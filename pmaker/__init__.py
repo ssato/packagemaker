@@ -1,24 +1,4 @@
 #
-# PackageMaker is a successor of xpack.py, a script to build packages from
-# existing files on your system.
-#
-# It will try gathering the info of files, dirs and symlinks in given path
-# list, and then:
-#
-# * arrange src tree contains these files, dirs and symlinks with these
-#   relative path kept, and build files (Makefile.am, configure.ac, etc.)
-#   to install these.
-#
-# * generate packaging metadata like RPM SPEC, debian/rules, etc.
-#
-# * build package such as rpm, src.rpm, deb, etc.
-#
-#
-# NOTE: The permissions of the files might be lost during packaging. If you
-# want to ensure these are saved or force set permissions as you wanted,
-# specify these explicitly in Makefile.am or rpm spec, etc.
-#
-#
 # Copyright (C) 2011 Satoru SATOH <satoru.satoh @ gmail.com>
 #
 # This program is free software: you can redistribute it and/or modify
@@ -33,40 +13,6 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
-#
-#
-# Requirements:
-# * rpmbuild in rpm-build package
-# * python-cheetah: EPEL should be needed for RHEL (option: it's not needed if
-#   you just want to setup src tree)
-# * autotools: both autoconf and automake (option: see the above comment)
-# * rpm-python
-# * pyxattr (option; if you want to try with --use-pyxattr)
-#
-#
-# TODO:
-# * correct wrong English expressions
-# * more complete tests
-# * stabilize the API of the plugin system
-# * sort out command line options: Work in progress
-# * eliminate the strong dependency to rpm and make it runnable on debian based
-#   systems (w/o rpm-python)
-# * find causes of warnings during deb build and fix them all
-# * keep permissions of targets in tar archives
-#
-#
-# References (in random order):
-# * http://docs.fedoraproject.org/en-US/Fedora_Draft_Documentation/0.1/html/RPM_Guide/ch-creating-rpms.html
-# * http://docs.fedoraproject.org/en-US/Fedora_Draft_Documentation/0.1/html/RPM_Guide/ch-rpm-programming-python.html
-# * http://cdbs-doc.duckcorp.org
-# * https://wiki.duckcorp.org/DebianPackagingTutorial/CDBS
-# * http://kitenet.net/~joey/talks/debhelper/debhelper-slides.pdf
-# * http://wiki.debian.org/IntroDebianPackaging
-# * http://www.debian.org/doc/maint-guide/ch-dother.ja.html
-#
-#
-# Alternatives:
-# * buildrpm: http://magnusg.fedorapeople.org/buildrpm/
 #
 #
 # Internal:
