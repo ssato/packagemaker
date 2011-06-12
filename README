@@ -1,0 +1,15 @@
+About
+================
+
+PackageMaker is a tool can automates the packaging process.
+
+It helps building packages of existing files on your system by automating
+almost all of the steps needed for packaing: arrange source tree, create
+makefiles and rpm specs or debina packaging files, etc.
+
+
+Author
+================
+
+Satoru SATOH <satoru.satoh at gmail.com>
+
