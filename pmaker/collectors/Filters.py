@@ -1,0 +1,71 @@
+#
+# Copyright (C) 2011 Satoru SATOH <satoru.satoh @ gmail.com>
+#
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.
+#
+from pmaker.globals import TYPES_SUPPORTED
+from pmaker.models import FileInfo
+
+import logging
+
+
+
+class BaseFilter(object):
+    """Base class to filter out specific FileInfo objects and make them not
+    collected when Collector.collect() runs.
+    """
+    _reason = ""
+
+    def __init__(self, *args, **kwargs):
+        pass
+
+    def pre(self, fileinfo):
+        assert isinstance(fileinfo, FileInfo)
+
+    def post(self, fileinfo):
+        msg = "Filtered out as %s: path=%s, type=%s" % \
+            (self._reason, fileinfo.path, fileinfo.type())
+
+        logging.info(msg)
+
+    def _pred(self, fileinfo):
+        #return False  # NOTE: It will not be filtered out if False.
+        raise NotImplementedError("Child classes must override this method!")
+
+    def pred(self, fileinfo, *args, **kwargs):
+        """
+        @fileinfo  FileInfo object
+        """
+        self.pre(fileinfo)
+        ret = self._pred(fileinfo)
+        self.post(fileinfo)
+
+        return ret
+
+
+
+class UnsupportedTypesFilterr(BaseFilter):
+    """A filter class to filter out fileinfo objects of which type is not
+    supported.
+    """
+
+    _reason = "not supported type"
+
+    def _pred(self, fileinfo):
+        """Rule to filter out fileinfo objects if its type is not supported.
+        """
+        return fileinfo.type() not in TYPES_SUPPORTED
+
+
+# vim: set sw=4 ts=4 expandtab:
