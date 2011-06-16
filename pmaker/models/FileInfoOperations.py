@@ -16,7 +16,8 @@
 #
 #
 from pmaker.globals import *
-from pmaker.utils import *
+from pmaker.utils import *  # dicts_comp
+from pmaker.shell import shell
 
 import logging
 import os
@@ -39,7 +40,7 @@ except ImportError:
 class FileOperations(object):
     """Class to implement operations for FileInfo classes.
 
-    This class will not be instatiated and mixed in FileInfo classes.
+    This class will not be instatiated and mixed into FileInfo classes.
     """
 
     @classmethod
@@ -187,59 +188,6 @@ class FileOperations(object):
         cls.copy_main(fileinfo, dest)
 
         return True
-
-
-
-class DirOperations(FileOperations):
-
-    @classmethod
-    def remove(cls, path):
-        if not os.path.isdir(path):
-            raise RuntimeError(" '%s' is not a directory! Aborting..." % path)
-
-        os.removedirs(path)
-
-    @classmethod
-    def copy_main(cls, fileinfo, dest, use_pyxattr=False):
-        try:
-            mode = int(fileinfo.permission(), 8)  # in octal, e.g. 0755
-            os.makedirs(dest, mode)
-
-        except OSError, e:   # It may be OK, ex. non-root user cannot set perms.
-            logging.debug("Failed: os.makedirs, dest=%s, mode=%o" % (dest, mode))
-            logging.warn(e)
-
-            logging.info("skip to copy " + dest)
-
-            # FIXME: What can be done with it?
-            #
-            #if not os.path.exists(dest):
-            #    os.chmod(dest, os.lstat(dest).st_mode | os.W_OK | os.X_OK)
-            #    os.makedirs(dest, mode)
-
-        uid = os.getuid()
-        gid = os.getgid()
-
-        if uid == 0 or (uid == fileinfo.uid and gid == fileinfo.gid):
-            os.chown(dest, fileinfo.uid, fileinfo.gid)
-        else:
-            logging.debug("Chown is not permitted so do not")
-
-        shutil.copystat(fileinfo.path, dest)
-        cls.copy_xattrs(fileinfo.xattrs, dest)
-
-
-
-class SymlinkOperations(FileOperations):
-
-    link_instead_of_copy = False
-
-    @classmethod
-    def copy_main(cls, fileinfo, dest, use_pyxattr=False):
-        if cls.link_instead_of_copy:
-            os.symlink(fileinfo.linkto, dest)
-        else:
-            shell("cp -a %s %s" % (fileinfo.path, dest))
 
 
 # vim: set sw=4 ts=4 expandtab:
