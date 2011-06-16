@@ -34,6 +34,15 @@ class FileInfo(object):
     is_copyable = True
 
     def __init__(self, path, mode, uid, gid, checksum, xattrs, **kwargs):
+        """
+
+        @path  str   Target object's path
+        @mode  int   Number represents mode: os.lstat(path).st_mode
+        @uid   int   User ID of the object's owner
+        @gid   int   Group ID of the object's owner
+        @checksum  str  Checksum of this target object
+        @xattr dict  Parameter names and values represent eXtended ATTRibutes
+        """
         self.path = path
         self.realpath = os.path.realpath(path)
 
@@ -128,12 +137,10 @@ class UnknownInfo(FileInfo):
         super(UnknownInfo, self).__init__(path, mode, uid, gid, checksum, xattrs)
 
 
-
 FileInfo.register()
 DirInfo.register()
 SymlinkInfo.register()
 OtherInfo.register()
 UnknownInfo.register()
-
 
 # vim: set sw=4 ts=4 expandtab:
