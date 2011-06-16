@@ -14,7 +14,7 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
-from pmaker.models.FileInfoOperations import FileOperations
+from pmaker.models.FileOperations import FileOperations
 from pmaker.shell import shell
 
 import os

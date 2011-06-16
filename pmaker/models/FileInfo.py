@@ -17,7 +17,7 @@
 #
 from pmaker.globals import *
 from pmaker.utils import *
-from pmaker.models.FileInfoOperations import *
+from pmaker.models.FileOperations import *
 
 import logging
 import os.path

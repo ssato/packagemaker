@@ -15,7 +15,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 #
-from pmaker.models.FileInfoOperations import FileOperations
+from pmaker.models.FileOperations import FileOperations
 
 import logging
 import os
