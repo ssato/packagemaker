@@ -1,0 +1,3 @@
+#for $fi in $conflicted_fileinfos
+$fi.target
+#end for

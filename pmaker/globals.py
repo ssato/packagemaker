@@ -46,6 +46,8 @@ TYPE_SYMLINK = "symlink"
 TYPE_OTHER   = "other"
 TYPE_UNKNOWN = "unknown"
 
+TYPES_SUPPORTED = (TYPE_FILE, TYPE_DIR, TYPE_SYMLINK)
+
 
 TEST_CHOICES = (TEST_BASIC, TEST_FULL) = ("basic", "full")
 

@@ -1,0 +1,9 @@
+#if $changelog
+$changelog
+#else
+$name ($version) unstable; urgency=low
+
+  * New upstream release
+
+ -- $packager <$mail>  $date.date
+#end if

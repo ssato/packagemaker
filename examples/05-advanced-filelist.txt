@@ -1,0 +1,35 @@
+## F. Packaging files under /etc which is not owned by any RPMs:
+
+$ list_files () { dir=$1; sudo find $dir -type f; }                                                                                                            $ is_not_from_rpm () { f=$1; LANG=C sudo rpm -qf $f | grep -q 'is not owned' 2>/dev/null; }
+$ (for f in `list_files /etc`; do is_not_from_rpm $f && echo $f; done) \\
+>  > etc.not_from_package.files
+$ sudo python pmaker.py -n etcdata --pversion $(date +%Y%m%d) \\
+> --debug -w etcdata-build etc.not_from_package.files
+[sudo] password for ssato:
+14:15:03 [DEBUG]  Could load the cache: /root/.cache/pmaker.rpm.filelist.pkl
+14:15:09 [INFO] Setting up src tree in /tmp/t/etcdata-build/etcdata-20110217: etcdata
+14:15:09 [DEBUG]  Creating a directory: /tmp/t/etcdata-build/etcdata-20110217
+...(snip)...
+14:16:33 [INFO] Successfully created packages in /tmp/t/etcdata-build/etcdata-20110217: etcdata
+$ sudo chown -R ssato.ssato etcdata-build/
+$ ls etcdata-build/etcdata-20110217/
+MANIFEST            Makefile.am  aclocal.m4      config.status  etcdata-20110217-1.fc14.src.rpm  etcdata.spec  rpm
+MANIFEST.overrides  Makefile.in  autom4te.cache  configure      etcdata-20110217.tar.bz2         install-sh    rpm.mk
+Makefile            README       config.log      configure.ac   etcdata-20110217.tar.gz          missing       src
+$ sudo make -C etcdata-build/etcdata-20110217/ rpm
+...(snip)...
+$ rpm -qlp etcdata-build/etcdata-20110217/etcdata-20110217-1.fc14.noarch.rpm
+/etc/.pwd.lock
+/etc/X11/xorg.conf
+/etc/X11/xorg.conf.by-psb-config-display
+/etc/X11/xorg.conf.d/01-poulsbo.conf
+/etc/X11/xorg.conf.livna-config-backup
+/etc/aliases.db
+/etc/crypttab
+/etc/gconf/gconf.xml.defaults/%gconf-tree-af.xml
+...(snip)...
+/etc/yum.repos.d/fedora-chromium.repo
+/usr/share/doc/etcdata-20110217
+/usr/share/doc/etcdata-20110217/MANIFEST
+/usr/share/doc/etcdata-20110217/README
+$

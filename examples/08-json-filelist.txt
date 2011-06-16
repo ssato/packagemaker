@@ -1,0 +1,62 @@
+## I. Packaging files with some attributes specified in JSON data:
+
+$ cat filelist.json
+[
+    {
+        "path": "/etc/resolv.conf",
+        "target": {
+            "target": "/var/lib/network/resolv.conf",
+            "uid": 0,
+            "gid": 0,
+            "conflicts": "NetworkManager"
+        }
+    },
+    {
+        "path": "/etc/hosts",
+        "target": {
+            "conflicts": "setup",
+            "rpmattr": "%config(noreplace)"
+        }
+    }
+]
+$ python pmaker.py --itype filelist.json -n netdata -w 5 -q filelist.json
+01:03:01 [WARNING] /etc/hosts is owned by setup
+configure.ac:2: installing `./install-sh'
+configure.ac:2: installing `./missing'
+{ test ! -d "netdata-0.1" || { find "netdata-0.1" -type d ! -perm -200 -exec chmod u+w {} ';' && rm -fr "netdata-0.1"; }; }
+test -d "netdata-0.1" || mkdir "netdata-0.1"
+test -n "" \
+|| find "netdata-0.1" -type d ! -perm -755 \
+        -exec chmod u+rwx,go+rx {} \; -o \
+  ! -type d ! -perm -444 -links 1 -exec chmod a+r {} \; -o \
+  ! -type d ! -perm -400 -exec chmod a+r {} \; -o \
+  ! -type d ! -perm -444 -exec /bin/sh /tmp/0/5/netdata-0.1/install-sh -c -m a+r {} {} \; \
+|| chmod -R a+r "netdata-0.1"
+tardir=netdata-0.1 && /bin/sh /tmp/0/5/netdata-0.1/missing --run tar chof - "$tardir" | bzip2 -9 -c >netdata-0.1.tar.bz2
+{ test ! -d "netdata-0.1" || { find "netdata-0.1" -type d ! -perm -200 -exec chmod u+w {} ';' && rm -fr "netdata-0.1"; }; }
+  GEN    srpm
+$ ls -w 80 5/netdata-0.1/
+MANIFEST            netdata-0.1-1.fc14.noarch.rpm
+MANIFEST.overrides  netdata-0.1-1.fc14.src.rpm
+Makefile            netdata-0.1.tar.bz2
+Makefile.am         netdata-overrides-0.1-1.fc14.noarch.rpm
+Makefile.in         netdata.spec
+README              pmaker-build.stamp
+aclocal.m4          pmaker-configure.stamp
+autom4te.cache      pmaker-package-filelist.pkl
+config.log          pmaker-preconfigure.stamp
+config.status       pmaker-sbuild.stamp
+configure           pmaker-setup.stamp
+configure.ac        rpm
+install-sh          rpm.mk
+missing             src
+$ rpm -qlp 5/netdata-0.1/netdata-0.1-1.fc14.noarch.rpm
+/usr/share/doc/netdata-0.1
+/usr/share/doc/netdata-0.1/MANIFEST
+/usr/share/doc/netdata-0.1/README
+$ rpm -qlp 5/netdata-0.1/netdata-overrides-0.1-1.fc14.noarch.rpm
+/etc/hosts
+/usr/share/doc/netdata-overrides-0.1
+/usr/share/doc/netdata-overrides-0.1/MANIFEST.overrides
+/var/lib/network/resolv.conf
+$

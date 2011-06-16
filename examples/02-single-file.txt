@@ -1,0 +1,46 @@
+## C. Packaing single file, /etc/resolve.conf:
+
+$ echo /etc/resolv.conf | python pmaker.py -n resolvconf -w 2 --debug -
+21:51:43 [INFO] Use PackageMaker: RpmPackageMaker: type=filelist, format=rpm
+21:51:43 [INFO] Use Collector: FilelistCollector (filelist)
+21:51:43 [INFO] Setting up src tree in /tmp/w/2/resolvconf-0.1: resolvconf
+21:51:43 [DEBUG]  Creating a directory: /tmp/w/2/resolvconf-0.1
+21:51:43 [DEBUG]  Creating a directory: /tmp/w/2/resolvconf-0.1/src
+21:51:43 [DEBUG]  Copying from '/etc/resolv.conf' to '/tmp/w/2/resolvconf-0.1/src/etc/resolv.conf'
+21:51:43 [INFO]  Run: touch /tmp/w/2/resolvconf-0.1/pmaker-setup.stamp [/tmp/w/2/resolvconf-0.1]
+21:51:43 [INFO] Arrange autotool-ized src directory: resolvconf
+21:51:43 [INFO]  Run: touch /tmp/w/2/resolvconf-0.1/pmaker-preconfigure.stamp [/tmp/w/2/resolvconf-0.1]
+21:51:43 [INFO] Configuring src distribution: resolvconf
+21:51:43 [INFO]  Run: autoreconf -vfi [/tmp/w/2/resolvconf-0.1]
+autoreconf: Entering directory `.'
+autoreconf: configure.ac: not using Gettext
+autoreconf: running: aclocal --force
+autoreconf: configure.ac: tracing
+autoreconf: configure.ac: not using Libtool
+autoreconf: running: /usr/bin/autoconf --force
+autoreconf: configure.ac: not using Autoheader
+autoreconf: running: automake --add-missing --copy --force-missing
+configure.ac:2: installing `./install-sh'
+configure.ac:2: installing `./missing'
+autoreconf: Leaving directory `.'
+21:51:46 [INFO]  Run: touch /tmp/w/2/resolvconf-0.1/pmaker-configure.stamp [/tmp/w/2/resolvconf-0.1]
+21:51:46 [INFO] Building src package: resolvconf
+21:51:46 [INFO]  Run: ./configure --quiet [/tmp/w/2/resolvconf-0.1]
+21:51:48 [INFO]  Run: make [/tmp/w/2/resolvconf-0.1]
+21:51:48 [INFO]  Run: make dist [/tmp/w/2/resolvconf-0.1]
+21:51:48 [INFO]  Run: make srpm [/tmp/w/2/resolvconf-0.1]
+21:51:48 [INFO]  Run: touch /tmp/w/2/resolvconf-0.1/pmaker-sbuild.stamp [/tmp/w/2/resolvconf-0.1]
+21:51:48 [INFO] Building bin packages: resolvconf
+21:51:48 [INFO]  Run: mock --version > /dev/null [/tmp/w/2/resolvconf-0.1]
+21:51:49 [DEBUG]  Run: rpm -q --specfile --qf "%{n}-%{v}-%{r}.src.rpm
+" /tmp/w/2/resolvconf-0.1/resolvconf.spec [.]
+21:51:49 [INFO]  Run: mock -r fedora-14-x86_64 resolvconf-0.1-1.fc14.src.rpm --quiet [/tmp/w/2/resolvconf-0.1]
+21:52:17 [INFO]  Run: mv /var/lib/mock/fedora-14-x86_64/result/*.rpm /tmp/w/2/resolvconf-0.1 [/tmp/w/2/resolvconf-0.1]
+21:52:17 [INFO]  Run: touch /tmp/w/2/resolvconf-0.1/pmaker-build.stamp [/tmp/w/2/resolvconf-0.1]
+21:52:17 [INFO] Successfully created packages in /tmp/w/2/resolvconf-0.1: resolvconf
+$ rpm -qlp 2/resolvconf-0.1/resolvconf-0.1-1.fc14.noarch.rpm
+/etc/resolv.conf
+/usr/share/doc/resolvconf-0.1
+/usr/share/doc/resolvconf-0.1/MANIFEST
+/usr/share/doc/resolvconf-0.1/README
+$

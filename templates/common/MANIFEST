@@ -1,0 +1,5 @@
+#for $fi in $fileinfos
+#if not $fi.conflicts
+$fi.target
+#end if
+#end for

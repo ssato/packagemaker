@@ -1,0 +1,39 @@
+## D. Packaing single file, 3/rhel-server-5.6-i386-dvd.iso,
+## will be installed into /srv/isos/:
+
+$ isoname=rhel-server-5.6-i386-dvd.iso
+$ echo "3/$isoname,target=/srv/isos/$isoname,uid=0,gid=0" | \
+> python pmaker.py --itype filelist.ext -n rhel-server-5-6-i386-dvd-iso \
+> -w 3 --upto build --no-rpmdb --no-mock -v -
+21:56:29 [INFO] Use PackageMaker: RpmPackageMaker: type=filelist, format=rpm
+21:56:29 [INFO] Use Collector: ExtFilelistCollector (filelist.ext)
+21:56:29 [INFO] Setting up src tree in /tmp/w/3/rhel-server-5-6-i386-dvd-iso-0.1: rhel-server-5-6-i386-dvd-iso
+21:56:29 [INFO] Override attr gid=0 in fileinfo: path=3/rhel-server-5.6-i386-dvd.iso
+21:56:29 [INFO] Override attr target=/srv/isos/rhel-server-5.6-i386-dvd.iso in fileinfo: path=3/rhel-server-5.6-i386-dvd.iso
+21:56:29 [INFO] Override attr uid=0 in fileinfo: path=3/rhel-server-5.6-i386-dvd.iso
+21:56:29 [INFO]  Run: touch /tmp/w/3/rhel-server-5-6-i386-dvd-iso-0.1/pmaker-setup.stamp [/tmp/w/3/rhel-server-5-6-i386-dvd-iso-0.1]
+21:56:29 [INFO] Arrange autotool-ized src directory: rhel-server-5-6-i386-dvd-iso
+21:56:29 [INFO]  Run: touch /tmp/w/3/rhel-server-5-6-i386-dvd-iso-0.1/pmaker-preconfigure.stamp [/tmp/w/3/rhel-server-5-6-i386-dvd-iso-0.1]
+21:56:29 [INFO] Configuring src distribution: rhel-server-5-6-i386-dvd-iso
+21:56:29 [INFO]  Run: autoreconf -fi [/tmp/w/3/rhel-server-5-6-i386-dvd-iso-0.1]
+configure.ac:2: installing `./install-sh'
+configure.ac:2: installing `./missing'
+21:56:32 [INFO]  Run: touch /tmp/w/3/rhel-server-5-6-i386-dvd-iso-0.1/pmaker-configure.stamp [/tmp/w/3/rhel-server-5-6-i386-dvd-iso-0.1]
+21:56:32 [INFO] Building src package: rhel-server-5-6-i386-dvd-iso
+21:56:32 [INFO]  Run: ./configure --quiet --enable-silent-rules [/tmp/w/3/rhel-server-5-6-i386-dvd-iso-0.1]
+21:56:34 [INFO]  Run: make V=0 > /dev/null [/tmp/w/3/rhel-server-5-6-i386-dvd-iso-0.1]
+21:56:34 [INFO]  Run: make dist V=0 > /dev/null [/tmp/w/3/rhel-server-5-6-i386-dvd-iso-0.1]
+21:56:34 [INFO]  Run: make srpm [/tmp/w/3/rhel-server-5-6-i386-dvd-iso-0.1]
+21:56:34 [INFO]  Run: touch /tmp/w/3/rhel-server-5-6-i386-dvd-iso-0.1/pmaker-sbuild.stamp [/tmp/w/3/rhel-server-5-6-i386-dvd-iso-0.1]
+21:56:34 [INFO] Building bin packages: rhel-server-5-6-i386-dvd-iso
+21:56:34 [INFO]  Run: make rpm [/tmp/w/3/rhel-server-5-6-i386-dvd-iso-0.1]
+configure: WARNING: unrecognized options: --disable-dependency-tracking
+configure: WARNING: unrecognized options: --disable-dependency-tracking
+21:56:37 [INFO]  Run: touch /tmp/w/3/rhel-server-5-6-i386-dvd-iso-0.1/pmaker-build.stamp [/tmp/w/3/rhel-server-5-6-i386-dvd-iso-0.1]
+21:56:37 [INFO] Successfully created packages in /tmp/w/3/rhel-server-5-6-i386-dvd-iso-0.1: rhel-server-5-6-i386-dvd-iso
+$ rpm -qlp 3/rhel-server-5-6-i386-dvd-iso-0.1/rhel-server-5-6-i386-dvd-iso-0.1-1.fc14.noarch.rpm
+/srv/isos/rhel-server-5.6-i386-dvd.iso
+/usr/share/doc/rhel-server-5-6-i386-dvd-iso-0.1
+/usr/share/doc/rhel-server-5-6-i386-dvd-iso-0.1/MANIFEST
+/usr/share/doc/rhel-server-5-6-i386-dvd-iso-0.1/README
+$

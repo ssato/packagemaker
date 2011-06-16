@@ -1,0 +1,26 @@
+Source: $name
+Priority: optional
+Maintainer: $packager <$mail>
+Build-Depends: debhelper (>= 7.3.8), autotools-dev
+Standards-Version: 3.9.0
+Homepage: $url
+
+Package: $name
+Section: database
+#if $noarch
+Architecture: all
+#else
+Architecture: any
+#end if
+#set $requires_list = ""
+#for $rel in $relations
+#if $rel.targets
+#set $rel_targets = ", ".join($rel.targets)
+#end if
+#if $rel.type == "Depends"
+#set $requires_list += $rel_targets
+#end if
+#end for
+Depends: \${shlibs:Depends}, \${misc:Depends}$requires_list
+Description: $summary
+  $summary
