@@ -18,6 +18,8 @@
 from pmaker.globals import *
 from pmaker.utils import *
 from pmaker.models.FileOperations import *
+from pmaker.models.DirOperations import *
+from pmaker.models.SymlinkOperations import *
 
 import logging
 import os.path
@@ -137,10 +139,15 @@ class UnknownInfo(FileInfo):
         super(UnknownInfo, self).__init__(path, mode, uid, gid, checksum, xattrs)
 
 
-FileInfo.register()
-DirInfo.register()
-SymlinkInfo.register()
-OtherInfo.register()
-UnknownInfo.register()
+
+def init():
+    """FIXME: Ugly
+    """
+    FileInfo.register()
+    DirInfo.register()
+    SymlinkInfo.register()
+    OtherInfo.register()
+    UnknownInfo.register()
+
 
 # vim: set sw=4 ts=4 expandtab:

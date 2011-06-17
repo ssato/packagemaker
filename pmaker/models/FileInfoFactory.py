@@ -14,8 +14,10 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
-from pmaker.globals import *
-from pmaker.utils import *
+from pmaker.globals import *  # TYPE_*, FILEINFOS, PYXATTR_ENABLED
+from pmaker.utils import checksum
+
+import pmaker.models.FileInfo
 
 import grp
 import logging
@@ -27,6 +29,7 @@ import stat
 
 try:
     import xattr  # pyxattr
+    PYXATTR_ENABLED = True
 
 except ImportError:
     # Make up a "Null-Object" like class mimics xattr module.
@@ -34,6 +37,8 @@ except ImportError:
         def get_all(self, *args):
             return ()
 
+
+pmaker.models.FileInfo.init()
 
 
 
@@ -73,7 +78,8 @@ class FileInfoFactory(object):
 
         return ft
 
-    def create(self, path, attrs=None, fileinfo_maps=FILEINFOS):
+    def create(self, path, attrs=None, fileinfo_map=FILEINFOS,
+            use_pyxattr=PYXATTR_ENABLED):
         """Factory method. Create and return the *Info instance.
 
         @path   str   Object path (relative or absolute)
@@ -86,20 +92,16 @@ class FileInfoFactory(object):
 
         (_mode, _uid, _gid) = st
 
-        xs = xattr.get_all(path)
-        _xattrs = (xs and dict(xs) or {})
+        _xattrs = dict(use_pyxattr and xattr.get_all(path) or ())
 
         _filetype = self._guess_ftype(_mode)
 
         if _filetype == TYPE_UNKNOWN:
-            logging.info(" Could not get the result: %s" % path)
+            logging.info(" Could not stat and determine type: %s" % path)
 
-        if _filetype == TYPE_FILE:
-            _checksum = checksum(path)
-        else:
-            _checksum = checksum()
+        _checksum = _filetype == TYPE_FILE and checksum(path) or checksum()
 
-        _cls = fileinfo_maps.get(_filetype, False)
+        _cls = fileinfo_map.get(_filetype, False)
         assert _cls, "Should not reached here! filetype=%s" % _filetype
 
         fi = _cls(path, _mode, _uid, _gid, _checksum, _xattrs)

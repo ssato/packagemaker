@@ -17,10 +17,10 @@
 #
 from pmaker.models.FileOperations import *
 from pmaker.models.FileInfoFactory import FileInfoFactory
+from pmaker.models.FileInfo import FileInfo
 from pmaker.utils import checksum, rm_rf
 
 import copy
-import glob
 import os
 import os.path
 import stat
@@ -59,7 +59,7 @@ class TestFileOperations(unittest.TestCase):
         rhs.checksum = checksum("/etc/resolv.conf")
         self.assertFalse(FileOperations.equivalent(lhs, rhs))
 
-    def test_permission(cls, mode):
+    def test_permission(self):
         file0 = "/etc/resolv.conf"
         if os.path.exists(file0):
             mode = os.lstat(file0).st_mode
@@ -113,10 +113,19 @@ class TestFileOperations__with_writes(unittest.TestCase):
         self.assertRaises(AssertionError, FileOperations.copy, fileinfo, fileinfo.path)
 
     def test_copy__not_copyable(self):
-        fileinfo = FileInfoFactory().create(self.testfile1)
-        dest = self.testfile1 + ".2"
+        class NotCopyableFileInfo(FileInfo):
+            is_copyable = False
 
-        fileinfo.is_copyable = False
+            def __init__(self, path):
+                mode = os.lstat(path).st_mode
+                uid = gid = 0
+                csum = checksum(path)
+                xattrs = dict()
+
+                super(NotCopyableFileInfo, self).__init__(path, mode, uid, gid, csum, xattrs)
+
+        fileinfo = NotCopyableFileInfo(self.testfile1)
+        dest = self.testfile1 + ".2"
 
         self.assertFalse(FileOperations.copy(fileinfo, dest))
 
@@ -126,7 +135,7 @@ class TestFileOperations__with_writes(unittest.TestCase):
 
         FileOperations.copy(fileinfo, dest)
 
-        self.assertFalse(FileOperations(fileinfo, dest))
+        self.assertFalse(FileOperations.copy(fileinfo, dest))
 
     def test_copy__exists__force(self):
         fileinfo = FileInfoFactory().create(self.testfile1)
