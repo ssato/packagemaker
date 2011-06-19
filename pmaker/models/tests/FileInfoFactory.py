@@ -14,100 +14,81 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
-from pmaker.models.FileInfo import *  # Register FileInfo and other classes
-from pmaker.globals import *  # TYPE_*, FILEINFOS, PYXATTR_ENABLED
-from pmaker.utils import checksum
+from pmaker.models.FileInfoFactory import FileInfoFactory
+from pmaker.models.FileInfo import *  # *FileInfo and other classes
+from pmaker.globals import *  # TYPE_*
+from pmaker.utils import rm_rf
 
-import grp
-import logging
 import os
-import os.path
-import pwd
-import stat
-
-
-try:
-    import xattr  # pyxattr
-    PYXATTR_ENABLED = True
-
-except ImportError:
-    # Make up a "Null-Object" like class mimics xattr module.
-    class xattr(object):
-        def get_all(self, *args):
-            return ()
+import tempfile
+import unittest
 
 
 
+class TestFileInfoFactory(unittest.TestCase):
 
-class FileInfoFactory(object):
+    def setUp(self):
+        self.factory = FileInfoFactory()
+        self.workdir = tempfile.mkdtemp(dir="/tmp", prefix="pmaker-tests")
 
-    def _stat(self, path):
-        """
-        @path    str     Object's path (relative or absolute)
-        @return  A tuple of (mode, uid, gid) or (None, None, None) if OSError was raised.
-        """
-        try:
-            _stat = os.lstat(path)
-        except OSError, e:
-            logging.warn(e)
-            return (None, None, None)
+    def tearDown(self):
+        rm_rf(self.workdir)
 
-        return (_stat.st_mode, _stat.st_uid, _stat.st_gid)
+    def test__stat_normal(self):
+        (mode, uid, gid) = self.factory._stat("/dev/null")
+        self.assertNotEquals(mode, None)
+        self.assertNotEquals(uid, None)
+        self.assertNotEquals(gid, None)
 
-    def _guess_ftype(self, st_mode):
-        """
-        @st_mode    st_mode
-        """
-        if stat.S_ISLNK(st_mode):
-            ft = TYPE_SYMLINK
+    def test__stat_no_permission(self):
+        if os.getuid() == 0:
+            print >> sys.stderr, "You're root. Skip this test."
+            return
 
-        elif stat.S_ISREG(st_mode):
-            ft = TYPE_FILE
+        (mode, uid, gid) = self.factory._stat("/root/.bashrc")
+        self.assertEquals(mode, None)
+        self.assertEquals(uid, None)
+        self.assertEquals(gid, None)
 
-        elif stat.S_ISDIR(st_mode):
-            ft = TYPE_DIR
+    def test_create__file(self):
+        path = os.path.join(self.workdir, "file.txt")
+        open(path, "w").write("type file\n")
+        fi = self.factory.create(path)
 
-        elif stat.S_ISCHR(st_mode) or stat.S_ISBLK(st_mode) \
-            or stat.S_ISFIFO(st_mode) or stat.S_ISSOCK(st_mode):
-            ft = TYPE_OTHER
-        else:
-            ft = TYPE_UNKNOWN  # Should not be reached
+        self.assertTrue(isinstance(fi, FileInfo))
+        self.assertEquals(fi.type(), TYPE_FILE)
 
-        return ft
+    def test_create__dir(self):
+        path = self.workdir
+        fi = self.factory.create(path)
 
-    def create(self, path, attrs=None, fileinfo_map=FILEINFOS,
-            use_pyxattr=PYXATTR_ENABLED):
-        """Factory method. Create and return the *Info instance.
+        self.assertTrue(isinstance(fi, DirInfo))
+        self.assertEquals(fi.type(), TYPE_DIR)
 
-        @path   str   Object path (relative or absolute)
-        @attrs  dict  Attributes set to FileInfo object result after creation
-        """
-        st = self._stat(path)
+    def test_create__symlink(self):
+        src = os.path.join(self.workdir, "file.txt")
+        path = os.path.join(self.workdir, "symlink.txt")
+        open(src, "w").write("type file\n")
+        os.symlink(src, path)
+        fi = self.factory.create(path)
 
-        if st is None:
-            return UnknownInfo(path)
+        self.assertTrue(isinstance(fi, SymlinkInfo))
+        self.assertEquals(fi.type(), TYPE_SYMLINK)
 
-        (_mode, _uid, _gid) = st
+    def test_create__other(self):
+        path = os.path.join(self.workdir, "fifo.pipe")
+        os.mkfifo(path)
+        fi = self.factory.create(path)
 
-        _xattrs = dict(use_pyxattr and xattr.get_all(path) or ())
+        self.assertTrue(isinstance(fi, OtherInfo))
+        self.assertEquals(fi.type(), TYPE_OTHER)
 
-        _filetype = self._guess_ftype(_mode)
+    def test_create__unknown(self):
+        path = "/root/.bashrc"
+        fi = self.factory.create(path)
 
-        if _filetype == TYPE_UNKNOWN:
-            logging.info(" Could not stat and determine type: %s" % path)
-
-        _checksum = _filetype == TYPE_FILE and checksum(path) or checksum()
-
-        _cls = fileinfo_map.get(_filetype, False)
-        assert _cls, "Should not reached here! filetype=%s" % _filetype
-
-        fi = _cls(path, _mode, _uid, _gid, _checksum, _xattrs)
-
-        if attrs:
-            for attr, val in attrs.iteritems():
-                setattr(fi, attr, val)
-
-        return fi
+        self.assertTrue(isinstance(fi, UnknownInfo))
+        self.assertEquals(fi.type(), TYPE_UNKNOWN)
 
 
 # vim: set sw=4 ts=4 expandtab:

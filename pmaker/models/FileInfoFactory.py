@@ -87,8 +87,8 @@ class FileInfoFactory(object):
         """
         st = self._stat(path)
 
-        if st is None:
-            return UnknownInfo(path)
+        if st == (None, None, None):
+            return pmaker.models.FileInfo.UnknownInfo(path)
 
         (_mode, _uid, _gid) = st
 
@@ -102,7 +102,7 @@ class FileInfoFactory(object):
         _checksum = _filetype == TYPE_FILE and checksum(path) or checksum()
 
         _cls = fileinfo_map.get(_filetype, False)
-        assert _cls, "Should not reached here! filetype=%s" % _filetype
+        assert _cls, "Could not get a class for filetype=%s !" % _filetype
 
         fi = _cls(path, _mode, _uid, _gid, _checksum, _xattrs)
 
