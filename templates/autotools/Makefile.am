@@ -14,7 +14,7 @@ include \$(abs_srcdir)/rpm.mk
 pkgdata${dd.id}dir = $dd.dir
 dist_pkgdata${dd.id}_DATA = \\
 #for $f in $dd.files
-$f \\
+src$f \\
 #end for
 \$(NULL)
 

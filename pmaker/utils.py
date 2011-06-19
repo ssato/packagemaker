@@ -19,6 +19,7 @@ from pmaker.globals import *
 import copy
 import datetime
 import glob
+import itertools
 import logging
 import operator
 
@@ -71,10 +72,6 @@ except NameError:  # python < 2.5
             if not x:
                 return False
         return True
-
-
-# globals:
-(DATE_FMT_RFC2822, DATE_FMT_SIMPLE) = (0, 1)
 
 
 
@@ -315,14 +312,6 @@ def on_debug_mode():
 
 
 def compile_template(template, params, is_file=False):
-    """
-    TODO: Add test case that $template is a filename.
-
-    >>> tmpl_s = "a=$a b=$b"
-    >>> params = {"a": 1, "b": "b"}
-    >>> 
-    >>> assert "a=1 b=b" == compile_template(tmpl_s, params)
-    """
     if is_file:
         tmpl = Template(file=template, searchList=params)
     else:
@@ -346,21 +335,7 @@ def createdir(targetdir, mode=0700):
 
 
 def rm_rf(target):
-    """ "rm -rf" in python.
-
-    >>> d = tempfile.mkdtemp(dir="/tmp")
-    >>> rm_rf(d)
-    >>> rm_rf(d)
-    >>> 
-    >>> d = tempfile.mkdtemp(dir="/tmp")
-    >>> for c in "abc":
-    ...     os.makedirs(os.path.join(d, c))
-    >>> os.makedirs(os.path.join(d, "c", "d"))
-    >>> open(os.path.join(d, "x"), "w").write("test")
-    >>> open(os.path.join(d, "a", "y"), "w").write("test")
-    >>> open(os.path.join(d, "c", "d", "z"), "w").write("test")
-    >>> 
-    >>> rm_rf(d)
+    """ 'rm -rf' in python.
     """
     if not os.path.exists(target):
         return
@@ -402,34 +377,21 @@ def cache_needs_updates_p(cache_file, expires=0):
     return (delta >= datetime.timedelta(expires))
 
 
-def distdata_in_makefile_am(paths, srcdir="src"):
+def sort_out_paths_by_dir(paths):
     """
-    @paths  file path list
+    Sort out files by dirs.
 
-    >>> ps0 = ["/etc/resolv.conf", "/etc/sysconfig/iptables"]
-    >>> rs0 = [{"dir": "/etc", "files": ["src/etc/resolv.conf"], "id": "0"}, {"dir": "/etc/sysconfig", "files": ["src/etc/sysconfig/iptables"], "id": "1"}]
-    >>> 
-    >>> ps1 = ps0 + ["/etc/sysconfig/ip6tables", "/etc/modprobe.d/dist.conf"]
-    >>> rs1 = [{"dir": "/etc", "files": ["src/etc/resolv.conf"], "id": "0"}, {"dir": "/etc/sysconfig", "files": ["src/etc/sysconfig/iptables", "src/etc/sysconfig/ip6tables"], "id": "1"}, {"dir": "/etc/modprobe.d", "files": ["src/etc/modprobe.d/dist.conf"], "id": "2"}]
-    >>> 
-    >>> _cmp = lambda ds1, ds2: all([utils.dicts_comp(*dt) for dt in zip(ds1, ds2)])
-    >>> 
-    >>> rrs0 = distdata_in_makefile_am(ps0)
-    >>> rrs1 = distdata_in_makefile_am(ps1)
-    >>> 
-    >>> assert _cmp(rrs0, rs0), "expected %s but got %s" % (str(rs0), str(rrs0))
-    >>> assert _cmp(rrs1, rs1), "expected %s but got %s" % (str(rs1), str(rrs1))
+    @paths  path list, e.g.
+        ["/etc/resolv.conf", "/etc/sysconfig/iptables", "/etc/sysconfig/network"]
+
+    @return path list grouped by dirs, e.g. 
+        [{"dir": "/etc", "files": ["/etc/resolv.conf"], "id": "0"},
+         {"dir": "/etc/sysconfig", "files": ["/etc/sysconfig/iptables"], "id": "1"}]
     """
-    cntr = count()
+    cntr = itertools.count()
 
-    return [
-        {
-            "id": str(cntr.next()),
-            "dir":d,
-            "files": [os.path.join("src", p.strip(os.path.sep)) for p in ps]
-        } \
-        for d,ps in groupby(paths, os.path.dirname)
-    ]
+    return [dict(id=str(cntr.next()), dir=d, files=[p for p in ps]) \
+            for d, ps in itertools.groupby(paths, os.path.dirname)]
 
 
 # vim: set sw=4 ts=4 expandtab:

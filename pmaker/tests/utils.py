@@ -14,13 +14,15 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
-#
-
 from pmaker.utils import *
+from pmaker.globals import DATE_FMT_SIMPLE, DATE_FMT_RFC2822
 
+import copy
 import doctest
+import logging
 import os
 import random
+import re
 import subprocess
 import tempfile
 import unittest
@@ -42,6 +44,8 @@ class TestMemoize(unittest.TestCase):
 class TestMemoized(unittest.TestCase):
 
     def test_memoized(self):
+        """TODO: not implemented yet.
+        """
         pass
 
 
@@ -117,6 +121,198 @@ class TestUnique(unittest.TestCase):
 
     def test_unique_lists(self):
         self.assertListEqual(unique([0, 3, 1, 2, 1, 0, 4, 5]), [0, 1, 2, 3, 4, 5])
+
+
+
+NULL_DICT = dict()
+
+
+class Test_dicts_comp(unittest.TestCase):
+
+    def test_dicts_comp__null_vs_null(self):
+        self.assertTrue(dicts_comp(NULL_DICT, NULL_DICT))
+
+    def test_dicts_comp__not_null_vs_null(self):
+        self.assertFalse(dicts_comp({"a": 1}, NULL_DICT))
+
+    def test_dicts_comp__same_values(self):
+        d0 = dict(a=0, b=1, c=2)
+        d1 = copy.copy(d0)
+        self.assertTrue(dicts_comp(d0, d1))
+
+    def test_dicts_comp__rhs_has_more_kvs(self):
+        d0 = dict(a=0, b=1, c=2)
+        d1 = copy.copy(d0)
+        d1["d"] = 3
+        self.assertTrue(dicts_comp(d0, d1))
+
+    def test_dicts_comp__by_key(self):
+        d0 = dict(a=0, b=1, c=2)
+        d1 = dict(a=0, b=1, c=2, d=3)
+        self.assertFalse(dicts_comp(d0, d1, ("d")))
+
+    def test_dicts_comp__by_key(self):
+        d0 = dict(a=0, b=1, c=2)
+        d1 = dict(a=0, b=1, c=2, d=3)
+        self.assertTrue(dicts_comp(d0, d1, ("a", "b")))
+
+
+
+class Test_listplus(unittest.TestCase):
+
+    def test_listplus(self):
+        self.assertTrue(isinstance(listplus([0], (i for i in range(10))), list))
+
+
+
+class Test_true(unittest.TestCase):
+
+    def test_true(self):
+        self.assertTrue(true(False))
+
+
+
+class Test_true(unittest.TestCase):
+
+    def test_true(self):
+        self.assertTrue(true(False))
+
+
+
+class Test_date(unittest.TestCase):
+
+    def test_date__default(self):
+        self.assertNotEquals(re.match(r".{3} .{3} \d+ \d{4}", date()), None)
+
+    def test_date__simple(self):
+        self.assertNotEquals(re.match(r"\d{8}", date(DATE_FMT_SIMPLE)), None)
+
+    def test_date__rfc2822(self):
+        self.assertNotEquals(
+            re.match(r".{3}, \d{1,2} .* \d{4} \d{2}:\d{2}:\d{2} \+\d{4}", date(DATE_FMT_RFC2822)),
+            None
+        )
+
+
+
+class Test_do_nothing(unittest.TestCase):
+
+    def test_do_nothing(self):
+        do_nothing()
+
+
+
+class Test_on_debug_mode(unittest.TestCase):
+
+    def test_on_debug_mode__debug(self):
+        logging.getLogger().setLevel(logging.DEBUG)
+        self.assertTrue(on_debug_mode())
+
+    def test_on_debug_mode__info(self):
+        logging.getLogger().setLevel(logging.INFO)
+        self.assertFalse(on_debug_mode())
+
+
+
+class Test_rm_rf_and_createdir(unittest.TestCase):
+
+    def setUp(self):
+        self.workdir = tempfile.mkdtemp(dir="/tmp", prefix="pmaker-tests")
+
+    def tearDown(self):
+        rm_rf(self.workdir)
+
+    def test_createdir_and_rm_rf__simple(self):
+        path = os.path.join(self.workdir, "a")
+
+        createdir(path)
+        self.assertTrue(os.path.exists(path))
+        self.assertTrue(os.path.isdir(path))
+
+        rm_rf(path)
+        self.assertFalse(os.path.exists(path))
+
+        rm_rf(path)
+
+    def test_createdir_and_rm_rf__multi(self):
+        topdir = os.path.join(self.workdir, "a")
+
+        for c in "bc":
+            p = os.path.join(topdir, c)
+            createdir(p)
+
+            self.assertTrue(os.path.exists(p))
+            self.assertTrue(os.path.isdir(p))
+
+        p = os.path.join(topdir, "d", "e")
+        createdir(p)
+        self.assertTrue(os.path.exists(p))
+        self.assertTrue(os.path.isdir(p))
+
+        open(os.path.join(topdir, "x"), "w").write("test\n")
+        open(os.path.join(topdir, "b", "y"), "w").write("test2\n")
+        open(os.path.join(topdir, "d", "e", "z"), "w").write("test3\n")
+
+        rm_rf(topdir)
+        self.assertFalse(os.path.exists(topdir))
+
+
+
+class Test_compile_template(unittest.TestCase):
+
+    def setUp(self):
+        self.workdir = tempfile.mkdtemp(dir="/tmp", prefix="pmaker-tests")
+
+    def tearDown(self):
+        rm_rf(self.workdir)
+
+    def test_compile_template__str(self):
+        tmpl_s = "a=$a b=$b"
+        params = {"a": 1, "b": "b"}
+
+        self.assertEquals("a=1 b=b", compile_template(tmpl_s, params))
+
+    def test_compile_template__file(self):
+        tmpl = os.path.join(self.workdir, "test.tmpl")
+        open(tmpl, "w").write("a=$a b=$b")
+
+        params = {"a": 1, "b": "b"}
+
+        self.assertEquals("a=1 b=b", compile_template(tmpl, params, is_file=True))
+
+
+
+class Test_sort_out_paths_by_dir(unittest.TestCase):
+
+    def setUp(self):
+        self.workdir = tempfile.mkdtemp(dir="/tmp", prefix="pmaker-tests")
+
+    def tearDown(self):
+        rm_rf(self.workdir)
+
+    def test_sort_out_paths_by_dir(self):
+        path_list = [
+           "/etc/resolv.conf",
+           "/etc/sysconfig/iptables",
+           "/etc/sysconfig/networks",
+        ]
+
+        expected_result = [
+            dict(dir="/etc", files=["/etc/resolv.conf"], id="0"),
+            dict(dir="/etc/sysconfig",
+                files=["/etc/sysconfig/iptables", "/etc/sysconfig/networks"],
+                id="1"),
+        ]
+        for i, d in enumerate(sort_out_paths_by_dir(path_list)):
+            self.assertTrue(dicts_comp(d, expected_result[i]))
+
+
+
+class Test_cache_needs_updates_p(unittest.TestCase):
+
+    def test_cache_needs_updates_p(self):
+        """TODO: Implement this.
+        """
 
 
 # vim: set sw=4 ts=4 et:

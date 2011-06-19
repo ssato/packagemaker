@@ -174,7 +174,7 @@ class PackageMaker(object):
         if not self.package.get("fileinfos", False):
             self.load()
 
-        self.package["distdata"] = distdata_in_makefile_am(
+        self.package["distdata"] = sort_out_paths_by_dir(
             [fi.target for fi in self.package["fileinfos"] if fi.type() == TYPE_FILE]
         )
 
