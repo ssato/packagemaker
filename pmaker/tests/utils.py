@@ -317,7 +317,7 @@ class Test_cache_needs_updates_p(unittest.TestCase):
 
 class Test_parse_conf_value(unittest.TestCase):
 
-    def test parse_conf_value(self):
+    def test_parse_conf_value(self):
         self.assertEquals(0, parse_conf_value("0"))
         self.assertEquals(123, parse_conf_value("123"))
         self.assertEquals(True, parse_conf_value("True"))

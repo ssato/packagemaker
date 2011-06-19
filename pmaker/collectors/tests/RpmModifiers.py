@@ -42,27 +42,24 @@ class TestRpmAttributeModifier(unittest.TestCase):
 
 class TestRpmConflictsModifier(unittest.TestCase):
 
+    def setUp(self):
+        pname = "foo"
+        self.modifier = RpmConflictsModifier(pname)
+        self.savedir = CONFLICTS_SAVEDIR % {"name": pname}
+        self.newdir = CONFLICTS_NEWDIR % {"name": pname}
+
     def test__init__conflicts(self):
-        modifier = RpmConflictsModifier("bash")
+        self.assertEquals(self.modifier.savedir, self.savedir)
+        self.assertEquals(self.modifier.newdir, self.newdir)
 
-        savedir = CONFLICTS_SAVEDIR % {"name": "bash"}
-        newdir = CONFLICTS_NEWDIR % {"name": "bash"}
-
-        self.assertEquals(modifier.savedir, savedir)
-        self.assertEquals(modifier.newdir, newdir)
-
-        owner = modifier.find_owner("/bin/bash")
+        owner = self.modifier.find_owner("/bin/bash")
         self.assertEquals(owner["name"], "bash")
 
     def test_update(self):
-
-        savedir = CONFLICTS_SAVEDIR % {"name": "bash"}
-        newdir = CONFLICTS_NEWDIR % {"name": "bash"}
-
         fi = FACTORY.create("/bin/bash")
-        new_fi = modifier.update(fi)
+        new_fi = self.modifier.update(fi)
 
-        self.assertEquals(new_fi.original_path, fi.target)
+        self.assertNotEquals(new_fi.original_path, fi.target)
 
         #path = fileinfo.target[1:]  # strip "/" at the head.
         #fileinfo.target = os.path.join(self.newdir, path)
