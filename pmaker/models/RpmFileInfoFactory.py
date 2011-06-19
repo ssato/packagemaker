@@ -14,16 +14,11 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
-from pmaker.globals import *
-from pmaker.utils import *
+from pmaker.models.FileInfoFactory import FileInfoFactory
+from pmaker.rpmutils import info_by_path
 
 import grp
-import logging
-import os
-import os.path
 import pwd
-
-import pmaker.rpmutils
 
 
 
@@ -36,7 +31,7 @@ class RpmFileInfoFactory(FileInfoFactory):
         any packages.
         """
         try:
-            fi = rpmutils.info_by_path(path)
+            fi = info_by_path(path)
             if fi:
                 uid = pwd.getpwnam(fi["uid"]).pw_uid   # uid: name -> id
                 gid = grp.getgrnam(fi["gid"]).gr_gid   # gid: name -> id
@@ -46,47 +41,6 @@ class RpmFileInfoFactory(FileInfoFactory):
             pass
 
         return super(RpmFileInfoFactory, self)._stat(path)
-
-
-
-class TestRpmFileInfoFactory(unittest.TestCase):
-
-    _multiprocess_can_split_ = True
-
-    def helper_00(self, filepath):
-        if not os.path.exists("/var/lib/rpm/Basenames"):
-            logging.info("rpmdb does not look exists. skip this test.")
-            return False
-
-        if not os.path.exists(filepath):
-            logging.info("File %s does not look exists. skip this test." % filepath)
-            return False
-
-        return True
-
-    def test__stat(self):
-        f = "/etc/hosts"
-
-        if not self.helper_00(f):
-            return
-
-        (_mode, uid, gid) = RpmFileInfoFactory()._stat(f)
-
-        self.assertEquals(uid, 0)
-        self.assertEquals(gid, 0)
-
-    def test__stat_call_parent_method(self):
-        for f in (os.path.expanduser("~/" + p) for p in (".bashrc", ".zshrc", ".tcshrc")):
-            if os.path.exists(f):
-                break
-
-        if not self.helper_00(f):
-            return
-
-        (_mode, uid, gid) = RpmFileInfoFactory()._stat(f)
-
-        self.assertEquals(uid, os.getuid())
-        self.assertEquals(gid, os.getgid())
 
 
 # vim: set sw=4 ts=4 expandtab:
