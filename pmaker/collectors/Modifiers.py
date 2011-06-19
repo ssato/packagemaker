@@ -14,6 +14,9 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
+
+#from pmaker.models.Target import Target
+
 import logging
 import os.path
 
@@ -93,6 +96,37 @@ class OwnerModifier(FileInfoModifier):
     def update(self, fileinfo, *args, **kwargs):
         fileinfo.uid = self.uid
         fileinfo.gid = self.gid
+
+        return fileinfo
+
+
+
+class TargetAttributeModifier(FileInfoModifier):
+
+    _priority = 9
+
+    def __init__(self, overrides=()):
+        """
+        @overrides  attribute names to override.
+        """
+        self.overrides = overrides
+
+    def update(self, fileinfo, target, *args, **kwargs):
+        """
+        @fileinfo  FileInfo object
+        @target    Target object
+        """
+        attrs_to_override = self.overrides and self.overrides or target.attrs
+
+        for attr in attrs_to_override:
+            if attr == "path":  # fileinfo.path must not be overridden.
+                logging.warn("You cannot overwrite original path of the fileinfo: path=" + fileinfo.path)
+                continue
+
+            val = getattr(target, attr, None)
+            if val is not None:
+                logging.info("Override attr %s=%s in fileinfo: path=%s" % (attr, val, fileinfo.path))
+                setattr(fileinfo, attr, val)
 
         return fileinfo
 

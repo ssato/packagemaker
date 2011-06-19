@@ -15,7 +15,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 from pmaker.globals import TYPES_SUPPORTED
-from pmaker.models import FileInfo
+from pmaker.models.FileInfo import FileInfo
 
 import logging
 

@@ -17,6 +17,11 @@
 from pmaker.globals import *
 from pmaker.utils import *
 from pmaker.collectors.Filters import *
+from pmaker.collectors.Modifiers import *
+from pmaker.collectors.RpmModifiers import *
+from pmaker.models.FileInfoFactory import FileInfoFactory
+from pmaker.models.RpmFileInfoFactory import RpmFileInfoFactory
+from pmaker.models.Target import Target
 
 import glob
 import logging
@@ -110,6 +115,8 @@ class FilelistCollector(Collector):
 
         if options.format == "rpm":
             self.fi_factory = RpmFileInfoFactory()
+
+            self.modifiers.append(RpmAttributeModifier())
 
             if not options.no_rpmdb:
                 self.modifiers.append(RpmConflictsModifier(pkgname))

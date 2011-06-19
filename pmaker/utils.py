@@ -22,6 +22,7 @@ import glob
 import itertools
 import logging
 import operator
+import re
 
 
 try:
@@ -393,5 +394,37 @@ def sort_out_paths_by_dir(paths):
     return [dict(id=str(cntr.next()), dir=d, files=[p for p in ps]) \
             for d, ps in itertools.groupby(paths, os.path.dirname)]
 
+
+def parse_conf_value(s):
+    """Simple and naive parser to parse value expressions in config files.
+
+    >>> assert 0 == parse_conf_value("0")
+    >>> assert 123 == parse_conf_value("123")
+    >>> assert True == parse_conf_value("True")
+    >>> assert [1,2,3] == parse_conf_value("[1,2,3]")
+    >>> assert "a string" == parse_conf_value("a string")
+    >>> assert "0.1" == parse_conf_value("0.1")
+    """
+    intp = re.compile(r"^([0-9]|([1-9][0-9]+))$")
+    boolp = re.compile(r"^(true|false)$", re.I)
+    listp = re.compile(r"^(\[\s*((\S+),?)*\s*\])$")
+
+    def matched(pat, s):
+        m = pat.match(s)
+        return m is not None
+
+    if not s:
+        return ""
+
+    if matched(boolp, s):
+        return bool(s)
+
+    if matched(intp, s):
+        return int(s)
+
+    if matched(listp, s):
+        return eval(s)  # TODO: too danger. safer parsing should be needed.
+
+    return s
 
 # vim: set sw=4 ts=4 expandtab:
