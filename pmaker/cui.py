@@ -27,51 +27,23 @@
 #
 
 from distutils.sysconfig import get_python_lib
-from itertools import count, groupby
 
 from pmaker.globals import *
-from pmaker.rpm import *
+from pmaker.rpmutils import *
 from pmaker.utils import *
-from pmaker.xattr import *
 
 import ConfigParser as cp
-import cPickle as pickle
-import copy
-import datetime
 import doctest
 import glob
-import grp
 import inspect
 import locale
 import logging
-import operator
 import optparse
 import os
 import os.path
-import platform
-import pwd
-import random
-import re
-import shutil
-import socket
-import stat
-import subprocess
 import sys
 import tempfile
 import unittest
-
-
-try:
-    import json
-    JSON_ENABLED = True
-
-except ImportError:
-    JSON_ENABLED = False
-
-    class json:
-        @staticmethod
-        def load(*args):
-            return ()
 
 
 __title__   = "packagemaker"
@@ -90,7 +62,7 @@ else:
 
 
 
-class TestFuncsWithSideEffects(unittest.TestCase):
+class Test_init_defaults(unittest.TestCase):
 
     _multiprocess_can_split_ = True
 
@@ -99,35 +71,6 @@ class TestFuncsWithSideEffects(unittest.TestCase):
 
     def tearDown(self):
         rm_rf(self.workdir)
-
-    def test_createdir_normal(self):
-        """TODO: Check mode (permission).
-        """
-        d = os.path.join(self.workdir, "a")
-        createdir(d)
-
-        self.assertTrue(os.path.isdir(d))
-
-    def test_createdir_specials(self):
-        # assertIsNone is not available in python < 2.5:
-        #self.assertIsNone(createdir(self.workdir))
-        self.assertEquals(createdir(self.workdir), None)  # try creating dir already exists.
-
-        f = os.path.join(self.workdir, "a")
-        open(f, "w").write("test")
-        self.assertRaises(RuntimeError, createdir, f)
-
-    def test_get_compressor(self):
-        _ = (_cmd, _ext, _am_opt) = get_compressor()
-
-    def test_shell(self):
-        rc = shell("echo \"\" > /dev/null", os.curdir)
-        self.assertEquals(rc, 0)
-
-        self.assertRaises(RuntimeError, shell, "grep xyz /dev/null")
-
-        if os.getuid() != 0:
-            self.assertRaises(RuntimeError, shell, "ls", "/root")
 
     def test_init_defaults_by_conffile_config(self):
         conf = """\
@@ -544,39 +487,6 @@ def run_unittests(verbose, test_choice):
 def run_alltests(verbose, test_choice):
     run_doctests(verbose)
     run_unittests(verbose, test_choice)
-
-
-def parse_conf_value(s):
-    """Simple and naive parser to parse value expressions in config files.
-
-    >>> assert 0 == parse_conf_value("0")
-    >>> assert 123 == parse_conf_value("123")
-    >>> assert True == parse_conf_value("True")
-    >>> assert [1,2,3] == parse_conf_value("[1,2,3]")
-    >>> assert "a string" == parse_conf_value("a string")
-    >>> assert "0.1" == parse_conf_value("0.1")
-    """
-    intp = re.compile(r"^([0-9]|([1-9][0-9]+))$")
-    boolp = re.compile(r"^(true|false)$", re.I)
-    listp = re.compile(r"^(\[\s*((\S+),?)*\s*\])$")
-
-    def matched(pat, s):
-        m = pat.match(s)
-        return m is not None
-
-    if not s:
-        return ""
-
-    if matched(boolp, s):
-        return bool(s)
-
-    if matched(intp, s):
-        return int(s)
-
-    if matched(listp, s):
-        return eval(s)  # TODO: too danger. safer parsing should be needed.
-
-    return s
 
 
 def parse_template_list_str(templates):
