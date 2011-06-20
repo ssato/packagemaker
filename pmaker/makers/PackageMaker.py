@@ -14,10 +14,10 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
-from itertools import count, groupby
+from itertools import groupby
 
 from pmaker.globals import *
-from pmaker.rpm import *
+from pmaker.shell import shell
 from pmaker.utils import *
 
 import cPickle as pickle
