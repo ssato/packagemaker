@@ -15,7 +15,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 from pmaker.globals import *
-from pmaker.makers.PackageMaker import PackageMaker
+from pmaker.makers.PackageMaker import TgzPackageMaker
 from pmaker.utils import on_debug_mode
 
 import logging

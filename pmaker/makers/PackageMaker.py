@@ -14,24 +14,29 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
-from itertools import groupby
-
 from pmaker.globals import *
+from pmaker.collectors.Collectors import FilelistCollector
 from pmaker.shell import shell
 from pmaker.utils import compile_template
 
 import cPickle as pickle
+import itertools
 import logging
 import os
 import os.path
 import sys
 
 
-if CHEETAH_ENABLED:
+try:
+    from Cheetah.Template import Template
+    CHEETAH_ENABLED = True
     UPTO = STEP_BUILD
-else:
+
+except ImportError:
     UPTO = STEP_SETUP
-    logging.warn("python-cheetah is not found. Packaging process can go up to \"setup\" step.")
+
+    logging.warn("python-cheetah is not found. It will go up to \"%s\" step." % STEP_SETUP)
+
 
 
 def to_srcdir(srcdir, path):
@@ -64,9 +69,8 @@ def find_template(template, search_paths=TEMPLATE_SEARCH_PATHS):
 class PackageMaker(object):
     """Abstract class for classes to implement various packaging processes.
     """
-    global BUILD_STEPS, TEMPLATES, COLLECTORS
+    global BUILD_STEPS, COLLECTORS
 
-    _templates = TEMPLATES
     _type = "filelist"
     _format = None
     _collector = FilelistCollector
@@ -145,10 +149,6 @@ class PackageMaker(object):
         content = compile_template(template, self.package, is_file=True)
         open(outfile, "w").write(content)
 
-    def genfile2(self, path, output=False):
-        outfile = os.path.join(self.workdir, (output or path))
-        open(outfile, "w").write(compile_template(self.templates()[path], self.package))
-
     def copyfiles(self):
         for fi in self.package["fileinfos"]:
             fi.copy(os.path.join(self.workdir, to_srcdir(self.srcdir, fi.target)), self.force)
@@ -209,7 +209,8 @@ class PackageMaker(object):
 
         _dirname = lambda fi: os.path.dirname(fi.original_path)
         self.package["conflicted_fileinfos_groupby_dir"] = \
-            [(dir, list(fis_g)) for dir, fis_g in groupby(self.package["conflicted_fileinfos"], _dirname)]
+            [(dir, list(fis_g)) for dir, fis_g in \
+                itertools.groupby(self.package["conflicted_fileinfos"], _dirname)]
 
         self.genfile("autotools/configure.ac", "configure.ac")
         self.genfile("autotools/Makefile.am", "Makefile.am")
