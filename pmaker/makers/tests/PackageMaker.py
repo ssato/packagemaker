@@ -14,91 +14,37 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
-from pmaker.globals import *
-from pmaker.shell import shell
-from pmaker.utils import compile_template
+from pmaker.makers.PackageMaker import *
 
-import pmaker.collectors.Collectors
-
-import cPickle as pickle
-import itertools
-import logging
 import os
 import os.path
 import sys
-
-
-try:
-    from Cheetah.Template import Template
-    CHEETAH_ENABLED = True
-    UPTO = STEP_BUILD
-
-except ImportError:
-    UPTO = STEP_SETUP
-
-    logging.warn("python-cheetah is not found. It will go up to \"%s\" step." % STEP_SETUP)
+import unittest
 
 
 
-# initialize them:
-pmaker.collectors.Collectors.init()
+class Test_to_srcdir(unittest.TestCase):
+
+    def test_to_srcdir(self):
+        srcdir = "/tmp/w/src"
+
+        self.assertEquals(to_srcdir(srcdir, "/a/b/c"), "/tmp/w/src/a/b/c")
+        self.assertEquals(to_srcdir(srcdir, "a/b"),    "/tmp/w/src/a/b")
+        self.assertEquals(to_srcdir(srcdir, "/"),      "/tmp/w/src/")
+
+
+class Test_find_template(unittest.TestCase):
+    """TBD"""
+
+    pass
 
 
 
-def to_srcdir(srcdir, path):
-    """
-    >>> srcdir = "/tmp/w/src"
-    >>> assert to_srcdir(srcdir, "/a/b/c") == "/tmp/w/src/a/b/c"
-    >>> assert to_srcdir(srcdir, "a/b") == "/tmp/w/src/a/b"
-    >>> assert to_srcdir(srcdir, "/") == "/tmp/w/src/"
-    """
-    assert path != "", "Empty path was given"
-
-    return os.path.join(srcdir, path.strip(os.path.sep))
+class TestPackageMaker(unittest.TestCase):
+    """TODO"""
 
 
-def find_template(template, search_paths=TEMPLATE_SEARCH_PATHS):
-    """
-    @param  template  Template file in relative path to template's topdir
-    @param  search_paths  Path list to search for the template
-    """
-    for path in search_paths:
-        tmpl = os.path.join(path, template)
-
-        if os.path.exists(tmpl):
-            return tmpl
-
-    return None
-
-
-
-class PackageMaker(object):
-    """Abstract class for classes to implement various packaging processes.
-
-    TODO: Separate packaging strategy from this class. 
-    (Strategy examples; autotools, simple filelist, cmake, etc.)
-    """
-    global BUILD_STEPS, COLLECTORS
-
-    _type = "filelist"
-    _format = None
-    _relations = dict()
-
-    _collectors = COLLECTORS
-    _steps = BUILD_STEPS
-
-    @classmethod
-    def register(cls, pmmaps=PACKAGE_MAKERS):
-        pmmaps[(cls.type(), cls.format())] = cls
-
-    @classmethod
-    def type(cls):
-        return cls._type
-
-    @classmethod
-    def format(cls):
-        return cls._format
-
+"""
     def __init__(self, package, filelist, options, *args, **kwargs):
         self.package = package
         self.filelist = filelist
@@ -136,10 +82,6 @@ class PackageMaker(object):
         return shell(cmd_s, workdir=self.workdir)
 
     def genfile(self, template, output=False):
-        """
-        @param  template  Relative path of template file
-        @param  output    Relative path of output to generate from template file
-        """
         outfile = os.path.join(self.workdir, output or path)
         tmpl = find_template(template)
 
@@ -155,18 +97,14 @@ class PackageMaker(object):
             dest = os.path.join(self.workdir, to_srcdir(self.srcdir, fi.target))
             fi.copy(dest, self.force)
 
-    def dumpfile(self):
+    def dumpfile_path(self):
         return os.path.join(self.workdir, "pmaker-package-filelist.pkl")
 
-    def save(self, proto=pickle.HIGHEST_PROTOCOL):
-        pickle.dump(
-            self.package["fileinfos"],
-            open(self.dumpfile(), "wb"),
-            proto
-        )
+    def save(self, pkl_proto=pickle.HIGHEST_PROTOCOL):
+        pickle.dump(self.package["fileinfos"], open(self.dumpfile_path(), "wb"), pkl_proto)
 
     def load(self):
-        self.package["fileinfos"] = pickle.load(open(self.dumpfile()))
+        self.package["fileinfos"] = pickle.load(open(self.dumpfile_path()))
 
     def touch_file(self, step):
         return os.path.join(self.workdir, "pmaker-%s.stamp" % step)
@@ -241,8 +179,6 @@ class PackageMaker(object):
         pass
 
     def run(self):
-        """run all of the packaging processes: setup, configure, build, ...
-        """
         d = dict(workdir=self.workdir, pname=self.pname)
 
         for step, msgfmt, _helptxt in self._steps:
@@ -255,9 +191,7 @@ class TgzPackageMaker(PackageMaker):
     _format = "tgz"
 
 
-
-def init():
-    TgzPackageMaker.register()
+"""
 
 
 # vim: set sw=4 ts=4 expandtab:

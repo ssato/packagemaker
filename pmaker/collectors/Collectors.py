@@ -154,8 +154,6 @@ class FilelistCollector(Collector):
 
         @listfile  str  File, dir and symlink paths list
         """
-        fileinfos = []
-
         for target in self.list_targets(listfile):
             fi = self.fi_factory.create(target.path)
             fi.conflicts = {}
@@ -172,12 +170,12 @@ class FilelistCollector(Collector):
             for modifier in self.get_modifiers():
                 fi = modifier.update(fi, target, self.trace)
 
-            fileinfos.append(fi)
-
-        return fileinfos
+            yield fi
 
     def collect(self):
-        return self._collect(self.filelist)
+        ## Is it needed?
+        #return unique(fi for fi in self._collect(self.filelist))
+        return [fi for fi in self._collect(self.filelist)]
 
 
 
@@ -278,8 +276,9 @@ class JsonFilelistCollector(FilelistCollector):
 
 
 
-FilelistCollector.register()
-ExtFilelistCollector.register()
-JsonFilelistCollector.register()
+def init():
+    FilelistCollector.register()
+    ExtFilelistCollector.register()
+    JsonFilelistCollector.register()
 
 # vim: set sw=4 ts=4 expandtab:
