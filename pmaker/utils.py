@@ -391,7 +391,7 @@ def sort_out_paths_by_dir(paths):
     """
     cntr = itertools.count()
 
-    return [dict(id=str(cntr.next()), dir=d, files=[p for p in ps]) \
+    return [dict(id=str(cntr.next()), dir=d, files=list(ps)) \
             for d, ps in itertools.groupby(paths, os.path.dirname)]
 
 
