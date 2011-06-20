@@ -15,14 +15,12 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 from pmaker.globals import *
-from pmaker.rpm import *
-from pmaker.utils import *
+from pmaker.makers.PackageMaker import PackageMaker
+from pmaker.utils import on_debug_mode
 
 import logging
 import os
 import os.path
-import re
-import sys
 
 
 
@@ -76,8 +74,8 @@ class RpmPackageMaker(TgzPackageMaker):
     def preconfigure(self):
         super(RpmPackageMaker, self).preconfigure()
 
-        self.genfile("rpm.mk")
-        self.genfile("package.spec", "%s.spec" % self.pname)
+        self.genfile("autotools/rpm.mk", "rpm.mk")
+        self.genfile("autotools/package.spec", "%s.spec" % self.pname)
 
     def sbuild(self):
         super(RpmPackageMaker, self).sbuild()
@@ -91,53 +89,6 @@ class RpmPackageMaker(TgzPackageMaker):
 
 
 
-class DebPackageMaker(TgzPackageMaker):
-    _format = "deb"
-
-    # TODO: Add almost relation tag set:
-    _relations = {
-        "requires": "Depends",
-    }
-
-    def preconfigure(self):
-        super(DebPackageMaker, self).preconfigure()
-
-        debiandir = os.path.join(self.workdir, "debian")
-
-        if not os.path.exists(debiandir):
-            os.makedirs(debiandir, 0755)
-
-        os.makedirs(os.path.join(debiandir, "source"), 0755)
-
-        self.genfile("debian/rules")
-        self.genfile("debian/control")
-        self.genfile("debian/copyright")
-        self.genfile("debian/changelog")
-        self.genfile("debian/dirs")
-        self.genfile("debian/compat")
-        self.genfile("debian/source/format")
-        self.genfile("debian/source/options")
-
-        os.chmod(os.path.join(self.workdir, "debian/rules"), 0755)
-
-    def sbuild(self):
-        """FIXME: What should be done for building source packages?
-        """
-        super(DebPackageMaker, self).sbuild()
-        self.shell("dpkg-buildpackage -S")
-
-    def build(self):
-        """Which is better to build?
-
-        * debuild -us -uc
-        * fakeroot debian/rules binary
-        """
-        super(DebPackageMaker, self).build()
-        self.shell("fakeroot debian/rules binary")
-
-
-
 RpmPackageMaker.register()
-DebPackageMaker.register()
 
 # vim: set sw=4 ts=4 expandtab:

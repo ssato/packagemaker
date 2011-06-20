@@ -21,21 +21,24 @@ def list_basenames(d, gpat="*", pred=os.path.isfile):
 
 
 pkgs = ["pmaker", ]
+
+templates_topdir = "share/pmaker/templates"
+
 data_files = [
 # TODO:
 #   ("share/man/man1", ["man/pmaker.1", ])
-    ("share/templates/common",
+    (os.path.join(templates_topdir, "common"),
         list_basenames(os.path.join(curdir, "templates/common"))),
-    ("share/templates/common/debian",
+    (os.path.join(templates_topdir, "common/debian"),
         list_basenames(os.path.join(curdir, "templates/common/debian"))),
-    ("share/templates/common/debian/source",
+    (os.path.join(templates_topdir, "common/debian/source"),
         list_basenames(os.path.join(curdir, "templates/common/debian/source"))),
-    ("share/templates/autotools",
+    (os.path.join(templates_topdir, "autotools"),
         list_basenames(os.path.join(curdir, "templates/autotools"))),
-    ("share/templates/autotools/debian",
-        list_basenames(os.path.join(curdir, "templates/autotools/debian"))),
-    ("share/templates/autotools/debian",
-        list_basenames(os.path.join(curdir, "templates/autotools/debian"))),
+    (os.path.join(templates_topdir, "autotools/debian"),
+        list_basenames(os.path.join(curdir, "autotools/debian")))),
+    (os.path.join(templates_topdir, "share/templates/autotools/debian",
+        list_basenames(os.path.join(curdir, "autotools/debian")))),
 ]
 
 

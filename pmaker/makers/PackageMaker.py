@@ -18,7 +18,7 @@ from itertools import groupby
 
 from pmaker.globals import *
 from pmaker.shell import shell
-from pmaker.utils import *
+from pmaker.utils import compile_template
 
 import cPickle as pickle
 import logging
@@ -44,6 +44,20 @@ def to_srcdir(srcdir, path):
     assert path != "", "Empty path was given"
 
     return os.path.join(srcdir, path.strip(os.path.sep))
+
+
+def find_template(template, search_paths=TEMPLATE_SEARCH_PATHS):
+    """
+    @param  template  Template file in relative path to template's topdir
+    @param  search_paths  Path list to search for the template
+    """
+    for path in search_paths:
+        tmpl = os.path.join(path, template)
+
+        if os.path.exists(tmpl):
+            return tmpl
+
+    return None
 
 
 
@@ -116,16 +130,28 @@ class PackageMaker(object):
     def shell(self, cmd_s):
         return shell(cmd_s, workdir=self.workdir)
 
-    def to_srcdir(self, path):
-        return to_srcdir(self.srcdir, path)
+    def genfile(self, template, output=False):
+        """
+        @param  template  Relative path of template file
+        @param  output    Relative path of output to generate from template file
+        """
+        outfile = os.path.join(self.workdir, output or path)
+        tmpl = find_template(template)
 
-    def genfile(self, path, output=False):
+        if tmpl is None:
+            logging.warn(" Template not found in your search paths: " + template)
+            return
+
+        content = compile_template(template, self.package, is_file=True)
+        open(outfile, "w").write(content)
+
+    def genfile2(self, path, output=False):
         outfile = os.path.join(self.workdir, (output or path))
         open(outfile, "w").write(compile_template(self.templates()[path], self.package))
 
     def copyfiles(self):
         for fi in self.package["fileinfos"]:
-            fi.copy(os.path.join(self.workdir, self.to_srcdir(fi.target)), self.force)
+            fi.copy(os.path.join(self.workdir, to_srcdir(self.srcdir, fi.target)), self.force)
 
     def dumpfile_path(self):
         return os.path.join(self.workdir, "pmaker-package-filelist.pkl")
@@ -185,13 +211,13 @@ class PackageMaker(object):
         self.package["conflicted_fileinfos_groupby_dir"] = \
             [(dir, list(fis_g)) for dir, fis_g in groupby(self.package["conflicted_fileinfos"], _dirname)]
 
-        self.genfile("configure.ac")
-        self.genfile("Makefile.am")
-        self.genfile("README")
-        self.genfile("MANIFEST")
-        self.genfile("MANIFEST.overrides")
-        self.genfile("apply-overrides")
-        self.genfile("revert-overrides")
+        self.genfile("autotools/configure.ac", "configure.ac")
+        self.genfile("autotools/Makefile.am", "Makefile.am")
+        self.genfile("common/README", "README")
+        self.genfile("common/MANIFEST", "MANIFEST")
+        self.genfile("common/MANIFEST.overrides", "MANIFEST.overrides")
+        self.genfile("common/apply-overrides", "apply-overrides")
+        self.genfile("common/revert-overrides", "revert-overrides")
 
     def configure(self):
         if on_debug_mode():

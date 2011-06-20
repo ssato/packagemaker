@@ -26,6 +26,7 @@ FILEINFOS = dict()
 PACKAGE_MAKERS = dict()
 COLLECTORS = dict()
 
+TEMPLATE_SEARCH_PATHS = ["/usr/share/pmaker/templates", ]
 
 COMPRESSORS = (
     # cmd, extension, am_option,

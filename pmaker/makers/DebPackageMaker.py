@@ -15,13 +15,10 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 from pmaker.globals import *
-from pmaker.utils import *
+from pmaker.makers.PackageMaker import PackageMaker
 
-import logging
 import os
 import os.path
-import re
-import sys
 
 
 
@@ -43,14 +40,14 @@ class DebPackageMaker(TgzPackageMaker):
 
         os.makedirs(os.path.join(debiandir, "source"), 0755)
 
-        self.genfile("debian/rules")
-        self.genfile("debian/control")
-        self.genfile("debian/copyright")
-        self.genfile("debian/changelog")
-        self.genfile("debian/dirs")
-        self.genfile("debian/compat")
-        self.genfile("debian/source/format")
-        self.genfile("debian/source/options")
+        self.genfile("common/debian/rules", "debian/rules")
+        self.genfile("autotools/debian/control", "debian/control")
+        self.genfile("common/debian/copyright", "debian/copyright")
+        self.genfile("common/debian/changelog", "debian/changelog")
+        self.genfile("common/debian/dirs", "debian/dirs")
+        self.genfile("common/debian/compat", "debian/compat")
+        self.genfile("common/debian/source/format", "debian/source/format")
+        self.genfile("common/debian/source/options", "debian/source/options")
 
         os.chmod(os.path.join(self.workdir, "debian/rules"), 0755)
 
@@ -61,10 +58,10 @@ class DebPackageMaker(TgzPackageMaker):
         self.shell("dpkg-buildpackage -S")
 
     def build(self):
-        """Which is better?
+        """Which is better to build?
 
-        a. debuild -us -uc
-        b. fakeroot debian/rules binary
+        * debuild -us -uc
+        * fakeroot debian/rules binary
         """
         super(DebPackageMaker, self).build()
         self.shell("fakeroot debian/rules binary")
