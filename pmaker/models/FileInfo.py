@@ -73,11 +73,29 @@ class FileInfo(object):
     def register(cls, fmaps=FILEINFOS):
         fmaps[cls.type()] = cls
 
+    def isfile(self):
+        return self.type() == TYPE_FILE
+
+    def isdir(self):
+        return self.type() == TYPE_DIR
+
+    def issymlink(self):
+        return self.type() == TYPE_SYMLINK
+
     def __eq__(self, other):
         return self.operations.equals(self, other)
 
     def equivalent(self, other):
         return self.operations.equivalent(self, other)
+
+    def same_target(self, other):
+        lhs = getattr(self, "target", None)
+        rhs = getattr(other, "target", None)
+
+        if lhs is None or rhs is None:
+            return False
+        else:
+            return lhs == rhs
 
     def permission(self):
         return self.operations.permission(self.mode)
