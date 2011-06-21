@@ -1,1 +1,3 @@
 pmaker/*.pyc
+pmaker/*/*.pyc
+pmaker/*/*/*.pyc
