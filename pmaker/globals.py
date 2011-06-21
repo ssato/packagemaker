@@ -87,4 +87,35 @@ JSON_ENABLED = False
 PYXATTR_ENABLED = False
 
 
+try:
+    from Cheetah.Template import Template
+    CHEETAH_ENABLED = True
+    UPTO = STEP_BUILD
+
+except ImportError:
+    UPTO = STEP_SETUP
+    logging.warn("python-cheetah is not found. It will go up to \"%s\" step." % STEP_SETUP)
+
+
+try:
+    import json
+    JSON_ENABLED = True
+
+except ImportError:
+    try:
+        import simplejson as json
+        JSON_ENABLED = True
+
+    except ImportError:
+        logging.warn("json module is not found. JSON support will be disabled.")
+
+
+try:
+    import xattr  # pyxattr
+    PYXATTR_ENABLED = True
+
+except ImportError:
+    logging.warn("pyxattr module is not found. Its support will be disabled.")
+
+
 # vim: set sw=4 ts=4 expandtab:

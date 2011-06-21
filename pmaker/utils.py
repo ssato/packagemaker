@@ -45,14 +45,9 @@ except ImportError:
         return newfunc
 
 
-try:
+if CHEETAH_ENABLED:
     from Cheetah.Template import Template
-    CHEETAH_ENABLED = True
-
-except ImportError:
-    logging.warn("python-cheetah is not found.")
-    UPTO = STEP_SETUP
-
+else:
     def Template(*args, **kwargs):
         raise RuntimeError("python-cheetah is missing and cannot proceed any more.")
 

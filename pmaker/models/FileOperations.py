@@ -26,10 +26,9 @@ import shutil
 import stat
 
 
-try:
+if PYXATTR_ENABLED:
     import xattr  # pyxattr
-
-except ImportError:
+else:
     # Make up a "Null-Object" like class mimics xattr module.
     class xattr(object):
         def set(self, *args, **kwargs):

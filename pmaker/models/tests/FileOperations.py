@@ -18,6 +18,7 @@
 from pmaker.models.FileOperations import *
 from pmaker.models.FileInfoFactory import FileInfoFactory
 from pmaker.models.FileInfo import FileInfo
+from pmaker.globals import PYXATTR_ENABLED
 from pmaker.utils import checksum, rm_rf
 
 import copy
@@ -26,14 +27,6 @@ import os.path
 import stat
 import tempfile
 import unittest
-
-
-
-try:
-    import xattr
-    PYXATTR_ENABLED = True
-except ImportError:
-    PYXATTR_ENABLED = False
 
 
 

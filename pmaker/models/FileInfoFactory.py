@@ -27,11 +27,9 @@ import pwd
 import stat
 
 
-try:
+if PYXATTR_ENABLED:
     import xattr  # pyxattr
-    PYXATTR_ENABLED = True
-
-except ImportError:
+else:
     # Make up a "Null-Object" like class mimics xattr module.
     class xattr(object):
         def get_all(self, *args):

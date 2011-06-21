@@ -28,17 +28,6 @@ import os.path
 import sys
 
 
-try:
-    from Cheetah.Template import Template
-    CHEETAH_ENABLED = True
-    UPTO = STEP_BUILD
-
-except ImportError:
-    UPTO = STEP_SETUP
-
-    logging.warn("python-cheetah is not found. It will go up to \"%s\" step." % STEP_SETUP)
-
-
 
 # initialize them:
 pmaker.collectors.Collectors.init()

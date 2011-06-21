@@ -30,11 +30,9 @@ import os.path
 import sys
 
 
-try:
+if JSON_ENABLED:
     import json
-    JSON_ENABLED = True
-
-except ImportError:
+else:
     class json:
         @staticmethod
         def load(*args):
