@@ -48,6 +48,36 @@ def get_arch():
 
 
 @memoize
+def get_distribution():
+    """Get name and version of the distribution of the system based on
+    heuristics.
+    """
+    fedora_f = "/etc/fedora-release"
+    rhel_f = "/etc/redhat-release"
+    debian_f = "/etc/debian_version"
+
+    if os.path.exists(fedora_f):
+        name = "fedora"
+        m = re.match(r"^Fedora .+ ([0-9]+) .+$", open(fedora_f).read())
+        version = m is None and "14" or m.groups()[0]
+
+    elif os.path.exists(rhel_f):
+        name = "rhel"
+        m = re.match(r"^Red Hat.* ([0-9]+) .*$", open(fedora_f).read())
+        version = m is None and "6" or m.groups()[0]
+
+    elif os.path.exists(debian_f):
+        name = "debian"
+        m = re.match(r"^([0-9])\..*", open(debian_f).read())
+        version = m is None and "6" or m.groups()[0]
+
+    else:
+        raise RuntimeError("Not supported distribution!")
+
+    return (name, version)
+
+
+@memoize
 def is_git_available():
     return os.system("git --version > /dev/null 2> /dev/null") == 0
 

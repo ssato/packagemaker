@@ -28,6 +28,9 @@ class TestFunctions(unittest.TestCase):
     def test_get_arch(self):
         self.assertNotEquals(get_arch(), "")
 
+    def test_get_distribution(self):
+        (os, version) = get_distribution()
+
     def test_is_git_available(self):
         is_git_available()
 
