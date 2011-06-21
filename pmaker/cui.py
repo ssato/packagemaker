@@ -33,7 +33,6 @@ from pmaker.rpmutils import *
 from pmaker.utils import *
 
 import ConfigParser as cp
-import doctest
 import glob
 import inspect
 import locale
@@ -42,8 +41,6 @@ import optparse
 import os
 import os.path
 import sys
-import tempfile
-import unittest
 
 
 __title__   = "packagemaker"
@@ -51,52 +48,6 @@ __version__ = "0.2.99"
 __author__  = "Satoru SATOH"
 __email__   = "satoru.satoh@gmail.com"
 __website__ = "https://github.com/ssato/packagemaker"
-
-
-
-if CHEETAH_ENABLED:
-    UPTO = STEP_BUILD
-else:
-    UPTO = STEP_SETUP
-    logging.warn("python-cheetah is not found. Packaging process can go up to \"setup\" step.")
-
-
-
-class Test_init_defaults(unittest.TestCase):
-
-    _multiprocess_can_split_ = True
-
-    def setUp(self):
-        self.workdir = tempfile.mkdtemp(dir="/tmp", prefix="pmaker-tests")
-
-    def tearDown(self):
-        rm_rf(self.workdir)
-
-    def test_init_defaults_by_conffile_config(self):
-        conf = """\
-[DEFAULT]
-a: aaa
-b: bbb
-"""
-        path = os.path.join(self.workdir, "config")
-        open(path, "w").write(conf)
-
-        params = init_defaults_by_conffile(path)
-        assert params["a"] == "aaa"
-        assert params["b"] == "bbb"
-
-    def test_init_defaults_by_conffile_config_and_profile_0(self):
-        conf = """\
-[profile0]
-a: aaa
-b: bbb
-"""
-        path = os.path.join(self.workdir, "config_p0")
-        open(path, "w").write(conf)
-
-        params = init_defaults_by_conffile(path, "profile0")
-        assert params["a"] == "aaa"
-        assert params["b"] == "bbb"
 
 
 
@@ -203,16 +154,6 @@ pmaker.main(sys.argv)
 
     logging.info(" executing: %s" % cmd)
     os.system(cmd)
-
-
-def show_examples(logs=EXAMPLE_LOGS):
-    for log in logs:
-        print >> sys.stdout, log
-
-
-def dump_rc(rc=EXAMPLE_RC):
-    print >> sys.stdout, rc
-
 
 
 class TestMainProgram00SingleFileCases(unittest.TestCase):
@@ -437,108 +378,6 @@ class TestMainProgram01MultipleFilesCases(unittest.TestCase):
 
 
 
-def run_doctests(verbose):
-    doctest.testmod(verbose=verbose, raise_on_error=True)
-
-
-def run_unittests(verbose, test_choice):
-    def tsuite(testcase):
-        return unittest.TestLoader().loadTestsFromTestCase(testcase)
-
-    basic_tests = [
-        TestDecoratedFuncs,
-        TestFuncsWithSideEffects,
-        TestFileInfoFactory,
-        TestRpmFileInfoFactory,
-        TestFileOperations,
-        TestDirOperations,
-        TestSymlinkOperations,
-        TestMiscFunctions,
-        TestDestdirModifier,
-        TestOwnerModifier,
-        TestTargetAttributeModifier,
-        TestFilelistCollector,
-        TestExtFilelistCollector,
-        TestJsonFilelistCollector,
-    ]
-
-    system_tests = [
-        TestRpm,
-        TestMainProgram00SingleFileCases,
-        TestMainProgram01JsonFileCases,
-        TestMainProgram01MultipleFilesCases,
-    ]
-
-    (major, minor) = sys.version_info[:2]
-
-    suites = [tsuite(c) for c in basic_tests]
-
-    if test_choice == TEST_FULL:
-        suites += [tsuite(c) for c in system_tests]
-
-    tests = unittest.TestSuite(suites)
-
-    if major == 2 and minor < 5:
-        unittest.TextTestRunner().run(tests)
-    else:
-        unittest.TextTestRunner(verbosity=(verbose and 2 or 0)).run(tests)
-
-
-def run_alltests(verbose, test_choice):
-    run_doctests(verbose)
-    run_unittests(verbose, test_choice)
-
-
-def parse_template_list_str(templates):
-    """
-    simple parser for options.templates.
-
-    >>> assert parse_template_list_str("") == {}
-    >>> assert parse_template_list_str("a:b") == {"a": "b"}
-    >>> assert parse_template_list_str("a:b,c:d") == {"a": "b", "c": "d"}
-    """
-    if templates:
-        return dict(kv.split(":") for kv in templates.split(","))
-    else:
-        return dict()
-
-
-def init_defaults_by_conffile(config=None, profile=None, prog="pmaker"):
-    """
-    Initialize default values for options by loading config files.
-    """
-    if config is None:
-        home = os.environ.get("HOME", os.curdir) # Is there case that $HOME is empty?
-
-        confs = ["/etc/%s.conf" % prog]
-        confs += sorted(glob.glob("/etc/%s.d/*.conf" % prog))
-        confs += [os.environ.get("%sRC" % prog.upper(), os.path.join(home, ".%src" % prog))]
-    else:
-        confs = (config,)
-
-    cparser = cp.SafeConfigParser()
-    loaded = False
-
-    for c in confs:
-        if os.path.exists(c):
-            logging.info("Loading config: %s" % c)
-            cparser.read(c)
-            loaded = True
-
-    if not loaded:
-        return {}
-
-    if profile:
-        defaults = dict((k, parse_conf_value(v)) for k,v in cparser.items(profile))
-    else:
-        defaults = cparser.defaults()
-
-#    for sec in cparser.sections():
-#        defaults.update(dict(((k, parse_conf_value(v)) for k, v in cparser.items(sec))))
-
-    return defaults
-
-
 def option_parser(V=__version__, pmaps=PACKAGE_MAKERS, itypes=COLLECTORS,
         test_choices=TEST_CHOICES, steps=BUILD_STEPS,
         compressors=COMPRESSORS, upto=UPTO):
@@ -724,18 +563,6 @@ Examples:
     p.add_option("", "--dump-rc", action="store_true", help="Show conf file example")
 
     return p
-
-
-def relations_parser(relations_str):
-    """
-    >>> relations_parser("requires:bash,zsh;obsoletes:sysdata;conflicts:sysdata-old")
-    [('requires', ['bash', 'zsh']), ('obsoletes', ['sysdata']), ('conflicts', ['sysdata-old'])]
-    """
-    if not relations_str:
-        return []
-
-    rels = [rel.split(":") for rel in relations_str.split(";")]
-    return [(reltype, reltargets.split(",")) for reltype, reltargets in rels]
 
 
 def main(argv=sys.argv, compressors=COMPRESSORS, templates=TEMPLATES):
