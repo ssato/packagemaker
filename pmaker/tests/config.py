@@ -100,11 +100,11 @@ class Test_parse_template_list_str(unittest.TestCase):
         self.assertEquals(parse_template_list_str("a:b,c:d"), dict(a="b", c="d"))
 
 
-class Test_relations_parser(unittest.TestCase):
+class Test_parse_relations(unittest.TestCase):
 
     def test_relations_str(self):
         self.assertEquals(
-            relations_parser("requires:bash,zsh;obsoletes:sysdata;conflicts:sysdata-old"),
+            parse_relations("requires:bash,zsh;obsoletes:sysdata;conflicts:sysdata-old"),
             [('requires', ['bash', 'zsh']), ('obsoletes', ['sysdata']), ('conflicts', ['sysdata-old'])]
         )
 

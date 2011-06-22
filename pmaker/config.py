@@ -52,9 +52,9 @@ def parse_template_list_str(templates):
         return dict()
 
 
-def relations_parser(relations_str):
+def parse_relations(relations_str):
     """
-    >>> relations_parser("requires:bash,zsh;obsoletes:sysdata;conflicts:sysdata-old")
+    >>> parse_relations("requires:bash,zsh;obsoletes:sysdata;conflicts:sysdata-old")
     [('requires', ['bash', 'zsh']), ('obsoletes', ['sysdata']), ('conflicts', ['sysdata-old'])]
     """
     if not relations_str:
@@ -62,7 +62,6 @@ def relations_parser(relations_str):
 
     rels = [rel.split(":") for rel in relations_str.split(";")]
     return [(reltype, reltargets.split(",")) for reltype, reltargets in rels]
-
 
 
 def option_parser(config):
@@ -89,8 +88,8 @@ Arguments:
 
 Configuration files:
 
-  It loads opitonal parameters from multiple configuration files if there are
-  in order of /etc/pmaker.conf, /etc/pmaker.d/*.conf, ~/.config/pmaker, any
+  It loads parameter configurations from multiple configuration files if there
+  are in order of /etc/pmaker.conf, /etc/pmaker.d/*.conf, ~/.config/pmaker, any
   path set in the environment variable PMAKERRC and ~/.pmakerrc.
 
 Examples:
