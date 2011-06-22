@@ -22,6 +22,14 @@ except ImportError:
     pass
 
 
+
+__title__   = "packagemaker"
+__version__ = "0.2.99"
+__author__  = "Satoru SATOH"
+__email__   = "satoru.satoh@gmail.com"
+__website__ = "https://github.com/ssato/packagemaker"
+
+
 FILEINFOS = dict()
 PACKAGE_MAKERS = dict()
 COLLECTORS = dict()
