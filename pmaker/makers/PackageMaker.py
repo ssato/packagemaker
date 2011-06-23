@@ -62,35 +62,33 @@ def find_template(template, search_paths=TEMPLATE_SEARCH_PATHS):
 
 
 class PackageMaker(object):
-    """Abstract class for classes to implement various packaging processes.
+    """Abstract class for children to implement various packaging processes.
 
     TODO: Separate packaging strategy from this class. 
-    (Strategy examples; autotools, simple filelist, cmake, etc.)
+    (Strategy examples; autotools, simple listfile, cmake, etc.)
     """
-    global BUILD_STEPS, COLLECTORS
-
-    _type = "filelist"
-    _format = None
+    _type = None
     _relations = dict()
-
-    _collectors = COLLECTORS
     _steps = BUILD_STEPS
-
-    @classmethod
-    def register(cls, pmmaps=PACKAGE_MAKERS):
-        pmmaps[(cls.type(), cls.format())] = cls
 
     @classmethod
     def type(cls):
         return cls._type
 
     @classmethod
-    def format(cls):
-        return cls._format
+    def register(cls, pmakers=PACKAGE_MAKERS):
+        if pmakers.get(cls.type(), False):
+            pmakers[cls.type()] = cls
 
-    def __init__(self, package, filelist, options, *args, **kwargs):
+    def __init__(self, package, listfile, collector, options):
+        """
+        @param  package    Dict holding package's metadata
+        @param  listfile   Path to the file contains paths list
+        @param  collector  Collector class to collect fileinfos
+        @param  options    Command line options :: optparse.Option  (FIXME)
+        """
         self.package = package
-        self.filelist = filelist
+        self.listfile = listfile
         self.options = options
 
         self.workdir = package["workdir"]
@@ -102,9 +100,7 @@ class PackageMaker(object):
 
         self.srcdir = os.path.join(self.workdir, "src")
 
-        ccls = self._collectors.get(options.itype, pmaker.Collectors.FilelistCollector)
-        self.collector = ccls(self.filelist, self.package["name"], self.options)
-        logging.info("Use Collector: %s (itype=%s)" % (ccls.__name__, options.itype))
+        self.collector = collector(self.listfile, self.package["name"], self.options)
 
         relmap = []
         if package.has_key("relations"):
@@ -117,9 +113,6 @@ class PackageMaker(object):
 
         self.package["conflicts_savedir"] = CONFLICTS_SAVEDIR % self.package
         self.package["conflicts_newdir"] = CONFLICTS_NEWDIR % self.package
-
-        for k, v in kwargs.iteritems():
-            setattr(self, k, v)
 
     def shell(self, cmd_s):
         return shell(cmd_s, workdir=self.workdir)
@@ -145,7 +138,7 @@ class PackageMaker(object):
             fi.copy(dest, self.force)
 
     def dumpfile(self):
-        return os.path.join(self.workdir, "pmaker-package-filelist.pkl")
+        return os.path.join(self.workdir, "pmaker-package-listfile.pkl")
 
     def save(self, proto=pickle.HIGHEST_PROTOCOL):
         pickle.dump(
@@ -182,13 +175,40 @@ class PackageMaker(object):
         return self.collector.collect()
 
     def setup(self):
-        self.package["fileinfos"] = self.collect()
-
         for d in ("workdir", "srcdir"):
             createdir(self.package[d])
 
+        self.package["fileinfos"] = self.collect()
+
         self.copyfiles()
         self.save()
+
+    def preconfigure(self):
+        pass
+
+    def configure(self):
+        pass
+
+    def sbuild(self):
+        pass
+
+    def build(self):
+        pass
+
+    def run(self):
+        """run all of the packaging processes: setup, configure, build, ...
+        """
+        d = dict(workdir=self.workdir, pname=self.pname)
+
+        for step, msgfmt, _helptxt in self._steps:
+            logging.info(msgfmt % d)
+            self.try_the_step(step)
+
+
+
+class AutotoolsTgzPackageMaker(PackageMaker):
+
+    _type = "autotools.tgz"
 
     def preconfigure(self):
         if not self.package.get("fileinfos", False):
@@ -225,23 +245,6 @@ class PackageMaker(object):
             self.shell("./configure --quiet --enable-silent-rules")
             self.shell("make V=0 > /dev/null")
             self.shell("make dist V=0 > /dev/null")
-
-    def build(self):
-        pass
-
-    def run(self):
-        """run all of the packaging processes: setup, configure, build, ...
-        """
-        d = dict(workdir=self.workdir, pname=self.pname)
-
-        for step, msgfmt, _helptxt in self._steps:
-            logging.info(msgfmt % d)
-            self.try_the_step(step)
-
-
-
-class TgzPackageMaker(PackageMaker):
-    _format = "tgz"
 
 
 
