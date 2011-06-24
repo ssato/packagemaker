@@ -77,7 +77,7 @@ class PackageMaker(object):
 
     @classmethod
     def register(cls, pmakers=PACKAGE_MAKERS):
-        if pmakers.get(cls.type(), False):
+        if not pmakers.get(cls.type(), False):
             pmakers[cls.type()] = cls
 
     def __init__(self, package, listfile, collector, options):
