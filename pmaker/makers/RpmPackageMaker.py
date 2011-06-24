@@ -15,7 +15,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 from pmaker.globals import *
-from pmaker.makers.PackageMaker import TgzPackageMaker
+from pmaker.makers.PackageMaker import AutotoolsTgzPackageMaker
 from pmaker.utils import on_debug_mode
 
 import logging
@@ -24,8 +24,8 @@ import os.path
 
 
 
-class RpmPackageMaker(TgzPackageMaker):
-    _format = "rpm"
+class AutotoolsRpmPackageMaker(AutotoolsTgzPackageMaker):
+    _type = "autotools.rpm"
 
     _relations = {
         "requires": "Requires",
@@ -72,23 +72,24 @@ class RpmPackageMaker(TgzPackageMaker):
                 return self.shell("make rpm V=0 > /dev/null")
 
     def preconfigure(self):
-        super(RpmPackageMaker, self).preconfigure()
+        super(AutotoolsRpmPackageMaker, self).preconfigure()
 
         self.genfile("autotools/rpm.mk", "rpm.mk")
         self.genfile("autotools/package.spec", "%s.spec" % self.pname)
 
     def sbuild(self):
-        super(RpmPackageMaker, self).sbuild()
+        super(AutotoolsRpmPackageMaker, self).sbuild()
 
         self.build_srpm()
 
     def build(self):
-        super(RpmPackageMaker, self).build()
+        super(AutotoolsRpmPackageMaker, self).build()
 
         self.build_rpm()
 
 
+def init():
+    AutotoolsRpmPackageMaker.register()
 
-RpmPackageMaker.register()
 
 # vim: set sw=4 ts=4 expandtab:

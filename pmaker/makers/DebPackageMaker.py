@@ -15,15 +15,15 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 from pmaker.globals import *
-from pmaker.makers.PackageMaker import TgzPackageMaker
+from pmaker.makers.PackageMaker import AutotoolsTgzPackageMaker
 
 import os
 import os.path
 
 
 
-class DebPackageMaker(TgzPackageMaker):
-    _format = "deb"
+class AutotoolsDebPackageMaker(AutotoolsTgzPackageMaker):
+    _type = "autotools.deb"
 
     # TODO: Add almost relation tag set:
     _relations = {
@@ -31,7 +31,7 @@ class DebPackageMaker(TgzPackageMaker):
     }
 
     def preconfigure(self):
-        super(DebPackageMaker, self).preconfigure()
+        super(AutotoolsDebPackageMaker, self).preconfigure()
 
         debiandir = os.path.join(self.workdir, "debian")
 
@@ -54,7 +54,7 @@ class DebPackageMaker(TgzPackageMaker):
     def sbuild(self):
         """FIXME: What should be done for building source packages?
         """
-        super(DebPackageMaker, self).sbuild()
+        super(AutotoolsDebPackageMaker, self).sbuild()
         self.shell("dpkg-buildpackage -S")
 
     def build(self):
@@ -63,11 +63,13 @@ class DebPackageMaker(TgzPackageMaker):
         * debuild -us -uc
         * fakeroot debian/rules binary
         """
-        super(DebPackageMaker, self).build()
+        super(AutotoolsDebPackageMaker, self).build()
         self.shell("fakeroot debian/rules binary")
 
 
 
-DebPackageMaker.register()
+def init():
+    AutotoolsDebPackageMaker.register()
+
 
 # vim: set sw=4 ts=4 expandtab:
