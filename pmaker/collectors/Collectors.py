@@ -56,7 +56,7 @@ class Collector(object):
 
     @classmethod
     def register(cls, cmaps=COLLECTORS):
-        if cls.enabled():
+        if cls.enabled() and not cmaps.get(cls.type(), False):
             cmaps[cls.type()] = cls
 
     @classmethod
