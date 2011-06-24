@@ -126,4 +126,11 @@ except ImportError:
     logging.warn("pyxattr module is not found. Its support will be disabled.")
 
 
+DIST_NAMES = (DIST_RHEL, DIST_FEDORA, DIST_DEBIAN) = \
+    ("rhel", "fedora", "debian")
+
+
+PKG_FORMATS = (PKG_FORMAT_TGZ, PKG_FORMAT_RPM, PKG_FORMAT_DEB) = \
+    ("tgz", "rpm", "deb")
+
 # vim: set sw=4 ts=4 expandtab:

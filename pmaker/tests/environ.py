@@ -15,6 +15,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 from pmaker.environ import *
+from pmaker.globals import PKG_FORMATS
 
 import unittest
 
@@ -30,6 +31,10 @@ class TestFunctions(unittest.TestCase):
 
     def test_get_distribution(self):
         (os, version) = get_distribution()
+
+    def test_get_package_format(self):
+        pfmt = get_package_format()
+        self.assertTrue(pfmt in PKG_FORMATS)
 
     def test_is_git_available(self):
         is_git_available()

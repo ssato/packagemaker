@@ -57,17 +57,17 @@ def get_distribution():
     debian_f = "/etc/debian_version"
 
     if os.path.exists(fedora_f):
-        name = "fedora"
+        name = DIST_FEDORA
         m = re.match(r"^Fedora .+ ([0-9]+) .+$", open(fedora_f).read())
         version = m is None and "14" or m.groups()[0]
 
     elif os.path.exists(rhel_f):
-        name = "rhel"
+        name = DIST_RHEL
         m = re.match(r"^Red Hat.* ([0-9]+) .*$", open(fedora_f).read())
         version = m is None and "6" or m.groups()[0]
 
     elif os.path.exists(debian_f):
-        name = "debian"
+        name = DIST_DEBIAN
         m = re.match(r"^([0-9])\..*", open(debian_f).read())
         version = m is None and "6" or m.groups()[0]
 
@@ -75,6 +75,18 @@ def get_distribution():
         raise RuntimeError("Not supported distribution!")
 
     return (name, version)
+
+
+@memoize
+def get_package_format():
+    (dist, _) = get_distribution()
+
+    if dist in (DIST_RHEL, DIST_FEDORA):
+        return PKG_FORMAT_RPM
+    elif dist in (DIST_DEBIAN):
+        return PKG_FORMAT_DEB
+    else:
+        return PKG_FORMAT_TGZ
 
 
 @memoize
