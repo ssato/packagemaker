@@ -18,6 +18,8 @@ from pmaker.globals import *
 from pmaker.environ import *
 from pmaker.utils import parse_conf_value
 
+import collectors.Collectors
+
 import ConfigParser as configparser
 import glob
 import logging
@@ -36,39 +38,10 @@ except ImportError:
 
 NULL_DICT = dict()
 
+collectors.Collectors.init()
 
 
-def parse_template_list_str(templates):
-    """
-    simple parser for options.templates.
-
-    >>> assert parse_template_list_str("") == {}
-    >>> assert parse_template_list_str("a:b") == {"a": "b"}
-    >>> assert parse_template_list_str("a:b,c:d") == {"a": "b", "c": "d"}
-    """
-    if templates:
-        return dict(kv.split(":") for kv in templates.split(","))
-    else:
-        return dict()
-
-
-def parse_relations(relations_str):
-    """
-    >>> parse_relations("requires:bash,zsh;obsoletes:sysdata;conflicts:sysdata-old")
-    [('requires', ['bash', 'zsh']), ('obsoletes', ['sysdata']), ('conflicts', ['sysdata-old'])]
-    """
-    if not relations_str:
-        return []
-
-    rels = [rel.split(":") for rel in relations_str.split(";")]
-    return [(reltype, reltargets.split(",")) for reltype, reltargets in rels]
-
-
-def option_parser(config):
-    """
-    Command line option parser.
-    """
-    p = optparse.OptionParser("""%prog [OPTION ...] FILE_LIST
+HELP_HEADER = """%prog [OPTION ...] FILE_LIST
 
 Arguments:
 
@@ -98,34 +71,114 @@ Examples:
 
   %prog -n foo --pversion 0.2 -l MIT files.list
   %prog -n foo --relations "requires:httpd,/sbin/service;obsoletes:foo-old" files.list
-""",
-    version = "%prog " + __version__
-    )
+"""
 
-    config.load_defaults()
-    defaults = config.as_dict()
 
+
+def parse_template_list_str(templates):
+    """
+    simple parser for options.templates.
+
+    >>> assert parse_template_list_str("") == {}
+    >>> assert parse_template_list_str("a:b") == {"a": "b"}
+    >>> assert parse_template_list_str("a:b,c:d") == {"a": "b", "c": "d"}
+    """
+    if templates:
+        return dict(kv.split(":") for kv in templates.split(","))
+    else:
+        return dict()
+
+
+def parse_relations(relations_str):
+    """
+    >>> parse_relations("requires:bash,zsh;obsoletes:sysdata;conflicts:sysdata-old")
+    [('requires', ['bash', 'zsh']), ('obsoletes', ['sysdata']), ('conflicts', ['sysdata-old'])]
+    """
+    if not relations_str:
+        return []
+
+    rels = [rel.split(":") for rel in relations_str.split(";")]
+    return [(reltype, reltargets.split(",")) for reltype, reltargets in rels]
+
+
+def get_collector(ctype, collectors=COLLECTORS):
+    cls = collectors.get(ctype, pmaker.Collectors.FilelistCollector)
+    logging.info("Use Collector: %s (type=%s)" % (ccls.__name__, ctype))
+
+    return cls
+
+
+# FIXME: Ugly
+def _upto_defaults(upto=UPTO, build_steps=BUILD_STEPS):
+    choices = [name for name, _l, _h in build_steps]
+    help = "Packaging step you want to proceed to: %s [%%default]" % \
+        ", ".join("%s (%s)" % (name, help) for name, _l, help in build_steps)
+    default = upto
+
+    return dict(choices=choices, help=help, default=default)
+
+
+def _driver_defaults(pmakers=PACKAGE_MAKERS):
+    choices = unique(pmakers.keys())
+    help = "Packaging driver: %s [%%default]" % ", ".join(choices)
+    default = "autotools." + get_package_format()
+
+    return dict(choices=choices, help=help, default=default)
+
+
+def _itype_defaults(itypes=COLLECTORS):
+    """
+    @param  itypes  Map of Input data type such as "filelist", "filelist.json"
+                    and Collector classes.
+    """
+    choices = itypes.keys()
+    help = "Input type: %s [%%default]" % ", ".join(itypes)
+    default = collectors.Collectors.FilelistCollector.type()
+
+    return dict(choices=choices, help=help, default=default)
+
+
+def _compressor_defaults(compressors=COMPRESSORS):
+    """
+    @param  compressors  list of (cmd, extension, am_option) of compressor.
+    """
+    compressor = get_compressor(compressors)  # cmd, extension, am_option,
+
+    choices = [ext for _c, ext, _a in compressors]
+    help = "Tool to compress src archive when building src distribution [%default]"
+    default = compressor[1]  # extension
+
+    return dict(choices=choices, help=help, default=default)
+
+
+def option_parser(config, defaults):
+    """
+    Command line option parser.
+    """
+    p = optparse.OptionParser(HELP_HEADER, version = "%prog " + __version__)
     p.set_defaults(**defaults)
 
     bog = optparse.OptionGroup(p, "Build options")
     bog.add_option("-w", "--workdir", help="Working dir to dump outputs [%default]")
-    bog.add_option("", "--upto", type="choice", choices=upto_params["choices"],
-        help="Which packaging step you want to proceed to: " + upto_params["choices_str"] + " [Default: %default]")
-    bog.add_option("", "--driver", type="choice", choices=pdriver, help=pdriver_help)
-    bog.add_option("", "--format", type="choice", choices=pformats, help=pformats_help)
-    bog.add_option("", "--itype", type="choice", choices=itypes, help=itypes_help)
+
+    bog.add_option("", "--upto", type="choice", **_upto_defaults())
+    bog.add_option("", "--driver", type="choice", **_driver_defaults())
+    bog.add_option("", "--itype", type="choice", **_itype_defaults())
+
     bog.add_option("", "--destdir", help="Destdir (prefix) you want to strip from installed path [%default]. "
         "For example, if the target path is \"/builddir/dest/usr/share/data/foo/a.dat\", "
         "and you want to strip \"/builddir/dest\" from the path when packaging \"a.dat\" and "
         "make it installed as \"/usr/share/foo/a.dat\" with the package , you can accomplish "
         "that by this option: \"--destdir=/builddir/destdir\"")
+
     bog.add_option("", "--templates", help="Use custom template files. "
         "TEMPLATES is a comma separated list of template output and file after the form of "
         "RELATIVE_OUTPUT_PATH_IN_SRCDIR:TEMPLATE_FILE such like \"package.spec:/tmp/foo.spec.tmpl\", "
         "and \"debian/rules:mydebrules.tmpl, Makefile.am:/etc/foo/mymakefileam.tmpl\". "
         "Supported template syntax is Python Cheetah: http://www.cheetahtemplate.org .")
-    bog.add_option("", "--link", action="store_true", help="Make symlinks for symlinks instead of copying them")
-    bog.add_option("", "--with-pyxattr", action="store_true", help="Get/set xattributes of files with pure python code.")
+
+    #bog.add_option("", "--link", action="store_true", help="Make symlinks for symlinks instead of copying them")
+    #bog.add_option("", "--with-pyxattr", action="store_true", help="Get/set xattributes of files with pure python code.")
     p.add_option_group(bog)
 
     pog = optparse.OptionGroup(p, "Package metadata options")
@@ -134,8 +187,7 @@ Examples:
     pog.add_option("", "--license", help="The license of the package [%default]")
     pog.add_option("", "--url", help="The url of the package [%default]")
     pog.add_option("", "--summary", help="The summary of the package")
-    pog.add_option("-z", "--compressor", type="choice", choices=compressor_choices,
-        help="Tool to compress src archives [%default]")
+    pog.add_option("-z", "--compressor", type="choice", **_compressor_defaults())
     pog.add_option("", "--arch", action="store_true", help="Make package arch-dependent [false - noarch]")
     pog.add_option("", "--relations",
         help="Semicolon (;) separated list of a pair of relation type and targets "
@@ -146,7 +198,8 @@ Examples:
     pog.add_option("", "--packager", help="Specify packager's name [%default]")
     pog.add_option("", "--mail", help="Specify packager's mail address [%default]")
     pog.add_option("", "--pversion", help="Specify the package version [%default]")
-    pog.add_option("", "--ignore-owner", action="store_true", help="Ignore owner and group of files and then treat as root's")
+    pog.add_option("", "--ignore-owner", action="store_true",
+        help="Ignore owner and group of files and then treat as root's")
     pog.add_option("", "--changelog", help="Specify text file contains changelog")
     p.add_option_group(pog)
 
@@ -156,11 +209,6 @@ Examples:
     rog.add_option("", "--no-mock", action="store_true", help="Build RPM with only using rpmbuild (not recommended)")
     rog.add_option("", "--scriptlets", help="Specify the file contains rpm scriptlets")
     p.add_option_group(rog)
-
-    sog = optparse.OptionGroup(p, "Self-build options")
-    sog.add_option("", "--release-build", action="store_true", help="Make a release build")
-    sog.add_option("", "--include-plugins", help="Comma separated list of plugin files to be included in dist.")
-    p.add_option_group(sog)
 
     tog = optparse.OptionGroup(p, "Test options")
     tog.add_option("", "--tests", action="store_true", help="Run tests.")
@@ -174,9 +222,7 @@ Examples:
     p.add_option("-q", "--quiet", action="store_true", help="Quiet mode")
     p.add_option("-D", "--debug", action="store_true", help="Debug mode")
 
-    p.add_option("", "--build-self", action="store_true", help="Package itself (self-build)")
     p.add_option("", "--show-examples", action="store_true", help="Show examples")
-    p.add_option("", "--dump-rc", action="store_true", help="Show conf file example")
 
     return p
 
@@ -246,34 +292,16 @@ class Config(object):
         """
         Load default configurations.
         """
-        upto_params = dict(
-            choices = [name for name, _logmsg, _helptxt in bsteps],
-            choices_s = ", ".join("%s (%s)" % (name, helptxt) for name, _logmsg, helptxt in bsteps),
-            default = upto,
-        )
-
-        drivers = unique(t[0] for t in pmakers.keys())
-        drivers_help = "Packaging driver's type: %s [%%default]" % ", ".join(pmakers)
-
-        pformats = unique(t[1] for t in pmakers.keys())
-        pformats_help = "Packaging format: %s [%%default]" % ", ".join(pformats)
-
-        itypes = sorted(itypes.keys())
-        itypes_help = "Input type: %s [%%default]" % ", ".join(itypes)
-
         # TODO: Detect appropriate distribution (for mock) automatically.
         (dist_name, dist_version) = get_distribution()
         dist = "%s-%s" % (dist_name, dist_version)
-
-        compressor = get_compressor(compressors)  # cmd, extension, am_option,
-        compressor_choices = [ext for _c, ext, _a in compressors]
 
         defaults = dict(
             workdir = os.path.join(os.getcwd(), "workdir"),
             upto = upto_params["default"],
             format = dist_name == "debian" and "deb" or "rpm",
-            itype = "filelist",
-            compressor = compressor[1],
+            itype = itype_params["default"],
+            compressor = compressor_params["default"],
             ignore_owner = False,
             force = False,
 
