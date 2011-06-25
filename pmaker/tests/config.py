@@ -79,9 +79,11 @@ b: yyy
     def test__init__(self):
         config = Config(paths=self.paths)
 
-    def test_load_defaults(self):
-        config = Config(paths=self.paths)
-        config.load_defaults()
+    def test_defaults(self):
+        defaults = Config.defaults()
+
+        self.assertTrue(isinstance(defaults, dict))
+        self.assertTrue(defaults.keys() > 0)
 
     def test_as_dict(self):
         config = Config(paths=self.paths)

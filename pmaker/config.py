@@ -16,7 +16,7 @@
 #
 from pmaker.globals import *
 from pmaker.environ import *
-from pmaker.utils import parse_conf_value
+from pmaker.utils import parse_conf_value, memoize
 
 import collectors.Collectors
 
@@ -30,7 +30,6 @@ import sys
 
 try:
     from collections import OrderedDict as dict
-
 except ImportError:
     pass
 
@@ -109,6 +108,7 @@ def get_collector(ctype, collectors=COLLECTORS):
 
 
 # FIXME: Ugly
+@memoize
 def _upto_defaults(upto=UPTO, build_steps=BUILD_STEPS):
     choices = [name for name, _l, _h in build_steps]
     help = "Packaging step you want to proceed to: %s [%%default]" % \
@@ -118,6 +118,7 @@ def _upto_defaults(upto=UPTO, build_steps=BUILD_STEPS):
     return dict(choices=choices, help=help, default=default)
 
 
+@memoize
 def _driver_defaults(pmakers=PACKAGE_MAKERS):
     choices = unique(pmakers.keys())
     help = "Packaging driver: %s [%%default]" % ", ".join(choices)
@@ -126,6 +127,7 @@ def _driver_defaults(pmakers=PACKAGE_MAKERS):
     return dict(choices=choices, help=help, default=default)
 
 
+@memoize
 def _itype_defaults(itypes=COLLECTORS):
     """
     @param  itypes  Map of Input data type such as "filelist", "filelist.json"
@@ -138,6 +140,7 @@ def _itype_defaults(itypes=COLLECTORS):
     return dict(choices=choices, help=help, default=default)
 
 
+@memoize
 def _compressor_defaults(compressors=COMPRESSORS):
     """
     @param  compressors  list of (cmd, extension, am_option) of compressor.
@@ -151,12 +154,17 @@ def _compressor_defaults(compressors=COMPRESSORS):
     return dict(choices=choices, help=help, default=default)
 
 
-def option_parser(config, defaults):
+def option_parser(defaults=NULL_DICT):
     """
     Command line option parser.
     """
+    if not defaults:
+        defaults = Config,defaults()
+
     p = optparse.OptionParser(HELP_HEADER, version = "%prog " + __version__)
     p.set_defaults(**defaults)
+
+    p.add_option("-C", "--config", "Configuration file path", default=None)
 
     bog = optparse.OptionGroup(p, "Build options")
     bog.add_option("-w", "--workdir", help="Working dir to dump outputs [%default]")
@@ -196,7 +204,7 @@ def option_parser(config, defaults):
         "Expressions of relation types and targets are varied depends on "
         "package format to use")
     pog.add_option("", "--packager", help="Specify packager's name [%default]")
-    pog.add_option("", "--mail", help="Specify packager's mail address [%default]")
+    pog.add_option("", "--email", help="Specify packager's mail address [%default]")
     pog.add_option("", "--pversion", help="Specify the package version [%default]")
     pog.add_option("", "--ignore-owner", action="store_true",
         help="Ignore owner and group of files and then treat as root's")
@@ -209,13 +217,6 @@ def option_parser(config, defaults):
     rog.add_option("", "--no-mock", action="store_true", help="Build RPM with only using rpmbuild (not recommended)")
     rog.add_option("", "--scriptlets", help="Specify the file contains rpm scriptlets")
     p.add_option_group(rog)
-
-    tog = optparse.OptionGroup(p, "Test options")
-    tog.add_option("", "--tests", action="store_true", help="Run tests.")
-    tog.add_option("", "--tlevel", type="choice", choices=test_choices,
-        help="Select the level of tests to run. Choices are " + ", ".join(test_choices) + " [%default]")
-    tog.add_option("", "--profile", action="store_true", help="Enable profiling")
-    p.add_option_group(tog)
 
     p.add_option("", "--force", action="store_true", help="Force going steps even if the steps looks done")
     p.add_option("-v", "--verbose", action="store_true", help="Verbose mode")
@@ -232,8 +233,7 @@ class Config(object):
     """Object to get/set configuration values.
     """
 
-    def __init__(self, prog="pmaker", profile=None, paths=None,
-            defaults=NULL_DICT):
+    def __init__(self, prog="pmaker", profile=None, paths=None):
         """
         @param  prog      Program name
         @param  profile   Profile name will be used for config selection
@@ -243,7 +243,7 @@ class Config(object):
         self._prog = prog
         self._profile = profile
         self._paths = self._list_paths(prog, paths)
-        self._config = defaults
+        self._config = self.defaults()
 
     @classmethod
     def _list_paths(cls, prog, paths=None):
@@ -285,23 +285,21 @@ class Config(object):
 
     def load(self, path=None):
         paths = path is None and self._paths or [path]
-        self._config = self._load(paths, self._profile) 
+        delta = self._load(paths, self._profile) 
+        self._config.update(delta)
 
-    def load_defaults(self, bsteps=BUILD_STEPS, upto=UPTO, itypes=COLLECTORS,
+    @classmethod
+    def defaults(cls, bsteps=BUILD_STEPS, upto=UPTO, itypes=COLLECTORS,
             pmakers=PACKAGE_MAKERS, compressors=COMPRESSORS):
         """
         Load default configurations.
         """
-        # TODO: Detect appropriate distribution (for mock) automatically.
-        (dist_name, dist_version) = get_distribution()
-        dist = "%s-%s" % (dist_name, dist_version)
-
         defaults = dict(
             workdir = os.path.join(os.getcwd(), "workdir"),
-            upto = upto_params["default"],
-            format = dist_name == "debian" and "deb" or "rpm",
-            itype = itype_params["default"],
-            compressor = compressor_params["default"],
+            upto = _upto_defaults()["default"],
+            driver = _driver_defaults()["default"],
+            itype = _itype_defaults()["default"],
+            compressor = _compressor_defaults()["default"],
             ignore_owner = False,
             force = False,
 
@@ -326,14 +324,14 @@ class Config(object):
             email = get_email(),
             changelog = "",
 
-            dist = dist,
+            dist = "%s-%s" % get_distribution(),
 
             no_rpmdb = False,
             no_mock = False,
             scriptlets = "",
         )
 
-        self._config = defaults
+        return defaults
 
     def as_dict(self):
         return self._config
