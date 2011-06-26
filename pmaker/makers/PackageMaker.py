@@ -18,19 +18,12 @@ from pmaker.globals import *
 from pmaker.shell import shell
 from pmaker.utils import compile_template
 
-import pmaker.collectors.Collectors
-
 import cPickle as pickle
 import itertools
 import logging
 import os
 import os.path
 import sys
-
-
-
-# initialize them:
-pmaker.collectors.Collectors.init()
 
 
 
@@ -80,15 +73,14 @@ class PackageMaker(object):
         if not pmakers.get(cls.type(), False):
             pmakers[cls.type()] = cls
 
-    def __init__(self, package, listfile, collector, options):
+    def __init__(self, package, fileinfos, options):
         """
         @param  package    Dict holding package's metadata
-        @param  listfile   Path to the file contains paths list
-        @param  collector  Collector class to collect fileinfos
+        @param  fileinfos  Target FileInfo objects :: [FileInfo]
         @param  options    Command line options :: optparse.Option  (FIXME)
         """
         self.package = package
-        self.listfile = listfile
+        self.fileinfos = self.package["fileinfos"] = fileinfos
         self.options = options
 
         self.workdir = package["workdir"]
@@ -99,8 +91,6 @@ class PackageMaker(object):
         self.upto = options.upto
 
         self.srcdir = os.path.join(self.workdir, "src")
-
-        self.collector = collector(self.listfile, self.package["name"], self.options)
 
         relmap = []
         if package.has_key("relations"):
@@ -117,13 +107,13 @@ class PackageMaker(object):
     def shell(self, cmd_s):
         return shell(cmd_s, workdir=self.workdir)
 
-    def genfile(self, template, output=False):
+    def genfile(self, template, output=False, search_paths=TEMPLATE_SEARCH_PATHS):
         """
         @param  template  Relative path of template file
         @param  output    Relative path of output to generate from template file
         """
         outfile = os.path.join(self.workdir, output or path)
-        tmpl = find_template(template)
+        tmpl = find_template(template, search_paths)
 
         if tmpl is None:
             logging.warn(" Template not found in your search paths: " + template)
@@ -133,8 +123,8 @@ class PackageMaker(object):
         open(outfile, "w").write(content)
 
     def copyfiles(self):
-        for fi in self.package["fileinfos"]:
-            dest = os.path.join(self.workdir, to_srcdir(self.srcdir, fi.target))
+        for fi in self.fileinfos:
+            dest = to_srcdir(self.srcdir, fi.target)
             fi.copy(dest, self.force)
 
     def dumpfile(self):
@@ -142,13 +132,13 @@ class PackageMaker(object):
 
     def save(self, proto=pickle.HIGHEST_PROTOCOL):
         pickle.dump(
-            self.package["fileinfos"],
+            self.fileinfos,
             open(self.dumpfile(), "wb"),
             proto
         )
 
     def load(self):
-        self.package["fileinfos"] = pickle.load(open(self.dumpfile()))
+        self.fileinfos = self.package["fileinfos"] = pickle.load(open(self.dumpfile()))
 
     def touch_file(self, step):
         return os.path.join(self.workdir, "pmaker-%s.stamp" % step)
@@ -171,14 +161,9 @@ class PackageMaker(object):
                 logging.info("Successfully created packages in %s: %s" % (self.workdir, self.pname))
             sys.exit()
 
-    def collect(self, *args, **kwargs):
-        return self.collector.collect()
-
     def setup(self):
         for d in ("workdir", "srcdir"):
             createdir(self.package[d])
-
-        self.package["fileinfos"] = self.collect()
 
         self.copyfiles()
         self.save()
@@ -215,14 +200,14 @@ class AutotoolsTgzPackageMaker(PackageMaker):
             self.load()
 
         self.package["distdata"] = sort_out_paths_by_dir(
-            fi.target for fi in self.package["fileinfos"] if fi.isfile()
+            fi.target for fi in self.fileinfos if fi.isfile()
         )
 
         self.package["conflicted_fileinfos"] = [
-            fi for fi in self.package["fileinfos"] if fi.conflicts
+            fi for fi in self.fileinfos if fi.conflicts
         ]
         self.package["not_conflicted_fileinfos"] = [
-            fi for fi in self.package["fileinfos"] if not fi.conflicts
+            fi for fi in self.fileinfos if not fi.conflicts
         ]
 
         self.genfile("autotools/configure.ac", "configure.ac")
