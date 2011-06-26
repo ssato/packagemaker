@@ -14,25 +14,12 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
-#
-# Internal:
-#
-# Make some pylint errors ignored:
-# pylint: disable=E0611
-# pylint: disable=E1101
-# pylint: disable=E1103
-# pylint: disable=W0613
-#
-# How to run pylint: pylint --rcfile pylintrc pmaker.py
-#
-
 from distutils.sysconfig import get_python_lib
 
 from pmaker.globals import *
 from pmaker.rpmutils import *
-from pmaker.utils import *
+from pmaker.utils import do_nothing
 
-import ConfigParser as cp
 import glob
 import inspect
 import locale
@@ -43,23 +30,23 @@ import os.path
 import sys
 
 
-__title__   = "packagemaker"
-__version__ = "0.2.99"
-__author__  = "Satoru SATOH"
-__email__   = "satoru.satoh@gmail.com"
-__website__ = "https://github.com/ssato/packagemaker"
+PYTHON_LIBDIR = get_python_lib()
 
 
 
-def load_plugins(package_makers_map=PACKAGE_MAKERS):
-    plugins = os.path.join(get_python_lib(), "pmaker", "*plugin*.py")
-    csfx = "PackageMaker"
+def load_plugins(libdir=PYTHON_LIBDIR):
+    plugins = glob.glob(os.path.join(libdir, "pmaker", "plugins", "*.py"))
 
-    for modpy in glob.glob(plugins):
+    for modpy in plugins:
         modn = os.path.basename(modpy).replace(".py")
-        mod = __import__("pmaker.%s" % modn)
-        pms = [c for n, c in inspect.getmembers(mod) if inspect.isclass(c) and n.endswith(csfx)]
-        c.register(package_makers_map)
+
+        if modn == "__init__":
+            continue
+
+        mod = __import__("pmaker.plugins.%s" % modn)
+        init_f = getattr(mod, "init", do_nothing)
+        init_f()
+            
 
 
 def do_packaging(pkg, filelist, options, pmaps=PACKAGE_MAKERS):
@@ -67,93 +54,6 @@ def do_packaging(pkg, filelist, options, pmaps=PACKAGE_MAKERS):
     logging.info("Use PackageMaker: %s: type=%s, format=%s" % (cls.__name__, cls.type(), cls.format()))
     cls(pkg, filelist, options).run()
 
-
-def do_packaging_self(options):
-    if options.pversion:
-        version = options.pversion
-    else:
-        version = __version__
-
-        if not options.release_build:
-            version += ".%s" % date(DATE_FMT_SIMPLE)
-
-    plugin_files = []
-    if options.include_plugins:
-        plugin_files = options.include_plugins.split(",")
-
-    name = __title__
-    workdir = tempfile.mkdtemp(dir="/tmp", prefix="pm-")
-    summary = "A python script to build packages from existing files on your system"
-    relations = "requires:python"
-    packager = __author__
-    mail = __email__
-    url = __website__
-
-    pkglibdir = os.path.join(workdir, get_python_lib()[1:], "pmaker")
-    bindir = os.path.join(workdir, "usr", "bin")
-    bin = os.path.join(bindir, "pmaker")
-
-    filelist = os.path.join(workdir, "files.list")
-
-    prog = sys.argv[0]
-
-    cmd_opts = "-n %s --pversion %s -w %s --license GPLv3+ --ignore-owner " % (name, version, workdir)
-    cmd_opts += " --destdir %s --no-rpmdb --url %s --upto %s" % (workdir, url, options.upto)
-    cmd_opts += " --summary \"%s\" --packager \"%s\" --mail %s" % (summary, packager, mail)
-
-    if relations:
-        cmd_opts += " --relations \"%s\" " % relations
-
-    if options.debug:
-        cmd_opts += " --debug"
-
-    if options.no_mock:
-        cmd_opts += " --no-mock"
-
-    if options.dist:
-        cmd_opts += " --dist %s" % options.dist
-
-    if options.format:
-        cmd_opts += " --format %s" % options.format
-
-    createdir(pkglibdir, mode=0755)
-    shell("install -m 644 %s %s/__init__.py" % (prog, pkglibdir))
-
-    for f in plugin_files:
-        if not os.path.exists(f):
-            logging.warn("Plugin %s does not found. Skip it" % f)
-            continue
-
-        nf = f.replace("pmaker-", "")
-        shell("install -m 644 %s %s" % (f, os.path.join(pkglibdir, nf)))
-
-    createdir(bindir)
-
-    open(bin, "w").write("""\
-#! /usr/bin/python
-import sys, pmaker
-
-pmaker.main(sys.argv)
-""")
-    shell("chmod +x %s" % bin)
-
-    open(filelist, "w").write("""\
-%s
-%s/*
-""" % (bin, pkglibdir))
-
-    # @see /usr/lib/rpm/brp-python-bytecompile:
-    pycompile = "import compileall, os; compileall.compile_dir(os.curdir, force=1)"
-    compile_pyc = "python -c \"%s\"" % pycompile
-    compile_pyo = "python -O -c \"%s\" > /dev/null" % pycompile
-
-    shell(compile_pyc, pkglibdir)
-    shell(compile_pyo, pkglibdir)
-
-    cmd = "python %s %s %s" % (prog, cmd_opts, filelist)
-
-    logging.info(" executing: %s" % cmd)
-    os.system(cmd)
 
 
 class TestMainProgram00SingleFileCases(unittest.TestCase):
