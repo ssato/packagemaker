@@ -15,10 +15,12 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 from pmaker.makers.PackageMaker import *
+from pmaker.utils import rm_rf
 
 import os
 import os.path
 import sys
+import tempfile
 import unittest
 
 
@@ -34,9 +36,26 @@ class Test_to_srcdir(unittest.TestCase):
 
 
 class Test_find_template(unittest.TestCase):
-    """TBD"""
 
-    pass
+    def setUp(self):
+        self.workdir = tempfile.mkdtemp(dir="/tmp", prefix="pmaker-tests")
+        self.template = os.path.join(self.workdir, "a.tmpl")
+
+        open(self.template, "w").write("$a\n")
+
+    def tearDown(self):
+        rm_rf(self.workdir)
+
+    def test_find_template__None(self):
+        tmpl = find_template("not_exist.tmpl", [self.workdir])
+
+        self.assertTrue(tmpl is None)
+
+    def test_find_template__None(self):
+        tmplname = os.path.basename(self.template)
+        tmpl = find_template(tmplname, [self.workdir])
+
+        self.assertTrue(tmpl is not None)
 
 
 
