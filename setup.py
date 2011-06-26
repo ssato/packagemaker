@@ -36,16 +36,22 @@ data_files = [
     (os.path.join(templates_topdir, "autotools"),
         list_basenames(os.path.join(curdir, "templates/autotools"))),
     (os.path.join(templates_topdir, "autotools/debian"),
-        list_basenames(os.path.join(curdir, "autotools/debian")))),
-    (os.path.join(templates_topdir, "share/templates/autotools/debian",
-        list_basenames(os.path.join(curdir, "autotools/debian")))),
+        list_basenames(os.path.join(curdir, "autotools/debian"))),
+    (os.path.join(templates_topdir, "share/templates/autotools/debian"),
+        list_basenames(os.path.join(curdir, "autotools/debian"))),
 ]
+
+
+test_targets = \
+    glob.glob(os.path.join(curdir, "pmaker/tests/*.py")) + \
+    glob.glob(os.path.join(curdir, "pmaker/*/tests/*.py"))
 
 
 
 class TestCommand(Command):
 
     user_options = []
+    test_driver = os.path.join(curdir, "runtest.sh")
 
     def initialize_options(self):
         pass
@@ -54,10 +60,8 @@ class TestCommand(Command):
         pass
 
     def run(self):
-        testsdir = os.path.join(curdir, "tests")
-
-        os.system("PYTHONPATH=%s nosetests -c %s -w %s" % \
-            (curdir, os.path.join(testsdir, "nose.cfg"), testsdir))
+        for f in test_targets:
+            os.system("PYTHONPATH=%s %s %s" % (curdir, self.test_driver, f))
 
 
 
