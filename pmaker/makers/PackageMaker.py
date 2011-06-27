@@ -16,7 +16,7 @@
 #
 from pmaker.globals import *
 from pmaker.shell import shell
-from pmaker.utils import compile_template
+from pmaker.utils import compile_template, do_nothing, createdir
 
 import cPickle as pickle
 import itertools
@@ -175,8 +175,8 @@ class PackageMaker(object):
             sys.exit()
 
     def setup(self):
-        for d in ("workdir", "srcdir"):
-            createdir(self.package[d])
+        createdir(self.workdir)
+        createdir(self.srcdir)
 
         self.copyfiles()
         self.save()

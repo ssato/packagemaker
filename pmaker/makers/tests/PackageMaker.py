@@ -120,5 +120,59 @@ class TestPackageMaker(unittest.TestCase):
         pmaker.save()
         pmaker.load()
 
+    def test_setup(self):
+        pmaker = PackageMaker(self.package, self.fileinfos, self.options)
+
+        try:
+            pmaker.setup()
+        except SystemExit:
+            pass
+
+        self.assertTrue(os.path.exists(os.path.join(pmaker.srcdir, self.target_path)))
+
+    def test_run__preconfigure(self):
+        pmaker = PackageMaker(self.package, self.fileinfos, self.options)
+        pmaker.upto = STEP_PRECONFIGURE
+
+        try:
+            pmaker.run()
+        except SystemExit:
+            pass
+
+        self.assertTrue(os.path.exists(pmaker.touch_file(STEP_PRECONFIGURE)))
+
+    def test_run__configure(self):
+        pmaker = PackageMaker(self.package, self.fileinfos, self.options)
+        pmaker.upto = STEP_CONFIGURE
+
+        try:
+            pmaker.run()
+        except SystemExit:
+            pass
+
+        self.assertTrue(os.path.exists(pmaker.touch_file(STEP_CONFIGURE)))
+
+    def test_run__sbuild(self):
+        pmaker = PackageMaker(self.package, self.fileinfos, self.options)
+        pmaker.upto = STEP_SBUILD
+
+        try:
+            pmaker.run()
+        except SystemExit:
+            pass
+
+        self.assertTrue(os.path.exists(pmaker.touch_file(STEP_SBUILD)))
+
+    def test_run__build(self):
+        pmaker = PackageMaker(self.package, self.fileinfos, self.options)
+        pmaker.upto = STEP_BUILD
+
+        try:
+            pmaker.run()
+        except SystemExit:
+            pass
+
+        self.assertTrue(os.path.exists(pmaker.touch_file(STEP_BUILD)))
+
 
 # vim: set sw=4 ts=4 expandtab:
