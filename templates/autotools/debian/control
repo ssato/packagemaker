@@ -1,6 +1,6 @@
 Source: $name
 Priority: optional
-Maintainer: $packager <$mail>
+Maintainer: $packager <$email>
 Build-Depends: debhelper (>= 7.3.8), autotools-dev
 Standards-Version: 3.9.0
 Homepage: $url

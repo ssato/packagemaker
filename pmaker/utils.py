@@ -449,4 +449,27 @@ def parse_conf_value(s):
 
     return s
 
+
+def compressor_params(extopt, compressors=COMPRESSORS):
+    am_opt = [ao for _c, ext, ao in compressors if ext == extopt][0]
+    return dict(ext=extopt, am_opt=am_opt)
+
+
+def date_params():
+    return dict(date=date(DATE_FMT_RFC2822), timestamp=date())
+
+
+def load_changelog_content(changelog_txt):
+    if changelog_txt:
+        try:
+            changelog = open(changelog_txt).read()
+        except IOError:
+            logging.warn(" Could not open %s to read changelog" % options.changelog)
+            changelog = ""
+    else:
+        changelog = ""
+
+    return changelog
+
+
 # vim: set sw=4 ts=4 expandtab:

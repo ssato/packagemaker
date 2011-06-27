@@ -15,8 +15,9 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 from pmaker.globals import *
+from pmaker.utils import *
 from pmaker.shell import shell
-from pmaker.utils import compile_template, do_nothing, createdir
+from pmaker.environ import hostname
 
 import cPickle as pickle
 import itertools
@@ -37,33 +38,6 @@ def to_srcdir(srcdir, path):
     assert path != "", "Empty path was given"
 
     return os.path.join(srcdir, path.strip(os.path.sep))
-
-
-def find_template(template, search_paths=TEMPLATE_SEARCH_PATHS):
-    """Find template file from given path information.
-
-    1. Try the path ($template)
-    2. Try $path + $template where $path in $search_paths
-
-    @param  template  Template file path may be relative to path in search paths.
-    @param  search_paths  Path list to search for the template
-    """
-    tmpl = None
-
-    if os.path.exists(template):
-        tmpl = template
-    else:
-        for path in search_paths:
-            t = os.path.join(path, template)
-
-            if os.path.exists(t):
-                tmpl = t
-                break
-
-    if tmpl is not None:
-        logging.info("Found template: " + tmpl)
-
-    return tmpl
 
 
 
@@ -102,6 +76,7 @@ class PackageMaker(object):
 
         self.force = options.force
         self.upto = options.upto
+        self.template_paths = options.template_paths
 
         self.srcdir = os.path.join(self.workdir, "src")
 
@@ -120,13 +95,13 @@ class PackageMaker(object):
     def shell(self, cmd_s):
         return shell(cmd_s, workdir=self.workdir)
 
-    def genfile(self, template, output=False, search_paths=TEMPLATE_SEARCH_PATHS):
+    def genfile(self, template, output=False):
         """
         @param  template  Relative path of template file
         @param  output    Relative path of output to generate from template file
         """
         outfile = os.path.join(self.workdir, output or path)
-        tmpl = find_template(template, search_paths)
+        tmpl = find_template(template, self.template_paths)
 
         if tmpl is None:
             logging.warn(" Template not found in your search paths: " + template)
@@ -208,6 +183,27 @@ class AutotoolsTgzPackageMaker(PackageMaker):
 
     _type = "autotools.tgz"
 
+    def __init__(self, package, fileinfos, options):
+        super(AutotoolsTgzPackageMaker, self).__init__(package, fileinfos, options)
+
+        self.package["format"] = self.type().split(".")[1]
+
+        self.package["release"] = "1"
+        self.package["group"] = options.group
+        self.package["license"] = options.license
+        self.package["url"] = options.url
+        self.package["version"] = options.pversion
+        self.package["packager"] = options.packager
+        self.package["email"] = options.email
+        self.package["compressor"] = compressor_params(options.compressor)
+        self.package["relations"] = options.relations
+        self.package["dist"] = options.dist
+        self.package["date"] = date_params()
+        self.package["host"] = hostname()
+        self.package["destdir"] = options.destdir.rstrip(os.path.sep)
+        self.package["summary"] = options.summary or "Custom package of " + options.name
+        self.package["changelog"] = load_changelog_content(options.changelog)
+
     def preconfigure(self):
         if not self.package.get("fileinfos", False):
             self.load()
@@ -217,10 +213,10 @@ class AutotoolsTgzPackageMaker(PackageMaker):
         )
 
         self.package["conflicted_fileinfos"] = [
-            fi for fi in self.fileinfos if fi.conflicts
+            fi for fi in self.fileinfos if getattr(fi, "conflicts", False)
         ]
         self.package["not_conflicted_fileinfos"] = [
-            fi for fi in self.fileinfos if not fi.conflicts
+            fi for fi in self.fileinfos if not getattr(fi, "conflicts", False)
         ]
 
         self.genfile("autotools/configure.ac", "configure.ac")

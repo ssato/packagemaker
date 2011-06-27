@@ -111,6 +111,6 @@ $fi.rpm_attr$fi.target
 #if $changelog
 $changelog
 #else
-* $date.timestamp ${packager} <${mail}> - ${version}-${release}
+* $date.timestamp ${packager} <${email}> - ${version}-${release}
 - Initial packaging.
 #end if

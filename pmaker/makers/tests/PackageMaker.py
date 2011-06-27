@@ -38,34 +38,6 @@ class Test_to_srcdir(unittest.TestCase):
         self.assertEquals(to_srcdir(srcdir, "/"),      "/tmp/w/src/")
 
 
-class Test_find_template(unittest.TestCase):
-
-    def setUp(self):
-        self.workdir = tempfile.mkdtemp(dir="/tmp", prefix="pmaker-tests")
-        self.template = os.path.join(self.workdir, "a.tmpl")
-
-        open(self.template, "w").write("$a\n")
-
-    def tearDown(self):
-        rm_rf(self.workdir)
-
-    def test_find_template__None(self):
-        tmpl = find_template("not_exist.tmpl")
-
-        self.assertTrue(tmpl is None)
-
-    def test_find_template__exact_path(self):
-        tmpl = find_template(self.template)
-
-        self.assertTrue(tmpl is not None)
-
-    def test_find_template__search_paths(self):
-        tmplname = os.path.basename(self.template)
-        tmpl = find_template(tmplname, [self.workdir])
-
-        self.assertTrue(tmpl is not None)
-
-
 
 class TestPackageMaker(unittest.TestCase):
 
@@ -85,6 +57,17 @@ class TestPackageMaker(unittest.TestCase):
     def tearDown(self):
         rm_rf(self.workdir)
 
+    def helper_run_upto_step(self, step):
+        pmaker = PackageMaker(self.package, self.fileinfos, self.options)
+        pmaker.upto = step
+
+        try:
+            pmaker.run()
+        except SystemExit:
+            pass
+
+        self.assertTrue(os.path.exists(pmaker.touch_file(step)))
+
     def test__init__(self):
         pmaker = PackageMaker(self.package, self.fileinfos, self.options)
 
@@ -103,7 +86,9 @@ class TestPackageMaker(unittest.TestCase):
         open(tmpl, "w").write("$name")
         outfile = "out.txt"
 
-        pmaker.genfile("aaa", outfile, [templatedir])
+        pmaker.template_paths = [templatedir]
+
+        pmaker.genfile("aaa", outfile)
 
         self.assertTrue(os.path.exists(os.path.join(self.workdir, outfile)))
         self.assertEquals(open(os.path.join(self.workdir, outfile)).read(),
@@ -120,59 +105,59 @@ class TestPackageMaker(unittest.TestCase):
         pmaker.save()
         pmaker.load()
 
-    def test_setup(self):
-        pmaker = PackageMaker(self.package, self.fileinfos, self.options)
-
-        try:
-            pmaker.setup()
-        except SystemExit:
-            pass
-
-        self.assertTrue(os.path.exists(os.path.join(pmaker.srcdir, self.target_path)))
+    def test_run__setup(self):
+        self.helper_run_upto_step(STEP_SETUP)
 
     def test_run__preconfigure(self):
-        pmaker = PackageMaker(self.package, self.fileinfos, self.options)
-        pmaker.upto = STEP_PRECONFIGURE
-
-        try:
-            pmaker.run()
-        except SystemExit:
-            pass
-
-        self.assertTrue(os.path.exists(pmaker.touch_file(STEP_PRECONFIGURE)))
+        self.helper_run_upto_step(STEP_PRECONFIGURE)
 
     def test_run__configure(self):
-        pmaker = PackageMaker(self.package, self.fileinfos, self.options)
-        pmaker.upto = STEP_CONFIGURE
-
-        try:
-            pmaker.run()
-        except SystemExit:
-            pass
-
-        self.assertTrue(os.path.exists(pmaker.touch_file(STEP_CONFIGURE)))
+        self.helper_run_upto_step(STEP_CONFIGURE)
 
     def test_run__sbuild(self):
-        pmaker = PackageMaker(self.package, self.fileinfos, self.options)
-        pmaker.upto = STEP_SBUILD
-
-        try:
-            pmaker.run()
-        except SystemExit:
-            pass
-
-        self.assertTrue(os.path.exists(pmaker.touch_file(STEP_SBUILD)))
+        self.helper_run_upto_step(STEP_SBUILD)
 
     def test_run__build(self):
-        pmaker = PackageMaker(self.package, self.fileinfos, self.options)
-        pmaker.upto = STEP_BUILD
+        self.helper_run_upto_step(STEP_BUILD)
+
+
+
+class TestAutotoolsTgzPackageMaker__single(unittest.TestCase):
+
+    def setUp(self):
+        self.workdir = tempfile.mkdtemp(dir="/tmp", prefix="pmaker-tests")
+        package = dict(
+            workdir = self.workdir,
+            destdir = "",
+            name = "foo",
+        )
+        target_path = os.path.join(self.workdir, "a.txt")
+        open(target_path, "w").write("a\n")
+
+        fileinfos = [FileInfoFactory().create(target_path)]
+        options = optparse.Values(Config.defaults())
+
+        self.pmaker = AutotoolsTgzPackageMaker(package, fileinfos, options)
+        self.pmaker.template_paths = [os.path.join(os.getcwd(), "templates")]
+
+    def tearDown(self):
+        rm_rf(self.workdir)
+
+    def helper_run_upto_step(self, step):
+        self.pmaker.upto = step
 
         try:
-            pmaker.run()
+            self.pmaker.run()
         except SystemExit:
             pass
 
-        self.assertTrue(os.path.exists(pmaker.touch_file(STEP_BUILD)))
+        self.assertTrue(os.path.exists(self.pmaker.touch_file(step)))
+
+    def test_preconfigure(self):
+        self.helper_run_upto_step(STEP_PRECONFIGURE)
+
+    def test_configure(self):
+        self.helper_run_upto_step(STEP_CONFIGURE)
 
 
 # vim: set sw=4 ts=4 expandtab:

@@ -5,5 +5,5 @@ $name ($version) unstable; urgency=low
 
   * New upstream release
 
- -- $packager <$mail>  $date.date
+ -- $packager <$email>  $date.date
 #end if

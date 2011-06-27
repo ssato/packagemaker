@@ -1,5 +1,3 @@
-#for $fi in $fileinfos
-#if not $fi.conflicts
+#for $fi in $not_conflicted_fileinfos
 $fi.target
-#end if
 #end for
