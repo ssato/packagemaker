@@ -343,7 +343,7 @@ class Config(object):
 
             destdir = "",
 
-            templa_paths = _template_paths_defaults()["default"],
+            template_paths = _template_paths_defaults()["default"],
 
             #link = False,
             #with_pyxattr = False,
