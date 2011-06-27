@@ -90,16 +90,16 @@ b: yyy
         config.as_dict()
 
 
-class Test_parse_template_list_str(unittest.TestCase):
+class Test_parse_list_str(unittest.TestCase):
 
     def test_no_arg(self):
-        self.assertEquals(parse_template_list_str(""), NULL_DICT)
+        self.assertEquals(parse_list_str(""), [])
 
     def test_single_arg(self):
-        self.assertEquals(parse_template_list_str("a:b"), dict(a="b"))
+        self.assertEquals(parse_list_str("a,b"), ["a", "b"])
 
     def test_multi_args(self):
-        self.assertEquals(parse_template_list_str("a:b,c:d"), dict(a="b", c="d"))
+        self.assertEquals(parse_list_str("a,b,c,"), ["a", "b", "c"])
 
 
 class Test_parse_relations(unittest.TestCase):
@@ -108,6 +108,12 @@ class Test_parse_relations(unittest.TestCase):
         self.assertEquals(
             parse_relations("requires:bash,zsh;obsoletes:sysdata;conflicts:sysdata-old"),
             [('requires', ['bash', 'zsh']), ('obsoletes', ['sysdata']), ('conflicts', ['sysdata-old'])]
+        )
+
+    def test_relations_str__invalid_args(self):
+        self.assertEquals(
+            parse_relations("requires:,zsh;;obsoletes:;conflicts:sysdata-old,"),
+            [('requires', ['zsh']), ('conflicts', ['sysdata-old'])]
         )
 
 

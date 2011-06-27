@@ -73,31 +73,36 @@ Examples:
 """
 
 
-
-def parse_template_list_str(templates):
+def parse_list_str(optstr, sep=","):
     """
-    simple parser for options.templates.
+    simple parser for optstr gives a list of items separated with "," (comma).
 
-    >>> assert parse_template_list_str("") == {}
-    >>> assert parse_template_list_str("a:b") == {"a": "b"}
-    >>> assert parse_template_list_str("a:b,c:d") == {"a": "b", "c": "d"}
+    >>> assert parse_list_str("") == []
+    >>> assert parse_list_str("a,b") == ["a", "b"]
+    >>> assert parse_list_str("a,b,") == ["a", "b"]
     """
-    if templates:
-        return dict(kv.split(":") for kv in templates.split(","))
-    else:
-        return dict()
+    return [p for p in optstr.split(sep) if p]
 
 
-def parse_relations(relations_str):
+def parse_relations(optstr):
     """
+    Returns list of (relation_type, relation_targets).
+
     >>> parse_relations("requires:bash,zsh;obsoletes:sysdata;conflicts:sysdata-old")
     [('requires', ['bash', 'zsh']), ('obsoletes', ['sysdata']), ('conflicts', ['sysdata-old'])]
     """
-    if not relations_str:
-        return []
+    def type_and_targets(optstr):
+        for rel in parse_list_str(optstr, ";"):
+            if ":" not in rel or rel.endswith(":"):
+                continue
 
-    rels = [rel.split(":") for rel in relations_str.split(";")]
-    return [(reltype, reltargets.split(",")) for reltype, reltargets in rels]
+            (_type, _targets) = parse_list_str(rel, ":")
+            _targets = parse_list_str(_targets, ",")
+
+            if _targets:
+                yield (_type, _targets)
+
+    return [(t, ts) for t, ts in type_and_targets(optstr)]
 
 
 def get_collector(ctype, collectors=COLLECTORS):
@@ -154,6 +159,39 @@ def _compressor_defaults(compressors=COMPRESSORS):
     return dict(choices=choices, help=help, default=default)
 
 
+@memoize
+def _template_paths_defaults(search_paths=TEMPLATE_SEARCH_PATHS):
+    """
+    @param  search_paths  defult template searching path list :: [str]
+
+    @see http://www.doughellmann.com/PyMOTW-ja/optparse/
+    """
+    def cb(option, opt_str, value, parser):
+        parser.values.template_paths = parse_list_str(value, ",")
+
+    _default = ",".join(search_paths)
+    _help = "Comma separated path list to search template files. [%default]"
+
+    return dict(action="callback", callback=cb, type="string",
+                default=_default, help=_help)
+
+
+@memoize
+def _relations_defaults():
+    """Relation option parameters.
+    """
+    def cb(option, opt_str, value, parser):
+        parser.values.relations = parse_relations(value)
+
+    _help = """Semicolon (;) separated list of a pair of relation type and
+targets separated with comma, separated with colon (:), e.g.
+\"requires:curl,sed;obsoletes:foo-old\".  Expressions of relation types and
+targets are varied depends on package format to use"""
+
+    return dict(action="callback", callback=cb, type="string",
+                default="", help=_help)
+
+
 def option_parser(defaults=NULL_DICT):
     """
     Command line option parser.
@@ -179,11 +217,12 @@ def option_parser(defaults=NULL_DICT):
         "make it installed as \"/usr/share/foo/a.dat\" with the package , you can accomplish "
         "that by this option: \"--destdir=/builddir/destdir\"")
 
-    bog.add_option("", "--templates", help="Use custom template files. "
-        "TEMPLATES is a comma separated list of template output and file after the form of "
-        "RELATIVE_OUTPUT_PATH_IN_SRCDIR:TEMPLATE_FILE such like \"package.spec:/tmp/foo.spec.tmpl\", "
-        "and \"debian/rules:mydebrules.tmpl, Makefile.am:/etc/foo/mymakefileam.tmpl\". "
-        "Supported template syntax is Python Cheetah: http://www.cheetahtemplate.org .")
+    bog.add_option("", "--template-paths", **_template_paths_defaults())
+    #bog.add_option("", "--templates", help="Use custom template files. "
+    #    "TEMPLATES is a comma separated list of template output and file after the form of "
+    #    "RELATIVE_OUTPUT_PATH_IN_SRCDIR:TEMPLATE_FILE such like \"package.spec:/tmp/foo.spec.tmpl\", "
+    #    "and \"debian/rules:mydebrules.tmpl, Makefile.am:/etc/foo/mymakefileam.tmpl\". "
+    #    "Supported template syntax is Python Cheetah: http://www.cheetahtemplate.org .")
 
     #bog.add_option("", "--link", action="store_true", help="Make symlinks for symlinks instead of copying them")
     #bog.add_option("", "--with-pyxattr", action="store_true", help="Get/set xattributes of files with pure python code.")
@@ -197,12 +236,7 @@ def option_parser(defaults=NULL_DICT):
     pog.add_option("", "--summary", help="The summary of the package")
     pog.add_option("-z", "--compressor", type="choice", **_compressor_defaults())
     pog.add_option("", "--arch", action="store_true", help="Make package arch-dependent [false - noarch]")
-    pog.add_option("", "--relations",
-        help="Semicolon (;) separated list of a pair of relation type and targets "
-        "separated with comma, separated with colon (:), "
-        "e.g. \"requires:curl,sed;obsoletes:foo-old\". "
-        "Expressions of relation types and targets are varied depends on "
-        "package format to use")
+    pog.add_option("", "--relations", **_relations_defaults()),
     pog.add_option("", "--packager", help="Specify packager's name [%default]")
     pog.add_option("", "--email", help="Specify packager's mail address [%default]")
     pog.add_option("", "--pversion", help="Specify the package version [%default]")
@@ -309,6 +343,8 @@ class Config(object):
 
             destdir = "",
 
+            templa_paths = _template_paths_defaults()["default"],
+
             #link = False,
             #with_pyxattr = False,
 
@@ -319,7 +355,7 @@ class Config(object):
             url = "http://localhost.localdomain",
             summary = "",
             arch = False,
-            relations = "",
+            relations = _relations_defaults()["default"],
             packager = get_fullname(),
             email = get_email(),
             changelog = "",
