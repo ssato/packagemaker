@@ -258,6 +258,35 @@ class Test_rm_rf_and_createdir(unittest.TestCase):
 
 
 
+class Test_find_template(unittest.TestCase):
+
+    def setUp(self):
+        self.workdir = tempfile.mkdtemp(dir="/tmp", prefix="pmaker-tests")
+        self.template = os.path.join(self.workdir, "a.tmpl")
+
+        open(self.template, "w").write("$a\n")
+
+    def tearDown(self):
+        rm_rf(self.workdir)
+
+    def test_find_template__None(self):
+        tmpl = find_template("not_exist.tmpl")
+
+        self.assertTrue(tmpl is None)
+
+    def test_find_template__exact_path(self):
+        tmpl = find_template(self.template)
+
+        self.assertTrue(tmpl is not None)
+
+    def test_find_template__search_paths(self):
+        tmplname = os.path.basename(self.template)
+        tmpl = find_template(tmplname, [self.workdir])
+
+        self.assertTrue(tmpl is not None)
+
+
+
 class Test_compile_template(unittest.TestCase):
 
     def setUp(self):

@@ -307,6 +307,33 @@ def on_debug_mode():
     return logging.getLogger().level < logging.INFO
 
 
+def find_template(template, search_paths=TEMPLATE_SEARCH_PATHS):
+    """Find template file from given path information.
+
+    1. Try the path ($template)
+    2. Try $path + $template where $path in $search_paths
+
+    @param  template  Template file path may be relative to path in search paths.
+    @param  search_paths  Path list to search for the template
+    """
+    tmpl = None
+
+    if os.path.exists(template):
+        tmpl = template
+    else:
+        for path in search_paths:
+            t = os.path.join(path, template)
+
+            if os.path.exists(t):
+                tmpl = t
+                break
+
+    if tmpl is not None:
+        logging.info("Found template: " + tmpl)
+
+    return tmpl
+
+
 def compile_template(template, params, is_file=False):
     if is_file:
         tmpl = Template(file=template, searchList=params)
