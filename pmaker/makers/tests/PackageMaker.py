@@ -50,11 +50,16 @@ class Test_find_template(unittest.TestCase):
         rm_rf(self.workdir)
 
     def test_find_template__None(self):
-        tmpl = find_template("not_exist.tmpl", [self.workdir])
+        tmpl = find_template("not_exist.tmpl")
 
         self.assertTrue(tmpl is None)
 
-    def test_find_template__None(self):
+    def test_find_template__exact_path(self):
+        tmpl = find_template(self.template)
+
+        self.assertTrue(tmpl is not None)
+
+    def test_find_template__search_paths(self):
         tmplname = os.path.basename(self.template)
         tmpl = find_template(tmplname, [self.workdir])
 
@@ -89,13 +94,11 @@ class TestPackageMaker(unittest.TestCase):
         self.assertEquals(pmaker.shell("true"), 0)
 
     def test_genfile(self):
-        """FIXME"""
-
-        return 
-
         pmaker = PackageMaker(self.package, self.fileinfos, self.options)
 
         templatedir = os.path.join(self.workdir, "templates")
+        os.makedirs(templatedir)
+
         tmpl = os.path.join(templatedir, "aaa")
         open(tmpl, "w").write("$name")
         outfile = "out.txt"

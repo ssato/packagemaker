@@ -40,17 +40,30 @@ def to_srcdir(srcdir, path):
 
 
 def find_template(template, search_paths=TEMPLATE_SEARCH_PATHS):
-    """
-    @param  template  Template file in relative path to template's topdir
+    """Find template file from given path information.
+
+    1. Try the path ($template)
+    2. Try $path + $template where $path in $search_paths
+
+    @param  template  Template file path may be relative to path in search paths.
     @param  search_paths  Path list to search for the template
     """
-    for path in search_paths:
-        tmpl = os.path.join(path, template)
+    tmpl = None
 
-        if os.path.exists(tmpl):
-            return tmpl
+    if os.path.exists(template):
+        tmpl = template
+    else:
+        for path in search_paths:
+            t = os.path.join(path, template)
 
-    return None
+            if os.path.exists(t):
+                tmpl = t
+                break
+
+    if tmpl is not None:
+        logging.info("Found template: " + tmpl)
+
+    return tmpl
 
 
 
@@ -119,7 +132,7 @@ class PackageMaker(object):
             logging.warn(" Template not found in your search paths: " + template)
             return
 
-        content = compile_template(template, self.package, is_file=True)
+        content = compile_template(tmpl, self.package, is_file=True)
         open(outfile, "w").write(content)
 
     def copyfiles(self):
