@@ -47,13 +47,18 @@ class PackageMaker(object):
     TODO: Separate packaging strategy from this class. 
     (Strategy examples; autotools, simple listfile, cmake, etc.)
     """
-    _type = None
+    _format = None
+    _scheme = None
     _relations = dict()
     _steps = BUILD_STEPS
 
     @classmethod
+    def format(cls):
+        return cls._format
+
+    @classmethod
     def type(cls):
-        return cls._type
+        return "%s.%s" % (cls._scheme, cls._format)
 
     @classmethod
     def register(cls, pmakers=PACKAGE_MAKERS):
@@ -80,13 +85,10 @@ class PackageMaker(object):
 
         self.srcdir = os.path.join(self.workdir, "src")
 
-        relmap = []
-        if package.has_key("relations"):
-            for reltype, reltargets in package["relations"]:
-                rel = self._relations.get(reltype, False)
-                if rel:
-                    relmap.append({"type": rel, "targets": reltargets})
+        self.package["format"] = self.format()
 
+        rels = [(self._relations.get(t, False), ts) for t, ts in options.relations]
+        relmap = [dict(type=t, targets=ts) for t, ts in rels if t]
         self.package["relations"] = relmap
 
         self.package["conflicts_savedir"] = CONFLICTS_SAVEDIR % self.package
@@ -181,12 +183,11 @@ class PackageMaker(object):
 
 class AutotoolsTgzPackageMaker(PackageMaker):
 
-    _type = "autotools.tgz"
+    _format = "tgz"
+    _scheme = "autotools"
 
     def __init__(self, package, fileinfos, options):
         super(AutotoolsTgzPackageMaker, self).__init__(package, fileinfos, options)
-
-        self.package["format"] = self.type().split(".")[1]
 
         self.package["release"] = "1"
         self.package["group"] = options.group
