@@ -18,6 +18,8 @@ from distutils.sysconfig import get_python_lib
 
 from pmaker.globals import *
 from pmaker.rpmutils import *
+from pmaker.config import Config, option_parser
+from pmaker.package import Package
 from pmaker.utils import do_nothing
 
 import glob
@@ -289,18 +291,8 @@ def main(argv=sys.argv, compressors=COMPRESSORS, templates=TEMPLATES):
 
     logging.basicConfig(level=loglevel, format=logformat, datefmt=logdatefmt)
 
-    pkg = dict()
-
     p = option_parser()
     (options, args) = p.parse_args(argv[1:])
-
-    if options.show_examples:
-        show_examples()
-        sys.exit(0)
-
-    if options.dump_rc:
-        dump_rc()
-        sys.exit(0)
 
     if options.verbose:
         logging.getLogger().setLevel(logging.INFO)
@@ -313,34 +305,17 @@ def main(argv=sys.argv, compressors=COMPRESSORS, templates=TEMPLATES):
         logging.getLogger().setLevel(logging.DEBUG)
         verbose_test = True
 
-    if options.build_self:
-        if options.tests:
-            rc = os.system("python %s --tests --tlevel=full -v" % argv[0])
-            if rc != 0:
-                sys.exit(rc)
-
-        do_packaging_self(options)
-        sys.exit()
-
-    if options.tests:
-        if options.profile:
-            import cProfile as profile
-            # FIXME: how to do? -  python <self> -m cProfile ...
-            print >> sys.stderr, \
-                "Not implemented yet. run \"python %s -m cProfile --tests ...\" instead" % \
-                        (argv[0], options.tlevel)
-            sys.exit()
-        else:
-            run_alltests(verbose_test, options.tlevel)
-        sys.exit()
-
     if len(args) < 1:
         p.print_usage()
         sys.exit(1)
 
     filelist = args[0]
 
-    pkg["noarch"] = not options.arch
+    if not options.name:
+        print >> sys.stderr, "You must specify the package name with \"--name\" option"
+        sys.exit(-1)
+
+    pkg = Package(options)
 
     if options.templates:
         for tgt, tmpl in parse_template_list_str(options.templates).iteritems():
@@ -364,34 +339,8 @@ def main(argv=sys.argv, compressors=COMPRESSORS, templates=TEMPLATES):
 
         pkg["scriptlets"] = scriptlets
 
-    if not options.name:
-        print >> sys.stderr, "You must specify the package name with \"--name\" option"
-        sys.exit(-1)
-
-    pkg["name"] = options.name
-    pkg["release"] = "1"
-    pkg["group"] = options.group
-    pkg["license"] = options.license
-    pkg["url"] = options.url
-
-    pkg["version"] = options.pversion
-    pkg["packager"] = options.packager
-    pkg["mail"] = options.mail
-
     pkg["workdir"] = os.path.abspath(os.path.join(options.workdir, "%(name)s-%(version)s" % pkg))
     pkg["srcdir"] = os.path.join(pkg["workdir"], "src")
-
-    compressor_am_opt = [am_opt for _c, _ext, am_opt in compressors if _ext == options.compressor][0]
-
-    pkg["compressor"] = {
-        "ext": options.compressor,
-        "am_opt": compressor_am_opt,
-    }
-
-    if options.relations:
-        pkg["relations"] = relations_parser(options.relations)
-
-    pkg["dist"] = options.dist
 
     # TODO: Revert locale setting change just after timestamp was gotten.
     locale.setlocale(locale.LC_ALL, "C")
