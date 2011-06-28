@@ -239,7 +239,8 @@ def option_parser(defaults=NULL_DICT):
     pog.add_option("", "--relations", **_relations_defaults()),
     pog.add_option("", "--packager", help="Specify packager's name [%default]")
     pog.add_option("", "--email", help="Specify packager's mail address [%default]")
-    pog.add_option("", "--pversion", help="Specify the package version [%default]")
+    pog.add_option("", "--pversion", help="Specify the package's version [%default]")
+    pog.add_option("", "--release", help="Specify the package's release [%default]")
     pog.add_option("", "--ignore-owner", action="store_true",
         help="Ignore owner and group of files and then treat as root's")
     pog.add_option("", "--changelog", help="Specify text file contains changelog")
@@ -350,6 +351,7 @@ class Config(object):
 
             name = "",
             pversion = "0.1",
+            release = "1",
             group = "System Environment/Base",
             license = "GPLv2+",
             url = "http://localhost.localdomain",
