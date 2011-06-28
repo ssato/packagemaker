@@ -208,8 +208,8 @@ class AutotoolsTgzPackageMaker(PackageMaker):
         self.genfile("autotools/configure.ac", "configure.ac")
         self.genfile("autotools/Makefile.am", "Makefile.am")
         self.genfile("common/README", "README")
-        self.genfile("common/MANIFEST", "MANIFEST")
-        self.genfile("common/MANIFEST.overrides", "MANIFEST.overrides")
+        self.genfile("common/manifest", "MANIFEST")
+        self.genfile("common/manifest.overrides", "MANIFEST.overrides")
         self.genfile("common/apply-overrides", "apply-overrides")
         self.genfile("common/revert-overrides", "revert-overrides")
 
