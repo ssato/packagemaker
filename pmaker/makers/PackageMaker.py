@@ -18,6 +18,7 @@ from pmaker.globals import *
 from pmaker.utils import *
 from pmaker.shell import shell
 from pmaker.environ import hostname
+from pmaker.package import Package
 
 import cPickle as pickle
 import itertools
@@ -72,27 +73,23 @@ class PackageMaker(object):
         @param  options    Command line options :: optparse.Option  (FIXME)
         """
         self.package = package
-        self.fileinfos = self.package["fileinfos"] = fileinfos
+        self.fileinfos = self.package.fileinfos = fileinfos
         self.options = options
-
-        self.workdir = package["workdir"]
-        self.destdir = package["destdir"]
-        self.pname = package["name"]
 
         self.force = options.force
         self.upto = options.upto
         self.template_paths = options.template_paths
 
-        self.srcdir = os.path.join(self.workdir, "src")
+        for k in ("workdir", "destdir", "srcdir"): 
+            setattr(self, k, getattr(package, k, None))
 
-        self.package["format"] = self.format()
+        self.pname = package.name
+
+        self.package.format = self.format()
 
         rels = [(self._relations.get(t, False), ts) for t, ts in options.relations]
         relmap = [dict(type=t, targets=ts) for t, ts in rels if t]
-        self.package["relations"] = relmap
-
-        self.package["conflicts_savedir"] = CONFLICTS_SAVEDIR % self.package
-        self.package["conflicts_newdir"] = CONFLICTS_NEWDIR % self.package
+        self.package.relations = relmap
 
     def shell(self, cmd_s):
         return shell(cmd_s, workdir=self.workdir)
@@ -109,7 +106,7 @@ class PackageMaker(object):
             logging.warn(" Template not found in your search paths: " + template)
             return
 
-        content = compile_template(tmpl, self.package, is_file=True)
+        content = compile_template(tmpl, self.package.as_dict(), is_file=True)
         open(outfile, "w").write(content)
 
     def copyfiles(self):
@@ -128,7 +125,14 @@ class PackageMaker(object):
         )
 
     def load(self):
-        self.fileinfos = self.package["fileinfos"] = pickle.load(open(self.dumpfile()))
+        try:
+            f = open(self.dumpfile())
+            fis = pickle.load(f)
+
+            if fis:
+                self.fileinfos = self.package.fileinfos = fis
+        except Exception, e:
+            logging.warn(str(e))
 
     def touch_file(self, step):
         return os.path.join(self.workdir, "pmaker-%s.stamp" % step)
@@ -186,37 +190,18 @@ class AutotoolsTgzPackageMaker(PackageMaker):
     _format = "tgz"
     _scheme = "autotools"
 
-    def __init__(self, package, fileinfos, options):
-        super(AutotoolsTgzPackageMaker, self).__init__(package, fileinfos, options)
-
-        self.package["release"] = "1"
-        self.package["group"] = options.group
-        self.package["license"] = options.license
-        self.package["url"] = options.url
-        self.package["version"] = options.pversion
-        self.package["packager"] = options.packager
-        self.package["email"] = options.email
-        self.package["compressor"] = compressor_params(options.compressor)
-        self.package["relations"] = options.relations
-        self.package["dist"] = options.dist
-        self.package["date"] = date_params()
-        self.package["host"] = hostname()
-        self.package["destdir"] = options.destdir.rstrip(os.path.sep)
-        self.package["summary"] = options.summary or "Custom package of " + options.name
-        self.package["changelog"] = load_changelog_content(options.changelog)
-
     def preconfigure(self):
-        if not self.package.get("fileinfos", False):
+        if not self.package.fileinfos:
             self.load()
 
-        self.package["distdata"] = sort_out_paths_by_dir(
+        self.package.distdata = sort_out_paths_by_dir(
             fi.target for fi in self.fileinfos if fi.isfile()
         )
 
-        self.package["conflicted_fileinfos"] = [
+        self.package.conflicted_fileinfos = [
             fi for fi in self.fileinfos if getattr(fi, "conflicts", False)
         ]
-        self.package["not_conflicted_fileinfos"] = [
+        self.package.not_conflicted_fileinfos = [
             fi for fi in self.fileinfos if not getattr(fi, "conflicts", False)
         ]
 

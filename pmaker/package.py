@@ -35,7 +35,7 @@ class Package(object):
 
         keys = ("workdir", "destdir", "upto", "name", "release", "group",
             "license", "url", "packager", "email", "relations", "dist",
-            "packager", "noarch", )
+            "noarch")
 
         for key in keys:
             val = getattr(options, key, None)
@@ -51,8 +51,8 @@ class Package(object):
 
         self.srcdir = os.path.join(self.workdir, "src")
 
-        self.conflicts_savedir = CONFLICTS_SAVEDIR % self
-        self.conflicts_newdir = CONFLICTS_NEWDIR % self
+        self.conflicts_savedir = CONFLICTS_SAVEDIR % self.as_dict()
+        self.conflicts_newdir = CONFLICTS_NEWDIR % self.as_dict()
 
     def add_fileinfos(self, fileinfos):
         self.fileinfos = self.fileinfos + [fi for fi in fileinfos if fi not in self.fileinfos]
@@ -70,8 +70,8 @@ class Package(object):
     def update(self, update_dict):
         self.__dict__.update(update_dict)
 
-    def __getitem__(self, key):
-        return self.__dict__.get(key, None)
+    def as_dict(self):
+        return self.__dict__
 
 
 # vim: set sw=4 ts=4 expandtab:

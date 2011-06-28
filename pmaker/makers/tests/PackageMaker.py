@@ -18,7 +18,9 @@ from pmaker.makers.PackageMaker import *
 from pmaker.models.FileInfoFactory import FileInfoFactory
 from pmaker.utils import rm_rf
 from pmaker.config import Config
+from pmaker.package import Package
 
+import logging
 import optparse
 import os
 import os.path
@@ -43,16 +45,18 @@ class TestPackageMaker(unittest.TestCase):
 
     def setUp(self):
         self.workdir = tempfile.mkdtemp(dir="/tmp", prefix="pmaker-tests")
-        self.package = dict(
-            workdir = self.workdir,
-            destdir = "",
-            name = "foo",
-        )
         self.target_path = os.path.join(self.workdir, "a.txt")
+
         open(self.target_path, "w").write("a\n")
 
         self.fileinfos = [FileInfoFactory().create(self.target_path)]
-        self.options = optparse.Values(Config.defaults())
+
+        defaults = Config.defaults()
+        defaults["workdir"] = self.workdir
+        defaults["name"] = "foo"
+
+        self.options = optparse.Values(defaults)
+        self.package = Package(self.options)
 
     def tearDown(self):
         rm_rf(self.workdir)
@@ -91,8 +95,7 @@ class TestPackageMaker(unittest.TestCase):
         pmaker.genfile("aaa", outfile)
 
         self.assertTrue(os.path.exists(os.path.join(self.workdir, outfile)))
-        self.assertEquals(open(os.path.join(self.workdir, outfile)).read(),
-            self.package["name"])
+        self.assertEquals(open(os.path.join(self.workdir, outfile)).read(), self.package.name)
 
     def test_copyfiles(self):
         pmaker = PackageMaker(self.package, self.fileinfos, self.options)
@@ -126,16 +129,18 @@ class TestAutotoolsTgzPackageMaker__single(unittest.TestCase):
 
     def setUp(self):
         self.workdir = tempfile.mkdtemp(dir="/tmp", prefix="pmaker-tests")
-        package = dict(
-            workdir = self.workdir,
-            destdir = "",
-            name = "foo",
-        )
         target_path = os.path.join(self.workdir, "a.txt")
+
         open(target_path, "w").write("a\n")
 
         fileinfos = [FileInfoFactory().create(target_path)]
-        options = optparse.Values(Config.defaults())
+
+        defaults = Config.defaults()
+        defaults["workdir"] = self.workdir
+        defaults["name"] = "foo"
+
+        options = optparse.Values(defaults)
+        package = Package(options)
 
         self.pmaker = AutotoolsTgzPackageMaker(package, fileinfos, options)
         self.pmaker.template_paths = [os.path.join(os.getcwd(), "templates")]
@@ -157,6 +162,7 @@ class TestAutotoolsTgzPackageMaker__single(unittest.TestCase):
         self.helper_run_upto_step(STEP_PRECONFIGURE)
 
     def test_configure(self):
+        logging.getLogger().setLevel(logging.WARNING) # suppress log messages
         self.helper_run_upto_step(STEP_CONFIGURE)
 
 
