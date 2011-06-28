@@ -1,3 +1,5 @@
+## NOTE: 'self build' feature is not available in this version.
+
 ## E. Packaging itself:
 
 $ python pmaker.py --build-self
