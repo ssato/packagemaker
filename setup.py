@@ -3,9 +3,13 @@ from distutils.core import setup, Command
 import datetime
 import glob
 import os
-import nose
 import sys
 
+try:
+    import nose
+except ImportError:
+    if len(sys.argv) > 1 and sys.argv[1] == "test":
+        raise ImportError("python-nose is must for testing.")
 
 
 PACKAGE = "packagemaker"
