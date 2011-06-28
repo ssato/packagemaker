@@ -25,8 +25,9 @@ import os.path
 
 
 class AutotoolsRpmPackageMaker(AutotoolsTgzPackageMaker):
-    _type = "autotools.rpm"
+    _format = "rpm"
 
+    # FIXME: Fix naming convention of relation keys.
     _relations = {
         "requires": "Requires",
         "requires.pre": "Requires(pre)",
@@ -38,6 +39,14 @@ class AutotoolsRpmPackageMaker(AutotoolsTgzPackageMaker):
         "provides": "Provides",
         "obsoletes": "Obsoletes",
     }
+
+    def __init__(self, package, fileinfos, options):
+        super(AutotoolsRpmPackageMaker, self).__init__(package, fileinfos, options)
+
+        self.package.noarch = options.arch
+        self.package.no_rpmdb = options.no_rpmdb
+        self.package.no_mock = options.no_mock
+        self.package.scriptlets = options.scriptlets
 
     def rpmspec(self):
         return os.path.join(self.workdir, "%s.spec" % self.pname)
@@ -59,17 +68,17 @@ class AutotoolsRpmPackageMaker(AutotoolsTgzPackageMaker):
                 use_mock = False
 
         if use_mock:
-            silent = (on_debug_mode() and "" or "--quiet")
+            silent = on_debug_mode() and "" or "--quiet"
             self.shell("mock -r %s %s %s" % \
-                (self.package["dist"], srcrpm_name_by_rpmspec(self.rpmspec()), silent)
+                (self.package.dist, srcrpm_name_by_rpmspec(self.rpmspec()), silent)
             )
             print "  GEN    rpm"  # mimics the message of "make rpm"
-            return self.shell("mv /var/lib/mock/%(dist)s/result/*.rpm %(workdir)s" % self.package)
+            return self.shell(
+                "mv /var/lib/mock/%(dist)s/result/*.rpm %(workdir)s" % self.package.as_dict()
+            )
         else:
-            if on_debug_mode:
-                return self.shell("make rpm")
-            else:
-                return self.shell("make rpm V=0 > /dev/null")
+            cmd = on_debug_mode and "make rpm" or "make rpm V=0 > /dev/null"
+            return self.shell(cmd)
 
     def preconfigure(self):
         super(AutotoolsRpmPackageMaker, self).preconfigure()

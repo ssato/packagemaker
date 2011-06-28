@@ -145,6 +145,8 @@ class TestAutotoolsTgzPackageMaker__single(unittest.TestCase):
         self.pmaker = AutotoolsTgzPackageMaker(package, fileinfos, options)
         self.pmaker.template_paths = [os.path.join(os.getcwd(), "templates")]
 
+        logging.getLogger().setLevel(logging.WARNING) # suppress log messages
+
     def tearDown(self):
         rm_rf(self.workdir)
 
@@ -162,8 +164,13 @@ class TestAutotoolsTgzPackageMaker__single(unittest.TestCase):
         self.helper_run_upto_step(STEP_PRECONFIGURE)
 
     def test_configure(self):
-        logging.getLogger().setLevel(logging.WARNING) # suppress log messages
         self.helper_run_upto_step(STEP_CONFIGURE)
+
+    def test_sbuild(self):
+        self.helper_run_upto_step(STEP_SBUILD)
+
+    def test_build(self):
+        self.helper_run_upto_step(STEP_BUILD)
 
 
 # vim: set sw=4 ts=4 expandtab:

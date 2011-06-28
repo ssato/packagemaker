@@ -208,6 +208,10 @@ def option_parser(defaults=NULL_DICT):
     bog.add_option("-w", "--workdir", help="Working dir to dump outputs [%default]")
 
     bog.add_option("", "--upto", type="choice", **_upto_defaults())
+
+    bog.add_option("", "--format", type="choice", choices=PKG_FORMATS,
+            default=get_package_format(), help="Package format [%default]")
+
     bog.add_option("", "--driver", type="choice", **_driver_defaults())
     bog.add_option("", "--itype", type="choice", **_itype_defaults())
 
@@ -332,6 +336,7 @@ class Config(object):
         defaults = dict(
             workdir = os.path.join(os.getcwd(), "workdir"),
             upto = _upto_defaults()["default"],
+            format = get_package_format(),
             driver = _driver_defaults()["default"],
             itype = _itype_defaults()["default"],
             compressor = _compressor_defaults()["default"],

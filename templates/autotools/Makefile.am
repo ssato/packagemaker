@@ -12,9 +12,9 @@ include \$(abs_srcdir)/rpm.mk
 
 #for $dd in $distdata
 pkgdata${dd.id}dir = $dd.dir
-dist_pkgdata${dd.id}_DATA = \\
+dist_pkgdata${dd.id}_DATA = \
 #for $f in $dd.files
-src$f \\
+src$f \
 #end for
 \$(NULL)
 
@@ -25,13 +25,13 @@ src$f \\
 #set $dir = os.path.dirname($fi.target)
 #set $bn = os.path.basename($fi.target)
 install-data-hook::
-\t\$(AM_V_at)test -d \$(DESTDIR)$dir || \$(MKDIR_P) \$(DESTDIR)$dir
-\t\$(AM_V_at)cd \$(DESTDIR)$dir && \$(LN_S) $fi.linkto $bn
+	\$(AM_V_at)test -d \$(DESTDIR)$dir || \$(MKDIR_P) \$(DESTDIR)$dir
+	\$(AM_V_at)cd \$(DESTDIR)$dir && \$(LN_S) $fi.linkto $bn
 
 #else
 #if $fi.type() == "dir"
 install-data-hook::
-\t\$(AM_V_at)test -d \$(DESTDIR)$fi.target || \$(MKDIR_P) \$(DESTDIR)$fi.target
+	\$(AM_V_at)test -d \$(DESTDIR)$fi.target || \$(MKDIR_P) \$(DESTDIR)$fi.target
 
 #end if
 #end if
@@ -39,3 +39,5 @@ install-data-hook::
 
 MKDIR_P ?= mkdir -p
 SED ?= sed
+
+# vim: set noexpandtab:
