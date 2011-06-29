@@ -20,8 +20,8 @@ VERSION = "0.2.99" + "." + datetime.datetime.now().strftime("%Y%m%d")
 curdir = os.getcwd()
 
 
-def list_basenames(d, gpat="*", pred=os.path.isfile):
-    return [os.path.basename(f) for f in glob.glob(os.path.join(d, gpat)) if pred(f)]
+def list_paths(path_pattern="*", topdir=curdir, pred=os.path.isfile):
+    return [p for p in glob.glob(os.path.join(topdir, path_pattern)) if pred(p)]
 
 
 pkgs = ["pmaker", ]
@@ -31,18 +31,11 @@ templates_topdir = "share/pmaker/templates"
 data_files = [
 # TODO:
 #   ("share/man/man1", ["man/pmaker.1", ])
-    (os.path.join(templates_topdir, "common"),
-        list_basenames(os.path.join(curdir, "templates/common"))),
-    (os.path.join(templates_topdir, "common/debian"),
-        list_basenames(os.path.join(curdir, "templates/common/debian"))),
-    (os.path.join(templates_topdir, "common/debian/source"),
-        list_basenames(os.path.join(curdir, "templates/common/debian/source"))),
-    (os.path.join(templates_topdir, "autotools"),
-        list_basenames(os.path.join(curdir, "templates/autotools"))),
-    (os.path.join(templates_topdir, "autotools/debian"),
-        list_basenames(os.path.join(curdir, "autotools/debian"))),
-    (os.path.join(templates_topdir, "share/templates/autotools/debian"),
-        list_basenames(os.path.join(curdir, "autotools/debian"))),
+    (os.path.join(templates_topdir, "common"), list_paths("templates/common/*")),
+    (os.path.join(templates_topdir, "common/debian"), list_paths("templates/common/debian/*")),
+    (os.path.join(templates_topdir, "common/debian/source"), list_paths("templates/common/debian/source/*")),
+    (os.path.join(templates_topdir, "autotools"), list_paths("templates/autotools/*")),
+    (os.path.join(templates_topdir, "autotools/debian"), list_paths("templates/autotools/debian/*")),
 ]
 
 
@@ -99,6 +92,45 @@ class SrpmCommand(Command):
         open(rpmspec, "w").write(open(rpmspec + ".in").read().replace("@VERSION@", VERSION))
 
         cmd = """rpmbuild -bs \
+            --define \"_topdir %(rpmdir)s\" --define \"_rpmdir %(rpmdir)s\" \
+            --define \"_sourcedir %(topdir)s/dist\" --define \"_buildroot %(BUILDROOT)s\" \
+            %(rpmspec)s
+            """ % params
+
+        os.system(cmd)
+
+
+
+class RpmCommand(Command):
+
+    user_options = []
+
+    def initialize_options(self):
+        pass
+
+    def finalize_options(self):
+        pass
+
+    def run(self):
+        self.run_command('sdist')
+        self.build_rpm()
+
+    def build_rpm(self):
+        params = dict()
+
+        topdir = params["topdir"] = os.path.abspath(os.curdir)
+        rpmdir = params["rpmdir"] = os.path.join(topdir, "dist")
+        rpmspec = params["rpmspec"] = os.path.join(topdir, "%s.spec" % PACKAGE)
+
+        for subdir in ("RPMS", "BUILD", "BUILDROOT"):
+            sdir = params[subdir] = os.path.join(rpmdir, subdir)
+
+            if not os.path.exists(sdir):
+                os.makedirs(sdir, 0755)
+
+        open(rpmspec, "w").write(open(rpmspec + ".in").read().replace("@VERSION@", VERSION))
+
+        cmd = """rpmbuild -bb \
             --define \"_topdir %(rpmdir)s\" --define \"_srcrpmdir %(rpmdir)s\" \
             --define \"_sourcedir %(topdir)s/dist\" --define \"_buildroot %(BUILDROOT)s\" \
             %(rpmspec)s
@@ -122,6 +154,7 @@ setup(name=PACKAGE,
       cmdclass={
           "test": TestCommand,
           "srpm": SrpmCommand,
+          "rpm":  RpmCommand,
       },
 )
 
