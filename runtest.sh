@@ -5,7 +5,7 @@ set -e
 topdir=${0%/*}
 
 if test -n "$@"; then
-    PYTHONPATH=$topdir nosetests -c $topdir/tests/nose.cfg $@
+    PYTHONPATH=$topdir nosetests -c $topdir/nose.cfg $@
 else
-    PYTHONPATH=$topdir nosetests -c $topdir/tests/nose.cfg -w $topdir/tests/
+    PYTHONPATH=$topdir nosetests -c $topdir/nose.cfg -w $topdir/tests/
 fi
