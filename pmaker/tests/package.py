@@ -21,6 +21,7 @@ from pmaker.utils import rm_rf
 
 import glob
 import optparse
+import os
 import os.path
 import random
 import tempfile
@@ -45,7 +46,7 @@ class TestPackage(unittest.TestCase):
         self.assertTrue(self.package.foobar, "baz")
 
     def test_add_fileinfos(self):
-        files = (p for p in random.sample(glob.glob("/etc/*"), 10))
+        files = (p for p in random.sample(glob.glob("/etc/*"), 10) if os.access(p, os.R_OK))
         fis = [FileInfoFactory().create(p) for p in files]
 
         self.package.add_fileinfos(fis)
