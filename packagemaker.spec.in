@@ -45,6 +45,7 @@ rm -rf $RPM_BUILD_ROOT
 %doc examples
 %{python_sitelib}/*
 %{_bindir}/*
+%{_datadir}/pmaker/templates/*
 
 
 %changelog
