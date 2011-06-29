@@ -20,6 +20,7 @@ import copy
 import datetime
 import glob
 import itertools
+import locale
 import logging
 import operator
 import re
@@ -289,6 +290,8 @@ def date(type=None):
     """TODO: how to output in rfc2822 format w/o email.Utils.formatdate?
     ("%z" for strftime does not look working.)
     """
+    locale.setlocale(locale.LC_TIME, "C")
+
     if type == DATE_FMT_RFC2822:
         fmt = "%a, %d %b %Y %T +0000"
     elif type == DATE_FMT_SIMPLE:
