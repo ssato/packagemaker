@@ -33,6 +33,7 @@ import sys
 
 PYTHON_LIBDIR = distutils.sysconfig.get_python_lib()
 
+LOG_LEVELS = [logging.WARN, logging.INFO, logging.DEBUG]
 
 
 def load_plugins(libdir=PYTHON_LIBDIR):
@@ -78,10 +79,7 @@ def main(argv=sys.argv, collector=COLLECTORS):
             build_steps=BUILD_STEPS, drivers=PACKAGE_MAKERS,
             itypes=COLLECTORS, tmpl_search_paths=TEMPLATE_SEARCH_PATHS)
 
-    loglevel = options.verbose and logging.INFO or logging.WARN
-    if options.debug:
-        loglevel = logging.DEBUG
-
+    loglevel = LOG_LEVELS[options.verbosity]
     logging.getLogger().setLevel(loglevel)
 
     if len(args) < 1:

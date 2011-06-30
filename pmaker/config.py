@@ -252,9 +252,9 @@ def parse_args(argv=sys.argv[1:], defaults=None, upto=UPTO,
     p.add_option_group(rog)
 
     p.add_option("", "--force", action="store_true", help="Force going steps even if the steps looks done")
-    p.add_option("-v", "--verbose", action="store_true", help="Verbose mode")
-    p.add_option("-q", "--quiet", action="store_true", help="Quiet mode")
-    p.add_option("-D", "--debug", action="store_true", help="Debug mode")
+
+    p.add_option("-v", "--verbose", action="count", dest='verbosity', help="Verbose mode")
+    p.add_option("-D", "--debug", action='store_const', dest='verbosity', const=2, help="Debug mode")
 
     p.add_option("", "--show-examples", action="store_true", help="Show examples")
 
@@ -339,9 +339,7 @@ class Config(object):
             ignore_owner = False,
             force = False,
 
-            verbose = False,
-            quiet = False,
-            debug = False,
+            verbosity = 0,
 
             destdir = "",
 
