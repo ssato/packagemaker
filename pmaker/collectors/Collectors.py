@@ -87,15 +87,12 @@ class FilelistCollector(Collector):
 
     _type = "filelist"
 
-    def __init__(self, filelist, pkgname, options):
+    def __init__(self, filelist, options):
         """
         @filelist  str  file to list files and dirs to collect or "-"
-                        (read files and dirs list from stdin)
-        @pkgname   str  package name to build
+                        (files and dirs list will be read from stdin)
         @options   optparse.Values
         """
-        super(FilelistCollector, self).__init__(filelist, options)
-
         self.filelist = filelist
 
         # TBD:
@@ -117,7 +114,7 @@ class FilelistCollector(Collector):
             self.modifiers.append(RpmAttributeModifier())
 
             if not options.no_rpmdb:
-                self.modifiers.append(RpmConflictsModifier(pkgname))
+                self.modifiers.append(RpmConflictsModifier(options.name))
         else:
             self.fi_factory = FileInfoFactory()
 
@@ -188,8 +185,8 @@ class ExtFilelistCollector(FilelistCollector):
     _enabled = True
     _type = "filelist.ext"
 
-    def __init__(self, filelist, pkgname, options):
-        super(ExtFilelistCollector, self).__init__(filelist, pkgname, options)
+    def __init__(self, filelist, options):
+        super(ExtFilelistCollector, self).__init__(filelist, options)
         self.modifiers.append(TargetAttributeModifier())
 
     @staticmethod
@@ -256,8 +253,8 @@ class JsonFilelistCollector(FilelistCollector):
     _enabled = JSON_ENABLED
     _type = "filelist.json"
 
-    def __init__(self, filelist, pkgname, options):
-        super(JsonFilelistCollector, self).__init__(filelist, pkgname, options)
+    def __init__(self, filelist, options):
+        super(JsonFilelistCollector, self).__init__(filelist, options)
         self.modifiers.append(TargetAttributeModifier())
 
     @classmethod

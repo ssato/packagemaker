@@ -60,6 +60,7 @@ class TestAutotoolsRpmPackageMaker(unittest.TestCase):
         open(listfile, "w").write("\n".join(paths))
 
         option_values = {
+            "name": "foo",
             "format": "rpm",
             "destdir": "",
             "ignore_owner": False,
@@ -67,7 +68,7 @@ class TestAutotoolsRpmPackageMaker(unittest.TestCase):
         }
 
         options = optparse.Values(option_values)
-        fc = FilelistCollector(listfile, "foo", options)
+        fc = FilelistCollector(listfile, options)
         fis = fc.collect()
 
         defaults = Config.defaults()

@@ -71,6 +71,7 @@ class TestFilelistCollector(unittest.TestCase):
         f.close()
 
         option_values = {
+            "name": "foo",
             "format": "rpm",
             "destdir": "",
             "ignore_owner": False,
@@ -78,7 +79,7 @@ class TestFilelistCollector(unittest.TestCase):
         }
 
         options = optparse.Values(option_values)
-        fc = FilelistCollector(listfile, "foo", options)
+        fc = FilelistCollector(listfile, options)
 
         ts = unique(concat(FilelistCollector._parse(p + "\n") for p in paths))
         self.assertListEqual(ts, fc.list_targets(listfile))
@@ -103,6 +104,7 @@ class TestFilelistCollector(unittest.TestCase):
         f.close()
 
         option_values = {
+            "name": "foo",
             "format": "rpm",
             "destdir": "",
             "ignore_owner": False,
@@ -110,30 +112,30 @@ class TestFilelistCollector(unittest.TestCase):
         }
 
         options = optparse.Values(option_values)
-        fc = FilelistCollector(listfile, "foo", options)
+        fc = FilelistCollector(listfile, options)
         fs = fc.collect()
 
         option_values["format"] = "deb"
         options = optparse.Values(option_values)
-        fc = FilelistCollector(listfile, "foo", options)
+        fc = FilelistCollector(listfile, options)
         fs = fc.collect()
         option_values["format"] = "rpm"
 
         option_values["destdir"] = "/etc"
         options = optparse.Values(option_values)
-        fc = FilelistCollector(listfile, "foo", options)
+        fc = FilelistCollector(listfile, options)
         fs = fc.collect()
         option_values["destdir"] = ""
 
         option_values["ignore_owner"] = True
         options = optparse.Values(option_values)
-        fc = FilelistCollector(listfile, "foo", options)
+        fc = FilelistCollector(listfile, options)
         fs = fc.collect()
         option_values["ignore_owner"] = False
 
         option_values["no_rpmdb"] = True
         options = optparse.Values(option_values)
-        fc = FilelistCollector(listfile, "foo", options)
+        fc = FilelistCollector(listfile, options)
         fs = fc.collect()
         option_values["no_rpmdb"] = False
 
@@ -164,6 +166,7 @@ class TestExtFilelistCollector(unittest.TestCase):
         f.close()
 
         option_values = {
+            "name": "foo",
             "format": "rpm",
             "destdir": "",
             "ignore_owner": False,
@@ -171,7 +174,7 @@ class TestExtFilelistCollector(unittest.TestCase):
         }
 
         options = optparse.Values(option_values)
-        fc = ExtFilelistCollector(listfile, "foo", options)
+        fc = ExtFilelistCollector(listfile, options)
         fs = fc.collect()
 
 
@@ -215,6 +218,7 @@ class TestJsonFilelistCollector(unittest.TestCase):
         f.close()
 
         option_values = {
+            "name": "foo",
             "format": "rpm",
             "destdir": "",
             "ignore_owner": False,
@@ -222,7 +226,7 @@ class TestJsonFilelistCollector(unittest.TestCase):
         }
 
         options = optparse.Values(option_values)
-        fc = ExtFilelistCollector(listfile, "foo", options)
+        fc = ExtFilelistCollector(listfile, options)
 
         ts = fc.list_targets(listfile)
         #self.assertListEqual(ts, ts2)
