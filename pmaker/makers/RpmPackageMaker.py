@@ -17,6 +17,7 @@
 from pmaker.globals import *
 from pmaker.makers.PackageMaker import AutotoolsTgzPackageMaker
 from pmaker.utils import on_debug_mode
+from pmaker.rpmutils import srcrpm_name_by_rpmspec
 
 import logging
 import os
