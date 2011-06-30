@@ -105,16 +105,6 @@ class Test_parse_list_str(unittest.TestCase):
 
 
 
-class Test_parse_args(unittest.TestCase):
-
-    def test__min(self):
-        (parser, options, args) = parse_args("-n foo".split())
-
-        self.assertTrue(isinstance(parser, optparse.OptionParser))
-        self.assertTrue(isinstance(options, optparse.Values))
-
-
-
 class Test_parse_relations(unittest.TestCase):
 
     def test_relations_str(self):
@@ -128,6 +118,45 @@ class Test_parse_relations(unittest.TestCase):
             parse_relations("requires:,zsh;;obsoletes:;conflicts:sysdata-old,"),
             [('requires', ['zsh']), ('conflicts', ['sysdata-old'])]
         )
+
+
+
+class Test_x_defaults(unittest.TestCase):
+
+    def test_upto_defaults(self):
+        defaults = upto_defaults()
+
+        self.assertTrue(bool(defaults["choices"]))
+
+    def test_driver_defaults(self):
+        defaults = driver_defaults()
+
+        self.assertTrue(bool(defaults["choices"]))
+
+    def test_itype_defaults(self):
+        defaults = itype_defaults()
+
+        self.assertTrue(bool(defaults["choices"]))
+
+    def test_compressor_defaults(self):
+        defaults = compressor_defaults()
+
+        self.assertTrue(bool(defaults["choices"]))
+
+    def test_relations_defaults(self):
+        defaults = relations_defaults()
+
+        #self.assertTrue(isinstance(defaults["default"], str))
+
+
+
+class Test_parse_args(unittest.TestCase):
+
+    def test__min(self):
+        (parser, options, args) = parse_args("-n foo".split())
+
+        self.assertTrue(isinstance(parser, optparse.OptionParser))
+        self.assertTrue(isinstance(options, optparse.Values))
 
 
 # vim: set sw=4 ts=4 expandtab:

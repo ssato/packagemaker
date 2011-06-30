@@ -109,7 +109,7 @@ def parse_relations(optstr):
 
 
 # FIXME: Ugly
-def _upto_defaults(upto=UPTO, build_steps=BUILD_STEPS):
+def upto_defaults(upto=UPTO, build_steps=BUILD_STEPS):
     choices = [name for name, _l, _h in build_steps]
     help = "Packaging step you want to proceed to: %s [%%default]" % \
         ", ".join("%s (%s)" % (name, help) for name, _l, help in build_steps)
@@ -118,7 +118,7 @@ def _upto_defaults(upto=UPTO, build_steps=BUILD_STEPS):
     return dict(choices=choices, help=help, default=default)
 
 
-def _driver_defaults(pmakers=PACKAGE_MAKERS):
+def driver_defaults(pmakers=PACKAGE_MAKERS):
     choices = unique(pmakers.keys())
     help = "Packaging driver: %s [%%default]" % ", ".join(choices)
     default = "autotools." + get_package_format()
@@ -126,7 +126,7 @@ def _driver_defaults(pmakers=PACKAGE_MAKERS):
     return dict(choices=choices, help=help, default=default)
 
 
-def _itype_defaults(itypes=COLLECTORS):
+def itype_defaults(itypes=COLLECTORS):
     """
     @param  itypes  Map of Input data type such as "filelist", "filelist.json"
                     and Collector classes.
@@ -138,7 +138,7 @@ def _itype_defaults(itypes=COLLECTORS):
     return dict(choices=choices, help=help, default=default)
 
 
-def _compressor_defaults(compressors=COMPRESSORS):
+def compressor_defaults(compressors=COMPRESSORS):
     """
     @param  compressors  list of (cmd, extension, am_option) of compressor.
     """
@@ -151,23 +151,7 @@ def _compressor_defaults(compressors=COMPRESSORS):
     return dict(choices=choices, help=help, default=default)
 
 
-def _template_paths_defaults(search_paths=TEMPLATE_SEARCH_PATHS):
-    """
-    @param  search_paths  defult template searching path list :: [str]
-
-    @see http://www.doughellmann.com/PyMOTW-ja/optparse/
-    """
-    def cb(option, opt_str, value, parser):
-        parser.values.template_paths = parse_list_str(value, ",")
-
-    _default = ",".join(search_paths)
-    _help = "Comma separated path list to search template files. [%default]"
-
-    return dict(action="callback", callback=cb, type="string",
-                default=_default, help=_help)
-
-
-def _relations_defaults():
+def relations_defaults():
     """Relation option parameters.
     """
     def cb(option, opt_str, value, parser):
@@ -184,7 +168,7 @@ targets are varied depends on package format to use"""
 
 def parse_args(argv=sys.argv[1:], defaults=None, upto=UPTO,
         build_steps=BUILD_STEPS, drivers=PACKAGE_MAKERS, itypes=COLLECTORS,
-        tmpl_search_paths=TEMPLATE_SEARCH_PATHS):
+        tmpl_paths=TEMPLATE_SEARCH_PATHS):
     """
     Parse command line options and args
 
@@ -201,13 +185,13 @@ def parse_args(argv=sys.argv[1:], defaults=None, upto=UPTO,
     bog = optparse.OptionGroup(p, "Build options")
     bog.add_option("-w", "--workdir", help="Working dir to dump outputs [%default]")
 
-    bog.add_option("", "--upto", type="choice", **_upto_defaults(upto, build_steps))
+    bog.add_option("", "--upto", type="choice", **upto_defaults(upto, build_steps))
 
     bog.add_option("", "--format", type="choice", choices=PKG_FORMATS,
             default=get_package_format(), help="Package format [%default]")
 
-    bog.add_option("", "--driver", type="choice", **_driver_defaults(drivers))
-    bog.add_option("", "--itype", type="choice", **_itype_defaults(itypes))
+    bog.add_option("", "--driver", type="choice", **driver_defaults(drivers))
+    bog.add_option("", "--itype", type="choice", **itype_defaults(itypes))
 
     bog.add_option("", "--destdir", help="Destdir (prefix) you want to strip from installed path [%default]. "
         "For example, if the target path is \"/builddir/dest/usr/share/data/foo/a.dat\", "
@@ -215,7 +199,8 @@ def parse_args(argv=sys.argv[1:], defaults=None, upto=UPTO,
         "make it installed as \"/usr/share/foo/a.dat\" with the package , you can accomplish "
         "that by this option: \"--destdir=/builddir/destdir\"")
 
-    bog.add_option("", "--template-paths", **_template_paths_defaults(tmpl_search_paths))
+    bog.add_option("-P", "--template-path", action="append", dest="template_paths", default=tmpl_paths)
+
     #bog.add_option("", "--templates", help="Use custom template files. "
     #    "TEMPLATES is a comma separated list of template output and file after the form of "
     #    "RELATIVE_OUTPUT_PATH_IN_SRCDIR:TEMPLATE_FILE such like \"package.spec:/tmp/foo.spec.tmpl\", "
@@ -232,9 +217,9 @@ def parse_args(argv=sys.argv[1:], defaults=None, upto=UPTO,
     pog.add_option("", "--license", help="The license of the package [%default]")
     pog.add_option("", "--url", help="The url of the package [%default]")
     pog.add_option("", "--summary", help="The summary of the package")
-    pog.add_option("-z", "--compressor", type="choice", **_compressor_defaults())
+    pog.add_option("-z", "--compressor", type="choice", **compressor_defaults())
     pog.add_option("", "--arch", action="store_true", help="Make package arch-dependent [false - noarch]")
-    pog.add_option("", "--relations", **_relations_defaults()),
+    pog.add_option("", "--relations", **relations_defaults()),
     pog.add_option("", "--packager", help="Specify packager's name [%default]")
     pog.add_option("", "--email", help="Specify packager's mail address [%default]")
     pog.add_option("", "--pversion", help="Specify the package's version [%default]")
@@ -325,17 +310,18 @@ class Config(object):
 
     @classmethod
     def defaults(cls, bsteps=BUILD_STEPS, upto=UPTO, itypes=COLLECTORS,
-            pmakers=PACKAGE_MAKERS, compressors=COMPRESSORS):
+            pmakers=PACKAGE_MAKERS, compressors=COMPRESSORS,
+            tmpl_paths=TEMPLATE_SEARCH_PATHS):
         """
         Load default configurations.
         """
         defaults = dict(
             workdir = os.path.join(os.getcwd(), "workdir"),
-            upto = _upto_defaults()["default"],
+            upto = upto_defaults()["default"],
             format = get_package_format(),
-            driver = _driver_defaults()["default"],
-            itype = _itype_defaults()["default"],
-            compressor = _compressor_defaults()["default"],
+            driver = driver_defaults()["default"],
+            itype = itype_defaults()["default"],
+            compressor = compressor_defaults()["default"],
             ignore_owner = False,
             force = False,
 
@@ -343,7 +329,7 @@ class Config(object):
 
             destdir = "",
 
-            template_paths = _template_paths_defaults()["default"],
+            template_paths = tmpl_paths,
 
             #link = False,
             #with_pyxattr = False,
@@ -356,7 +342,7 @@ class Config(object):
             url = "http://localhost.localdomain",
             summary = "",
             arch = False,
-            relations = _relations_defaults()["default"],
+            relations = relations_defaults()["default"],
             packager = get_fullname(),
             email = get_email(),
             changelog = "",
