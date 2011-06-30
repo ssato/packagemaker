@@ -56,6 +56,8 @@ def get_distribution():
     rhel_f = "/etc/redhat-release"
     debian_f = "/etc/debian_version"
 
+    arch = get_arch()
+
     if os.path.exists(fedora_f):
         name = DIST_FEDORA
         m = re.match(r"^Fedora .+ ([0-9]+) .+$", open(fedora_f).read())
@@ -74,12 +76,12 @@ def get_distribution():
     else:
         raise RuntimeError("Not supported distribution!")
 
-    return (name, version)
+    return (name, version, arch)
 
 
 @memoize
 def get_package_format():
-    (dist, _) = get_distribution()
+    (dist, _v, _a) = get_distribution()
 
     if dist in (DIST_RHEL, DIST_FEDORA):
         return PKG_FORMAT_RPM

@@ -30,7 +30,7 @@ class TestFunctions(unittest.TestCase):
         self.assertNotEquals(get_arch(), "")
 
     def test_get_distribution(self):
-        (os, version) = get_distribution()
+        (os, version, arch) = get_distribution()
 
     def test_get_package_format(self):
         pfmt = get_package_format()

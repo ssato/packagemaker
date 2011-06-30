@@ -363,7 +363,7 @@ class Config(object):
             email = get_email(),
             changelog = "",
 
-            dist = "%s-%s" % get_distribution(),
+            dist = "%s-%s-%s" % get_distribution(),
 
             no_rpmdb = False,
             no_mock = False,
