@@ -17,19 +17,22 @@
 from pmaker.cui import main as cui_main
 from pmaker.utils import rm_rf
 
+import glob
 import logging
 import os
 import os.path
+import random
 import sys
 import tempfile
 import unittest
 
 
 
-class Test_cui_main__tgz(unittest.TestCase):
+class Test_cui_main__single_file(unittest.TestCase):
 
     def setUp(self):
         self.workdir = tempfile.mkdtemp(dir="/tmp", prefix="pmaker-tests")
+        self.pmworkdir = os.path.join(self.workdir, "pm")
         self.listfile = os.path.join(self.workdir, "files.list")
         self.template_path = os.path.join(os.getcwd(), "templates")
 
@@ -46,14 +49,37 @@ class Test_cui_main__tgz(unittest.TestCase):
 
         #self.assertTrue(...something_to_confirm_access...)
 
-    def test_00_generated_file(self):
+    def test_00_generated_file__tgz(self):
         target = os.path.join(self.workdir, "aaa.txt")
         os.system("touch " + target)
 
         open(self.listfile, "w").write("%s\n" % target)
 
         args = "pmaker_dummy --name foobar --template-paths %s -w %s -q --format %s %s" % \
-            (self.template_path, self.workdir, "tgz", self.listfile)
+            (self.template_path, self.pmworkdir, "tgz", self.listfile)
+        self.helper_run_with_args(args)
+
+    def test_01_system_file__tgz(self):
+        target = random.choice([f for f in glob.glob("/etc/*") if os.path.isfile(f)])
+
+        open(self.listfile, "w").write("%s\n" % target)
+
+        args = "pmaker_dummy --name foobar --template-paths %s -w %s -q --format %s %s" % \
+            (self.template_path, self.pmworkdir, "tgz", self.listfile)
+        self.helper_run_with_args(args)
+
+    def test_02_generated_file__rpm(self):
+        if not os.path.exists("/var/lib/rpm"):
+            print >> sys.stderr, "This system does not look a RPM-based system."
+            return
+
+        target = os.path.join(self.workdir, "aaa.txt")
+        os.system("touch " + target)
+
+        open(self.listfile, "w").write("%s\n" % target)
+
+        args = "pmaker_dummy --name foobar --template-paths %s -w %s -q --format %s %s" % \
+            (self.template_path, self.pmworkdir, "rpm", self.listfile)
         self.helper_run_with_args(args)
 
 
