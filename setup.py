@@ -41,23 +41,31 @@ test_targets = \
     glob.glob(os.path.join(curdir, "pmaker/tests/*.py")) + \
     glob.glob(os.path.join(curdir, "pmaker/*/tests/*.py"))
 
+test_targets_full = glob.glob(os.path.join(curdir, "tests/*.py"))
+
 
 
 class TestCommand(Command):
 
-    user_options = []
+    user_options = [("full", "F",
+        "Fully test all including system/integration tests take much time to complete")]
+    boolean_options = ['full']
     test_driver = os.path.join(curdir, "runtest.sh")
 
     def initialize_options(self):
-        pass
+        self.full = 0
 
     def finalize_options(self):
-        pass
+        if self.full and "FULL_TESTS" not in os.environ:
+            os.environ["FULL_TESTS"] = "1"
 
     def run(self):
         for f in test_targets:
             os.system("PYTHONPATH=%s %s %s" % (curdir, self.test_driver, f))
 
+        if self.full:
+            for f in test_targets_full:
+                os.system("PYTHONPATH=%s %s %s" % (curdir, self.test_driver, f))
 
 
 class SrpmCommand(Command):
