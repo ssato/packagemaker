@@ -23,11 +23,11 @@ except ImportError:
 
 
 
-__title__   = "packagemaker"
-__version__ = "0.2.99"
-__author__  = "Satoru SATOH"
-__email__   = "satoru.satoh@gmail.com"
-__website__ = "https://github.com/ssato/packagemaker"
+PMAKER_TITLE    = "packagemaker"
+PMAKER_VERSION  = "0.2.99"
+PMAKER_AUTHOR   = "Satoru SATOH"
+PMAKER_EMAIL    = "satoru.satoh@gmail.com"
+PMAKER_WEBSITE  = "https://github.com/ssato/packagemaker"
 
 
 FILEINFOS = dict()
