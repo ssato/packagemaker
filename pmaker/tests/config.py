@@ -17,6 +17,7 @@
 from pmaker.config import *
 from pmaker.utils import rm_rf
 
+import optparse
 import os
 import os.path
 import sys
@@ -90,6 +91,7 @@ b: yyy
         config.as_dict()
 
 
+
 class Test_parse_list_str(unittest.TestCase):
 
     def test_no_arg(self):
@@ -100,6 +102,16 @@ class Test_parse_list_str(unittest.TestCase):
 
     def test_multi_args(self):
         self.assertEquals(parse_list_str("a,b,c,"), ["a", "b", "c"])
+
+
+
+class Test_parse_args(unittest.TestCase):
+
+    def test__min(self):
+        (options, args) = parse_args("-n foo".split())
+
+        self.assertTrue(isinstance(options, optparse.Values))
+
 
 
 class Test_parse_relations(unittest.TestCase):
