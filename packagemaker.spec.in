@@ -58,6 +58,7 @@ rm -rf $RPM_BUILD_ROOT
 %defattr(-,root,root,-)
 %doc README
 %doc examples
+%doc tests
 %{python_sitelib}/*
 %{python_sitelib}/*/*.py*
 %{python_sitelib}/*/*/*.py*
