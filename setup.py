@@ -24,8 +24,6 @@ def list_paths(path_pattern="*", topdir=curdir, pred=os.path.isfile):
     return [p for p in glob.glob(os.path.join(topdir, path_pattern)) if pred(p)]
 
 
-pkgs = ["pmaker", ]
-
 templates_topdir = "share/pmaker/templates"
 
 data_files = [
@@ -141,21 +139,26 @@ class RpmCommand(Command):
 
 
 setup(name=PACKAGE,
-      version=VERSION,
-      description="",
-      author="Satoru SATOH",
-      author_email="satoru.satoh@gmail.com",
-      license="GPLv3+",
-      url="https://github.com/ssato/packagemaker",
-      package_dir={"pmaker": "pmaker"},
-      scripts=["tools/pmaker"],
-      packages=pkgs,
-      data_files=data_files,
-      cmdclass={
-          "test": TestCommand,
-          "srpm": SrpmCommand,
-          "rpm":  RpmCommand,
-      },
+    version=VERSION,
+    description="A packaging helper tool",
+    author="Satoru SATOH",
+    author_email="satoru.satoh@gmail.com",
+    license="GPLv3+",
+    url="https://github.com/ssato/packagemaker",
+    packages=[
+        "pmaker",
+        "pmaker.collectors",
+        "pmaker.makers",
+        "pmaker.models",
+        "pmaker.plugins",
+    ],
+    scripts=["tools/pmaker"],
+    data_files=data_files,
+    cmdclass={
+        "test": TestCommand,
+        "srpm": SrpmCommand,
+        "rpm":  RpmCommand,
+    },
 )
 
 # vim: set sw=4 ts=4 et:
