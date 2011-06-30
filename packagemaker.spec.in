@@ -49,5 +49,5 @@ rm -rf $RPM_BUILD_ROOT
 
 
 %changelog
-* Mon Jun 13 2011 Satoru SATOH <satoru.satoh@gmail.com>
+* Thu Jun 30 2011 Satoru SATOH <satoru.satoh@gmail.com> - 0.2.99.20110630-1
 - Initial (static) packaging
