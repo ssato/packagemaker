@@ -25,6 +25,29 @@ to ensure these are saved or force set permissions as you wanted, specify these
 explicitly in Makefile.am or rpm spec, etc.
 
 
+How to build
+================
+
+
+Build w/ mock
+------------------------
+
+It takes some time to make a rpm but should be better, I think.
+
+1. python setup.py srpm
+2. mock -r <target_build_dist> dist/SRPMS/packagemaker-*.src.rpm
+
+
+Build w/o mock
+------------------------
+
+It's easy but only possible to make a rpm on build host.
+
+
+1. python setup.py rpm
+
+
+
 TODO
 ================
 
