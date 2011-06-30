@@ -14,14 +14,14 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
-from distutils.sysconfig import get_python_lib
-
 from pmaker.globals import *
-from pmaker.rpmutils import *
-from pmaker.config import Config, option_parser
+from pmaker.config import parse_args
 from pmaker.package import Package
 from pmaker.utils import do_nothing
+from pmaker.collectors.Collectors import FilelistCollector
+from pmaker.makers.PackageMaker import AutotoolsTgzPackageMaker
 
+import distutils.sysconfig
 import glob
 import inspect
 import logging
@@ -31,7 +31,7 @@ import os.path
 import sys
 
 
-PYTHON_LIBDIR = get_python_lib()
+PYTHON_LIBDIR = distutils.sysconfig.get_python_lib()
 
 
 
@@ -47,20 +47,36 @@ def load_plugins(libdir=PYTHON_LIBDIR):
         mod = __import__("pmaker.plugins.%s" % modn)
         init_f = getattr(mod, "init", do_nothing)
         init_f()
-            
 
 
-def main(argv=sys.argv, compressors=COMPRESSORS, templates=TEMPLATES):
-    global TEMPLATES, PYXATTR_ENABLED
+def _get_class(ctype, cpool, default):
+    """
+    Get class from classes pool by its type. If no class found for given type,
+    it will return the given default.
 
-    loglevel = logging.INFO
-    logdatefmt = "%H:%M:%S" # too much? "%a, %d %b %Y %H:%M:%S"
-    logformat = "%(asctime)s [%(levelname)-4s] %(message)s"
+    @param  ctype    'Type' of class to find. 'Type' varies dependent on class
+    @param  cpool    Class pool
+    @param  default  Default class returned if no class found for the type
+    """
+    cls = cpool.get(ctype, default)
+    logging.info("Use %s (type=%s)" % (cls.__name__, ctype))
 
-    logging.basicConfig(level=loglevel, format=logformat, datefmt=logdatefmt)
+    return cls
 
-    p = config.option_parser()
-    (options, args) = p.parse_args(argv[1:])
+
+def init_log():
+    datefmt = "%H:%M:%S" # too much? "%a, %d %b %Y %H:%M:%S"
+    fmt = "%(asctime)s [%(levelname)-4s] %(message)s"
+
+    logging.basicConfig(level=logging.INFO, format=fmt, datefmt=datefmt)
+
+
+def main(argv=sys.argv, collector=COLLECTORS):
+    init_log()
+
+    (parser, options, args) = parse_args(argv[1:], upto=UPTO,
+            build_steps=BUILD_STEPS, drivers=PACKAGE_MAKERS,
+            itypes=COLLECTORS, tmpl_search_paths=TEMPLATE_SEARCH_PATHS)
 
     loglevel = options.verbose and logging.INFO or logging.WARN
     if options.debug:
@@ -69,10 +85,10 @@ def main(argv=sys.argv, compressors=COMPRESSORS, templates=TEMPLATES):
     logging.getLogger().setLevel(loglevel)
 
     if len(args) < 1:
-        p.print_usage()
+        parser.print_usage()
         sys.exit(1)
 
-    filelist = args[0]
+    listfile = args[0]
 
     if not options.name:
         sys.stderr.write("You must specify the package name with \"--name\" option\n")
@@ -89,7 +105,13 @@ def main(argv=sys.argv, compressors=COMPRESSORS, templates=TEMPLATES):
 
     pkg = Package(options)
 
-    do_packaging(pkg, filelist, options)
+    ccls = _get_class(options.itype, COLLECTORS, FilelistCollector)
+    collector = ccls(listfile, options)
+    fis = collector.collect()
+
+    dcls = _get_class(options.driver, PACKAGE_MAKERS, AutotoolsTgzPackageMaker)
+    driver = dcls(pkg, fis, options)
+    driver.run()
 
 
 if __name__ == '__main__':
