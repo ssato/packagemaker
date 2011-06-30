@@ -17,8 +17,10 @@
 from pmaker.globals import *
 from pmaker.environ import *
 from pmaker.utils import parse_conf_value, memoize
-
-import collectors.Collectors
+from pmaker.collectors.Collectors import FilelistCollector, init as init_collectors
+from pmaker.makers.PackageMaker import init as init_packagemaker
+from pmaker.makers.RpmPackageMaker import init as init_rpmpackagemaker
+from pmaker.makers.DebPackageMaker import init as init_debpackagemaker
 
 import ConfigParser as configparser
 import glob
@@ -35,9 +37,10 @@ except ImportError:
 
 
 
-NULL_DICT = dict()
-
-collectors.Collectors.init()
+init_collectors()
+init_packagemaker()
+init_rpmpackagemaker()
+init_debpackagemaker()
 
 
 HELP_HEADER = """%prog [OPTION ...] FILE_LIST
@@ -105,15 +108,7 @@ def parse_relations(optstr):
     return [(t, ts) for t, ts in type_and_targets(optstr)]
 
 
-def get_collector(ctype, collectors=COLLECTORS):
-    cls = collectors.get(ctype, pmaker.Collectors.FilelistCollector)
-    logging.info("Use Collector: %s (type=%s)" % (ccls.__name__, ctype))
-
-    return cls
-
-
 # FIXME: Ugly
-@memoize
 def _upto_defaults(upto=UPTO, build_steps=BUILD_STEPS):
     choices = [name for name, _l, _h in build_steps]
     help = "Packaging step you want to proceed to: %s [%%default]" % \
@@ -123,16 +118,16 @@ def _upto_defaults(upto=UPTO, build_steps=BUILD_STEPS):
     return dict(choices=choices, help=help, default=default)
 
 
-@memoize
 def _driver_defaults(pmakers=PACKAGE_MAKERS):
     choices = unique(pmakers.keys())
     help = "Packaging driver: %s [%%default]" % ", ".join(choices)
     default = "autotools." + get_package_format()
 
-    return dict(choices=choices, help=help, default=default)
+    d = dict(choices=choices, help=help, default=default)
+    import pprint; pprint.pprint(d)
+    return d
 
 
-@memoize
 def _itype_defaults(itypes=COLLECTORS):
     """
     @param  itypes  Map of Input data type such as "filelist", "filelist.json"
@@ -140,12 +135,11 @@ def _itype_defaults(itypes=COLLECTORS):
     """
     choices = itypes.keys()
     help = "Input type: %s [%%default]" % ", ".join(itypes)
-    default = collectors.Collectors.FilelistCollector.type()
+    default = FilelistCollector.type()
 
     return dict(choices=choices, help=help, default=default)
 
 
-@memoize
 def _compressor_defaults(compressors=COMPRESSORS):
     """
     @param  compressors  list of (cmd, extension, am_option) of compressor.
@@ -159,7 +153,6 @@ def _compressor_defaults(compressors=COMPRESSORS):
     return dict(choices=choices, help=help, default=default)
 
 
-@memoize
 def _template_paths_defaults(search_paths=TEMPLATE_SEARCH_PATHS):
     """
     @param  search_paths  defult template searching path list :: [str]
@@ -176,7 +169,6 @@ def _template_paths_defaults(search_paths=TEMPLATE_SEARCH_PATHS):
                 default=_default, help=_help)
 
 
-@memoize
 def _relations_defaults():
     """Relation option parameters.
     """
@@ -192,28 +184,30 @@ targets are varied depends on package format to use"""
                 default="", help=_help)
 
 
-def option_parser(defaults=NULL_DICT):
+def parse_args(argv=sys.argv[1:], defaults=None, upto=UPTO,
+        build_steps=BUILD_STEPS, drivers=PACKAGE_MAKERS, itypes=COLLECTORS,
+        tmpl_search_paths=TEMPLATE_SEARCH_PATHS):
     """
-    Command line option parser.
+    Parse command line options and args
     """
-    if not defaults:
-        defaults = Config,defaults()
+    if defaults is None:
+        defaults = Config.defaults()
 
-    p = optparse.OptionParser(HELP_HEADER, version = "%prog " + __version__)
+    p = optparse.OptionParser(HELP_HEADER, version = "%prog " + PMAKER_VERSION)
     p.set_defaults(**defaults)
 
-    p.add_option("-C", "--config", "Configuration file path", default=None)
+    p.add_option("-C", "--config", help="Configuration file path", default=None)
 
     bog = optparse.OptionGroup(p, "Build options")
     bog.add_option("-w", "--workdir", help="Working dir to dump outputs [%default]")
 
-    bog.add_option("", "--upto", type="choice", **_upto_defaults())
+    bog.add_option("", "--upto", type="choice", **_upto_defaults(upto, build_steps))
 
     bog.add_option("", "--format", type="choice", choices=PKG_FORMATS,
             default=get_package_format(), help="Package format [%default]")
 
-    bog.add_option("", "--driver", type="choice", **_driver_defaults())
-    bog.add_option("", "--itype", type="choice", **_itype_defaults())
+    bog.add_option("", "--driver", type="choice", **_driver_defaults(drivers))
+    bog.add_option("", "--itype", type="choice", **_itype_defaults(itypes))
 
     bog.add_option("", "--destdir", help="Destdir (prefix) you want to strip from installed path [%default]. "
         "For example, if the target path is \"/builddir/dest/usr/share/data/foo/a.dat\", "
@@ -221,7 +215,7 @@ def option_parser(defaults=NULL_DICT):
         "make it installed as \"/usr/share/foo/a.dat\" with the package , you can accomplish "
         "that by this option: \"--destdir=/builddir/destdir\"")
 
-    bog.add_option("", "--template-paths", **_template_paths_defaults())
+    bog.add_option("", "--template-paths", **_template_paths_defaults(tmpl_search_paths))
     #bog.add_option("", "--templates", help="Use custom template files. "
     #    "TEMPLATES is a comma separated list of template output and file after the form of "
     #    "RELATIVE_OUTPUT_PATH_IN_SRCDIR:TEMPLATE_FILE such like \"package.spec:/tmp/foo.spec.tmpl\", "
@@ -264,7 +258,7 @@ def option_parser(defaults=NULL_DICT):
 
     p.add_option("", "--show-examples", action="store_true", help="Show examples")
 
-    return p
+    return p.parse_args(argv)
 
 
 
@@ -315,7 +309,7 @@ class Config(object):
                     logging.warn(e)
 
         if not loaded:
-            return NULL_DICT
+            return dict() 
 
         if profile is None:
             return cparser.defaults()
