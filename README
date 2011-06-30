@@ -8,8 +8,8 @@ almost all of the steps needed for packaing: arrange source tree, create
 makefiles and rpm specs or debina packaging files, etc.
 
 
-It will try gathering the info of files, dirs and symlinks in given path list,
-and then:
+It will try gathering the information of files, dirs and symlinks in given path
+list, and then:
 
 1. arrange src tree contains these files, dirs and symlinks with these
    relative path kept, and build files (Makefile.am, configure.ac, etc.)
