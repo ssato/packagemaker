@@ -48,6 +48,14 @@ It's easy but only possible to make a rpm on build host.
 
 
 
+How to test
+================
+
+* Unit tests: `python setup.py test`
+* Unit tests + System tests: `python setup.py test --full`
+
+
+
 TODO
 ================
 
@@ -93,6 +101,7 @@ License
 ================
 
 Copyright (C) 2011 Satoru SATOH <satoru.satoh @ gmail.com>
+Copyright (C) 2011 Satoru SATOH <ssato @ redhat.com>
 
 This program is free software: you can redistribute it and/or modify it under
 the terms of the GNU General Public License as published by the Free Software
