@@ -168,7 +168,7 @@ targets are varied depends on package format to use"""
 
 def parse_args(argv=sys.argv[1:], defaults=None, upto=UPTO,
         build_steps=BUILD_STEPS, drivers=PACKAGE_MAKERS, itypes=COLLECTORS,
-        tmpl_paths=TEMPLATE_SEARCH_PATHS):
+        tmpl_search_paths=TEMPLATE_SEARCH_PATHS):
     """
     Parse command line options and args
 
@@ -199,7 +199,7 @@ def parse_args(argv=sys.argv[1:], defaults=None, upto=UPTO,
         "make it installed as \"/usr/share/foo/a.dat\" with the package , you can accomplish "
         "that by this option: \"--destdir=/builddir/destdir\"")
 
-    bog.add_option("-P", "--template-path", action="append", dest="template_paths", default=tmpl_paths)
+    bog.add_option("-P", "--template-path", action="append", dest="template_paths", default=tmpl_search_paths)
 
     #bog.add_option("", "--templates", help="Use custom template files. "
     #    "TEMPLATES is a comma separated list of template output and file after the form of "

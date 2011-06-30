@@ -58,7 +58,7 @@ class Test_cui_main__single_file_deb(unittest.TestCase):
 
         open(self.listfile, "w").write("%s\n" % target)
 
-        args = "pmaker_dummy --name foobar --template-paths %s -w %s -q --format %s %s" % \
+        args = "argv0 --name foobar --template-path %s -w %s --format %s %s" % \
             (self.template_path, self.pmworkdir, "deb", self.listfile)
         self.helper_run_with_args(args)
 

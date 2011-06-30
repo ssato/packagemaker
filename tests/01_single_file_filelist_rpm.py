@@ -67,7 +67,7 @@ class Test_cui_main__single_file_rpm(unittest.TestCase):
 
         open(self.listfile, "w").write("%s\n" % target)
 
-        args = "pmaker_dummy --name foobar --template-paths %s -w %s -q --format %s --no-mock %s" % \
+        args = "argv0 --name foobar --template-path %s -w %s --format %s --no-mock %s" % \
             (self.template_path, self.pmworkdir, "rpm", self.listfile)
         self.helper_run_with_args(args)
 
@@ -80,7 +80,7 @@ class Test_cui_main__single_file_rpm(unittest.TestCase):
 
         open(self.listfile, "w").write("%s\n" % target)
 
-        args = "pmaker_dummy --name foobar --template-paths %s -w %s -q --format %s %s" % \
+        args = "argv0 --name foobar --template-path %s -w %s --format %s %s" % \
             (self.template_path, self.pmworkdir, "rpm", self.listfile)
         self.helper_run_with_args(args)
 
@@ -101,7 +101,7 @@ class Test_cui_main__single_file_rpm(unittest.TestCase):
 
         open(self.listfile, "w").write("%s\n" % target)
 
-        args = "pmaker_dummy --name foobar --template-paths %s -w %s -q --format %s --no-mock %s" % \
+        args = "argv0 --name foobar --template-path %s -w %s --format %s --no-mock %s" % \
             (self.template_path, self.pmworkdir, "rpm", self.listfile)
         self.helper_run_with_args(args)
 
@@ -124,7 +124,7 @@ class Test_cui_main__single_file_rpm(unittest.TestCase):
 
         open(self.listfile, "w").write("%s\n" % target)
 
-        args = "pmaker_dummy --name foobar --template-paths %s -w %s -q --format %s --no-mock %s" % \
+        args = "argv0 --name foobar --template-path %s -w %s --format %s --no-mock %s" % \
             (self.template_path, self.pmworkdir, "rpm", self.listfile)
         self.helper_run_with_args(args)
 
