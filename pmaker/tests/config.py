@@ -108,8 +108,9 @@ class Test_parse_list_str(unittest.TestCase):
 class Test_parse_args(unittest.TestCase):
 
     def test__min(self):
-        (options, args) = parse_args("-n foo".split())
+        (parser, options, args) = parse_args("-n foo".split())
 
+        self.assertTrue(isinstance(parser, optparse.OptionParser))
         self.assertTrue(isinstance(options, optparse.Values))
 
 

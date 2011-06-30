@@ -123,9 +123,7 @@ def _driver_defaults(pmakers=PACKAGE_MAKERS):
     help = "Packaging driver: %s [%%default]" % ", ".join(choices)
     default = "autotools." + get_package_format()
 
-    d = dict(choices=choices, help=help, default=default)
-    import pprint; pprint.pprint(d)
-    return d
+    return dict(choices=choices, help=help, default=default)
 
 
 def _itype_defaults(itypes=COLLECTORS):
@@ -189,6 +187,8 @@ def parse_args(argv=sys.argv[1:], defaults=None, upto=UPTO,
         tmpl_search_paths=TEMPLATE_SEARCH_PATHS):
     """
     Parse command line options and args
+
+    @return  (parser, options, args)
     """
     if defaults is None:
         defaults = Config.defaults()
@@ -258,7 +258,9 @@ def parse_args(argv=sys.argv[1:], defaults=None, upto=UPTO,
 
     p.add_option("", "--show-examples", action="store_true", help="Show examples")
 
-    return p.parse_args(argv)
+    (options, args) = p.parse_args(argv)
+
+    return (p, options, args)
 
 
 
