@@ -324,6 +324,7 @@ def find_template(template, search_paths=TEMPLATE_SEARCH_PATHS):
     if os.path.exists(template):
         tmpl = template
     else:
+        logging.debug("template search_paths=" + ",".join(search_paths))
         for path in search_paths:
             t = os.path.join(path, template)
 
