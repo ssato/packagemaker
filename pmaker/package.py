@@ -15,7 +15,6 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 from pmaker.globals import CONFLICTS_NEWDIR, CONFLICTS_SAVEDIR
-from pmaker.config import Config
 from pmaker.environ import hostname
 from pmaker.utils import load_changelog_content, date_params, \
     compressor_params, sort_out_paths_by_dir
