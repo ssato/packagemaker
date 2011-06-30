@@ -55,7 +55,7 @@ class BaseFilter(object):
 
 
 
-class UnsupportedTypesFilterr(BaseFilter):
+class UnsupportedTypesFilter(BaseFilter):
     """A filter class to filter out fileinfo objects of which type is not
     supported.
     """

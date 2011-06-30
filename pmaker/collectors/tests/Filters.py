@@ -21,10 +21,10 @@ import unittest
 
 
 
-class TestUnsupportedTypesFilterr(unittest.TestCase):
+class TestUnsupportedTypesFilter(unittest.TestCase):
 
     def setUp(self):
-        self.filter = UnsupportedTypesFilterr()
+        self.filter = UnsupportedTypesFilter()
 
     def test__pred__supported(self):
         fi = FileInfo("/dummy/path", 33204, 0, 0, checksum(), dict())

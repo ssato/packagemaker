@@ -55,9 +55,9 @@ class Collector(object):
         return cls._type
 
     @classmethod
-    def register(cls, cmaps=COLLECTORS):
-        if cls.enabled() and not cmaps.get(cls.type(), False):
-            cmaps[cls.type()] = cls
+    def register(cls, collectors=COLLECTORS):
+        if cls.enabled() and not collectors.get(cls.type(), False):
+            collectors[cls.type()] = cls
 
     @classmethod
     def enabled(cls):
@@ -102,7 +102,7 @@ class FilelistCollector(Collector):
         #self.trace = options.trace
         self.trace = False
 
-        self.filters = [UnsupportedTypesFilterr()]
+        self.filters = [UnsupportedTypesFilter()]
         self.modifiers = []
 
         if options.destdir:
@@ -111,7 +111,7 @@ class FilelistCollector(Collector):
         if options.ignore_owner:
             self.modifiers.append(OwnerModifier(0, 0))  # 0 == root's uid and gid
 
-        if options.format == "rpm":
+        if options.format == PKG_FORMAT_RPM:
             self.fi_factory = RpmFileInfoFactory()
 
             self.modifiers.append(RpmAttributeModifier())
