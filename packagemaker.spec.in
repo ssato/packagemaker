@@ -59,9 +59,10 @@ rm -rf $RPM_BUILD_ROOT
 %doc README
 %doc examples
 %doc tests
-%{python_sitelib}/*
-%{python_sitelib}/*/*.py*
-%{python_sitelib}/*/*/*.py*
+%{python_sitelib}/*.egg-info
+%{python_sitelib}/pmaker
+%{python_sitelib}/pmaker/*.py*
+%{python_sitelib}/pmaker/*/*.py*
 %{_bindir}/*
 %{_datadir}/pmaker/templates/*
 
