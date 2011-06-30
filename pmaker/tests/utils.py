@@ -182,7 +182,7 @@ class Test_true(unittest.TestCase):
 class Test_date(unittest.TestCase):
 
     def test_date__default(self):
-        self.assertNotEquals(re.match(r".{3} .{3} \d+ \d{4}", date()), None)
+        self.assertNotEquals(re.match(r".{3} .{3} +\d+ \d{4}", date()), None)
 
     def test_date__simple(self):
         self.assertNotEquals(re.match(r"\d{8}", date(DATE_FMT_SIMPLE)), None)
