@@ -94,6 +94,9 @@ def main(argv=sys.argv, collector=COLLECTORS):
         sys.stderr.write("You must specify the package name with \"--name\" option\n")
         options.name = raw_input("You must specify the package name. Name: ")
 
+    if options.format:
+        options.driver = options.driver.split(".")[0] + "." + options.format
+
     if options.scriptlets:
         try:
             scriptlets = open(options.scriptlets).read()
