@@ -16,6 +16,7 @@
 #
 from pmaker.makers.PackageMaker import *
 from pmaker.models.FileInfoFactory import FileInfoFactory
+from pmaker.collectors.Filters import *
 from pmaker.utils import rm_rf
 from pmaker.config import Config
 from pmaker.package import Package
@@ -24,6 +25,7 @@ import logging
 import optparse
 import os
 import os.path
+import random
 import sys
 import tempfile
 import unittest
@@ -41,15 +43,18 @@ class Test_to_srcdir(unittest.TestCase):
 
 
 
-class TestPackageMaker(unittest.TestCase):
+class TestPackageMaker__generated_files(unittest.TestCase):
 
     def setUp(self):
         self.workdir = tempfile.mkdtemp(dir="/tmp", prefix="pmaker-tests")
-        self.target_path = os.path.join(self.workdir, "a.txt")
 
-        open(self.target_path, "w").write("a\n")
+        targets = [os.path.join(self.workdir, p) for p in ("aaa.txt", "bbb.txt", "c/d/e.txt")]
+        os.makedirs(os.path.join(self.workdir, "c/d/"))
+        for t in targets:
+            os.system("touch " + t)
+        self.targets = targets
 
-        self.fileinfos = [FileInfoFactory().create(self.target_path)]
+        self.fileinfos = [FileInfoFactory().create(f) for f in targets]
 
         defaults = Config.defaults()
         defaults["workdir"] = self.workdir
@@ -71,9 +76,6 @@ class TestPackageMaker(unittest.TestCase):
             pass
 
         self.assertTrue(os.path.exists(pmaker.touch_file(step)))
-
-    def test__init__(self):
-        pmaker = PackageMaker(self.package, self.fileinfos, self.options)
 
     def test_shell(self):
         pmaker = PackageMaker(self.package, self.fileinfos, self.options)
@@ -101,7 +103,9 @@ class TestPackageMaker(unittest.TestCase):
         pmaker = PackageMaker(self.package, self.fileinfos, self.options)
         pmaker.copyfiles()
 
-        self.assertTrue(os.path.exists(os.path.join(pmaker.srcdir, self.target_path)))
+        for t in self.targets:
+            p = os.path.join(pmaker.srcdir, t[1:])
+            self.assertTrue(os.path.exists(p))
 
     def test_save__and__load(self):
         pmaker = PackageMaker(self.package, self.fileinfos, self.options)
@@ -121,6 +125,75 @@ class TestPackageMaker(unittest.TestCase):
         self.helper_run_upto_step(STEP_SBUILD)
 
     def test_run__build(self):
+        self.helper_run_upto_step(STEP_BUILD)
+
+
+
+class TestPackageMaker__system_files(unittest.TestCase):
+
+    def setUp(self):
+        self.workdir = tempfile.mkdtemp(dir="/tmp", prefix="pmaker-tests")
+
+        paths = [
+            "/etc/aliases.db",
+            "/etc/at.deny",
+            "/etc/auto.master",
+            "/etc/hosts",
+            "/etc/httpd/conf/httpd.conf",
+            "/etc/modprobe.d/blacklist.conf",
+            "/etc/rc.d/init.d",
+            "/etc/rc.d/rc",
+            "/etc/resolv.conf",
+            "/etc/secure.tty",
+            "/etc/security/access.conf",
+            "/etc/security/limits.conf",
+            "/etc/shadow",
+            "/etc/skel",
+            "/etc/system-release",
+            "/etc/sudoers",
+        ]
+
+        paths = random.sample([p for p in paths if os.path.exists(p)], 10)
+
+        filters = [UnsupportedTypesFilter(), ReadAccessFilter()]
+        fileinfos = [FileInfoFactory().create(p) for p in paths]
+        fileinfos = [fi for fi in fileinfos if not any(f.pred(fi) for f in filters)]
+
+        defaults = Config.defaults()
+        defaults["workdir"] = self.workdir
+        defaults["name"] = "foo"
+
+        options = optparse.Values(defaults)
+        package = Package(options)
+
+        self.pmaker = AutotoolsTgzPackageMaker(package, fileinfos, options)
+        self.pmaker.template_paths = [os.path.join(os.getcwd(), "templates")]
+
+        logging.getLogger().setLevel(logging.WARNING) # suppress log messages
+
+    def tearDown(self):
+        rm_rf(self.workdir)
+
+    def helper_run_upto_step(self, step):
+        self.pmaker.upto = step
+
+        try:
+            self.pmaker.run()
+        except SystemExit:
+            pass
+
+        self.assertTrue(os.path.exists(self.pmaker.touch_file(step)))
+
+    def test_preconfigure(self):
+        self.helper_run_upto_step(STEP_PRECONFIGURE)
+
+    def test_configure(self):
+        self.helper_run_upto_step(STEP_CONFIGURE)
+
+    def test_sbuild(self):
+        self.helper_run_upto_step(STEP_SBUILD)
+
+    def test_build(self):
         self.helper_run_upto_step(STEP_BUILD)
 
 
