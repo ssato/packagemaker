@@ -18,6 +18,7 @@ from pmaker.globals import TYPES_SUPPORTED
 from pmaker.models.FileInfo import FileInfo
 
 import logging
+import os
 
 
 
@@ -66,6 +67,18 @@ class UnsupportedTypesFilter(BaseFilter):
         """Rule to filter out fileinfo objects if its type is not supported.
         """
         return fileinfo.type() not in TYPES_SUPPORTED
+
+
+
+class ReadAccessFilter(BaseFilter):
+    """A filter class to filter out fileinfo objects of which type is not
+    supported.
+    """
+
+    _reason = "You don't have read access"
+
+    def _pred(self, fileinfo):
+        return not os.access(fileinfo.path, os.R_OK)
 
 
 # vim: set sw=4 ts=4 expandtab:

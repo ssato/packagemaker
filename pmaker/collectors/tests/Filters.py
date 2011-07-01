@@ -15,8 +15,12 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 from pmaker.collectors.Filters import *
-from pmaker.models.FileInfo import *
+from pmaker.models.FileInfo import FileInfo, UnknownInfo
+from pmaker.models.FileInfoFactory import FileInfoFactory
+from pmaker.utils import checksum
 
+import os
+import random
 import unittest
 
 
@@ -32,6 +36,26 @@ class TestUnsupportedTypesFilter(unittest.TestCase):
 
     def test__pred__unsupported(self):
         fi = UnknownInfo("/dummy/path")
+        self.assertTrue(self.filter._pred(fi))
+
+
+
+class TestReadAccessFilter(unittest.TestCase):
+
+    def setUp(self):
+        self.filter = ReadAccessFilter()
+
+    def test__pred__dont_have_read_access(self):
+        if os.getuid() == 0:
+            print >> sys.stderr, "You look root and cannot test this. Skipped"
+            return
+
+        path = random.choice(
+            [p for p in ("/etc/at.deny", "/etc/securetty", "/etc/sudoer", "/etc/shadow") \
+                if os.path.exists(p)]
+        )
+        fi = FileInfoFactory().create(path)
+
         self.assertTrue(self.filter._pred(fi))
 
 
