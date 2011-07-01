@@ -99,7 +99,7 @@ class FilelistCollector(Collector):
         #self.trace = options.trace
         self.trace = False
 
-        self.filters = [UnsupportedTypesFilter()]
+        self.filters = [UnsupportedTypesFilter(), ReadAccessFilter()]
         self.modifiers = []
 
         if options.destdir:
@@ -151,21 +151,22 @@ class FilelistCollector(Collector):
         """
         for target in self.list_targets(listfile):
             fi = self.fi_factory.create(target.path)
-            fi.conflicts = {}
-            fi.target = fi.path
 
-            # Too verbose but useful in some cases:
-            if self.trace:
-                logging.debug(" fi=%s" % str(fi))
+            # filter out if any filter(fi) -> True
+            filtered = any(filter.pred(fi) for filter in self.filters)
 
-            for filter in self.filters:
-                if filter.pred(fi):  # filter out if pred -> True:
-                    continue
+            if not filtered:
+                fi.conflicts = {}
+                fi.target = fi.path
 
-            for modifier in self.get_modifiers():
-                fi = modifier.update(fi, target, self.trace)
+                # Too verbose but useful in some cases:
+                if self.trace:
+                    logging.debug(" fi=%s" % str(fi))
 
-            yield fi
+                for modifier in self.get_modifiers():
+                    fi = modifier.update(fi, target, self.trace)
+
+                yield fi
 
     def collect(self):
         ## Is it needed?
