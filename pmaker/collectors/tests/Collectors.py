@@ -86,6 +86,7 @@ class TestFilelistCollector(unittest.TestCase):
 
     def test_collect(self):
         paths = [
+            "/etc/at.deny",
             "/etc/auto.*",
             "#/etc/aliases.db",
             "/etc/httpd/conf.d",
@@ -95,6 +96,7 @@ class TestFilelistCollector(unittest.TestCase):
             "/etc/rc.d/rc",
             "/etc/resolv.conf",
             "/etc/reslv.conf",  # should not be exist.
+            "/etc/securetty",  # should not be exist.
         ]
         listfile = os.path.join(self.workdir, "files.list")
 
