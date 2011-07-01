@@ -70,7 +70,7 @@ class TestChecksum(unittest.TestCase):
 
         path = random.choice(
             [p for p in ("/etc/at.deny", "/etc/securetty", "/etc/sudoer", "/etc/shadow") \
-                if os.path.exists(p)]
+                if os.path.exists(p) and not os.access(p, os.R_OK)]
         )
 
         csum_ref = "0" * len(sha1("").hexdigest())
