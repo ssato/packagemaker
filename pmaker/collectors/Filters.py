@@ -38,7 +38,7 @@ class BaseFilter(object):
         msg = "Filtered out as %s: path=%s, type=%s" % \
             (self._reason, fileinfo.path, fileinfo.type())
 
-        logging.info(msg)
+        logging.warn(msg)
 
     def _pred(self, fileinfo):
         #return False  # NOTE: It will not be filtered out if False.
@@ -50,7 +50,9 @@ class BaseFilter(object):
         """
         self.pre(fileinfo)
         ret = self._pred(fileinfo)
-        self.post(fileinfo)
+
+        if ret:
+            self.post(fileinfo)
 
         return ret
 
