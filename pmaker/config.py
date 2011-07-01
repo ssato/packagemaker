@@ -166,6 +166,23 @@ targets are varied depends on package format to use"""
                 default="", help=_help)
 
 
+def workdir_defaults():
+    """Relation option parameters.
+    """
+    def cb(option, opt_str, value, parser):
+        name = parser.values.name
+        version = parser.values.pversion
+        workdir = os.path.join(value, "%s-%s" % (name, version))
+
+        parser.values.workdir = os.path.abspath(workdir)
+
+    _help="Working dir to dump outputs [%default]"
+    _default = os.path.join(os.getcwd(), "workdir")
+
+    return dict(action="callback", callback=cb, type="string",
+        default=_default, help=_help)
+
+
 def parse_args(argv=sys.argv[1:], defaults=None, upto=UPTO,
         build_steps=BUILD_STEPS, drivers=PACKAGE_MAKERS, itypes=COLLECTORS,
         tmpl_search_paths=TEMPLATE_SEARCH_PATHS):
@@ -183,7 +200,7 @@ def parse_args(argv=sys.argv[1:], defaults=None, upto=UPTO,
     p.add_option("-C", "--config", help="Configuration file path", default=None)
 
     bog = optparse.OptionGroup(p, "Build options")
-    bog.add_option("-w", "--workdir", help="Working dir to dump outputs [%default]")
+    bog.add_option("-w", "--workdir", **workdir_defaults())
 
     bog.add_option("", "--upto", type="choice", **upto_defaults(upto, build_steps))
 
@@ -316,7 +333,7 @@ class Config(object):
         Load default configurations.
         """
         defaults = dict(
-            workdir = os.path.join(os.getcwd(), "workdir"),
+            workdir = workdir_defaults()["default"],
             upto = upto_defaults()["default"],
             format = get_package_format(),
             driver = driver_defaults()["default"],
