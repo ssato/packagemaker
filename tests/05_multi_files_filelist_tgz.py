@@ -36,7 +36,7 @@ class Test_cui_main__multi_files_tgz(unittest.TestCase):
         self.listfile = os.path.join(self.workdir, "files.list")
         self.template_path = os.path.join(os.getcwd(), "templates")
 
-        logging.getLogger().setLevel(logging.DEBUG)
+        logging.getLogger().setLevel(logging.WARN)
 
     def tearDown(self):
         rm_rf(self.workdir)
