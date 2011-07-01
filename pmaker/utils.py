@@ -71,6 +71,17 @@ except NameError:  # python < 2.5
         return True
 
 
+try:
+    any
+
+except NameError:
+    def any(xs):
+        for x in xs:
+            if x:
+                return True
+        return False
+
+
 
 def dicts_comp(lhs, rhs, keys=False):
     """Compare dicts. $rhs may have keys (and values) $lhs does not have.
