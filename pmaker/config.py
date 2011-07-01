@@ -36,7 +36,7 @@ except ImportError:
     pass
 
 
-
+# Initialize some global hash tables: COLLECTORS, PACKAGE_MAKERS
 init_collectors()
 init_packagemaker()
 init_rpmpackagemaker()

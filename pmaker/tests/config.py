@@ -143,10 +143,42 @@ class Test_x_defaults(unittest.TestCase):
 
         self.assertTrue(bool(defaults["choices"]))
 
-    def test_relations_defaults(self):
+
+
+class Test_relations_option_parser(unittest.TestCase):
+
+    def setUp(self):
         defaults = relations_defaults()
 
-        #self.assertTrue(isinstance(defaults["default"], str))
+        p = optparse.OptionParser()
+        p.add_option("", "--relations", **defaults)
+
+        self.parser = p
+        self.defaults = defaults
+
+    def parse_args(self, args):
+        return self.parser.parse_args(args.split())
+
+    def test_default(self):
+        """test_default: Cases that this option not given"""
+        (options, _) = self.parse_args("")
+
+        self.assertEquals(options.relations, self.defaults["default"])
+
+    def test_set(self):
+        (options, _) = self.parse_args("--relations requires:bash,zsh;obsoletes:sysdata;conflicts:sysdata-old")
+        expected = [
+            ('requires', ['bash', 'zsh']),
+            ('obsoletes', ['sysdata']),
+            ('conflicts', ['sysdata-old']),
+        ]
+
+        d = dict(options.relations)
+        d_ref = dict(expected)
+
+        self.assertEquals(d["requires"], d_ref["requires"])
+        self.assertEquals(d["obsoletes"], d_ref["obsoletes"])
+        self.assertEquals(d["conflicts"], d_ref["conflicts"])
 
 
 
