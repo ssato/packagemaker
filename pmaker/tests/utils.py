@@ -19,6 +19,7 @@ from pmaker.globals import DATE_FMT_SIMPLE, DATE_FMT_RFC2822
 
 import copy
 import doctest
+import glob
 import logging
 import os
 import random
@@ -61,6 +62,19 @@ class TestChecksum(unittest.TestCase):
     def test_checksum_no_file(self):
         csum_ref = "0" * len(sha1("").hexdigest())
         self.assertEquals(checksum(), csum_ref)
+
+    def test_checksum_permission_denied(self):
+        if os.getuid() == 0:
+            print >> sys.stderr, "You look root and cannot test this. Skipped"
+            return
+
+        path = random.choice(
+            [p for p in ("/etc/at.deny", "/etc/securetty", "/etc/sudoer", "/etc/shadow") \
+                if os.path.exists(p)]
+        )
+
+        csum_ref = "0" * len(sha1("").hexdigest())
+        self.assertEquals(checksum(path), csum_ref)
 
     def test_checksum(self):
         csum_ref = subprocess.check_output("sha1sum " + self.f, shell=True).split()[0]

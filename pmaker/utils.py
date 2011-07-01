@@ -167,7 +167,11 @@ def checksum(filepath="", algo=sha1, buffsize=8192):
     if not filepath:
         return "0" * len(algo("").hexdigest())
 
-    f = open(filepath, "r")
+    try:
+        f = open(filepath, "r")
+    except IOError:
+        return "0" * len(algo("").hexdigest())
+
     m = algo()
 
     while True:
