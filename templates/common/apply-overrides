@@ -13,11 +13,13 @@ $fi.original_path
 for f in \$files
 do
     dest=$conflicts_savedir\$f
+    new=$conflicts_newdir\$f
 
 #raw
     dir=$(dirname $dest)
     test -d $dir || mkdir -p $dir
 
+    # 1. save original file:
     if test -f $dest; then
         csum1=$(sha1sum $f | cut -f 1 -d ' ')
         csum2=$(sha1sum $dest | cut -f 1 -d ' ')
@@ -29,9 +31,13 @@ do
             cp -af $f $dest
         fi
     else
-        echo "[Debug] Saving: $f"
+        echo "[Info] Saving: $f"
         cp -a $f $dest
     fi
+
+    # 2. install new one:
+    echo "[Info] Overwrite $f with $new"
+    cp --no-preserve=all $new $f
 #end raw
 done
 #else
