@@ -193,7 +193,7 @@ class Test_01_ExtFilelistCollector(unittest.TestCase):
 
 
 
-class TestJsonFilelistCollector(unittest.TestCase):
+class Test_02_JsonFilelistCollector(unittest.TestCase):
 
     _multiprocess_can_split_ = True
 
@@ -218,6 +218,9 @@ class TestJsonFilelistCollector(unittest.TestCase):
                 "conflicts": "setup",
                 "rpmattr": "%config(noreplace)"
             }
+        },
+        {
+            "path": "/etc/sysctl.conf"
         }
     ]
 }

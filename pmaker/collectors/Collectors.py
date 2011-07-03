@@ -235,19 +235,22 @@ class JsonFilelistCollector(FilelistCollector):
     """
     Collector for files list in JSON format such as:
 
-    [
-        {
-            "path": "/a/b/c",
-            "target": {
-                "target": "/a/c",
-                "uid": 100,
-                "gid": 0,
-                "rpmattr": "%config(noreplace)",
-                ...
-            }
-        },
+    {
         ...
-    ]
+        "files": [
+            {
+                "path": "/a/b/c",
+                "target": {
+                    "target": "/a/c",
+                    "uid": 100,
+                    "gid": 0,
+                    "rpmattr": "%config(noreplace)",
+                    ...
+                }
+            },
+            ...
+        ]
+    }
     """
     global JSON_ENABLED
 
@@ -265,10 +268,11 @@ class JsonFilelistCollector(FilelistCollector):
         if not path or path.startswith("#"):
             return []
         else:
-            return [Target(p, path_dict["target"]) for p in glob.glob(path)]
+            return [Target(p, path_dict.get("target", {})) for p in glob.glob(path)]
 
     def list_targets(self, listfile):
-        return unique(concat(self._parse(d) for d in json.load(self.open(listfile))))
+        data = json.load(self.open(listfile))
+        return unique(concat(self._parse(d) for d in data["files"]))
 
 
 
