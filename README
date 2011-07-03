@@ -60,6 +60,7 @@ TODO
 ================
 
 * correct wrong English expressions
+* define schema for input (JSON, YAML?, XML?, ...)
 * more complete tests
 * stabilize the API of the plugin system
 * sort out command line options: Work in progress
