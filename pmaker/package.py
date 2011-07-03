@@ -34,7 +34,7 @@ class Package(object):
 
         keys = ("workdir", "destdir", "upto", "name", "release", "group",
             "license", "url", "packager", "email", "relations", "dist",
-            "noarch")
+            "arch")
 
         for key in keys:
             val = getattr(options, key, None)
@@ -42,6 +42,7 @@ class Package(object):
                 setattr(self, key, val)
 
         self.version = options.pversion
+        self.noarch = options.arch and 0 or 1
         self.changelog = load_changelog_content(options.changelog)
         self.host = hostname()
         self.date = date_params()
