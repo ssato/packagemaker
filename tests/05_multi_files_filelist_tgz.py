@@ -89,5 +89,32 @@ class Test_cui_main__multi_files_tgz(unittest.TestCase):
             (self.template_path, self.pmworkdir, "tgz", self.listfile)
         self.helper_run_with_args(args)
 
+    def test_02_system_files_relative_workdir(self):
+        paths = [
+            "/etc/aliases.db",
+            "/etc/at.deny",
+            "/etc/auto.master",
+            "/etc/hosts",
+            "/etc/httpd/conf/httpd.conf",
+            "/etc/modprobe.d/blacklist.conf",
+            "/etc/rc.d/init.d",
+            "/etc/rc.d/rc",
+            "/etc/resolv.conf",
+            "/etc/secure.tty",
+            "/etc/security/access.conf",
+            "/etc/security/limits.conf",
+            "/etc/shadow",
+            "/etc/skel",
+            "/etc/system-release",
+            "/etc/sudoers",
+        ]
+        targets = [p for p in paths if os.path.exists(p)]
+
+        open(self.listfile, "w").write("\n".join(targets))
+
+        args = "argv0 --name foobar --template-path %s -w ./dist/w -vv --format %s %s" % \
+            (self.template_path, "tgz", self.listfile)
+        self.helper_run_with_args(args)
+
 
 # vim: set sw=4 ts=4 expandtab:
