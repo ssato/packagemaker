@@ -23,7 +23,7 @@ import unittest
 
 
 
-class TestFilelistCollector(unittest.TestCase):
+class Test_00_FilelistCollector(unittest.TestCase):
 
     _multiprocess_can_split_ = True
 
@@ -143,7 +143,7 @@ class TestFilelistCollector(unittest.TestCase):
 
 
 
-class TestExtFilelistCollector(unittest.TestCase):
+class Test_01_ExtFilelistCollector(unittest.TestCase):
 
     _multiprocess_can_split_ = True
 
@@ -153,8 +153,20 @@ class TestExtFilelistCollector(unittest.TestCase):
     def tearDown(self):
         rm_rf(self.workdir)
 
+    def test_parse_line(self):
+        line0 = "/etc/resolv.conf\n"
+        line1 = "/etc/resolv.conf,target=/var/lib/network/resolv.conf,uid=0,gid=0\n"
+
+        d0 = ExtFilelistCollector.parse_line(line0)
+        self.assertEquals(d0[0], "/etc/resolv.conf")
+
+        d1 = ExtFilelistCollector.parse_line(line1)
+        self.assertEquals(d1[0], "/etc/resolv.conf")
+        self.assertEquals(d1[1], [('target', '/var/lib/network/resolv.conf'), ('uid', 0), ('gid', 0)])
+
     def test_collect(self):
         paths = [
+            "/etc/resolv.conf",
             "/etc/auto.*,uid=0,gid=0",
             "#/etc/aliases.db",
             "/etc/rc.d/rc,target=/etc/init.d/rc,uid=0,gid=0",
@@ -189,24 +201,26 @@ class TestJsonFilelistCollector(unittest.TestCase):
         self.workdir = tempfile.mkdtemp(dir="/tmp", prefix="pmaker-tests")
 
         self.json_data = """\
-[
-    {
-        "path": "/etc/resolv.conf",
-        "target": {
-            "target": "/var/lib/network/resolv.conf",
-            "uid": 0,
-            "gid": 0,
-            "conflicts": "NetworkManager"
+{
+    "files": [
+        {
+            "path": "/etc/resolv.conf",
+            "target": {
+                "target": "/var/lib/network/resolv.conf",
+                "uid": 0,
+                "gid": 0,
+                "conflicts": "NetworkManager"
+            }
+        },
+        {
+            "path": "/etc/hosts",
+            "target": {
+                "conflicts": "setup",
+                "rpmattr": "%config(noreplace)"
+            }
         }
-    },
-    {
-        "path": "/etc/hosts",
-        "target": {
-            "conflicts": "setup",
-            "rpmattr": "%config(noreplace)"
-        }
-    }
-]
+    ]
+}
 """
 
     def tearDown(self):
