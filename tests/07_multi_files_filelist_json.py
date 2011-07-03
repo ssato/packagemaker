@@ -14,18 +14,15 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
-from pmaker.cui import main as cui_main
 from pmaker.utils import rm_rf
 from pmaker.globals import *
+from tests.utils import *
 
-import glob
 import logging
 import os
 import os.path
-import random
-import sys
-import tempfile
 import unittest
+
 
 if JSON_ENABLED:
     import json
@@ -150,10 +147,10 @@ JSON_FILELIST_1 = """
 """
 
 
-class Test_cui_main__multi_files_tgz(unittest.TestCase):
+class Test_00_multi_files_filelist_json(unittest.TestCase):
 
     def setUp(self):
-        self.workdir = tempfile.mkdtemp(dir="/tmp", prefix="pmaker-tests")
+        self.workdir = helper_create_tmpdir()
         self.pmworkdir = os.path.join(self.workdir, "pm")
         self.listfile = os.path.join(self.workdir, "files.list")
         self.template_path = os.path.join(os.getcwd(), "templates")
@@ -161,18 +158,7 @@ class Test_cui_main__multi_files_tgz(unittest.TestCase):
     def tearDown(self):
         rm_rf(self.workdir)
 
-    def helper_run_with_args(self, args):
-        try:
-            cui_main(args.split())
-        except SystemExit:
-            pass
-
-        #self.assertTrue(...something_to_confirm_access...)
-
-    def test_00_generated_files(self):
-        if not JSON_ENABLED:
-            return
-
+    def prepare_json_filelist__generated_files(self):
         data = json.loads(JSON_FILELIST_0)
         data2 = dict(); data2["files"] = []
 
@@ -191,15 +177,8 @@ class Test_cui_main__multi_files_tgz(unittest.TestCase):
 
         json.dump(data2, open(self.listfile, "w"))
 
-        args = "argv0 --name foobar --template-path %s -w %s --format %s --itype filelist.json %s" % \
-            (self.template_path, self.pmworkdir, "tgz", self.listfile)
-        self.helper_run_with_args(args)
-
-    def test_01_system_files(self):
-        if not JSON_ENABLED:
-            return
-
-        data = json.loads(JSON_FILELIST_0)
+    def prepare_json_filelist__system_files(self):
+        data = json.loads(JSON_FILELIST_1)
         data2 = dict(); data2["files"] = []
 
         for t in data["files"]:
@@ -208,9 +187,51 @@ class Test_cui_main__multi_files_tgz(unittest.TestCase):
 
         json.dump(data2, open(self.listfile, "w"))
 
-        args = "argv0 --name foobar --template-path %s -w %s --format %s --itype filelist.json %s" % \
+    def test_00_generated_files__tgz(self):
+        if not JSON_ENABLED:
+            return
+
+        self.prepare_json_filelist__generated_files()
+
+        args = "--name foobar --template-path %s -w %s --format %s --itype filelist.json %s" % \
             (self.template_path, self.pmworkdir, "tgz", self.listfile)
-        self.helper_run_with_args(args)
+        helper_run_with_args(args)
+
+    def test_01_system_files__tgz(self):
+        if not JSON_ENABLED:
+            return
+
+        self.prepare_json_filelist__system_files()
+
+        args = "--name foobar --template-path %s -w %s --format %s --itype filelist.json %s" % \
+            (self.template_path, self.pmworkdir, "tgz", self.listfile)
+        helper_run_with_args(args)
+
+    def test_02_generated_files__rpm__no_mock(self):
+        if not JSON_ENABLED:
+            return
+
+        if not helper_is_rpm_based_system():
+            return
+
+        self.prepare_json_filelist__generated_files()
+
+        args = "--name foobar --template-path %s -w %s --format %s --itype filelist.json %s --no-mock" % \
+            (self.template_path, self.pmworkdir, "rpm", self.listfile)
+        helper_run_with_args(args)
+
+    def test_03_system_files__rpm__no_mock(self):
+        if not JSON_ENABLED:
+            return
+
+        if not helper_is_rpm_based_system():
+            return
+
+        self.prepare_json_filelist__system_files()
+
+        args = "--name foobar --template-path %s -w %s --format %s --itype filelist.json %s --no-mock" % \
+            (self.template_path, self.pmworkdir, "rpm", self.listfile)
+        helper_run_with_args(args)
 
 
 # vim: set sw=4 ts=4 expandtab:

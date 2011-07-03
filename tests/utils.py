@@ -30,7 +30,7 @@ def helper_create_tmpdir(dir="/tmp", prefix="pmaker-system-tests-"):
     return tempfile.mkdtemp(dir=dir, prefix=prefix)
 
 
-def helper_is_deb_based_systems():
+def helper_is_deb_based_system():
     if os.path.exists("/etc/debian_version"):
         return True
     else:
