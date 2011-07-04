@@ -1,7 +1,7 @@
 About
 ================
 
-PackageMaker is a tool can automates the packaging process.
+PackageMaker is a tool to automates the packaging process.
 
 It helps building packages of existing files on your system by automating
 almost all of the steps needed for packaing: arrange source tree, create
@@ -41,8 +41,7 @@ It takes some time to make a rpm but should be better, I think.
 Build w/o mock
 ------------------------
 
-It's easy but only possible to make a rpm on build host.
-
+It's easier than the above way but only possible to make a rpm on build host.
 
 1. python setup.py rpm
 
