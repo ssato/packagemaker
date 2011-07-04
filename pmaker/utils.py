@@ -334,6 +334,10 @@ def find_template(template, search_paths=TEMPLATE_SEARCH_PATHS):
     @param  template  Template file path may be relative to path in search paths.
     @param  search_paths  Path list to search for the template
     """
+    # The path at the top is special (system search path).
+    # Make it searched at last.
+    search_paths = search_paths[1:] + [search_paths[0]]
+
     tmpl = None
 
     if os.path.exists(template):
