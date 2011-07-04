@@ -14,6 +14,7 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
+import datetime
 import os.path
 
 try:
@@ -24,10 +25,12 @@ except ImportError:
 
 
 PMAKER_TITLE    = "packagemaker"
-PMAKER_VERSION  = "0.2.99"
 PMAKER_AUTHOR   = "Satoru SATOH"
 PMAKER_EMAIL    = "satoru.satoh@gmail.com"
 PMAKER_WEBSITE  = "https://github.com/ssato/packagemaker"
+
+#PMAKER_VERSION  = "0.3.0" + "." + datetime.datetime.now().strftime("%Y%m%d")
+PMAKER_VERSION  = "0.3.0"
 
 
 FILEINFOS = dict()

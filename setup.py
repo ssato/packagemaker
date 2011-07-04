@@ -12,12 +12,13 @@ except ImportError:
         raise ImportError("python-nose is must for testing.")
 
 
-PACKAGE = "packagemaker"
-
-VERSION = "0.2.99" + "." + datetime.datetime.now().strftime("%Y%m%d")
-
-
 curdir = os.getcwd()
+
+
+sys.path.append(curdir)
+from pmaker.globals import PMAKER_AUTHOR, PMAKER_EMAIL, PMAKER_WEBSITE, \
+    PMAKER_TITLE as PACKAGE, PMAKER_VERSION as VERSION
+
 
 
 def list_paths(path_pattern="*", topdir=curdir, pred=os.path.isfile):
@@ -149,10 +150,10 @@ class RpmCommand(Command):
 setup(name=PACKAGE,
     version=VERSION,
     description="A packaging helper tool",
-    author="Satoru SATOH",
-    author_email="satoru.satoh@gmail.com",
+    author=PMAKER_AUTHOR,
+    author_email=PMAKER_EMAIL,
     license="GPLv3+",
-    url="https://github.com/ssato/packagemaker",
+    url=PMAKER_WEBSITE,
     packages=[
         "pmaker",
         "pmaker.collectors",
