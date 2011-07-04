@@ -56,6 +56,9 @@ class BaseFilter(object):
 
         return ret
 
+    def __call__(self, fileinfo, *args, **kwargs):
+        return self.pred(fileinfo, *args, **kwargs)
+
 
 
 class UnsupportedTypesFilter(BaseFilter):

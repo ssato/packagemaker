@@ -153,7 +153,7 @@ class FilelistCollector(Collector):
             fi = self.fi_factory.create(target.path)
 
             # filter out if any filter(fi) -> True
-            filtered = any(filter.pred(fi) for filter in self.filters)
+            filtered = any(filter(fi) for filter in self.filters)
 
             if not filtered:
                 fi.conflicts = {}
