@@ -44,7 +44,6 @@ class AutotoolsRpmPackageMaker(AutotoolsTgzPackageMaker):
     def __init__(self, package, fileinfos, options):
         super(AutotoolsRpmPackageMaker, self).__init__(package, fileinfos, options)
 
-        self.package.noarch = options.arch
         self.package.no_rpmdb = options.no_rpmdb
         self.package.no_mock = options.no_mock
         self.package.scriptlets = options.scriptlets
