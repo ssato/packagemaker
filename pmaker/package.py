@@ -42,7 +42,7 @@ class Package(object):
                 setattr(self, key, val)
 
         self.version = options.pversion
-        self.noarch = options.arch and 0 or 1
+        self.noarch = options.arch and "" or "1"
         self.changelog = load_changelog_content(options.changelog)
         self.host = hostname()
         self.date = date_params()

@@ -28,6 +28,7 @@ import logging
 import optparse
 import os
 import os.path
+import pprint
 import sys
 
 
@@ -105,6 +106,7 @@ def main(argv=sys.argv, collector=COLLECTORS):
         options.scriptlets = scriptlets
 
     pkg = Package(options)
+    #pprint.pprint(pkg.as_dict())
 
     ccls = _get_class(options.itype, COLLECTORS, FilelistCollector)
     collector = ccls(listfile, options)

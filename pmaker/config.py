@@ -118,6 +118,14 @@ def upto_defaults(upto=UPTO, build_steps=BUILD_STEPS):
     return dict(choices=choices, help=help, default=default)
 
 
+def format_defaults(formats=PKG_FORMATS):
+    choices = formats
+    help = "Package format: %s [%%default]" % ", ".join(choices)
+    default = get_package_format()
+
+    return dict(choices=choices, help=help, default=default)
+
+
 def driver_defaults(pmakers=PACKAGE_MAKERS):
     choices = unique(pmakers.keys())
     help = "Packaging driver: %s [%%default]" % ", ".join(choices)
@@ -184,8 +192,8 @@ def workdir_defaults():
 
 
 def parse_args(argv=sys.argv[1:], defaults=None, upto=UPTO,
-        build_steps=BUILD_STEPS, drivers=PACKAGE_MAKERS, itypes=COLLECTORS,
-        tmpl_search_paths=TEMPLATE_SEARCH_PATHS):
+        build_steps=BUILD_STEPS, formats=PKG_FORMATS, drivers=PACKAGE_MAKERS,
+        itypes=COLLECTORS, tmpl_search_paths=TEMPLATE_SEARCH_PATHS):
     """
     Parse command line options and args
 
@@ -203,10 +211,7 @@ def parse_args(argv=sys.argv[1:], defaults=None, upto=UPTO,
     bog.add_option("-w", "--workdir", **workdir_defaults())
 
     bog.add_option("", "--upto", type="choice", **upto_defaults(upto, build_steps))
-
-    bog.add_option("", "--format", type="choice", choices=PKG_FORMATS,
-            default=get_package_format(), help="Package format [%default]")
-
+    bog.add_option("", "--format", type="choice", **format_defaults(formats))
     bog.add_option("", "--driver", type="choice", **driver_defaults(drivers))
     bog.add_option("", "--itype", type="choice", **itype_defaults(itypes))
 
@@ -235,7 +240,7 @@ def parse_args(argv=sys.argv[1:], defaults=None, upto=UPTO,
     pog.add_option("", "--url", help="The url of the package [%default]")
     pog.add_option("", "--summary", help="The summary of the package")
     pog.add_option("-z", "--compressor", type="choice", **compressor_defaults())
-    pog.add_option("", "--arch", action="store_true", help="Make package arch-dependent [false - noarch]")
+    pog.add_option("", "--arch", action="store_true", help="Make package arch-dependent [false = noarch]")
     pog.add_option("", "--relations", **relations_defaults()),
     pog.add_option("", "--packager", help="Specify packager's name [%default]")
     pog.add_option("", "--email", help="Specify packager's mail address [%default]")
@@ -256,9 +261,7 @@ def parse_args(argv=sys.argv[1:], defaults=None, upto=UPTO,
     p.add_option("", "--force", action="store_true", help="Force going steps even if the steps looks done")
 
     p.add_option("-v", "--verbose", action="count", dest='verbosity', help="Verbose mode")
-    p.add_option("-D", "--debug", action='store_const', dest='verbosity', const=2, help="Debug mode")
-
-    p.add_option("", "--show-examples", action="store_true", help="Show examples")
+    p.add_option("", "--debug", action='store_const', dest='verbosity', const=2, help="Debug mode (same as -vv)")
 
     (options, args) = p.parse_args(argv)
 
