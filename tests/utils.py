@@ -15,6 +15,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 from pmaker.cui import main as cui_main
+from pmaker.environ import get_compressor
 
 import glob
 import os
@@ -24,6 +25,12 @@ import sys
 import tempfile
 import unittest
 
+
+PKG_0 = dict(
+    name="foobar",
+    version="0.1",
+    release="1",
+)
 
 
 def helper_create_tmpdir(dir="/tmp", prefix="pmaker-system-tests-"):
@@ -44,6 +51,10 @@ def helper_is_rpm_based_system():
     else:
         print >> sys.stderr, "This system does not look a RPM-based system."
         return False
+
+
+def helper_get_compressor_ext():
+    return get_compressor()[1]
 
 
 def helper_run_with_args(args):
