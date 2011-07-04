@@ -10,7 +10,7 @@ License:        $license
 URL:            $url
 Source0:        %{name}-%{version}.tar.${compressor.ext}
 BuildRoot:      %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
-#if $noarch or not $arch
+#if $noarch
 BuildArch:      noarch
 #end if
 #for $fi in $fileinfos
