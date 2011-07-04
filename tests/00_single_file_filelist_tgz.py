@@ -33,6 +33,19 @@ class Test_00_single_file_tgz(unittest.TestCase):
         self.listfile = os.path.join(self.workdir, "files.list")
         self.template_path = os.path.join(os.getcwd(), "templates")
 
+        p = PKG_0
+        p["tpath"] = self.template_path
+        p["wdir"] = self.pmworkdir
+        p["fmt"] = "tgz"
+
+        args = "--name %(name)s --template-path %(tpath)s -w %(wdir)s --format %(fmt)s " % p
+        self.args = args + self.listfile
+
+        pnv = "%(name)s-%(version)s" % p
+
+        tgz = os.path.join(self.pmworkdir, pnv, pnv + ".tar." + helper_get_compressor_ext())
+        self.tgz = tgz
+
         logging.getLogger().setLevel(logging.WARNING) # suppress log messages
 
     def tearDown(self):
@@ -44,18 +57,18 @@ class Test_00_single_file_tgz(unittest.TestCase):
 
         open(self.listfile, "w").write("%s\n" % target)
 
-        args = "--name foobar --template-path %s -w %s --format %s %s" % \
-            (self.template_path, self.pmworkdir, "tgz", self.listfile)
-        helper_run_with_args(args)
+        helper_run_with_args(self.args)
+
+        self.assertTrue(os.path.exists(self.tgz))
 
     def test_01_system_file(self):
         target = helper_random_system_files(1)
 
         open(self.listfile, "w").write("%s\n" % target)
 
-        args = "--name foobar --template-path %s -w %s --format %s %s" % \
-            (self.template_path, self.pmworkdir, "tgz", self.listfile)
-        helper_run_with_args(args)
+        helper_run_with_args(self.args)
+
+        self.assertTrue(os.path.exists(self.tgz))
 
 
 # vim: set sw=4 ts=4 expandtab:
