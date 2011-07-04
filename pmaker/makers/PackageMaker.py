@@ -214,7 +214,10 @@ class AutotoolsTgzPackageMaker(PackageMaker):
         self.genfile("common/revert-overrides", "revert-overrides")
 
     def configure(self):
-        self.shell(on_debug_mode() and "autoreconf -vfi" or "autoreconf -fi")
+        logfile = os.path.join(self.workdir, "pmaker.configure.log")
+        self.shell(
+            on_debug_mode() and "autoreconf -vfi" or "autoreconf -fi > " + logfile
+        )
 
     def sbuild(self):
         if on_debug_mode():
