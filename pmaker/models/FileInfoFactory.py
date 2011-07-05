@@ -90,7 +90,11 @@ class FileInfoFactory(object):
 
         (_mode, _uid, _gid) = st
 
-        _xattrs = dict(use_pyxattr and xattr.get_all(path) or ())
+        # There is a case that read access is OK but cannot get xattrs.
+        try:
+            _xattrs = dict(use_pyxattr and xattr.get_all(path) or ())
+        except  IOError:
+            _xattrs = dict()
 
         _filetype = self._guess_ftype(_mode)
 
