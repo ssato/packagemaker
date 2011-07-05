@@ -1,0 +1,7 @@
+/etc/auto.*
+/etc/modprobe.d/*
+/etc/resolv.conf
+/etc/yum.repos.d/fedora.repo
+#/etc/aliases.db
+/etc/system-release
+/etc/httpd/conf.d

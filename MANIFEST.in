@@ -3,7 +3,8 @@ include README
 include packagemaker.spec.in
 include setup.py
 include runtest.sh nose.cfg
-include examples/*.txt
+include examples/*
+include examples/*/*
 recursive-include pmaker *.py
 recursive-include templates *
 recursive-include tests *

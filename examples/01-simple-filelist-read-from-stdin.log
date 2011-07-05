@@ -1,0 +1,49 @@
+10:54:42 [WARNING] /etc/auto.iso is owned by miniascape
+10:54:43 [WARNING] /etc/auto.master is owned by autofs
+10:54:43 [WARNING] /etc/auto.misc is owned by autofs
+10:54:43 [WARNING] /etc/auto.net is owned by autofs
+10:54:43 [WARNING] /etc/auto.smb is owned by autofs
+10:54:43 [WARNING] /etc/httpd/conf.d is owned by httpd
+10:54:43 [WARNING] /etc/modprobe.d/blacklist-visor.conf is owned by pilot-link
+10:54:43 [WARNING] /etc/modprobe.d/blacklist.conf is owned by hwdata
+10:54:43 [WARNING] /etc/modprobe.d/dist-alsa.conf is owned by module-init-tools
+10:54:44 [WARNING] /etc/modprobe.d/dist-oss.conf is owned by module-init-tools
+10:54:44 [WARNING] /etc/modprobe.d/dist.conf is owned by module-init-tools
+10:54:44 [WARNING] /etc/modprobe.d/libmlx4.conf is owned by libmlx4
+10:54:44 [WARNING] /etc/modprobe.d/poulsbo.conf is owned by xorg-x11-drv-psb
+10:54:44 [WARNING] /etc/system-release is owned by fedora-release
+10:54:44 [WARNING] /etc/yum.repos.d/fedora.repo is owned by fedora-release
+$ ls /tmp/0
+sysdata-0.1
+$ ls /tmp/1/sysdata-0.1/
+MANIFEST
+MANIFEST.overrides
+Makefile
+Makefile.am
+Makefile.in
+README
+aclocal.m4
+apply-overrides
+autom4te.cache
+config.log
+config.status
+configure
+configure.ac
+install-sh
+missing
+pmaker-build.stamp
+pmaker-configure.stamp
+pmaker-package-listfile.pkl
+pmaker-preconfigure.stamp
+pmaker-sbuild.stamp
+pmaker-setup.stamp
+pmaker.configure.log
+revert-overrides
+rpm
+rpm.mk
+src
+sysdata-0.1-1.fc14.noarch.rpm
+sysdata-0.1-1.fc14.src.rpm
+sysdata-0.1.tar.xz
+sysdata-overrides-0.1-1.fc14.noarch.rpm
+sysdata.spec

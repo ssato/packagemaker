@@ -1,8 +1,9 @@
 ## F. Packaging files under /etc which is not owned by any RPMs:
 
-$ list_files () { dir=$1; sudo find $dir -type f; }                                                                                                            $ is_not_from_rpm () { f=$1; LANG=C sudo rpm -qf $f | grep -q 'is not owned' 2>/dev/null; }
-$ (for f in `list_files /etc`; do is_not_from_rpm $f && echo $f; done) \\
->  > etc.not_from_package.files
+$ list_files () { dir=$1; sudo find $dir -type f; }
+$ is_not_from_rpm () { f=$1; LANG=C sudo rpm -qf $f | grep -q 'is not owned' 2>/dev/null; }
+$ (for f in `list_files /etc`; do is_not_from_rpm $f && echo $f; done) > \\
+> etc.not_from_package.files
 $ sudo python pmaker.py -n etcdata --pversion $(date +%Y%m%d) \\
 > --debug -w etcdata-build etc.not_from_package.files
 [sudo] password for ssato:
