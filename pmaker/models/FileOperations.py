@@ -181,7 +181,11 @@ class FileOperations(object):
 
             if not os.path.exists(destdir):
                 os.makedirs(destdir)
-            shutil.copystat(os.path.dirname(fileinfo.path), destdir)
+
+            try:
+                shutil.copystat(os.path.dirname(fileinfo.path), destdir)
+            except OSError:
+                logging.warn("Could not copy stat of " + os.path.dirname(fileinfo.path))
 
         logging.debug(" Copying from '%s' to '%s'" % (fileinfo.path, dest))
         cls.copy_main(fileinfo, dest)
