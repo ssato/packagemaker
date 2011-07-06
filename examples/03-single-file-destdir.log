@@ -1,0 +1,89 @@
+22:55:39 [INFO] Use FilelistCollector (type=filelist)
+22:55:39 [DEBUG] Rewrote installation path from examples/etc/resolv.conf to /etc/resolv.conf
+22:55:39 [INFO] Use AutotoolsRpmPackageMaker (type=autotools.rpm)
+22:55:39 [INFO] Setting up src tree in /tmp/3/resolvconf-0.1: resolvconf
+22:55:39 [DEBUG]  Creating a directory: /tmp/3/resolvconf-0.1
+22:55:39 [DEBUG]  Creating a directory: /tmp/3/resolvconf-0.1/src
+22:55:39 [DEBUG]  Copying from 'examples/etc/resolv.conf' to '/tmp/3/resolvconf-0.1/src/etc/resolv.conf'
+22:55:39 [INFO]  Run: touch /tmp/3/resolvconf-0.1/pmaker-setup.stamp [/tmp/3/resolvconf-0.1]
+22:55:39 [INFO] Making up autotool-ized src directory: resolvconf
+22:55:39 [DEBUG] template search_paths=/usr/share/pmaker/templates
+22:55:39 [INFO] Found template: /usr/share/pmaker/templates/autotools/configure.ac
+22:55:39 [DEBUG] template search_paths=/usr/share/pmaker/templates
+22:55:39 [INFO] Found template: /usr/share/pmaker/templates/autotools/Makefile.am
+22:55:39 [DEBUG] template search_paths=/usr/share/pmaker/templates
+22:55:39 [INFO] Found template: /usr/share/pmaker/templates/common/README
+22:55:39 [DEBUG] template search_paths=/usr/share/pmaker/templates
+22:55:39 [INFO] Found template: /usr/share/pmaker/templates/common/manifest
+22:55:39 [DEBUG] template search_paths=/usr/share/pmaker/templates
+22:55:39 [INFO] Found template: /usr/share/pmaker/templates/common/manifest.overrides
+22:55:39 [DEBUG] template search_paths=/usr/share/pmaker/templates
+22:55:39 [INFO] Found template: /usr/share/pmaker/templates/common/apply-overrides
+22:55:39 [DEBUG] template search_paths=/usr/share/pmaker/templates
+22:55:39 [INFO] Found template: /usr/share/pmaker/templates/common/revert-overrides
+22:55:39 [DEBUG] template search_paths=/usr/share/pmaker/templates
+22:55:39 [INFO] Found template: /usr/share/pmaker/templates/autotools/rpm.mk
+22:55:39 [DEBUG] template search_paths=/usr/share/pmaker/templates
+22:55:39 [INFO] Found template: /usr/share/pmaker/templates/autotools/package.spec
+22:55:39 [INFO]  Run: touch /tmp/3/resolvconf-0.1/pmaker-preconfigure.stamp [/tmp/3/resolvconf-0.1]
+22:55:39 [INFO] Configuring src distribution: resolvconf
+22:55:39 [INFO]  Run: autoreconf -vfi [/tmp/3/resolvconf-0.1]
+autoreconf: Entering directory `.'
+autoreconf: configure.ac: not using Gettext
+autoreconf: running: aclocal --force 
+autoreconf: configure.ac: tracing
+autoreconf: configure.ac: not using Libtool
+autoreconf: running: /usr/bin/autoconf --force
+autoreconf: configure.ac: not using Autoheader
+autoreconf: running: automake --add-missing --copy --force-missing
+configure.ac:2: installing `./install-sh'
+configure.ac:2: installing `./missing'
+autoreconf: Leaving directory `.'
+22:55:47 [INFO]  Run: touch /tmp/3/resolvconf-0.1/pmaker-configure.stamp [/tmp/3/resolvconf-0.1]
+22:55:47 [INFO] Building src package: resolvconf
+22:55:47 [INFO]  Run: ./configure --quiet [/tmp/3/resolvconf-0.1]
+22:55:49 [INFO]  Run: make [/tmp/3/resolvconf-0.1]
+22:55:49 [INFO]  Run: make dist [/tmp/3/resolvconf-0.1]
+22:55:50 [INFO]  Run: make srpm [/tmp/3/resolvconf-0.1]
+22:55:51 [INFO]  Run: touch /tmp/3/resolvconf-0.1/pmaker-sbuild.stamp [/tmp/3/resolvconf-0.1]
+22:55:51 [INFO] Building bin packages: resolvconf
+22:55:51 [INFO]  Run: make rpm [/tmp/3/resolvconf-0.1]
+22:55:54 [INFO]  Run: touch /tmp/3/resolvconf-0.1/pmaker-build.stamp [/tmp/3/resolvconf-0.1]
+22:55:54 [INFO] Successfully created packages in /tmp/3/resolvconf-0.1: resolvconf
+$ ls /tmp/3
+resolvconf-0.1
+$ ls /tmp/3/resolvconf-0.1/
+MANIFEST
+MANIFEST.overrides
+Makefile
+Makefile.am
+Makefile.in
+README
+aclocal.m4
+apply-overrides
+autom4te.cache
+config.log
+config.status
+configure
+configure.ac
+install-sh
+missing
+pmaker-build.stamp
+pmaker-configure.stamp
+pmaker-package-listfile.pkl
+pmaker-preconfigure.stamp
+pmaker-sbuild.stamp
+pmaker-setup.stamp
+resolvconf-0.1-1.fc14.noarch.rpm
+resolvconf-0.1-1.fc14.src.rpm
+resolvconf-0.1.tar.xz
+resolvconf.spec
+revert-overrides
+rpm
+rpm.mk
+src
+$ rpm -qlp /tmp/3/resolvconf-0.1/resolvconf-0.1-1.fc14.noarch.rpm
+/etc/resolv.conf
+/usr/share/doc/resolvconf-0.1
+/usr/share/doc/resolvconf-0.1/MANIFEST
+/usr/share/doc/resolvconf-0.1/README

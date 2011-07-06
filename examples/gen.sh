@@ -19,3 +19,7 @@ sed -i '/^. echo \/etc\/resolv.conf/d; /^. PYTHON/d; s,^. python ,$ echo /etc/re
 test -f $dir/03-single-file-destdir.log || \
 $dir/03-single-file-destdir.sh && \
 sed -i '/^. echo .*\/etc\/resolv.conf/d; /^. PYTHON/d; s,^. python ,$ echo examples/etc/resolv.conf | python ,; s,^\+,$,g' $dir/03-single-file-destdir.log
+
+test -f $dir/05-advanced-filelist.log || \
+$dir/05-advanced-filelist.sh && \
+sed -i 's,^\+,$,g' $dir/05-advanced-filelist.log

@@ -1,0 +1,248 @@
+$ export PYTHONPATH=.
+$ PYTHONPATH=.
+$ mkdir -p /tmp/5
+$ cat examples/list_etc_files_not_from_rpms.sh
+#! /bin/sh
+
+logfile=$1
+
+list_files () {
+    local dir=$1
+    find $dir -type f
+}
+
+is_not_from_rpm () {
+    local f=$1
+    LANG=C rpm -qf $f | grep -q 'is not owned' 2>/dev/null
+}
+
+(
+for f in $(list_files /etc)
+do
+    is_not_from_rpm $f && echo $f
+done
+) > $logfile
+$ examples/list_etc_files_not_from_rpms.sh /tmp/5/etc.not_from_package.files
+find: `/etc/pki/CA/private': 許可がありません
+find: `/etc/libvirt': 許可がありません
+find: `/etc/audit': 許可がありません
+find: `/etc/sssd': 許可がありません
+find: `/etc/lvm/cache': 許可がありません
+find: `/etc/lvm/backup': 許可がありません
+find: `/etc/lvm/archive': 許可がありません
+find: `/etc/selinux/targeted/modules/active': 許可がありません
+find: `/etc/polkit-1/localauthority': 許可がありません
+find: `/etc/dhcp': 許可がありません
+find: `/etc/ntp/crypto': 許可がありません
+find: `/etc/sudoers.d': 許可がありません
+find: `/etc/audisp': 許可がありません
+find: `/etc/cups/ssl': 許可がありません
+$ python tools/pmaker -n etcdata --pversion 0.1 -v -w /tmp/5 --upto sbuild /tmp/5/etc.not_from_package.files
+08:54:22 [INFO] Use FilelistCollector (type=filelist)
+08:54:22 [WARNING] Filtered out as You don't have read access: path=/etc/.pwd.lock, type=file
+08:54:22 [WARNING] Filtered out as You don't have read access: path=/etc/aliases.db, type=file
+08:54:31 [WARNING] Filtered out as You don't have read access: path=/etc/gshadow-, type=file
+08:54:31 [WARNING] Filtered out as You don't have read access: path=/etc/mtab.fuselock, type=file
+08:54:31 [WARNING] Filtered out as You don't have read access: path=/etc/passwd-, type=file
+08:54:33 [WARNING] Filtered out as You don't have read access: path=/etc/shadow-, type=file
+08:54:33 [WARNING] Filtered out as You don't have read access: path=/etc/ssh/ssh_host_dsa_key, type=file
+08:54:33 [WARNING] Filtered out as You don't have read access: path=/etc/ssh/ssh_host_key, type=file
+08:54:33 [WARNING] Filtered out as You don't have read access: path=/etc/ssh/ssh_host_rsa_key, type=file
+08:54:34 [WARNING] Filtered out as You don't have read access: path=/etc/sysconfig/ip6tables, type=file
+08:54:34 [WARNING] Filtered out as You don't have read access: path=/etc/sysconfig/ip6tables.old, type=file
+08:54:34 [WARNING] Filtered out as You don't have read access: path=/etc/sysconfig/iptables, type=file
+08:54:34 [WARNING] Filtered out as You don't have read access: path=/etc/sysconfig/iptables.old, type=file
+08:54:34 [WARNING] Filtered out as You don't have read access: path=/etc/sysconfig/iptables.save, type=file
+08:54:36 [WARNING] Filtered out as You don't have read access: path=/etc/sysconfig/system-config-firewall.old, type=file
+08:54:36 [WARNING] Filtered out as You don't have read access: path=/etc/vpnc/rh.conf, type=file
+08:54:37 [INFO] Use AutotoolsRpmPackageMaker (type=autotools.rpm)
+08:54:37 [INFO] Setting up src tree in /tmp/5/etcdata-0.1: etcdata
+08:54:37 [INFO]  Run: touch /tmp/5/etcdata-0.1/pmaker-setup.stamp [/tmp/5/etcdata-0.1]
+08:54:37 [INFO] Making up autotool-ized src directory: etcdata
+08:54:37 [INFO] Found template: /usr/share/pmaker/templates/autotools/configure.ac
+08:54:37 [INFO] Found template: /usr/share/pmaker/templates/autotools/Makefile.am
+08:54:37 [INFO] Found template: /usr/share/pmaker/templates/common/README
+08:54:38 [INFO] Found template: /usr/share/pmaker/templates/common/manifest
+08:54:38 [INFO] Found template: /usr/share/pmaker/templates/common/manifest.overrides
+08:54:38 [INFO] Found template: /usr/share/pmaker/templates/common/apply-overrides
+08:54:38 [INFO] Found template: /usr/share/pmaker/templates/common/revert-overrides
+08:54:38 [INFO] Found template: /usr/share/pmaker/templates/autotools/rpm.mk
+08:54:38 [INFO] Found template: /usr/share/pmaker/templates/autotools/package.spec
+08:54:38 [INFO]  Run: touch /tmp/5/etcdata-0.1/pmaker-preconfigure.stamp [/tmp/5/etcdata-0.1]
+08:54:38 [INFO] Configuring src distribution: etcdata
+08:54:38 [INFO]  Run: autoreconf -fi > /tmp/5/etcdata-0.1/pmaker.configure.log [/tmp/5/etcdata-0.1]
+configure.ac:2: installing `./install-sh'
+configure.ac:2: installing `./missing'
+08:54:54 [INFO]  Run: touch /tmp/5/etcdata-0.1/pmaker-configure.stamp [/tmp/5/etcdata-0.1]
+08:54:54 [INFO] Building src package: etcdata
+08:54:54 [INFO]  Run: ./configure --quiet --enable-silent-rules [/tmp/5/etcdata-0.1]
+08:54:57 [INFO]  Run: make V=0 > /dev/null [/tmp/5/etcdata-0.1]
+08:54:57 [INFO]  Run: make dist V=0 > /dev/null [/tmp/5/etcdata-0.1]
+08:55:10 [INFO]  Run: make srpm [/tmp/5/etcdata-0.1]
+08:55:24 [INFO]  Run: touch /tmp/5/etcdata-0.1/pmaker-sbuild.stamp [/tmp/5/etcdata-0.1]
+$ ls /tmp/5/etcdata-0.1/
+MANIFEST
+MANIFEST.overrides
+Makefile
+Makefile.am
+Makefile.in
+README
+aclocal.m4
+apply-overrides
+autom4te.cache
+config.log
+config.status
+configure
+configure.ac
+etcdata-0.1-1.fc14.src.rpm
+etcdata-0.1.tar.xz
+etcdata.spec
+install-sh
+missing
+pmaker-configure.stamp
+pmaker-package-listfile.pkl
+pmaker-preconfigure.stamp
+pmaker-sbuild.stamp
+pmaker-setup.stamp
+pmaker.configure.log
+revert-overrides
+rpm
+rpm.mk
+src
+$ make -C /tmp/5/etcdata-0.1/ rpm
+make: ディレクトリ `/tmp/5/etcdata-0.1' に入ります
+{ test ! -d "etcdata-0.1" || { find "etcdata-0.1" -type d ! -perm -200 -exec chmod u+w {} ';' && rm -fr "etcdata-0.1"; }; }
+test -d "etcdata-0.1" || mkdir "etcdata-0.1"
+test -n "" \
+|| find "etcdata-0.1" -type d ! -perm -755 \
+	-exec chmod u+rwx,go+rx {} \; -o \
+  ! -type d ! -perm -444 -links 1 -exec chmod a+r {} \; -o \
+  ! -type d ! -perm -400 -exec chmod a+r {} \; -o \
+  ! -type d ! -perm -444 -exec /bin/sh /tmp/5/etcdata-0.1/install-sh -c -m a+r {} {} \; \
+|| chmod -R a+r "etcdata-0.1"
+tardir=etcdata-0.1 && tar --format=posix -chf - "$tardir" | xz -c >etcdata-0.1.tar.xz
+{ test ! -d "etcdata-0.1" || { find "etcdata-0.1" -type d ! -perm -200 -exec chmod u+w {} ';' && rm -fr "etcdata-0.1"; }; }
+  GEN    rpm
+make: ディレクトリ `/tmp/5/etcdata-0.1' から出ます
+$ rpm -qlp /tmp/5/etcdata-0.1/etcdata-0.1-1.fc14.noarch.rpm
+/etc/X11/xorg.conf
+/etc/X11/xorg.conf.by-psb-config-display
+/etc/X11/xorg.conf.d/01-poulsbo.conf
+/etc/X11/xorg.conf.livna-config-backup
+/etc/blkid/blkid.tab
+/etc/blkid/blkid.tab.old
+/etc/gconf/gconf.xml.defaults/%gconf-tree-af.xml
+/etc/gconf/gconf.xml.defaults/%gconf-tree-ar.xml
+/etc/gconf/gconf.xml.defaults/%gconf-tree-as.xml
+/etc/gconf/gconf.xml.defaults/%gconf-tree-ast.xml
+/etc/gconf/gconf.xml.defaults/%gconf-tree-az.xml
+/etc/gconf/gconf.xml.defaults/%gconf-tree-be.xml
+/etc/gconf/gconf.xml.defaults/%gconf-tree-bg.xml
+/etc/gconf/gconf.xml.defaults/%gconf-tree-bn.xml
+/etc/gconf/gconf.xml.defaults/%gconf-tree-bn_IN.xml
+/etc/gconf/gconf.xml.defaults/%gconf-tree-bs.xml
+/etc/gconf/gconf.xml.defaults/%gconf-tree-ca.xml
+/etc/gconf/gconf.xml.defaults/%gconf-tree-ca@valencia.xml
+/etc/gconf/gconf.xml.defaults/%gconf-tree-cs.xml
+/etc/gconf/gconf.xml.defaults/%gconf-tree-cy.xml
+/etc/gconf/gconf.xml.defaults/%gconf-tree-da.xml
+/etc/gconf/gconf.xml.defaults/%gconf-tree-de.xml
+/etc/gconf/gconf.xml.defaults/%gconf-tree-dz.xml
+/etc/gconf/gconf.xml.defaults/%gconf-tree-el.xml
+/etc/gconf/gconf.xml.defaults/%gconf-tree-en.xml
+/etc/gconf/gconf.xml.defaults/%gconf-tree-en@shaw.xml
+/etc/gconf/gconf.xml.defaults/%gconf-tree-en_CA.xml
+/etc/gconf/gconf.xml.defaults/%gconf-tree-en_GB.xml
+/etc/gconf/gconf.xml.defaults/%gconf-tree-es.xml
+/etc/gconf/gconf.xml.defaults/%gconf-tree-et.xml
+/etc/gconf/gconf.xml.defaults/%gconf-tree-eu.xml
+/etc/gconf/gconf.xml.defaults/%gconf-tree-fi.xml
+/etc/gconf/gconf.xml.defaults/%gconf-tree-fo.xml
+/etc/gconf/gconf.xml.defaults/%gconf-tree-fr.xml
+/etc/gconf/gconf.xml.defaults/%gconf-tree-gl.xml
+/etc/gconf/gconf.xml.defaults/%gconf-tree-gu.xml
+/etc/gconf/gconf.xml.defaults/%gconf-tree-he.xml
+/etc/gconf/gconf.xml.defaults/%gconf-tree-hi.xml
+/etc/gconf/gconf.xml.defaults/%gconf-tree-hr.xml
+/etc/gconf/gconf.xml.defaults/%gconf-tree-hu.xml
+/etc/gconf/gconf.xml.defaults/%gconf-tree-id.xml
+/etc/gconf/gconf.xml.defaults/%gconf-tree-it.xml
+/etc/gconf/gconf.xml.defaults/%gconf-tree-ja.xml
+/etc/gconf/gconf.xml.defaults/%gconf-tree-ka.xml
+/etc/gconf/gconf.xml.defaults/%gconf-tree-kn.xml
+/etc/gconf/gconf.xml.defaults/%gconf-tree-ko.xml
+/etc/gconf/gconf.xml.defaults/%gconf-tree-lt.xml
+/etc/gconf/gconf.xml.defaults/%gconf-tree-lv.xml
+/etc/gconf/gconf.xml.defaults/%gconf-tree-mai.xml
+/etc/gconf/gconf.xml.defaults/%gconf-tree-mg.xml
+/etc/gconf/gconf.xml.defaults/%gconf-tree-mk.xml
+/etc/gconf/gconf.xml.defaults/%gconf-tree-ml.xml
+/etc/gconf/gconf.xml.defaults/%gconf-tree-mn.xml
+/etc/gconf/gconf.xml.defaults/%gconf-tree-mr.xml
+/etc/gconf/gconf.xml.defaults/%gconf-tree-nb.xml
+/etc/gconf/gconf.xml.defaults/%gconf-tree-ne.xml
+/etc/gconf/gconf.xml.defaults/%gconf-tree-nl.xml
+/etc/gconf/gconf.xml.defaults/%gconf-tree-nn.xml
+/etc/gconf/gconf.xml.defaults/%gconf-tree-nso.xml
+/etc/gconf/gconf.xml.defaults/%gconf-tree-or.xml
+/etc/gconf/gconf.xml.defaults/%gconf-tree-pa.xml
+/etc/gconf/gconf.xml.defaults/%gconf-tree-pl.xml
+/etc/gconf/gconf.xml.defaults/%gconf-tree-pt.xml
+/etc/gconf/gconf.xml.defaults/%gconf-tree-pt_BR.xml
+/etc/gconf/gconf.xml.defaults/%gconf-tree-ro.xml
+/etc/gconf/gconf.xml.defaults/%gconf-tree-ru.xml
+/etc/gconf/gconf.xml.defaults/%gconf-tree-sk.xml
+/etc/gconf/gconf.xml.defaults/%gconf-tree-sl.xml
+/etc/gconf/gconf.xml.defaults/%gconf-tree-sq.xml
+/etc/gconf/gconf.xml.defaults/%gconf-tree-sr.xml
+/etc/gconf/gconf.xml.defaults/%gconf-tree-sr@ije.xml
+/etc/gconf/gconf.xml.defaults/%gconf-tree-sr@latin.xml
+/etc/gconf/gconf.xml.defaults/%gconf-tree-sv.xml
+/etc/gconf/gconf.xml.defaults/%gconf-tree-ta.xml
+/etc/gconf/gconf.xml.defaults/%gconf-tree-te.xml
+/etc/gconf/gconf.xml.defaults/%gconf-tree-th.xml
+/etc/gconf/gconf.xml.defaults/%gconf-tree-tr.xml
+/etc/gconf/gconf.xml.defaults/%gconf-tree-uk.xml
+/etc/gconf/gconf.xml.defaults/%gconf-tree-vi.xml
+/etc/gconf/gconf.xml.defaults/%gconf-tree-xh.xml
+/etc/gconf/gconf.xml.defaults/%gconf-tree-zh_CN.xml
+/etc/gconf/gconf.xml.defaults/%gconf-tree-zh_HK.xml
+/etc/gconf/gconf.xml.defaults/%gconf-tree-zh_TW.xml
+/etc/gconf/gconf.xml.defaults/%gconf-tree-zu.xml
+/etc/gconf/gconf.xml.defaults/%gconf-tree.xml
+/etc/gdm/custom.conf.livna-config-backup
+/etc/group-
+/etc/iscsi/initiatorname.iscsi
+/etc/mdadm.conf
+/etc/nsswitch.conf.bak
+/etc/pki/CA/certs/RedHat_IS_CA_Root.cert
+/etc/pki/nssdb/pkcs11.txt.rpmnew
+/etc/pm/last_known_working.quirkdb
+/etc/prelink.cache
+/etc/rc.d/init.d/livesys
+/etc/rc.d/init.d/livesys-late
+/etc/resolv.conf
+/etc/rpm/macros.imgcreate
+/etc/sabayon/users.xml
+/etc/selinux/targeted/contexts/netfilter_contexts
+/etc/ssh/ssh_host_dsa_key.pub
+/etc/ssh/ssh_host_key.pub
+/etc/ssh/ssh_host_rsa_key.pub
+/etc/sysconfig/clock
+/etc/sysconfig/firstboot
+/etc/sysconfig/grub
+/etc/sysconfig/i18n
+/etc/sysconfig/kernel
+/etc/sysconfig/keyboard
+/etc/sysconfig/network
+/etc/sysconfig/networking/profiles/default/hosts
+/etc/sysconfig/networking/profiles/default/resolv.conf
+/etc/tgt/conf.d/storage0.conf
+/etc/udev/rules.d/70-persistent-cd.rules
+/etc/udev/rules.d/70-persistent-net.rules
+/etc/yum.repos.d/fedora-chromium.repo
+/etc/yum.repos.d/fedora-firefox4.repo
+/etc/yum.repos.d/fedora-virt-preview.repo
+/usr/share/doc/etcdata-0.1
+/usr/share/doc/etcdata-0.1/MANIFEST
+/usr/share/doc/etcdata-0.1/README
