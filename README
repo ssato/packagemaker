@@ -60,6 +60,12 @@ TODO
 
 * correct wrong English expressions
 * define schema for input (JSON, YAML?, XML?, ...)
+
+  * support VirtualFileInfo (or whatever) model: its content is embedded in
+    JSON data and will be generated on demand.
+  * and more, perhasp, its content will be gotten from external site pointed by
+    URL reference in JSON data
+
 * more complete tests
 * stabilize the API of the plugin system
 * sort out command line options: Work in progress
