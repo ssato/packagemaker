@@ -153,5 +153,19 @@ class Test_00_single_file_rpm(unittest.TestCase):
         rpms = glob.glob(self.rpm_pattern + ".%s.rpm" % get_arch())
         self.assertTrue(len(rpms) > 0)
 
+    def test_06_generated_file__wo_mock_w_relations(self):
+        if not helper_is_rpm_based_system():
+            return
+
+        target = os.path.join(self.workdir, "aaa.txt")
+        os.system("touch " + target)
+
+        open(self.listfile, "w").write("%s\n" % target)
+
+        helper_run_with_args(self.args + " --upto build --no-mock --relations requires:python,python-nose")
+
+        rpms = glob.glob(self.rpm_pattern + "noarch.rpm")
+        self.assertTrue(len(rpms) > 0)
+
 
 # vim: set sw=4 ts=4 expandtab:

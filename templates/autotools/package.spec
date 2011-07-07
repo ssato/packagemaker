@@ -21,7 +21,7 @@ BuildArch:      noarch
 #end for
 #for $rel in $relations
 #set $rel_targets = ", ".join($rel.targets)
-$rel.type:\t$rel_targets
+$rel.type:       $rel_targets
 #end for
 
 
