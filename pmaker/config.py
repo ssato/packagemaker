@@ -71,7 +71,7 @@ Examples:
   %prog -n foo files.list
   cat files.list | %prog -n foo -  # same as above.
 
-  %prog -n foo --pversion 0.2 -l MIT files.list
+  %prog -n foo --pversion 0.2 --license MIT files.list
   %prog -n foo --relations "requires:httpd,/sbin/service;obsoletes:foo-old" files.list
 """
 
