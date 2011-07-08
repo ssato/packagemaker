@@ -11,7 +11,7 @@
 Name:           packagemaker
 Version:        @VERSION@
 Release:        1%{?dist}
-Summary:        Tool to help building packages of existing files on your system
+Summary:        Tool to make packages of files on your system automatically
 Group:          System Environment/Base
 License:        GPLv3+
 URL:            https://github.com/ssato/packagemaker
@@ -28,10 +28,10 @@ Requires:       python
 
 
 %description
-PackageMaker is a tool can automates the packaging process. It helps building
-packages of existing files on your system by automating almost all of the steps
-needed for packaging: arrange source tree, create makefiles and rpm specs or
-debian packaging files, etc.
+PackageMaker is a tool can automate process to package files on your system. It
+helps building packages of existing files, dirs and symlinks on your system by
+automating almost all of the steps needed for packaging: arrange source tree,
+create makefiles and rpm specs or debian packaging files, etc.
 
 
 %prep
@@ -66,10 +66,21 @@ rm -rf $RPM_BUILD_ROOT
 %{python_sitelib}/pmaker
 %{python_sitelib}/pmaker/*.py*
 %{python_sitelib}/pmaker/*/*.py*
+#%{python_sitelib}/pmaker/*/tests/*.py*
 %{_bindir}/*
 %{_datadir}/pmaker/templates/*
 
 
 %changelog
+* Thu Jul 07 2011 Satoru SATOH <satoru.satoh@gmail.com> - 0.3.0.20110707-1
+- Fixed wrong option '-l' found in help text
+
+* Mon Jul 04 2011 Satoru SATOH <satoru.satoh@gmail.com> - 0.3.0-1
+- New modularized 0.3.0 release
+- Removed some options: --build-self, --tests, etc.
+- Changed the option --mail to --email to make it consistent with myrepo in rpmkit
+- Git repository was moved
+- And some more bug fixes
+
 * Thu Jun 30 2011 Satoru SATOH <satoru.satoh@gmail.com> - 0.2.99.20110630-1
 - Initial (static) packaging
