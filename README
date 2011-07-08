@@ -1,7 +1,7 @@
 About
 ================
 
-PackageMaker is a tool to automates the packaging process.
+PackageMaker is a tool to automate process to package files, dirs and symlinks.
 
 It helps building packages of existing files on your system by automating
 almost all of the steps needed for packaing: arrange source tree, create
@@ -20,9 +20,9 @@ list, and then:
 3. build package such as rpm, src.rpm, deb, etc.
 
 
-NOTE: The permissions of the files might be lost during packaging. If you want
-to ensure these are saved or force set permissions as you wanted, specify these
-explicitly in Makefile.am or rpm spec, etc.
+NOTE: The permissions of the files might be lost during packaging process. If
+you want to ensure these are saved or force set permissions as you wanted,
+specify these explicitly in Makefile.am or rpm spec, etc.
 
 
 How to build
@@ -41,7 +41,7 @@ It takes some time to make a rpm but should be better, I think.
 Build w/o mock
 ------------------------
 
-It's easier than the above way but only possible to make a rpm on build host.
+It's easier than the above but only possible to make a rpm for build host.
 
 1. python setup.py rpm
 
