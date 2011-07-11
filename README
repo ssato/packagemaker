@@ -99,7 +99,7 @@ Around the same time I started working on PackageMaker, Magnus-san developed
 buildrpm and I was very impressed with it. Implementation was completely
 different but PackageMaker and buildrpm do the same thing basically.
 
-I believe PackageMaker is usefull and helps you but if you want features
+I believe PackageMaker is useful and helps you but if you want features
 PackageMaker lacks or will not have or you don't like it, take a look at
 buildrpm:
 
