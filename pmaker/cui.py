@@ -96,15 +96,6 @@ def main(argv=sys.argv, collector=COLLECTORS):
     if options.format:
         options.driver = options.driver.split(".")[0] + "." + options.format
 
-    if options.scriptlets:
-        try:
-            scriptlets = open(options.scriptlets).read()
-        except IOError:
-            logging.warn(" Could not open %s to read scriptlets" % options.scriptlets)
-            scriptlets = ""
-
-        options.scriptlets = scriptlets
-
     pkg = Package(options)
     #pprint.pprint(pkg.as_dict())
 

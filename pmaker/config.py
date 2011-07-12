@@ -255,7 +255,6 @@ def parse_args(argv=sys.argv[1:], defaults=None, upto=UPTO,
     rog.add_option("", "--dist", help="Target distribution (for mock) [%default]")
     rog.add_option("", "--no-rpmdb", action="store_true", help="Do not refer rpm db to get extra information of target files")
     rog.add_option("", "--no-mock", action="store_true", help="Build RPM with only using rpmbuild (not recommended)")
-    rog.add_option("", "--scriptlets", help="Specify the file contains rpm scriptlets")
     p.add_option_group(rog)
 
     p.add_option("", "--force", action="store_true", help="Force going steps even if the steps looks done")
@@ -371,7 +370,6 @@ class Config(object):
 
             no_rpmdb = False,
             no_mock = False,
-            scriptlets = "",
         )
 
         return defaults
