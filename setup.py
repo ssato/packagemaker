@@ -28,8 +28,7 @@ def list_paths(path_pattern="*", topdir=curdir, pred=os.path.isfile):
 templates_topdir = "share/pmaker/templates"
 
 data_files = [
-# TODO:
-#   ("share/man/man1", ["man/pmaker.1", ])
+    ("share/man/man8", ["doc/pmaker.8", ]),
     (os.path.join(templates_topdir, "common"), list_paths("templates/common/*")),
     (os.path.join(templates_topdir, "common/debian"), list_paths("templates/common/debian/*")),
     (os.path.join(templates_topdir, "common/debian/source"), list_paths("templates/common/debian/source/*")),

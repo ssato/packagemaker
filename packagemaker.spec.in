@@ -69,9 +69,13 @@ rm -rf $RPM_BUILD_ROOT
 #%{python_sitelib}/pmaker/*/tests/*.py*
 %{_bindir}/*
 %{_datadir}/pmaker/templates/*
+%{_datadir}/man/man8/*
 
 
 %changelog
+* Thu Jul 14 2011 Satoru SATOH <ssato@redhat.com> - 0.3.0.20110714-1
+- Added a man page
+
 * Thu Jul 07 2011 Satoru SATOH <satoru.satoh@gmail.com> - 0.3.0.20110707-1
 - Fixed wrong option '-l' found in help text
 

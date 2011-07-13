@@ -1,0 +1,190 @@
+.TH PMAKER "8" "May 2010" "packagemaker" "User Commands"
+.SH NAME
+pmaker \- Automated Package Maker
+.SH SYNOPSIS
+.B pmaker [Options...] PATH_LIST_FILE
+
+
+.SH DESCRIPTION
+.B PackageMaker(pmaker)
+is a tool to automate process to package files, dirs and symlinks.
+.LP
+It helps building packages of existing files on your system by automating
+almost all of the steps needed for packaing: arrange source tree, create
+makefiles and rpm specs or debina packaging files, etc.
+
+
+.SH Packaging Steps
+.B Pmaker
+will try gathering the information of files, dirs and symlinks in given path
+list, and then makes a package contains these. By default, it will goes upto 
+the final step of packaing process: make a package but it can be controled with 
+.B upto
+option. The possible packaing steps are:
+.TP
+.B setup
+Create the src tree and copy files, dirs and symlinks in given path list file.
+.TP
+.B preconfigure
+Generate build-aux and package format specific files: Makefile.am,
+configure.ac, rpm spec, etc.
+.TP
+.B configure
+Generate build files such like configure
+.TP
+.B sbuild
+Create a source package
+.TP
+.B build
+Create binary packages
+
+.SH Path list file
+Argument PATH_LIST_FILE is a path of input file contains paths in various
+format or "-" (stdin). The option
+.B --itype 
+specifies its format and supported format is:
+.TP
+.B filelist
+is the simplest input format. In this format, lines are consist of aboslute
+path of target file/dir/symlink.  The lines starting with "#" in the list file
+are ignored, and "*" in paths are intepreted as glob matching pattern and will
+be expanded to the files match this pattern.  For example, if there were files
+ 'c', 'd' and 'e' in the dir and the path '/a/b/*' was given, it's just same as
+ '/a/b/c', '/a/b/d' and '/a/b/e' were given.
+.TP
+.B filelist.ext
+is similar to filelist but allows specifying attributes such like target
+(installation path), uid/gid (owner), rpmattr (rpm specific attributes). These
+attributes follows path spec in filelist and separated with comma, e.g.
+"/etc/auto.*,uid=0,gid=0", "/etc/rc.d/rc,target=/etc/init.d/rc,uid=0,gid=0",
+"/etc/rc.d/rc.local,rpmattr=%config(noreplace)". 
+.TP
+.B filelist.json
+is simillar to filelist.ext but formated in JSON. [TBD]
+
+
+.SH OPTIONS
+.TP
+.B \-\-version
+Show program's version number and exit
+.TP
+.B \-h, \-\-help
+Show this help message and exit
+.TP
+.B \-C CONFIG, \-\-config=CONFIG
+Specify Configuration file path
+.TP
+.B \-\-force
+Force going steps even if the steps looks done
+.TP
+.B \-v, \-\-verbose
+Verbose mode
+.TP
+.B \-\-debug
+Debug mode (same as -vv)
+.SS "Build options"
+.IX Subsection "Build options"
+.IP \-w WORKDIR, \-\-workdir=WORKDIR
+.IX Item "-w WORKDIR, --workdir=WORKDIR"
+Working dir to dump outputs [current dir]
+.IP "\-\-upto=UPTO"
+.IX Item "--upto=UPTO"
+Packaging step you want to proceed to: setup (setup the package' src dir and
+copy target files in it), preconfigure (arrange build aux files such like
+configure.ac, Makefile.am, rpm specfile, debian/* and so on. python-cheetah
+will be needed.), configure (setup src dir to run './configure'. autotools will
+be needed), sbuild (build src package[s]), build (build binary package[s])
+[build]
+.IP "\-\-format=FORMAT"
+.IX Item "--format=FORMAT"
+Package format: tgz, rpm, deb [automatically detected based on os]
+.IP "\-\-driver=DRIVER"
+.IX Item "--driver=DRIVER"
+Packaging driver: autotools.rpm, autotools.tgz [autotools.FORMAT]
+.IP "\-\-itype"
+.IX Item "--itype=ITYPE"
+Input type: filelist, filelist.ext, filelist.json [filelist]
+.IP "\-\-destdir=DESTDIR"
+.IX Item "--destdir=DESTDIR"
+Destdir (prefix) you want to strip from installed path []. For example, if the
+target path is "/builddir/dest/usr/share/data/foo/a.dat", and you want to strip
+"/builddir/dest" from the path when packaging "a.dat" and make it installed as
+"/usr/share/foo/a.dat" with the package , you can accomplish that by this
+option: "-- destdir=/builddir/destdir"
+.IP "\-P TEMPLATE_PATHS, \-\-template\-path=TEMPLATE_PATHS"
+.IX Item "-P TEMPLATE_PATHS, --template-path=TEMPLATE_PATHS"
+Specify template search path
+.SS "Package metadata options"
+.IX Subsection "Package metadata options"
+.IP "\-n NAME, \-\-name=NAME"
+.IX Item "-n NAME, --name=NAME"
+Package name (must)
+.IP "\-\-group=GROUP"
+.IX Item "--group=GROUP"
+The group of the package [System Environment/Base]
+.IP "\-\-license=LICENSE" 
+.IX Item "--license=LICENSE"
+The license of the package [GPLv2+]
+.IP "\-\-url=URL"
+.IX Item "--url=URL"
+The url of the package [http://localhost.localdomain]
+.IP "\-\-summary=SUMMARY"
+.IX Item "--summary=SUMMARY"
+The summary of the package
+.IP "\-z COMPRESSOR, \-\-compressor=COMPRESSOR"
+.IX Item "-z COMPRESSOR, --compressor=COMPRESSOR"
+Tool to compress src archive when building src distribution [detected
+automatically]
+.IP "\-\-arch"
+.IX Item "--arch"
+Make package arch-dependent [false = noarch]
+.IP "\-\-relations=RELATIONS"
+.IX Item "--relations=RELATIONS"
+Semicolon (;) separated list of a pair of relation type and targets separated
+with comma, separated with colon (:), e.g.
+"requires:curl,sed;obsoletes:foo-old".  Expressions of relation types and
+targets are varied depends on package format to use
+.IP "\-\-packager=PACKAGER"
+.IX Item "--packager=PACKAGER"
+Specify packager's name [automatically detected from git configuration if
+available]
+.IP "\-\-email=EMAIL"
+.IX Item "--email=EMAIL"
+Specify packager's mail address [automatically detected from git configuration
+if available]
+.IP "\-\-pversion=PVERSION"
+.IX Item "--pversion=PVERSION"
+Specify the package's version [0.1]
+.IP "\-\-release=RELEASE"
+.IX Item "--release=RELEASE"
+Specify the package's release [1]
+.IP "\-\-ignore-owner"
+.IX Item "--ignore-owner"
+Ignore owner and group of files and then treat as root's
+.IP "\-\-changelog=CHANGELOG"
+.IX Item "--changelog=CHANGELOG"
+Specify text file contains changelog
+
+.SS "RPM Options"
+.IX Subsection "RPM Options"
+.IP "\-\-dist=DIST"
+.IX Item "--dist=DIST"
+Target distribution (for mock) [detected automatically]
+.IP "\-\-no-rpmdb"
+.IX Item "--no-rpmdb"
+Do not refer rpm db to get extra information of target files
+.IP "\-\-no-mock"
+.IX Item "--no-mock"
+Build RPM with only using rpmbuild (not recommended)
+
+
+.SH FILES
+.I /etc/pmaker.conf
+.br
+.I /etc/pmaker.d/*.conf
+.br
+.I ~/.pmakerrc
+
+
+.SH AUTHORS
+Satoru SATOH <ssato@redhat.com>
