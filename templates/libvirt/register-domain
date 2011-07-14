@@ -22,6 +22,7 @@ fi
 $libvirtd_check 2>&1 > /dev/null; rc=$?
 
 if test $rc != 0; then  # libvirtd is not running.
+    # FIXME: This may not be enough but what we can do other than this here?
     install -m 600 ${domain_xml} /etc/libvirt/qemu/
     exit 0
 fi

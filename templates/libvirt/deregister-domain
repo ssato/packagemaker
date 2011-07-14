@@ -27,13 +27,10 @@ if test $rc != 0; then  # libvirtd is not running.
 fi
 
 if $($virsh list | grep -q ${domain_name} 2>/dev/null); then
-    cat << EOF
-${domain_name} is running now. Updates will be applied later.
-EOF
+    echo "${domain_name} is running now. Updates will be applied later."
 fi
 
 echo "[Info] De-registering: ${domain_name}"
-rm -f /etc/libvirt/qemu/${dmain_name}.xml
-
+$virsh undefine ${domain_name}
 #end raw
 # vim: set sw=4 ts=4 et:
