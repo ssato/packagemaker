@@ -70,8 +70,6 @@ install -m 755 revert-overrides \$RPM_BUILD_ROOT%{_libexecdir}/%{name}-overrides
 %clean
 rm -rf \$RPM_BUILD_ROOT
 
-$getVar("scriptlets", "")
-
 #if $conflicted_fileinfos
 %post           overrides
 if [ $1 = 1 -o $1 = 2 ]; then    # install or update

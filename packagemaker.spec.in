@@ -10,7 +10,7 @@
 
 Name:           packagemaker
 Version:        @VERSION@
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        Tool to make packages of files on your system automatically
 Group:          System Environment/Base
 License:        GPLv3+
@@ -73,6 +73,9 @@ rm -rf $RPM_BUILD_ROOT
 
 
 %changelog
+* Thu Jul 14 2011 Satoru SATOH <ssato@redhat.com> - 0.3.0.20110714-2
+- Fixed bugs related to deprecated and removed option --scriptlets
+
 * Thu Jul 14 2011 Satoru SATOH <ssato@redhat.com> - 0.3.0.20110714-1
 - Added a man page
 
