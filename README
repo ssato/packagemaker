@@ -59,6 +59,12 @@ TODO
 ================
 
 * correct wrong English expressions
+* refactor its architecture:
+
+  * make collector (generator) and packagemaker loosely-coupled
+  * separate packaging strategy (PackageMaker._scheme) and packaging format
+    (PackageMaker._format)
+
 * define schema for input (JSON, YAML?, XML?, ...)
 
   * support VirtualFileInfo (or whatever) model: its content is embedded in
