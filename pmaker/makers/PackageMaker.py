@@ -52,6 +52,10 @@ class PackageMaker(object):
     _scheme = None
     _relations = dict()
     _steps = BUILD_STEPS
+    _templates = (
+        # (template_in_relative_path, generated_file_in_relative_path),
+        # ("autotools/configure.ac", "configure.ac"),
+    )
 
     @classmethod
     def format(cls):
@@ -90,6 +94,9 @@ class PackageMaker(object):
         rels = [(self._relations.get(t, False), ts) for t, ts in options.relations]
         relmap = [dict(type=t, targets=ts) for t, ts in rels if t]
         self.package.relations = relmap
+
+    def templates(self):
+        return self._templates
 
     def shell(self, cmd_s):
         return shell(cmd_s, workdir=self.workdir)
@@ -147,7 +154,7 @@ class PackageMaker(object):
                 logging.info(msg + ". Skip the step: " + step)
                 return
 
-        getattr(self, step, do_nothing)() # TODO: or eval("self." + step)() ?
+        getattr(self, step, do_nothing)()
         self.shell("touch %s" % self.touch_file(step))
 
         if step == self.upto:
@@ -163,7 +170,8 @@ class PackageMaker(object):
         self.save()
 
     def preconfigure(self):
-        pass
+        for tmpl, out in self.templates():
+            self.genfile(tmpl, out)
 
     def configure(self):
         pass
@@ -189,6 +197,15 @@ class AutotoolsTgzPackageMaker(PackageMaker):
 
     _format = "tgz"
     _scheme = "autotools"
+    _templates = (
+        ("autotools/configure.ac", "configure.ac"),
+        ("autotools/Makefile.am", "Makefile.am"),
+        ("common/README", "README"),
+        ("common/manifest", "MANIFEST"),
+        ("common/manifest.overrides", "MANIFEST.overrides"),
+        ("common/apply-overrides", "apply-overrides"),
+        ("common/revert-overrides", "revert-overrides"),
+    )
 
     def preconfigure(self):
         if not self.package.fileinfos:
@@ -205,13 +222,7 @@ class AutotoolsTgzPackageMaker(PackageMaker):
             fi for fi in self.fileinfos if not getattr(fi, "conflicts", False)
         ]
 
-        self.genfile("autotools/configure.ac", "configure.ac")
-        self.genfile("autotools/Makefile.am", "Makefile.am")
-        self.genfile("common/README", "README")
-        self.genfile("common/manifest", "MANIFEST")
-        self.genfile("common/manifest.overrides", "MANIFEST.overrides")
-        self.genfile("common/apply-overrides", "apply-overrides")
-        self.genfile("common/revert-overrides", "revert-overrides")
+        super(AutotoolsTgzPackageMaker, self).preconfigure()
 
     def configure(self):
         logfile = os.path.join(self.workdir, "pmaker.configure.log")

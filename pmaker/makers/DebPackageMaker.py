@@ -30,24 +30,24 @@ class AutotoolsDebPackageMaker(AutotoolsTgzPackageMaker):
         "requires": "Depends",
     }
 
-    def preconfigure(self):
-        super(AutotoolsDebPackageMaker, self).preconfigure()
+    _templates = (
+        ("common/debian/rules", "debian/rules"),
+        ("autotools/debian/control", "debian/control"),
+        ("common/debian/copyright", "debian/copyright"),
+        ("common/debian/changelog", "debian/changelog"),
+        ("common/debian/dirs", "debian/dirs"),
+        ("common/debian/compat", "debian/compat"),
+        ("common/debian/source/format", "debian/source/format"),
+        ("common/debian/source/options", "debian/source/options"),
+    )
 
+    def preconfigure(self):
         debiandir = os.path.join(self.workdir, "debian")
 
-        if not os.path.exists(debiandir):
-            os.makedirs(debiandir, 0755)
-
+        os.makedirs(debiandir, 0755)
         os.makedirs(os.path.join(debiandir, "source"), 0755)
 
-        self.genfile("common/debian/rules", "debian/rules")
-        self.genfile("autotools/debian/control", "debian/control")
-        self.genfile("common/debian/copyright", "debian/copyright")
-        self.genfile("common/debian/changelog", "debian/changelog")
-        self.genfile("common/debian/dirs", "debian/dirs")
-        self.genfile("common/debian/compat", "debian/compat")
-        self.genfile("common/debian/source/format", "debian/source/format")
-        self.genfile("common/debian/source/options", "debian/source/options")
+        super(AutotoolsDebPackageMaker, self).preconfigure()
 
         os.chmod(os.path.join(self.workdir, "debian/rules"), 0755)
 

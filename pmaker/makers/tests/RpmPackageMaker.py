@@ -33,7 +33,7 @@ import unittest
 
 
 
-class TestAutotoolsRpmPackageMaker(unittest.TestCase):
+class Test_00_AutotoolsRpmPackageMaker(unittest.TestCase):
 
     def setUp(self):
         self.workdir = tempfile.mkdtemp(dir="/tmp", prefix="pmaker-tests")
@@ -97,16 +97,16 @@ class TestAutotoolsRpmPackageMaker(unittest.TestCase):
 
         self.assertTrue(os.path.exists(self.pmaker.touch_file(step)))
 
-    def test_preconfigure(self):
+    def test_01_preconfigure(self):
         self.helper_run_upto_step(STEP_PRECONFIGURE)
 
-    def test_configure(self):
+    def test_02_configure(self):
         self.helper_run_upto_step(STEP_CONFIGURE)
 
-    def test_run__sbuild(self):
+    def test_03_run__sbuild(self):
         self.helper_run_upto_step(STEP_SBUILD)
 
-    def test_run__build(self):
+    def test_04_run__build(self):
         self.helper_run_upto_step(STEP_BUILD)
 
 

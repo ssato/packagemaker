@@ -47,6 +47,11 @@ class AutotoolsRpmPackageMaker(AutotoolsTgzPackageMaker):
         self.package.no_rpmdb = options.no_rpmdb
         self.package.no_mock = options.no_mock
 
+        self._templates = super(AutotoolsRpmPackageMaker, self).templates() + (
+            ("autotools/rpm.mk", "rpm.mk"),
+            ("autotools/package.spec", "%s.spec" % self.pname),
+        )
+
     def rpmspec(self):
         return os.path.join(self.workdir, "%s.spec" % self.pname)
 
@@ -78,12 +83,6 @@ class AutotoolsRpmPackageMaker(AutotoolsTgzPackageMaker):
         else:
             cmd = on_debug_mode and "make rpm" or "make rpm V=0 > /dev/null"
             return self.shell(cmd)
-
-    def preconfigure(self):
-        super(AutotoolsRpmPackageMaker, self).preconfigure()
-
-        self.genfile("autotools/rpm.mk", "rpm.mk")
-        self.genfile("autotools/package.spec", "%s.spec" % self.pname)
 
     def sbuild(self):
         super(AutotoolsRpmPackageMaker, self).sbuild()

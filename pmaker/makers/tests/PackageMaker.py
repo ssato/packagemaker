@@ -32,7 +32,7 @@ import unittest
 
 
 
-class Test_to_srcdir(unittest.TestCase):
+class Test_00_to_srcdir(unittest.TestCase):
 
     def test_to_srcdir(self):
         srcdir = "/tmp/w/src"
@@ -43,7 +43,7 @@ class Test_to_srcdir(unittest.TestCase):
 
 
 
-class TestPackageMaker__generated_files(unittest.TestCase):
+class Test_01_PackageMaker__generated_files(unittest.TestCase):
 
     def setUp(self):
         self.workdir = tempfile.mkdtemp(dir="/tmp", prefix="pmaker-tests")
@@ -77,12 +77,12 @@ class TestPackageMaker__generated_files(unittest.TestCase):
 
         self.assertTrue(os.path.exists(pmaker.touch_file(step)))
 
-    def test_shell(self):
+    def test_00_shell(self):
         pmaker = PackageMaker(self.package, self.fileinfos, self.options)
 
         self.assertEquals(pmaker.shell("true"), 0)
 
-    def test_genfile(self):
+    def test_01_genfile(self):
         pmaker = PackageMaker(self.package, self.fileinfos, self.options)
 
         templatedir = os.path.join(self.workdir, "templates")
@@ -99,7 +99,7 @@ class TestPackageMaker__generated_files(unittest.TestCase):
         self.assertTrue(os.path.exists(os.path.join(self.workdir, outfile)))
         self.assertEquals(open(os.path.join(self.workdir, outfile)).read(), self.package.name)
 
-    def test_copyfiles(self):
+    def test_02_copyfiles(self):
         pmaker = PackageMaker(self.package, self.fileinfos, self.options)
         pmaker.copyfiles()
 
@@ -107,29 +107,29 @@ class TestPackageMaker__generated_files(unittest.TestCase):
             p = os.path.join(pmaker.srcdir, t[1:])
             self.assertTrue(os.path.exists(p))
 
-    def test_save__and__load(self):
+    def test_03_save__and__load(self):
         pmaker = PackageMaker(self.package, self.fileinfos, self.options)
         pmaker.save()
         pmaker.load()
 
-    def test_run__setup(self):
+    def test_04_run__setup(self):
         self.helper_run_upto_step(STEP_SETUP)
 
-    def test_run__preconfigure(self):
+    def test_05_run__preconfigure(self):
         self.helper_run_upto_step(STEP_PRECONFIGURE)
 
-    def test_run__configure(self):
+    def test_06_run__configure(self):
         self.helper_run_upto_step(STEP_CONFIGURE)
 
-    def test_run__sbuild(self):
+    def test_07_run__sbuild(self):
         self.helper_run_upto_step(STEP_SBUILD)
 
-    def test_run__build(self):
+    def test_08_run__build(self):
         self.helper_run_upto_step(STEP_BUILD)
 
 
 
-class TestPackageMaker__system_files(unittest.TestCase):
+class Test_02_PackageMaker__system_files(unittest.TestCase):
 
     def setUp(self):
         self.workdir = tempfile.mkdtemp(dir="/tmp", prefix="pmaker-tests")
@@ -184,21 +184,21 @@ class TestPackageMaker__system_files(unittest.TestCase):
 
         self.assertTrue(os.path.exists(self.pmaker.touch_file(step)))
 
-    def test_preconfigure(self):
+    def test_01_preconfigure(self):
         self.helper_run_upto_step(STEP_PRECONFIGURE)
 
-    def test_configure(self):
+    def test_02_configure(self):
         self.helper_run_upto_step(STEP_CONFIGURE)
 
-    def test_sbuild(self):
+    def test_03_sbuild(self):
         self.helper_run_upto_step(STEP_SBUILD)
 
-    def test_build(self):
+    def test_04_build(self):
         self.helper_run_upto_step(STEP_BUILD)
 
 
 
-class TestAutotoolsTgzPackageMaker__single(unittest.TestCase):
+class Test_03_AutotoolsTgzPackageMaker__single(unittest.TestCase):
 
     def setUp(self):
         self.workdir = tempfile.mkdtemp(dir="/tmp", prefix="pmaker-tests")
@@ -233,16 +233,16 @@ class TestAutotoolsTgzPackageMaker__single(unittest.TestCase):
 
         self.assertTrue(os.path.exists(self.pmaker.touch_file(step)))
 
-    def test_preconfigure(self):
+    def test_01_preconfigure(self):
         self.helper_run_upto_step(STEP_PRECONFIGURE)
 
-    def test_configure(self):
+    def test_02_configure(self):
         self.helper_run_upto_step(STEP_CONFIGURE)
 
-    def test_sbuild(self):
+    def test_03_sbuild(self):
         self.helper_run_upto_step(STEP_SBUILD)
 
-    def test_build(self):
+    def test_04_build(self):
         self.helper_run_upto_step(STEP_BUILD)
 
 
