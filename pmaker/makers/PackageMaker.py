@@ -52,10 +52,10 @@ class PackageMaker(object):
     _scheme = None
     _relations = dict()
     _steps = BUILD_STEPS
-    _templates = (
-        # (template_in_relative_path, generated_file_in_relative_path),
-        # ("autotools/configure.ac", "configure.ac"),
-    )
+    _templates = dict((
+        # (generated_file_in_relative_path, template_in_relative_path),
+        # ("configure.ac", "autotools/configure.ac"),
+    ))
 
     @classmethod
     def format(cls):
@@ -96,7 +96,8 @@ class PackageMaker(object):
         self.package.relations = relmap
 
     def templates(self):
-        return self._templates
+        for k, v in self._templates.iteritems():
+            yield (v, k)  # v: template, k: file to be generated
 
     def shell(self, cmd_s):
         return shell(cmd_s, workdir=self.workdir)
@@ -197,15 +198,15 @@ class AutotoolsTgzPackageMaker(PackageMaker):
 
     _format = "tgz"
     _scheme = "autotools"
-    _templates = (
-        ("autotools/configure.ac", "configure.ac"),
-        ("autotools/Makefile.am", "Makefile.am"),
-        ("common/README", "README"),
-        ("common/manifest", "MANIFEST"),
-        ("common/manifest.overrides", "MANIFEST.overrides"),
-        ("common/apply-overrides", "apply-overrides"),
-        ("common/revert-overrides", "revert-overrides"),
-    )
+    _templates = dict((
+        ("configure.ac", "autotools/configure.ac"),
+        ("Makefile.am", "autotools/Makefile.am"),
+        ("README", "common/README"),
+        ("MANIFEST", "common/manifest"),
+        ("MANIFEST.overrides", "common/manifest.overrides"),
+        ("apply-overrides", "common/apply-overrides"),
+        ("revert-overrides", "common/revert-overrides"),
+    ))
 
     def preconfigure(self):
         if not self.package.fileinfos:

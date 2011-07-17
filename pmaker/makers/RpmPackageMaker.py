@@ -47,10 +47,9 @@ class AutotoolsRpmPackageMaker(AutotoolsTgzPackageMaker):
         self.package.no_rpmdb = options.no_rpmdb
         self.package.no_mock = options.no_mock
 
-        self._templates = super(AutotoolsRpmPackageMaker, self).templates() + (
-            ("autotools/rpm.mk", "rpm.mk"),
-            ("autotools/package.spec", "%s.spec" % self.pname),
-        )
+        self._templates = super(AutotoolsRpmPackageMaker, self)._templates
+        self._templates["rpm.mk"] = "autotools/rpm.mk"
+        self._templates["%s.spec" % self.pname] = "autotools/package.spec"
 
     def rpmspec(self):
         return os.path.join(self.workdir, "%s.spec" % self.pname)

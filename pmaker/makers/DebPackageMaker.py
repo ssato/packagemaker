@@ -30,16 +30,20 @@ class AutotoolsDebPackageMaker(AutotoolsTgzPackageMaker):
         "requires": "Depends",
     }
 
-    _templates = (
-        ("common/debian/rules", "debian/rules"),
-        ("autotools/debian/control", "debian/control"),
-        ("common/debian/copyright", "debian/copyright"),
-        ("common/debian/changelog", "debian/changelog"),
-        ("common/debian/dirs", "debian/dirs"),
-        ("common/debian/compat", "debian/compat"),
-        ("common/debian/source/format", "debian/source/format"),
-        ("common/debian/source/options", "debian/source/options"),
-    )
+    def __init__(self, package, fileinfos, options):
+        super(AutotoolsDebPackageMaker, self).__init__(package, fileinfos, options)
+
+        self._templates = super(AutotoolsDebPackageMaker, self)._templates
+        self._templates.update({
+            "debian/rules": "common/debian/rules",
+            "debian/control": "autotools/debian/control",
+            "debian/copyright": "common/debian/copyright",
+            "debian/changelog": "common/debian/changelog",
+            "debian/dirs": "common/debian/dirs",
+            "debian/compat": "common/debian/compat",
+            "debian/source/format": "common/debian/source/format",
+            "debian/source/options": "common/debian/source/options",
+        })
 
     def preconfigure(self):
         debiandir = os.path.join(self.workdir, "debian")
