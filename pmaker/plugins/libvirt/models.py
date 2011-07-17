@@ -25,7 +25,7 @@ import subprocess
 
 
 
-LIBVIRT_XML_SAVEDIR = "/var/lib/%(name)s/xml"
+LIBVIRT_XML_SAVEDIR = "/var/lib/%(name)s"
 
 
 
