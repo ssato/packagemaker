@@ -18,10 +18,14 @@ from pmaker.plugins.libvirt.base import *
 from pmaker.utils import rm_rf
 from pmaker.shell import shell
 
+import os
 import os.path
 import tempfile
 import unittest
 
+
+
+CURDIR = os.getcwd()
 
 
 TEST_DOMAIN_XML_0 = """\
@@ -114,6 +118,38 @@ class TestXpathEval(unittest.TestCase):
 
         self.assertEquals(images[0], "/var/lib/libvirt/images/rhel-5-5-guest-1/disk-0.qcow2")
         self.assertEquals(images[1], "/var/lib/libvirt/images/rhel-5-5-guest-1/disk-1.qcow2")
+
+
+
+class Test_get_base_image_path(unittest.TestCase):
+
+    _multiprocess_shared_ = True
+
+    def setUp(self):
+        self.workdir = tempfile.mkdtemp(dir="/tmp", prefix="pplx-")
+
+    def tearDown(self):
+        rm_rf(self.workdir)
+
+    def test_get_base_image_path(self):
+        ib_relpath = "test0-base.img"
+        i_relpath = "test0.img"
+
+        ib_abspath = os.path.join(self.workdir, ib_relpath)
+        i_abspath = os.path.join(self.workdir, i_relpath)
+
+        shell("qemu-img create -f qcow2 %s 10M" % ib_relpath, self.workdir)
+        shell("qemu-img create -f qcow2 -b %s %s" % (ib_relpath, i_relpath), self.workdir)
+
+        self.assertEquals(get_base_image_path(i_abspath), ib_abspath)
+
+    def test_get_base_image_path__not_base(self):
+        ib_relpath = "test0-base.img"
+        ib_abspath = os.path.join(self.workdir, ib_relpath)
+
+        shell("qemu-img create -f qcow2 %s 10M" % ib_abspath, CURDIR)
+
+        self.assertEquals(get_base_image_path(ib_abspath), None)
 
 
 # vim:sw=4:ts=4:et:

@@ -14,14 +14,12 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
-from pmaker.plugins.libvirt.base import xpath_eval, xml_context, VMM
+from pmaker.plugins.libvirt.base import *
 from pmaker.utils import unique
 
 import libvirt
 import logging
 import os
-import re
-import subprocess
 
 
 
@@ -92,8 +90,9 @@ class LibvirtDomain(LibvirtObject):
 
         images = xpath_eval('/domain/devices/disk[@type="file"]/source/@file', ctx=ctx)
 
-        dbs = [(img, self.get_base_image_path(img)) for img in images]
-        self.base_images = [db[1] for db in dbs if db[1]] + [db[0] for db in dbs if not db[1]]
+        dbs = [(img, get_base_image_path(img)) for img in images]
+        self.base_images = [db[1] for db in dbs if db[1] is not None] + \
+            [db[0] for db in dbs if db[1] is None]
         self.delta_images = [db[0] for db in dbs if db[1]]
 
     def status(self):
@@ -113,19 +112,6 @@ class LibvirtDomain(LibvirtObject):
 
     def is_shutoff(self):
         return self.status() == libvirt.VIR_DOMAIN_SHUTOFF
-
-    def get_base_image_path(self, image_path):
-        try:
-            out = subprocess.check_output("qemu-img info %s" % image_path, shell=True)
-            m = re.match(r"^backing file: (.+) \(actual path: (.+)\)$", out.split("\n")[-2])
-            if m:
-                (delta, base) = m.groups()
-                return base
-            else:
-                return False
-        except Exception, e:
-            logging.warn("get_delta_image_path: " + str(e))
-            pass
 
 
 

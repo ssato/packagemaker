@@ -16,6 +16,8 @@
 #
 import libvirt
 import libxml2
+import re
+import subprocess
 
 
 
@@ -37,6 +39,25 @@ def xpath_eval(xpath, xmlfile=False, ctx=None):
         ctx = xml_context(xmlfile)
 
     return [r.content for r in ctx.xpathEval(xpath)]
+
+
+def get_base_image_path(image_path):
+    """Resolve the path of base image for given image path with using qemu-img.
+
+    Returns None if given image is not a delta image.
+    """
+    try:
+        out = subprocess.check_output("qemu-img info " + image_path, shell=True)
+        m = re.match(r"^backing file: (.+) \(actual path: (.+)\)$", out.split("\n")[-2])
+        if m:
+            (delta, base) = m.groups()
+            return base
+
+    except Exception, e:
+        logging.warn("get_delta_image_path: " + str(e))
+        pass
+
+    return None
 
 
 # vim:sw=4:ts=4:et:
