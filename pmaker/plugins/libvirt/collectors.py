@@ -14,15 +14,10 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
-from pmaker.plugins.libvirt.base import *
-from pmaker.plugins.libvirt.modifiers import *
+from pmaker.plugins.libvirt.models import LibvirtDomain
+from pmaker.plugins.libvirt.modifiers import LibvirtObjectXMLModifier
+from pmaker.collectors.Collectors import FilelistCollector
 from pmaker.utils import unique
-
-import libvirt
-import logging
-import os
-import re
-import subprocess
 
 
 
@@ -31,7 +26,7 @@ class LibvirtDomainCollector(FilelistCollector):
     _type = "libvirt.domain"
 
     def __init__(self, domname, options):
-        super(LibvirtDomainCollector, self).__init__(domname, pkgname, options)
+        super(LibvirtDomainCollector, self).__init__(domname, options)
 
         self.domain = LibvirtDomain(domname)
         self.modifiers.append(LibvirtObjectXMLModifier(self.domain))
