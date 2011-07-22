@@ -78,7 +78,8 @@ class FileInfoFactory(object):
 
     def create(self, path, attrs=None, fileinfo_map=FILEINFOS,
             use_pyxattr=PYXATTR_ENABLED):
-        """Factory method. Create and return the *Info instance.
+        """
+        Factory method. Creates and returns the *Info instance.
 
         @path   str   Object path (relative or absolute)
         @attrs  dict  Attributes set to FileInfo object result after creation
