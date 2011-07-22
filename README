@@ -61,7 +61,10 @@ TODO
 * correct wrong English expressions
 * refactor its architecture:
 
-  * make collector (generator) and packagemaker loosely-coupled
+  * central configuration management
+  * central object registration system
+  * plugin system: stabilize the API of the plugin system
+  * make collector (generator) and packagemaker classes loosely-coupled
   * separate packaging strategy (PackageMaker._scheme) and packaging format
     (PackageMaker._format)
 
@@ -73,7 +76,6 @@ TODO
     URL reference in JSON data
 
 * more complete tests
-* stabilize the API of the plugin system
 * sort out command line options: Work in progress
 * eliminate the strong dependency to rpm and make it runnable on debian based
   systems (w/o rpm-python)
