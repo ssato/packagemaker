@@ -14,6 +14,9 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
+from pmaker.globals import TYPE_FILE
+
+
 class Target(object):
 
     def __init__(self, path, attrs={}):
@@ -27,6 +30,15 @@ class Target(object):
             setattr(self, attr, val)
             self.attrs.append(attr)
 
+        # FIXME: Ugly
+        if "virtual" in attrs.keys():
+            self._is_virtual = True
+        else:
+            self._is_virtual = False
+
+        if "content" in attrs.keys():
+            self.type = TYPE_FILE
+
     def __cmp__(self, other):
         return cmp(self.path, other.path)
 
@@ -35,6 +47,9 @@ class Target(object):
 
     def path(self):
         return path
+
+    def is_virtual(self):
+        return self._is_virtual
 
 
 # vim: set sw=4 ts=4 expandtab:

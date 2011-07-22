@@ -14,6 +14,7 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
+from pmaker.models.FileInfo import VirtualFileInfo, VirtualDirInfo, VirtualSymlinkInfo
 from pmaker.globals import *  # TYPE_*, FILEINFOS, PYXATTR_ENABLED
 from pmaker.utils import checksum
 
@@ -114,6 +115,30 @@ class FileInfoFactory(object):
                 setattr(fi, attr, val)
 
         return fi
+
+    def createFromTarget(self, target):
+        params = dict(path=target.path)
+
+        for k in ("mode", "uid", "gid", "checksum"):
+            v = getattr(target, k, False)
+            if v:
+                params[k] = v
+
+        _type = getattr(target, "type", TYPE_FILE)
+
+        if _type == TYPE_FILE:
+            _cls = VirtualFileInfo
+
+        elif _type == TYPE_DIR:
+            _cls = VirtualDirInfo
+
+        elif _type == TYPE_SYMLINK:
+            _cls = VirtualSymlinkInfo
+
+        else:
+            raise RuntimeError(" Unknown type is specified for virtual object: path=" + target.path)
+
+        return _cls(target.path, **params)
 
 
 # vim: set sw=4 ts=4 expandtab:

@@ -150,7 +150,10 @@ class FilelistCollector(Collector):
         @listfile  str  File, dir and symlink paths list
         """
         for target in self.list_targets(listfile):
-            fi = self.fi_factory.create(target.path)
+            if target.is_virtual():
+                fi = self.fi_factory.createFromTarget(target)
+            else:
+                fi = self.fi_factory.create(target.path)
 
             # filter out if any filter(fi) -> True
             filtered = any(filter(fi) for filter in self.filters)

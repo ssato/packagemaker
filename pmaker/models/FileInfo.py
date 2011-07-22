@@ -161,6 +161,9 @@ class VirtualFileInfo(FileInfo):
     """
     operations = VirtualFileOperations
 
+    def __init__(self, path, mode=33188, uid=0, gid=0, checksum=checksum(), xattrs={}):
+        super(VirtualFileInfo, self).__init__(path, mode, uid, gid, checksum, xattrs)
+
 
 
 class VirtualDirInfo(DirInfo):
@@ -168,12 +171,18 @@ class VirtualDirInfo(DirInfo):
     """
     operations = VirtualDirOperations
 
+    def __init__(self, path, mode=16877, uid=0, gid=0, checksum=checksum(), xattrs={}):
+        super(VirtualDirInfo, self).__init__(path, mode, uid, gid, checksum, xattrs)
+
 
 
 class VirtualSymlinkInfo(SymlinkInfo):
     """Likewise but this is for symlinks.
     """
     operations = VirtualSymlinkOperations
+
+    def __init__(self, path, mode=41471, uid=0, gid=0, checksum=checksum(), xattrs={}):
+        super(VirtualSymlinkInfo, self).__init__(path, mode, uid, gid, checksum, xattrs)
 
 
 
@@ -185,9 +194,6 @@ def init():
     SymlinkInfo.register()
     OtherInfo.register()
     UnknownInfo.register()
-    VirtualFileInfo.register()
-    VirtualDirInfo.register()
-    VirtualSymlinkInfo.register()
 
 
 # vim: set sw=4 ts=4 expandtab:
