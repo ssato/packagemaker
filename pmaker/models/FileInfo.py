@@ -115,10 +115,7 @@ class DirInfo(FileInfo):
 
     operations = DirOperations
     filetype = TYPE_DIR
-
-    def __init__(self, path, mode, uid, gid, checksum, xattrs):
-        super(DirInfo, self).__init__(path, mode, uid, gid, checksum, xattrs)
-        self.perm_default = "0755"
+    perm_default = "0755"
 
 
 
@@ -141,9 +138,6 @@ class OtherInfo(FileInfo):
     """
     filetype = TYPE_OTHER
     is_copyable = False
-
-    def __init__(self, path, mode, uid, gid, checksum, xattrs):
-        super(OtherInfo, self).__init__(path, mode, uid, gid, checksum, xattrs)
 
 
 
