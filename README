@@ -61,7 +61,10 @@ TODO
 * correct wrong English expressions
 * refactor its architecture:
 
-  * central configuration management
+  * central configuration management:
+
+    * package metadata passed thru JSON/YAML/XML data
+
   * central object registration system
   * plugin system: stabilize the API of the plugin system
   * make collector (generator) and packagemaker classes loosely-coupled
