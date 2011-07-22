@@ -65,7 +65,7 @@ class Collector(object):
 
     def collect(self, *args, **kwargs):
         if not self.enabled():
-            raise RuntimeError("Pluing %s cannot run as necessary function is not available." % self.__name__)
+            raise RuntimeError("Pluing %s is disabled because required function is not available." % self.__name__)
 
     def get_modifiers(self):
         """
