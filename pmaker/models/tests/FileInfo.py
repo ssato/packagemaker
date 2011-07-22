@@ -74,4 +74,56 @@ class TestSymlinkInfo(unittest.TestCase):
         self.assertFalse(fi.need_to_chmod())
 
 
+
+class TestVirtualFileInfo(unittest.TestCase):
+
+    def test__init__(self):
+        path = "/etc/hosts"
+
+        st = os.lstat(path)
+        (mode, uid, gid) = (st.st_mode, st.st_uid, st.st_gid)
+        csum = checksum(path)
+
+        fi = VirtualFileInfo(path, mode, uid, gid, csum, NULL_DICT)
+        self.assertTrue(isinstance(fi, VirtualFileInfo))
+        self.assertTrue(fi.type(), TYPE_FILE)
+
+
+
+class TestVirtualDirInfo(unittest.TestCase):
+
+    def test__init__(self):
+        path = "/etc"
+
+        st = os.lstat(path)
+        (mode, uid, gid) = (st.st_mode, st.st_uid, st.st_gid)
+        csum = checksum()
+
+        fi = VirtualDirInfo(path, mode, uid, gid, csum, NULL_DICT)
+        self.assertTrue(isinstance(fi, VirtualDirInfo))
+        self.assertTrue(fi.type(), TYPE_DIR)
+
+
+
+class TestVirtualSymlinkInfo(unittest.TestCase):
+
+    def setUp(self):
+        self.workdir = tempfile.mkdtemp(dir="/tmp", prefix="pmaker-tests")
+
+    def tearDown(self):
+        rm_rf(self.workdir)
+
+    def test__init__(self):
+        path = os.path.join(self.workdir, "hosts")
+        os.symlink("/etc/hosts", path)
+
+        st = os.lstat(path)
+        (mode, uid, gid) = (st.st_mode, st.st_uid, st.st_gid)
+        csum = checksum(path)
+
+        fi = VirtualSymlinkInfo(path, mode, uid, gid, csum, NULL_DICT)
+        self.assertTrue(isinstance(fi, VirtualSymlinkInfo))
+        self.assertTrue(fi.type(), TYPE_SYMLINK)
+
+
 # vim: set sw=4 ts=4 expandtab:

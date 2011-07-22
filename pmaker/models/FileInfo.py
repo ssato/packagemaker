@@ -20,6 +20,7 @@ from pmaker.utils import *
 from pmaker.models.FileOperations import *
 from pmaker.models.DirOperations import *
 from pmaker.models.SymlinkOperations import *
+from pmaker.models.VirtualFileInfoOperations import *
 
 import logging
 import os.path
@@ -152,6 +153,30 @@ class UnknownInfo(FileInfo):
 
 
 
+class VirtualFileInfo(FileInfo):
+    """Special type of fileinfo class to accomplish dynamically generated
+    files/dirs/symlinks.
+
+    This is for files.
+    """
+    operations = VirtualFileOperations
+
+
+
+class VirtualDirInfo(DirInfo):
+    """Likewise but this is for dirs.
+    """
+    operations = VirtualDirOperations
+
+
+
+class VirtualSymlinkInfo(SymlinkInfo):
+    """Likewise but this is for symlinks.
+    """
+    operations = VirtualSymlinkOperations
+
+
+
 def init():
     """FIXME: Ugly
     """
@@ -160,6 +185,9 @@ def init():
     SymlinkInfo.register()
     OtherInfo.register()
     UnknownInfo.register()
+    VirtualFileInfo.register()
+    VirtualDirInfo.register()
+    VirtualSymlinkInfo.register()
 
 
 # vim: set sw=4 ts=4 expandtab:
