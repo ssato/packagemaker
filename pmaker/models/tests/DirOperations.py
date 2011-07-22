@@ -41,7 +41,6 @@ class TestDirOperations(unittest.TestCase):
         DirOperations.remove(path)
         self.assertFalse(os.path.exists(path))
 
-    #def test_copy_main(cls, fileinfo, dest, use_pyxattr=False):
     def test_copy_main(self):
         path = os.path.join(self.workdir, "test0")
         os.makedirs(path)
