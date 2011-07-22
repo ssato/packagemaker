@@ -65,7 +65,7 @@ class Collector(object):
 
     def collect(self, *args, **kwargs):
         if not self.enabled():
-            raise RuntimeError("Disabled %s because required function is not available." % self.__name__)
+            raise RuntimeError("Disabled because required function is not available: " + self.__name__)
 
     def get_modifiers(self):
         """
