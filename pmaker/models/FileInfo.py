@@ -60,7 +60,7 @@ class FileInfo(object):
         self.target = path
 
         for k, v in kwargs.iteritems():
-            self[k] = v
+            setattr(self, k, v)
 
     @classmethod
     def type(cls):
