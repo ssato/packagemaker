@@ -54,8 +54,6 @@ class FileInfo(object):
         @xattr dict  Parameter names and values represent eXtended ATTRibutes
         """
         self.path = path
-        self.realpath = os.path.realpath(path)
-
         self.mode = mode
         self.uid= uid
         self.gid = gid
