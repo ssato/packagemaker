@@ -103,8 +103,8 @@ class SymlinkInfo(FileInfo):
     operations = SymlinkOperations
     filetype = TYPE_SYMLINK
 
-    def __init__(self, path, mode, uid, gid, checksum, xattrs):
-        super(SymlinkInfo, self).__init__(path, mode, uid, gid, checksum, xattrs)
+    def __init__(self, path, mode, uid, gid, checksum, xattrs, **kwargs):
+        super(SymlinkInfo, self).__init__(path, mode, uid, gid, checksum, xattrs, **kwargs)
         self.linkto = os.path.realpath(path)
 
     def need_to_chmod(self):
@@ -139,8 +139,8 @@ class VirtualFileInfo(FileInfo):
     """
     operations = VirtualFileOperations
 
-    def __init__(self, path, mode=33188, uid=0, gid=0, checksum=checksum(), xattrs={}):
-        super(VirtualFileInfo, self).__init__(path, mode, uid, gid, checksum, xattrs)
+    def __init__(self, path, mode=33188, uid=0, gid=0, checksum=checksum(), xattrs={}, **kwargs):
+        super(VirtualFileInfo, self).__init__(path, mode, uid, gid, checksum, xattrs, **kwargs)
 
 
 
@@ -149,8 +149,8 @@ class VirtualDirInfo(DirInfo):
     """
     operations = VirtualDirOperations
 
-    def __init__(self, path, mode=16877, uid=0, gid=0, checksum=checksum(), xattrs={}):
-        super(VirtualDirInfo, self).__init__(path, mode, uid, gid, checksum, xattrs)
+    def __init__(self, path, mode=16877, uid=0, gid=0, checksum=checksum(), xattrs={}, **kwargs):
+        super(VirtualDirInfo, self).__init__(path, mode, uid, gid, checksum, xattrs, **kwargs)
 
 
 
@@ -159,8 +159,8 @@ class VirtualSymlinkInfo(SymlinkInfo):
     """
     operations = VirtualSymlinkOperations
 
-    def __init__(self, path, mode=41471, uid=0, gid=0, checksum=checksum(), xattrs={}):
-        super(VirtualSymlinkInfo, self).__init__(path, mode, uid, gid, checksum, xattrs)
+    def __init__(self, path, mode=41471, uid=0, gid=0, checksum=checksum(), xattrs={}, **kwargs):
+        super(VirtualSymlinkInfo, self).__init__(path, mode, uid, gid, checksum, xattrs, **kwargs)
 
 
 
