@@ -70,33 +70,11 @@ class FileInfo(object):
     def copyable(cls):
         return cls.is_copyable
 
-    @classmethod
-    def register(cls, fmaps=FILEINFOS):
-        fmaps[cls.type()] = cls
-
     def isfile(self):
         return self.type() == TYPE_FILE
 
-    def isdir(self):
-        return self.type() == TYPE_DIR
-
-    def issymlink(self):
-        return self.type() == TYPE_SYMLINK
-
     def __eq__(self, other):
         return self.operations.equals(self, other)
-
-    def equivalent(self, other):
-        return self.operations.equivalent(self, other)
-
-    def same_target(self, other):
-        lhs = getattr(self, "target", None)
-        rhs = getattr(other, "target", None)
-
-        if lhs is None or rhs is None:
-            return False
-        else:
-            return lhs == rhs
 
     def permission(self):
         return self.operations.permission(self.mode)
@@ -186,14 +164,11 @@ class VirtualSymlinkInfo(SymlinkInfo):
 
 
 
-def init():
+def init(fileinfo_map=FILEINFOS):
     """FIXME: Ugly
     """
-    FileInfo.register()
-    DirInfo.register()
-    SymlinkInfo.register()
-    OtherInfo.register()
-    UnknownInfo.register()
+    for cls in (FileInfo, DirInfo, SymlinkInfo, OtherInfo, UnknownInfo):
+        fileinfo_map[cls.type()] = cls
 
 
 # vim: set sw=4 ts=4 expandtab:
