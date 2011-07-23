@@ -23,7 +23,9 @@ import itertools
 import locale
 import logging
 import operator
+import os
 import re
+import stat
 
 
 try:
@@ -194,6 +196,13 @@ def checksum(filepath="", algo=sha1, buffsize=8192):
     f.close()
 
     return m.hexdigest()
+
+
+def st_mode_to_mode(st_mode):
+    """Convert st_mode (os.lstat().st_mode) to mode string, e.g. "0644"
+    """
+    m = stat.S_IMODE(st_mode & 0777)
+    return m == 0 and "0000" or oct(m)
 
 
 def is_foldable(xs):

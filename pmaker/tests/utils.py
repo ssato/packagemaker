@@ -82,6 +82,23 @@ class TestChecksum(unittest.TestCase):
 
 
 
+class Test_st_mode_to_mode(unittest.TestCase):
+
+    def test_st_mode_to_mode(self):
+        file0 = "/etc/resolv.conf"
+        if os.path.exists(file0):
+            mode = os.lstat(file0).st_mode
+            expected = oct(stat.S_IMODE(mode & 0777))
+            self.assertEquals(expected, st_mode_to_mode(mode))
+
+    def test_st_mode_to_mode__special(self):
+        gshadow = "/etc/gshadow-"
+        if os.path.exists(gshadow):
+            mode = os.lstat(gshadow).st_mode
+            self.assertEquals("0000", st_mode_to_mode(mode))
+
+
+
 class TestIsFoldable(unittest.TestCase):
 
     def test_is_foldable_empty(self):
