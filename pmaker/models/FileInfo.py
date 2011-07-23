@@ -27,6 +27,11 @@ import os.path
 
 
 
+DICT_0 = dict()
+CHECkSUM_0 = checksum()
+
+
+
 class FileInfo(object):
     """The class of which objects to hold meta data of regular files, dirs and
     symlinks. This is for regular file and the super class for other types.
@@ -36,7 +41,8 @@ class FileInfo(object):
     filetype = TYPE_FILE
     is_copyable = True
 
-    def __init__(self, path, mode, uid, gid, checksum, xattrs, **kwargs):
+    def __init__(self, path, mode, uid=0, gid=0, checksum=CHECkSUM_0,
+            xattrs=DICT_0, **kwargs):
         """
 
         @path  str   Target object's path
@@ -53,11 +59,11 @@ class FileInfo(object):
         self.uid= uid
         self.gid = gid
         self.checksum = checksum
-        self.xattrs = xattrs or dict()
+        self.xattrs = xattrs
 
         self.perm_default = "0644"
 
-        self.target = path
+        self.target = self.dest = path
 
         for k, v in kwargs.iteritems():
             setattr(self, k, v)
@@ -103,8 +109,8 @@ class SymlinkInfo(FileInfo):
     operations = SymlinkOperations
     filetype = TYPE_SYMLINK
 
-    def __init__(self, path, mode, uid, gid, checksum, xattrs, **kwargs):
-        super(SymlinkInfo, self).__init__(path, mode, uid, gid, checksum, xattrs, **kwargs)
+    def __init__(self, path, *args, **kwargs):
+        super(SymlinkInfo, self).__init__(path, *args, **kwargs)
         self.linkto = os.path.realpath(path)
 
     def need_to_chmod(self):
@@ -126,8 +132,8 @@ class UnknownInfo(FileInfo):
     filetype = TYPE_UNKNOWN
     is_copyable = False
 
-    def __init__(self, path, mode=-1, uid=-1, gid=-1, checksum=checksum(), xattrs={}):
-        super(UnknownInfo, self).__init__(path, mode, uid, gid, checksum, xattrs)
+    def __init__(self, path, mode=-1, *args, **kwargs):
+        super(UnknownInfo, self).__init__(path, -1, *args, **kwargs)
 
 
 
@@ -139,8 +145,8 @@ class VirtualFileInfo(FileInfo):
     """
     operations = VirtualFileOperations
 
-    def __init__(self, path, mode=33188, uid=0, gid=0, checksum=checksum(), xattrs={}, **kwargs):
-        super(VirtualFileInfo, self).__init__(path, mode, uid, gid, checksum, xattrs, **kwargs)
+    def __init__(self, path, mode=33188, *args, **kwargs):
+        super(VirtualFileInfo, self).__init__(path, mode, *args, **kwargs)
 
 
 
@@ -149,8 +155,8 @@ class VirtualDirInfo(DirInfo):
     """
     operations = VirtualDirOperations
 
-    def __init__(self, path, mode=16877, uid=0, gid=0, checksum=checksum(), xattrs={}, **kwargs):
-        super(VirtualDirInfo, self).__init__(path, mode, uid, gid, checksum, xattrs, **kwargs)
+    def __init__(self, path, mode=16877, *args, **kwargs):
+        super(VirtualDirInfo, self).__init__(path, mode, *args, **kwargs)
 
 
 
@@ -159,8 +165,8 @@ class VirtualSymlinkInfo(SymlinkInfo):
     """
     operations = VirtualSymlinkOperations
 
-    def __init__(self, path, mode=41471, uid=0, gid=0, checksum=checksum(), xattrs={}, **kwargs):
-        super(VirtualSymlinkInfo, self).__init__(path, mode, uid, gid, checksum, xattrs, **kwargs)
+    def __init__(self, path, mode=41471, *args, **kwargs):
+        super(VirtualSymlinkInfo, self).__init__(path, mode, *args, **kwargs)
 
 
 
