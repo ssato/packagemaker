@@ -55,26 +55,6 @@ class FileOperations(object):
         return res and dicts_comp(lhs.xattrs, rhs.xattrs) or False
 
     @classmethod
-    def equivalent(cls, lhs, rhs):
-        """These metadata (path, uid, gid, etc.) do not match but the checksums
-        are same, that is, that contents are exactly same.
-
-        @lhs  FileInfo object
-        @rhs  Likewise
-
-        >>> class FakeFileInfo(object):
-        ...     checksum = checksum()
-        >>> 
-        >>> lhs = FakeFileInfo(); rhs = FakeFileInfo()
-        >>> FileOperations.equivalent(lhs, rhs)
-        True
-        >>> rhs.checksum = checksum("/etc/resolv.conf")
-        >>> FileOperations.equivalent(lhs, rhs)
-        False
-        """
-        return lhs.checksum == rhs.checksum
-
-    @classmethod
     def copy_main(cls, fileinfo, dest, use_pyxattr=PYXATTR_ENABLED):
         """Two steps needed to keep the content and metadata of the original file:
 

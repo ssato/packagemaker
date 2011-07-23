@@ -42,16 +42,6 @@ class TestFileOperations(unittest.TestCase):
         rhs.mode = "755"
         self.assertFalse(FileOperations.equals(lhs, rhs))
 
-    def test_equivalent(self):
-        class FakeFileInfo(object):
-            checksum = checksum()
-
-        lhs = FakeFileInfo(); rhs = FakeFileInfo()
-        self.assertTrue(FileOperations.equivalent(lhs, rhs))
-
-        rhs.checksum = checksum("/etc/resolv.conf")
-        self.assertFalse(FileOperations.equivalent(lhs, rhs))
-
 
 
 class TestFileOperations__with_writes(unittest.TestCase):
