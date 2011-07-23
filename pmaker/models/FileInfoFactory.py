@@ -16,7 +16,7 @@
 #
 from pmaker.models.FileInfo import VirtualFileInfo, VirtualDirInfo, VirtualSymlinkInfo
 from pmaker.globals import *  # TYPE_*, FILEINFOS, PYXATTR_ENABLED
-from pmaker.utils import checksum
+from pmaker.utils import checksum, st_mode_to_mode
 
 import pmaker.models.FileInfo
 
@@ -90,7 +90,7 @@ class FileInfoFactory(object):
         if st is None:
             return pmaker.models.FileInfo.UnknownInfo(path)
 
-        (_mode, _uid, _gid) = st
+        (st_mode, _uid, _gid) = st
 
         # There is a case that read access is OK but cannot get xattrs.
         try:
@@ -98,12 +98,13 @@ class FileInfoFactory(object):
         except  IOError:
             _xattrs = dict()
 
-        _filetype = self._guess_ftype(_mode)
+        _filetype = self._guess_ftype(st_mode)
 
         if _filetype == TYPE_UNKNOWN:
-            logging.info(" Could not stat and determine type: %s" % path)
+            logging.warn(" Could not stat and determine type: %s" % path)
 
         _checksum = _filetype == TYPE_FILE and checksum(path) or checksum()
+        _mode = st_mode_to_mode(st_mode)
 
         _cls = fileinfo_map.get(_filetype, False)
         assert _cls, "Could not get a class for filetype=%s !" % _filetype

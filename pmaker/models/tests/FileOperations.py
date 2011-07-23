@@ -52,18 +52,6 @@ class TestFileOperations(unittest.TestCase):
         rhs.checksum = checksum("/etc/resolv.conf")
         self.assertFalse(FileOperations.equivalent(lhs, rhs))
 
-    def test_permission(self):
-        file0 = "/etc/resolv.conf"
-        if os.path.exists(file0):
-            mode = os.lstat(file0).st_mode
-            expected = oct(stat.S_IMODE(mode & 0777))
-            self.assertEquals(expected, FileOperations.permission(mode))
-
-        gshadow = "/etc/gshadow-"
-        if os.path.exists(gshadow):
-            mode = os.lstat(gshadow).st_mode
-            self.assertEquals("0000", FileOperations.permission(mode))
-
 
 
 class TestFileOperations__with_writes(unittest.TestCase):

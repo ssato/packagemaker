@@ -23,7 +23,6 @@ import logging
 import os
 import os.path
 import shutil
-import stat
 
 
 if PYXATTR_ENABLED:
@@ -48,17 +47,7 @@ class FileOperations(object):
         (except for path) are exactly same.
 
         TODO: Compare the part of the path?
-          ex. lhs.path: "/path/to/xyz", rhs.path: "/var/lib/sp2/updates/path/to/xyz"
-
-        >>> lhs = FileInfoFactory().create("/etc/resolv.conf")
-        >>> rhs = copy.copy(lhs)
-        >>> setattr(rhs, "other_attr", "xyz")
-        >>> 
-        >>> FileOperations.equals(lhs, rhs)
-        True
-        >>> rhs.mode = "755"
-        >>> FileOperations.equals(lhs, rhs)
-        False
+          ex. lhs.path: "/path/to/xyz", rhs.path: "/var/lib/save.d/path/to/xyz"
         """
         keys = ("mode", "uid", "gid", "checksum", "filetype")
         res = all(getattr(lhs, k) == getattr(rhs, k) for k in keys)
@@ -84,29 +73,6 @@ class FileOperations(object):
         False
         """
         return lhs.checksum == rhs.checksum
-
-    @classmethod
-    def permission(cls, mode):
-        """permission (mode) can be passed to "chmod".
-
-        NOTE: There are some special cases, e.g. /etc/gshadow- and
-        /etc/shadow-, such that mode == 0.
-
-        @mode  stat.mode
-
-        >>> file0 = "/etc/resolv.conf"
-        >>> if os.path.exists(file0):
-        ...     mode = os.lstat(file0).st_mode
-        ...     expected = oct(stat.S_IMODE(mode & 0777))
-        ...     assert expected == FileOperations.permission(mode)
-        >>> 
-        >>> gshadow = "/etc/gshadow-"
-        >>> if os.path.exists(gshadow):
-        ...     mode = os.lstat(gshadow).st_mode
-        ...     assert "0000" == FileOperations.permission(mode)
-        """
-        m = stat.S_IMODE(mode & 0777)
-        return m == 0 and "0000" or oct(m)
 
     @classmethod
     def copy_main(cls, fileinfo, dest, use_pyxattr=PYXATTR_ENABLED):

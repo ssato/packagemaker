@@ -40,13 +40,14 @@ class FileInfo(object):
     operations = FileOperations
     filetype = TYPE_FILE
     is_copyable = True
+    perm_default = "0644"
 
-    def __init__(self, path, mode, uid=0, gid=0, checksum=CHECkSUM_0,
+    def __init__(self, path, mode="0644", uid=0, gid=0, checksum=CHECkSUM_0,
             xattrs=DICT_0, **kwargs):
         """
 
         @path  str   Target object's path
-        @mode  int   Number represents mode: os.lstat(path).st_mode
+        @mode  str   File mode e.g. "0644", "1755"
         @uid   int   User ID of the object's owner
         @gid   int   Group ID of the object's owner
         @checksum  str  Checksum of this target object
@@ -60,8 +61,6 @@ class FileInfo(object):
         self.gid = gid
         self.checksum = checksum
         self.xattrs = xattrs
-
-        self.perm_default = "0644"
 
         self.target = self.dest = path
 
@@ -83,7 +82,7 @@ class FileInfo(object):
         return self.operations.equals(self, other)
 
     def permission(self):
-        return self.operations.permission(self.mode)
+        return self.mode
 
     def need_to_chmod(self):
         return self.permission() != self.perm_default
@@ -132,8 +131,8 @@ class UnknownInfo(FileInfo):
     filetype = TYPE_UNKNOWN
     is_copyable = False
 
-    def __init__(self, path, mode=-1, *args, **kwargs):
-        super(UnknownInfo, self).__init__(path, -1, *args, **kwargs)
+    def __init__(self, path, *args, **kwargs):
+        super(UnknownInfo, self).__init__(path, *args, **kwargs)
 
 
 
@@ -145,8 +144,8 @@ class VirtualFileInfo(FileInfo):
     """
     operations = VirtualFileOperations
 
-    def __init__(self, path, mode=33188, *args, **kwargs):
-        super(VirtualFileInfo, self).__init__(path, mode, *args, **kwargs)
+    def __init__(self, path, *args, **kwargs):
+        super(VirtualFileInfo, self).__init__(path, *args, **kwargs)
 
 
 
@@ -155,8 +154,8 @@ class VirtualDirInfo(DirInfo):
     """
     operations = VirtualDirOperations
 
-    def __init__(self, path, mode=16877, *args, **kwargs):
-        super(VirtualDirInfo, self).__init__(path, mode, *args, **kwargs)
+    def __init__(self, path, *args, **kwargs):
+        super(VirtualDirInfo, self).__init__(path, *args, **kwargs)
 
 
 
@@ -165,8 +164,8 @@ class VirtualSymlinkInfo(SymlinkInfo):
     """
     operations = VirtualSymlinkOperations
 
-    def __init__(self, path, mode=41471, *args, **kwargs):
-        super(VirtualSymlinkInfo, self).__init__(path, mode, *args, **kwargs)
+    def __init__(self, path, *args, **kwargs):
+        super(VirtualSymlinkInfo, self).__init__(path, *args, **kwargs)
 
 
 
