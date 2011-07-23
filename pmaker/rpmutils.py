@@ -164,9 +164,9 @@ def __rpm_attr(fileinfo):
     """Returns "%attr(...)" to specify the file/dir attribute for given
     fileinfo object, which will be used in the %files section in rpm spec.
 
-    >>> fi = FileInfo("/dummy/path", 33204, 0, 0, checksum(),{})
+    >>> fi = FileInfo("/dummy/path", "0664")
     >>> assert __rpm_attr(fi) == "%attr(0664, -, -)"
-    >>> fi = FileInfo("/bin/foo", 33261, 1, 1, checksum(),{})
+    >>> fi = FileInfo("/bin/foo", "0755", 1, 1)
     >>> assert __rpm_attr(fi) == "%attr(0755, bin, bin)"
     """
     m = fileinfo.permission() # ex. "0755"

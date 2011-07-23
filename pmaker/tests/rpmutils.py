@@ -67,13 +67,13 @@ class TestFunctions(unittest.TestCase):
         self.assertNotEquals(d, NULL_DICT)
 
     def test_rpm_attr(self):
-        fi = FileInfo("/dummy/path", 33204, 0, 0, checksum(),NULL_DICT)
+        fi = FileInfo("/dummy/path", "0664")
         self.assertEquals(rpm_attr(fi), "%attr(0664, -, -) ")
 
-        fi = FileInfo("/bin/foo", 33261, 1, 1, checksum(),NULL_DICT)
+        fi = FileInfo("/bin/foo", "0755", 1, 1)
         self.assertEquals(rpm_attr(fi), "%attr(0755, bin, bin) ")
 
-        fi = DirInfo("/bin/bar/", 33204, 1, 1, checksum(),NULL_DICT)
+        fi = DirInfo("/bin/bar/", "0664", 1, 1)
         self.assertEquals(rpm_attr(fi), "%attr(0664, bin, bin) %dir ")
 
 
