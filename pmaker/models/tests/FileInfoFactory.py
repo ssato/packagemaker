@@ -45,10 +45,7 @@ class TestFileInfoFactory(unittest.TestCase):
             print >> sys.stderr, "You're root. Skip this test."
             return
 
-        (mode, uid, gid) = self.factory._stat("/root/.bashrc")
-        self.assertEquals(mode, None)
-        self.assertEquals(uid, None)
-        self.assertEquals(gid, None)
+        self.assertEquals(self.factory._stat("/root/.bashrc"), None)
 
     def test_create__file(self):
         path = os.path.join(self.workdir, "file.txt")

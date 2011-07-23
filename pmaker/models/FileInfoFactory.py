@@ -52,7 +52,7 @@ class FileInfoFactory(object):
             _stat = os.lstat(path)
         except OSError, e:
             logging.warn(e)
-            return (None, None, None)
+            return None
 
         return (_stat.st_mode, _stat.st_uid, _stat.st_gid)
 
@@ -87,7 +87,7 @@ class FileInfoFactory(object):
         """
         st = self._stat(path)
 
-        if st == (None, None, None):
+        if st is None:
             return pmaker.models.FileInfo.UnknownInfo(path)
 
         (_mode, _uid, _gid) = st
