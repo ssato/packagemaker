@@ -310,6 +310,11 @@ def true(x):
     return True
 
 
+@memoize
+def is_superuser():
+    return os.getuid() == 0
+
+
 def date(type=None):
     """TODO: how to output in rfc2822 format w/o email.Utils.formatdate?
     ("%z" for strftime does not look working.)
