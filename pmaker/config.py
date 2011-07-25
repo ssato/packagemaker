@@ -16,7 +16,7 @@
 #
 from pmaker.globals import *
 from pmaker.environ import *
-from pmaker.utils import parse_conf_value, memoize
+from pmaker.utils import parse_conf_value, memoize, parse_list_str
 from pmaker.collectors.Collectors import FilelistCollector, init as init_collectors
 from pmaker.makers.PackageMaker import init as init_packagemaker
 from pmaker.makers.RpmPackageMaker import init as init_rpmpackagemaker
@@ -74,17 +74,6 @@ Examples:
   %prog -n foo --pversion 0.2 --license MIT files.list
   %prog -n foo --relations "requires:httpd,/sbin/service;obsoletes:foo-old" files.list
 """
-
-
-def parse_list_str(optstr, sep=","):
-    """
-    simple parser for optstr gives a list of items separated with "," (comma).
-
-    >>> assert parse_list_str("") == []
-    >>> assert parse_list_str("a,b") == ["a", "b"]
-    >>> assert parse_list_str("a,b,") == ["a", "b"]
-    """
-    return [p for p in optstr.split(sep) if p]
 
 
 def parse_relations(optstr):

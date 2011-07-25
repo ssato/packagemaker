@@ -487,6 +487,17 @@ def parse_conf_value(s):
     return s
 
 
+def parse_list_str(optstr, sep=","):
+    """
+    simple parser for optstr gives a list of items separated with "," (comma).
+
+    >>> assert parse_list_str("") == []
+    >>> assert parse_list_str("a,b") == ["a", "b"]
+    >>> assert parse_list_str("a,b,") == ["a", "b"]
+    """
+    return [p for p in optstr.split(sep) if p]
+
+
 def compressor_params(extopt, compressors=COMPRESSORS):
     am_opt = [ao for _c, ext, ao in compressors if ext == extopt][0]
     return dict(ext=extopt, am_opt=am_opt)
