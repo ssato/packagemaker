@@ -19,9 +19,9 @@ from pmaker.utils import *
 from pmaker.collectors.Filters import *
 from pmaker.collectors.Modifiers import *
 from pmaker.collectors.RpmModifiers import *
+from pmaker.models.FileInfo import *
 from pmaker.models.FileInfoFactory import FileInfoFactory
 from pmaker.models.RpmFileInfoFactory import RpmFileInfoFactory
-from pmaker.models.Target import Target
 
 import glob
 import logging
@@ -53,11 +53,6 @@ class Collector(object):
     @classmethod
     def type(cls):
         return cls._type
-
-    @classmethod
-    def register(cls, collectors=COLLECTORS):
-        if cls.enabled() and not collectors.get(cls.type(), False):
-            collectors[cls.type()] = cls
 
     @classmethod
     def enabled(cls):
@@ -100,7 +95,7 @@ class FilelistCollector(Collector):
         self.trace = False
 
         self.filters = [UnsupportedTypesFilter(), ReadAccessFilter()]
-        self.modifiers = []
+        self.modifiers = [AttributeModifier()]
 
         if options.destdir:
             self.modifiers.append(DestdirModifier(options.destdir))
@@ -122,16 +117,42 @@ class FilelistCollector(Collector):
     def open(path):
         return path == "-" and sys.stdin or open(path)
 
+    @staticmethod
+    def parse_line(line):
+        """
+        Parse str and returns a dict to create a FileInfo instance.
+
+        >>> cls = FilelistCollector
+        >>> rref = dict(install_path="/var/lib/network/resolv.conf", uid=0, gid=0)
+        >>> (ps, r) = cls.parse_line("/etc/resolv.conf,install_path=/var/lib/network/resolv.conf,uid=0,gid=0")
+        >>> assert ps == ["/etc/resolv.conf"]
+        >>> assert dicts_comp(r, rref)
+        """
+        ss = parse_list_str(line, ",")
+
+        p = ss[0]
+        paths = "*" in p and glob.glob(p) or [p]
+
+        avs = (av for av in (parse_list_str(kv, "=") for kv in ss[1:]) if av)
+        attrs = dict((a, parse_conf_value(v)) for a, v in avs)
+        if "*" in p:
+            attrs["create"] = False
+
+        return (paths, attrs)
+
     @classmethod
     def _parse(cls, line):
-        """Parse the line and returns Target (path) list.
+        """Parse the line and returns FileInfo list generator.
         """
+        line = line.rstrip().strip() # remove extra white spaces at the top and the end.
+
         if not line or line.startswith("#"):
             return []
         else:
-            return [Target(p) for p in glob.glob(line.rstrip())]
+            (paths, attrs) = cls.parse_line(line)
+            return [FileInfo(path, **attrs) for path in paths]
 
-    def list_targets(self, listfile):
+    def list_fileinfos(self, listfile):
         """Read paths from given file line by line and returns path list sorted by
         dir names. There some speical parsing rules for the file list:
 
@@ -149,88 +170,27 @@ class FilelistCollector(Collector):
 
         @listfile  str  File, dir and symlink paths list
         """
-        for target in self.list_targets(listfile):
-            if target.is_virtual():
-                fi = self.fi_factory.createFromTarget(target)
-            else:
-                fi = self.fi_factory.create(target.path)
+        for fi in self.list_fileinfos(listfile):
+            if not fi.create:
+                fi = self.fi_factory.create(fi.path)
 
             # filter out if any filter(fi) -> True
             filtered = any(filter(fi) for filter in self.filters)
 
             if not filtered:
-                fi.conflicts = {}
-                fi.target = fi.path
+                fi.conflicts = dict()
 
                 # Too verbose but useful in some cases:
                 if self.trace:
                     logging.debug(" fi=%s" % str(fi))
 
                 for modifier in self.get_modifiers():
-                    fi = modifier.update(fi, target, self.trace)
+                    fi = modifier.update(fi)
 
                 yield fi
 
     def collect(self):
-        ## Is it needed?
-        #return unique(fi for fi in self._collect(self.filelist))
         return [fi for fi in self._collect(self.filelist)]
-
-
-
-class ExtFilelistCollector(FilelistCollector):
-    """
-    Collector to collect fileinfo list from files list in simple format:
-
-    Format: A file or dir path (absolute or relative) |
-            Comment line starts with "#" |
-            Glob pattern to list multiple files or dirs
-    """
-    _enabled = True
-    _type = "filelist.ext"
-
-    def __init__(self, filelist, options):
-        super(ExtFilelistCollector, self).__init__(filelist, options)
-        self.modifiers.append(TargetAttributeModifier())
-
-    @staticmethod
-    def parse_line(line):
-        """
-        >>> cls = ExtFilelistCollector
-        >>> cls.parse_line("/etc/resolv.conf,target=/var/lib/network/resolv.conf,uid=0,gid=0\\n")
-        ('/etc/resolv.conf', [('target', '/var/lib/network/resolv.conf'), ('uid', 0), ('gid', 0)])
-        """
-        path_attrs = line.rstrip().split(",")
-        path = path_attrs[0]
-        attrs = []
-
-        for attr, val in (kv.split("=") for kv in path_attrs[1:]):
-            attrs.append((attr, parse_conf_value(val)))   # e.g. "uid=0" -> ("uid", 0), etc.
-
-        return (path, attrs)
-
-    @classmethod
-    def _parse(cls, line):
-        """Parse the line and returns Target (path) list.
-
-        TODO: support glob expression in path.
-
-        >>> cls = ExtFilelistCollector
-        >>> cls._parse("#\\n")
-        []
-        >>> cls._parse("")
-        []
-        >>> cls._parse(" ")
-        []
-        >>> t = Target("/etc/resolv.conf", {"target": "/var/lib/network/resolv.conf", "uid": 0, "gid": 0})
-        >>> ts = cls._parse("/etc/resolv.conf,target=/var/lib/network/resolv.conf,uid=0,gid=0\\n")
-        >>> assert [t] == ts, str(ts)
-        """
-        if not line or line.startswith("#") or " " in line:
-            return []
-        else:
-            (path, attrs) = cls.parse_line(line)
-            return [Target(path, dict(attrs)) for path, attrs in zip(glob.glob(path), [attrs])]
 
 
 
@@ -243,8 +203,9 @@ class JsonFilelistCollector(FilelistCollector):
         "files": [
             {
                 "path": "/a/b/c",
-                "target": {
-                    "target": "/a/c",
+                "attrs" : {
+                    "create": 0,
+                    "install_path": "/a/c",
                     "uid": 100,
                     "gid": 0,
                     "rpmattr": "%config(noreplace)",
@@ -260,28 +221,28 @@ class JsonFilelistCollector(FilelistCollector):
     _enabled = JSON_ENABLED
     _type = "filelist.json"
 
-    def __init__(self, filelist, options):
-        super(JsonFilelistCollector, self).__init__(filelist, options)
-        self.modifiers.append(TargetAttributeModifier())
-
     @classmethod
-    def _parse(cls, path_dict):
-        path = path_dict.get("path", False)
+    def _parse(cls, params):
+        path = params.get("path", False)
 
         if not path or path.startswith("#"):
             return []
         else:
-            return [Target(p, path_dict.get("target", {})) for p in glob.glob(path)]
+            paths = "*" in path and glob.glob(path) or [path]
+            attrs = params.get("attrs", dict())
 
-    def list_targets(self, listfile):
+            return (FileInfo(path, **attrs) for path in paths)
+
+    def list_fileinfos(self, listfile):
         data = json.load(self.open(listfile))
         return unique(concat(self._parse(d) for d in data["files"]))
 
 
 
-def init():
-    FilelistCollector.register()
-    ExtFilelistCollector.register()
-    JsonFilelistCollector.register()
+def init(collectors_map=COLLECTORS):
+    for cls in (FilelistCollector, JsonFilelistCollector):
+        if cls.enabled():
+            collectors_map[cls.type()] = cls
+
 
 # vim: set sw=4 ts=4 expandtab:
