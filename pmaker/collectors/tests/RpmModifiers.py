@@ -23,7 +23,6 @@ import os.path
 
 
 
-NULL_DICT = dict()
 FACTORY = FileInfoFactory()
 
 
@@ -59,7 +58,7 @@ class TestRpmConflictsModifier(unittest.TestCase):
         fi = FACTORY.create("/bin/bash")
         new_fi = self.modifier.update(fi)
 
-        self.assertNotEquals(new_fi.original_path, fi.target)
+        self.assertNotEquals(new_fi.original_path, fi.install_path)
 
         #path = fileinfo.target[1:]  # strip "/" at the head.
         #fileinfo.target = os.path.join(self.newdir, path)

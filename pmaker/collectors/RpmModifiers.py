@@ -63,10 +63,10 @@ class RpmConflictsModifier(FileInfoModifier):
         fileinfo.conflicts = self.find_owner(fileinfo.target)
 
         if fileinfo.conflicts:
-            fileinfo.original_path = fileinfo.target
+            fileinfo.original_path = fileinfo.install_path
 
-            path = fileinfo.target[1:]  # strip "/" at the head.
-            fileinfo.target = os.path.join(self.newdir, path)
+            path = fileinfo.install_path[1:]  # strip "/" at the head.
+            fileinfo.target = fileinfo.install_path = os.path.join(self.newdir, path)
             fileinfo.save_path = os.path.join(self.savedir, path)
 
         return fileinfo
