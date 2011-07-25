@@ -15,10 +15,12 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 from pmaker.collectors.Collectors import *
+from pmaker.models.FileInfo import FileInfo
+from pmaker.utils import dicts_comp
+from pmaker.tests.common import setup_workdir, cleanup_workdir
 
 import optparse
 import os.path
-import tempfile
 import unittest
 
 
@@ -28,12 +30,12 @@ class Test_00_FilelistCollector(unittest.TestCase):
     _multiprocess_can_split_ = True
 
     def setUp(self):
-        self.workdir = tempfile.mkdtemp(dir="/tmp", prefix="pmaker-tests")
+        self.workdir = setup_workdir()
 
     def tearDown(self):
-        rm_rf(self.workdir)
+        cleanup_workdir(self.workdir)
 
-    def test__parse(self):
+    def test_00__parse(self):
         p0 = ""
         p1 = "#xxxxx"
         p2 = os.path.join(self.workdir, "a")
@@ -43,15 +45,15 @@ class Test_00_FilelistCollector(unittest.TestCase):
         for p in (p2, p3):
             os.system("touch " + p)
 
-        ps2 = [Target(p) for p in [p2]]
-        ps3 = [Target(p) for p in [p2, p3]]
+        ps2 = [FileInfo(p) for p in [p2]]
+        ps3 = [FileInfo(p) for p in (p2, p3)]
 
         self.assertListEqual(FilelistCollector._parse(p0 + "\n"), [])
         self.assertListEqual(FilelistCollector._parse(p1 + "\n"), [])
         self.assertListEqual(FilelistCollector._parse(p2 + "\n"), ps2)
         self.assertListEqual(sorted(FilelistCollector._parse(p4 + "\n")), sorted(ps3))
 
-    def test_list_targets(self):
+    def test_01_list_fileinfos(self):
         paths = [
             "/etc/auto.*",
             "#/etc/aliases.db",
@@ -64,11 +66,7 @@ class Test_00_FilelistCollector(unittest.TestCase):
         ]
         listfile = os.path.join(self.workdir, "files.list")
 
-        f = open(listfile, "w")
-        f.write("\n")
-        for p in paths:
-            f.write("%s\n" % p)
-        f.close()
+        open(listfile, "w").write("\n".join(p for p in paths))
 
         option_values = {
             "name": "foo",
@@ -81,10 +79,10 @@ class Test_00_FilelistCollector(unittest.TestCase):
         options = optparse.Values(option_values)
         fc = FilelistCollector(listfile, options)
 
-        ts = unique(concat(FilelistCollector._parse(p + "\n") for p in paths))
-        self.assertListEqual(ts, fc.list_targets(listfile))
+        fis = unique(concat(FilelistCollector._parse(p + "\n") for p in paths))
+        self.assertListEqual(fis, fc.list_fileinfos(listfile))
 
-    def test_collect(self):
+    def test_02_collect(self):
         paths = [
             "/etc/at.deny",
             "/etc/auto.*",
@@ -100,10 +98,11 @@ class Test_00_FilelistCollector(unittest.TestCase):
         ]
         listfile = os.path.join(self.workdir, "files.list")
 
-        f = open(listfile, "w")
-        for p in paths:
-            f.write("%s\n" % p)
-        f.close()
+        open(listfile, "w").write("\n".join(p for p in paths))
+        #f = open(listfile, "w")
+        #for p in paths:
+        #    f.write("%s\n" % p)
+        #f.close()
 
         option_values = {
             "name": "foo",
@@ -141,30 +140,17 @@ class Test_00_FilelistCollector(unittest.TestCase):
         fs = fc.collect()
         option_values["no_rpmdb"] = False
 
+    def test_03_parse_line__ext(self):
+        line = "/etc/resolv.conf,install_path=/var/lib/network/resolv.conf,uid=0,gid=0"
 
+        (paths, attrs) = FilelistCollector.parse_line(line)
 
-class Test_01_ExtFilelistCollector(unittest.TestCase):
+        self.assertEquals(paths, ["/etc/resolv.conf"])
+        self.assertEquals(attrs["install_path"], "/var/lib/network/resolv.conf")
+        self.assertEquals(attrs["uid"], 0)
+        self.assertEquals(attrs["gid"], 0)
 
-    _multiprocess_can_split_ = True
-
-    def setUp(self):
-        self.workdir = tempfile.mkdtemp(dir="/tmp", prefix="pmaker-tests")
-
-    def tearDown(self):
-        rm_rf(self.workdir)
-
-    def test_parse_line(self):
-        line0 = "/etc/resolv.conf\n"
-        line1 = "/etc/resolv.conf,target=/var/lib/network/resolv.conf,uid=0,gid=0\n"
-
-        d0 = ExtFilelistCollector.parse_line(line0)
-        self.assertEquals(d0[0], "/etc/resolv.conf")
-
-        d1 = ExtFilelistCollector.parse_line(line1)
-        self.assertEquals(d1[0], "/etc/resolv.conf")
-        self.assertEquals(d1[1], [('target', '/var/lib/network/resolv.conf'), ('uid', 0), ('gid', 0)])
-
-    def test_collect(self):
+    def test_04_collect__ext(self):
         paths = [
             "/etc/resolv.conf",
             "/etc/auto.*,uid=0,gid=0",
@@ -188,7 +174,7 @@ class Test_01_ExtFilelistCollector(unittest.TestCase):
         }
 
         options = optparse.Values(option_values)
-        fc = ExtFilelistCollector(listfile, options)
+        fc = FilelistCollector(listfile, options)
         fs = fc.collect()
 
 
@@ -198,14 +184,14 @@ class Test_02_JsonFilelistCollector(unittest.TestCase):
     _multiprocess_can_split_ = True
 
     def setUp(self):
-        self.workdir = tempfile.mkdtemp(dir="/tmp", prefix="pmaker-tests")
+        self.workdir = setup_workdir()
 
         self.json_data = """\
 {
     "files": [
         {
             "path": "/etc/resolv.conf",
-            "target": {
+            "attrs": {
                 "target": "/var/lib/network/resolv.conf",
                 "uid": 0,
                 "gid": 0,
@@ -214,7 +200,7 @@ class Test_02_JsonFilelistCollector(unittest.TestCase):
         },
         {
             "path": "/etc/hosts",
-            "target": {
+            "attrs": {
                 "conflicts": "setup",
                 "rpmattr": "%config(noreplace)"
             }
@@ -227,9 +213,9 @@ class Test_02_JsonFilelistCollector(unittest.TestCase):
 """
 
     def tearDown(self):
-        rm_rf(self.workdir)
+        cleanup_workdir(self.workdir)
 
-    def test_list_targets(self):
+    def test_list_fileinfos(self):
         listfile = os.path.join(self.workdir, "files.json")
 
         f = open(listfile, "w")
@@ -245,10 +231,9 @@ class Test_02_JsonFilelistCollector(unittest.TestCase):
         }
 
         options = optparse.Values(option_values)
-        fc = ExtFilelistCollector(listfile, options)
+        fc = JsonFilelistCollector(listfile, options)
 
-        ts = fc.list_targets(listfile)
-        #self.assertListEqual(ts, ts2)
+        ts = fc.list_fileinfos(listfile)
 
 
 # vim: set sw=4 ts=4 expandtab:
