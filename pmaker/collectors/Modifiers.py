@@ -60,10 +60,11 @@ class DestdirModifier(FileInfoModifier):
         consist of DESTDIR and actual installation path, that is, DESTDIR will
         be stripped.
 
-        >>> assert DestdirModifier("/a/b").rewrite_with_destdir("/a/b/c") == "/c"
-        >>> assert DestdirModifier("/a/b/").rewrite_with_destdir("/a/b/c") == "/c"
+        >>> dm = DestdirModifier
+        >>> assert dm("/a/b").rewrite_with_destdir("/a/b/c") == "/c"
+        >>> assert dm("/a/b/").rewrite_with_destdir("/a/b/c") == "/c"
         >>> try:
-        ...     DestdirModifier("/x/y").rewrite_with_destdir("/a/b/c")
+        ...     dm("/x/y").rewrite_with_destdir("/a/b/c")
         ... except RuntimeError, e:
         ...     pass
         """
@@ -80,7 +81,7 @@ class DestdirModifier(FileInfoModifier):
             raise RuntimeError("Destdir and the actual file path are inconsistent.")
 
     def update(self, fileinfo, *args, **kwargs):
-        fileinfo.target = self.rewrite_with_destdir(fileinfo.path)
+        fileinfo.target = fileinfo.install_path = self.rewrite_with_destdir(fileinfo.path)
         return fileinfo
 
 
@@ -101,32 +102,22 @@ class OwnerModifier(FileInfoModifier):
 
 
 
-class TargetAttributeModifier(FileInfoModifier):
+class AttributeModifier(FileInfoModifier):
 
     _priority = 9
 
-    def __init__(self, overrides=()):
-        """
-        @overrides  attribute names to override.
-        """
-        self.overrides = overrides
-
-    def update(self, fileinfo, target, *args, **kwargs):
+    def update(self, fileinfo, attrs=dict(), *args, **kwargs):
         """
         @fileinfo  FileInfo object
-        @target    Target object
+        @attrs     FileInfo attributes to overwrite
         """
-        attrs_to_override = self.overrides and self.overrides or target.attrs
-
-        for attr in attrs_to_override:
+        for attr, val in attrs.iteritems():
             if attr == "path":  # fileinfo.path must not be overridden.
-                logging.warn("You cannot overwrite original path of the fileinfo: path=" + fileinfo.path)
+                logging.warn("You cannot overwrite path: path=" + fileinfo.path)
                 continue
 
-            val = getattr(target, attr, None)
-            if val is not None:
-                logging.info("Override attr %s=%s in fileinfo: path=%s" % (attr, val, fileinfo.path))
-                setattr(fileinfo, attr, val)
+            logging.info("Override %s=%s: path=%s" % (attr, val, fileinfo.path))
+            setattr(fileinfo, attr, val)
 
         return fileinfo
 
