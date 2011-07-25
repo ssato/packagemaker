@@ -17,6 +17,7 @@
 #
 from pmaker.models.DirOperations import DirOperations
 from pmaker.models.FileInfoFactory import FileInfoFactory
+from pmaker.models.FileInfo import DirInfo
 from pmaker.utils import rm_rf
 
 import os
@@ -52,14 +53,11 @@ class TestDirOperations(unittest.TestCase):
         self.assertTrue(os.path.exists(dest))
         self.assertTrue(os.path.isdir(dest))
 
-    def test_copy_main__with_pyxattr(self):
-        path = os.path.join(self.workdir, "test0")
-        os.makedirs(path)
+    def test_create(self):
+        path = dest = os.path.join(self.workdir, "test0")
+        fi = DirInfo(path, create=True)
 
-        dest = os.path.join(self.workdir, "test1")
-        fi = FileInfoFactory().create(path)
-
-        DirOperations.copy_main(fi, dest, True)
+        DirOperations.create(fi, dest)
         self.assertTrue(os.path.exists(dest))
         self.assertTrue(os.path.isdir(dest))
 

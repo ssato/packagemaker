@@ -18,7 +18,6 @@
 from pmaker.models.FileOperations import *
 from pmaker.models.FileInfoFactory import FileInfoFactory
 from pmaker.models.FileInfo import FileInfo
-from pmaker.globals import PYXATTR_ENABLED
 from pmaker.utils import checksum, rm_rf
 
 import copy
@@ -30,26 +29,26 @@ import unittest
 
 
 
-class TestFileOperations(unittest.TestCase):
+class Test_00_FileOperations(unittest.TestCase):
 
     def test_equals(self):
-        lhs = FileInfoFactory().create("/etc/resolv.conf")
+        lhs = FileInfo("/etc/resolv.conf", mode="0644")
         rhs = copy.copy(lhs)
         setattr(rhs, "other_attr", "xyz")
         
         self.assertTrue(FileOperations.equals(lhs, rhs))
         
-        rhs.mode = "755"
+        rhs.mode = "0755"
         self.assertFalse(FileOperations.equals(lhs, rhs))
 
 
 
-class TestFileOperations__with_writes(unittest.TestCase):
+class Test_01_FileOperations__with_side_effects(unittest.TestCase):
 
     def setUp(self):
         self.workdir = tempfile.mkdtemp(dir="/tmp", prefix="pmaker-tests")
         self.testfile1 = os.path.join(self.workdir, "test1.txt")
-        os.system("touch " + self.testfile1)
+        open(self.testfile1, "w").write("test1\n")
 
     def tearDown(self):
         rm_rf(self.workdir)
@@ -58,21 +57,7 @@ class TestFileOperations__with_writes(unittest.TestCase):
         fileinfo = FileInfoFactory().create(self.testfile1)
         dest = self.testfile1 + ".2"
 
-        FileOperations.copy_main(fileinfo, dest, use_pyxattr=False)
-        self.assertTrue(os.path.exists(dest))
-
-        FileOperations.remove(dest)
-        self.assertFalse(os.path.exists(dest))
-
-    def test_copy_main__and__remove__with_pyxattr(self):
-        if not PYXATTR_ENABLED:
-            logging.warn("Could not load pyxattr module. Skip this test")
-            return
-
-        fileinfo = FileInfoFactory().create(self.testfile1)
-        dest = self.testfile1 + ".2"
-
-        FileOperations.copy_main(fileinfo, dest, use_pyxattr=True)
+        FileOperations.copy_main(fileinfo, dest)
         self.assertTrue(os.path.exists(dest))
 
         FileOperations.remove(dest)
@@ -86,14 +71,6 @@ class TestFileOperations__with_writes(unittest.TestCase):
     def test_copy__not_copyable(self):
         class NotCopyableFileInfo(FileInfo):
             is_copyable = False
-
-            def __init__(self, path):
-                mode = os.lstat(path).st_mode
-                uid = gid = 0
-                csum = checksum(path)
-                xattrs = dict()
-
-                super(NotCopyableFileInfo, self).__init__(path, mode, uid, gid, csum, xattrs)
 
         fileinfo = NotCopyableFileInfo(self.testfile1)
         dest = self.testfile1 + ".2"
@@ -117,6 +94,14 @@ class TestFileOperations__with_writes(unittest.TestCase):
     def test_copy__mkdir(self):
         fileinfo = FileInfoFactory().create(self.testfile1)
         dest = os.path.join(self.workdir, "t", "test2.txt")
+
+        self.assertTrue(FileOperations.copy(fileinfo, dest))
+
+    def test_copy__create(self):
+        path = dest = self.testfile1 + ".3"
+
+        fileinfo = FileInfo(path, create=1, content="xyz\n")
+        dest = os.path.join(self.workdir, "t", "test3.txt")
 
         self.assertTrue(FileOperations.copy(fileinfo, dest))
 

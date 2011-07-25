@@ -28,22 +28,19 @@ class DirOperations(FileOperations):
 
     @classmethod
     def remove(cls, path):
-        if not os.path.isdir(path):
-            raise RuntimeError(" '%s' is not a directory! Aborting..." % path)
-
+        assert os.path.isdir(path), "Not a directory! path=" + path
         os.removedirs(path)
 
     @classmethod
-    def copy_main(cls, fileinfo, dest, use_pyxattr=False):
+    def create(cls, fileinfo, dest):
         try:
             mode = int(fileinfo.permission(), 8)  # in octal, e.g. 0755
             os.makedirs(dest, mode)
 
         except OSError, e:   # It may be OK, ex. non-root user cannot set perms.
-            logging.debug("Failed: os.makedirs, dest=%s, mode=%o" % (dest, mode))
+            logging.debug(" Failed: os.makedirs, dest=%s, mode=%o" % (dest, mode))
             logging.warn(e)
-
-            logging.info("skip to copy " + dest)
+            logging.info(" Skipped: " + dest)
 
             # FIXME: What can be done with it?
             #
@@ -57,10 +54,16 @@ class DirOperations(FileOperations):
         if uid == 0 or (uid == fileinfo.uid and gid == fileinfo.gid):
             os.chown(dest, fileinfo.uid, fileinfo.gid)
         else:
-            logging.debug("Chown is not permitted so do not")
+            logging.debug("Chown is not permitted so do nothing")
 
-        shutil.copystat(fileinfo.path, dest)
-        cls.copy_xattrs(fileinfo.xattrs, dest)
+    @classmethod
+    def copy_main(cls, fileinfo, dest):
+        cls.create(fileinfo, dest)
+
+        try:
+            shutil.copystat(fileinfo.path, dest)
+        except OSError, e:
+            logging.warn(str(e))
 
 
 # vim: set sw=4 ts=4 expandtab:

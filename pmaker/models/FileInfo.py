@@ -20,15 +20,9 @@ from pmaker.utils import *
 from pmaker.models.FileOperations import *
 from pmaker.models.DirOperations import *
 from pmaker.models.SymlinkOperations import *
-from pmaker.models.VirtualFileInfoOperations import *
 
 import logging
 import os.path
-
-
-
-DICT_0 = dict()
-CHECkSUM_0 = checksum()
 
 
 
@@ -42,25 +36,29 @@ class FileInfo(object):
     is_copyable = True
     perm_default = "0644"
 
-    def __init__(self, path, mode="0644", uid=0, gid=0, checksum=CHECkSUM_0,
-            xattrs=DICT_0, **kwargs):
+    def __init__(self, path, mode="0644", uid=0, gid=0, checksum=checksum(),
+            create=False, content="", **kwargs):
         """
-
         @path  str   Target object's path
         @mode  str   File mode e.g. "0644", "1755"
         @uid   int   User ID of the object's owner
         @gid   int   Group ID of the object's owner
         @checksum  str  Checksum of this target object
-        @xattr dict  Parameter names and values represent eXtended ATTRibutes
+
+        @create  bool  If true, object of path may not exist and created later on demand.
+        @content str   The string represents the content of path to be created. 
+                       It means nothing if $create is false.
         """
         self.path = path
         self.mode = mode
         self.uid= uid
         self.gid = gid
         self.checksum = checksum
-        self.xattrs = xattrs
 
-        self.target = self.dest = path
+        self.create = bool(create)
+        self.content = content
+
+        self.target = self.install_path = path
 
         for k, v in kwargs.iteritems():
             setattr(self, k, v)
@@ -99,6 +97,9 @@ class DirInfo(FileInfo):
     filetype = TYPE_DIR
     perm_default = "0755"
 
+    def __init__(self, path, mode="0755", *args, **kwargs):
+        super(DirInfo, self).__init__(path, mode, *args, **kwargs)
+
 
 
 class SymlinkInfo(FileInfo):
@@ -131,39 +132,6 @@ class UnknownInfo(FileInfo):
 
     def __init__(self, path, *args, **kwargs):
         super(UnknownInfo, self).__init__(path, *args, **kwargs)
-
-
-
-class VirtualFileInfo(FileInfo):
-    """Special type of fileinfo class to accomplish dynamically generated
-    files/dirs/symlinks.
-
-    This is for files.
-    """
-    operations = VirtualFileOperations
-
-    def __init__(self, path, *args, **kwargs):
-        super(VirtualFileInfo, self).__init__(path, *args, **kwargs)
-
-
-
-class VirtualDirInfo(DirInfo):
-    """Likewise but this is for dirs.
-    """
-    operations = VirtualDirOperations
-
-    def __init__(self, path, *args, **kwargs):
-        super(VirtualDirInfo, self).__init__(path, *args, **kwargs)
-
-
-
-class VirtualSymlinkInfo(SymlinkInfo):
-    """Likewise but this is for symlinks.
-    """
-    operations = VirtualSymlinkOperations
-
-    def __init__(self, path, *args, **kwargs):
-        super(VirtualSymlinkInfo, self).__init__(path, *args, **kwargs)
 
 
 

@@ -26,9 +26,13 @@ class SymlinkOperations(FileOperations):
     link_instead_of_copy = False
 
     @classmethod
-    def copy_main(cls, fileinfo, dest, use_pyxattr=False):
+    def create(cls, fileinfo, dest):
+        os.symlink(fileinfo.linkto, dest)
+
+    @classmethod
+    def copy_main(cls, fileinfo, dest):
         if cls.link_instead_of_copy:
-            os.symlink(fileinfo.linkto, dest)
+            cls.create(fileinfo, dest)
         else:
             shell("cp -a %s %s" % (fileinfo.path, dest))
 

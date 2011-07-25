@@ -17,11 +17,11 @@
 #
 from pmaker.models.SymlinkOperations import SymlinkOperations
 from pmaker.models.FileInfoFactory import FileInfoFactory
-from pmaker.utils import rm_rf
+from pmaker.models.FileInfo import SymlinkInfo
+from pmaker.tests.common import setup_workdir, cleanup_workdir
 
 import os
 import os.path
-import tempfile
 import unittest
 
 
@@ -29,7 +29,7 @@ import unittest
 class TestSymlinkOperations(unittest.TestCase):
 
     def setUp(self):
-        self.workdir = tempfile.mkdtemp(dir="/tmp", prefix="pmaker-tests")
+        self.workdir = setup_workdir()
         src = os.path.join(self.workdir, "test.txt")
         open(src, "w").write("test\n")
 
@@ -37,21 +37,13 @@ class TestSymlinkOperations(unittest.TestCase):
         os.symlink(src, self.path)
 
     def tearDown(self):
-        rm_rf(self.workdir)
+        cleanup_workdir(self.workdir)
 
     def test_copy_main(self):
         dest = os.path.join(self.workdir, "another_symlink.txt")
         fi = FileInfoFactory().create(self.path)
 
         SymlinkOperations.copy_main(fi, dest)
-        self.assertTrue(os.path.exists(dest))
-        self.assertTrue(os.path.islink(dest))
-
-    def test_copy_main__with_pyxattr(self):
-        dest = os.path.join(self.workdir, "another_symlink.txt")
-        fi = FileInfoFactory().create(self.path)
-
-        SymlinkOperations.copy_main(fi, dest, True)
         self.assertTrue(os.path.exists(dest))
         self.assertTrue(os.path.islink(dest))
 
@@ -62,6 +54,18 @@ class TestSymlinkOperations(unittest.TestCase):
         fi = FileInfoFactory().create(self.path)
 
         SymlinkOperations.copy_main(fi, dest)
+        self.assertTrue(os.path.exists(dest))
+        self.assertTrue(os.path.islink(dest))
+
+        SymlinkOperations.link_instead_of_copy = False
+
+    def test_create(self):
+        dest = self.path
+
+        fi = SymlinkInfo(dest, create=True)
+        os.remove(dest)  # remove to create
+
+        SymlinkOperations.create(fi, dest)
         self.assertTrue(os.path.exists(dest))
         self.assertTrue(os.path.islink(dest))
 
