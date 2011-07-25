@@ -17,10 +17,10 @@
 from pmaker.models.FileInfoFactory import FileInfoFactory
 from pmaker.models.FileInfo import *  # *FileInfo and other classes
 from pmaker.globals import *  # TYPE_*
-from pmaker.utils import rm_rf
+from pmaker.utils import is_superuser
+from pmaker.tests.common import setup_workdir, cleanup_workdir
 
 import os
-import tempfile
 import unittest
 
 
@@ -28,26 +28,51 @@ import unittest
 class TestFileInfoFactory(unittest.TestCase):
 
     def setUp(self):
+        self.workdir = setup_workdir()
         self.factory = FileInfoFactory()
-        self.workdir = tempfile.mkdtemp(dir="/tmp", prefix="pmaker-tests")
 
     def tearDown(self):
-        rm_rf(self.workdir)
+        cleanup_workdir(self.workdir)
 
     def test__stat_normal(self):
-        (mode, uid, gid) = self.factory._stat("/dev/null")
+        st = self.factory._stat("/dev/null")
+        self.assertNotEquals(st, None)
+
+        (mode, uid, gid) = st
+
         self.assertNotEquals(mode, None)
         self.assertNotEquals(uid, None)
         self.assertNotEquals(gid, None)
 
     def test__stat_no_permission(self):
-        if os.getuid() == 0:
+        if is_superuser():
             print >> sys.stderr, "You're root. Skip this test."
             return
 
         self.assertEquals(self.factory._stat("/root/.bashrc"), None)
 
-    def test_create__file(self):
+    def test_create__create_file(self):
+        path = os.path.join(self.workdir, "file.txt")
+        fi = self.factory.create(path, create=True, fietype=TYPE_FILE)
+
+        self.assertTrue(isinstance(fi, FileInfo))
+        self.assertEquals(fi.type(), TYPE_FILE)
+
+    def test_create__create_dir(self):
+        path = os.path.join(self.workdir, "subdir0")
+        fi = self.factory.create(path, create=True, filetype=TYPE_DIR)
+
+        self.assertTrue(isinstance(fi, DirInfo))
+        self.assertEquals(fi.type(), TYPE_DIR)
+
+    def test_create__create_symlink(self):
+        path = os.path.join(self.workdir, "symlink0")
+        fi = self.factory.create(path, create=True, filetype=TYPE_SYMLINK)
+
+        self.assertTrue(isinstance(fi, SymlinkInfo))
+        self.assertEquals(fi.type(), TYPE_SYMLINK)
+
+    def test_create_from_path_file(self):
         path = os.path.join(self.workdir, "file.txt")
         open(path, "w").write("type file\n")
         fi = self.factory.create(path)
@@ -55,14 +80,14 @@ class TestFileInfoFactory(unittest.TestCase):
         self.assertTrue(isinstance(fi, FileInfo))
         self.assertEquals(fi.type(), TYPE_FILE)
 
-    def test_create__dir(self):
+    def test_create_from_path__dir(self):
         path = self.workdir
         fi = self.factory.create(path)
 
         self.assertTrue(isinstance(fi, DirInfo))
         self.assertEquals(fi.type(), TYPE_DIR)
 
-    def test_create__symlink(self):
+    def test_create_from_path__symlink(self):
         src = os.path.join(self.workdir, "file.txt")
         path = os.path.join(self.workdir, "symlink.txt")
         open(src, "w").write("type file\n")
@@ -72,7 +97,7 @@ class TestFileInfoFactory(unittest.TestCase):
         self.assertTrue(isinstance(fi, SymlinkInfo))
         self.assertEquals(fi.type(), TYPE_SYMLINK)
 
-    def test_create__other(self):
+    def test_create_from_path__other(self):
         path = os.path.join(self.workdir, "fifo.pipe")
         os.mkfifo(path)
         fi = self.factory.create(path)
@@ -80,7 +105,7 @@ class TestFileInfoFactory(unittest.TestCase):
         self.assertTrue(isinstance(fi, OtherInfo))
         self.assertEquals(fi.type(), TYPE_OTHER)
 
-    def test_create__unknown(self):
+    def test_create_from_path__unknown(self):
         path = "/root/.bashrc"
         fi = self.factory.create(path)
 

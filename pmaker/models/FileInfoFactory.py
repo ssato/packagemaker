@@ -14,8 +14,7 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
-from pmaker.models.FileInfo import VirtualFileInfo, VirtualDirInfo, VirtualSymlinkInfo
-from pmaker.globals import *  # TYPE_*, FILEINFOS, PYXATTR_ENABLED
+from pmaker.globals import *  # TYPE_*, FILEINFOS
 from pmaker.utils import checksum, st_mode_to_mode
 
 import pmaker.models.FileInfo
@@ -28,16 +27,8 @@ import pwd
 import stat
 
 
-if PYXATTR_ENABLED:
-    import xattr  # pyxattr
-else:
-    # Make up a "Null-Object" like class mimics xattr module.
-    class xattr(object):
-        def get_all(self, *args):
-            return ()
 
-
-pmaker.models.FileInfo.init()
+pmaker.models.FileInfo.init()  # Initialize FILEINFOS (fileinfos mapping table)
 
 
 
@@ -77,8 +68,16 @@ class FileInfoFactory(object):
 
         return ft
 
-    def create(self, path, attrs=None, fileinfo_map=FILEINFOS,
-            use_pyxattr=PYXATTR_ENABLED):
+    def create(self, path, create=False, filetype=TYPE_FILE, fileinfo_map=FILEINFOS, **kwargs):
+        if create:
+            _cls = fileinfo_map.get(filetype, False)
+            assert _cls, "Could not get a class for filetype=" + filetype
+
+            return _cls(path, create=True, **kwargs)
+        else:
+            return self.create_from_path(path, fileinfo_map, **kwargs)
+
+    def create_from_path(self, path, fileinfo_map=FILEINFOS, **kwargs):
         """
         Factory method. Creates and returns the *Info instance.
 
@@ -92,54 +91,20 @@ class FileInfoFactory(object):
 
         (st_mode, _uid, _gid) = st
 
-        # There is a case that read access is OK but cannot get xattrs.
-        try:
-            _xattrs = dict(use_pyxattr and xattr.get_all(path) or ())
-        except  IOError:
-            _xattrs = dict()
-
         _filetype = self._guess_ftype(st_mode)
 
         if _filetype == TYPE_UNKNOWN:
-            logging.warn(" Could not stat and determine type: %s" % path)
+            logging.warn(" Could not determine type for " + path)
 
         _checksum = _filetype == TYPE_FILE and checksum(path) or checksum()
         _mode = st_mode_to_mode(st_mode)
 
         _cls = fileinfo_map.get(_filetype, False)
-        assert _cls, "Could not get a class for filetype=%s !" % _filetype
+        assert _cls, "Could not get a class for filetype=" + _filetype
 
-        fi = _cls(path, _mode, _uid, _gid, _checksum, _xattrs)
-
-        if attrs:
-            for attr, val in attrs.iteritems():
-                setattr(fi, attr, val)
+        fi = _cls(path, _mode, _uid, _gid, _checksum, **kwargs)
 
         return fi
-
-    def createFromTarget(self, target):
-        params = dict(path=target.path)
-
-        for k in ("mode", "uid", "gid", "checksum"):
-            v = getattr(target, k, False)
-            if v:
-                params[k] = v
-
-        _type = getattr(target, "type", TYPE_FILE)
-
-        if _type == TYPE_FILE:
-            _cls = VirtualFileInfo
-
-        elif _type == TYPE_DIR:
-            _cls = VirtualDirInfo
-
-        elif _type == TYPE_SYMLINK:
-            _cls = VirtualSymlinkInfo
-
-        else:
-            raise RuntimeError(" Unknown type is specified for virtual object: path=" + target.path)
-
-        return _cls(target.path, **params)
 
 
 # vim: set sw=4 ts=4 expandtab:
