@@ -54,7 +54,7 @@ class Test_00_multi_files_tgz(unittest.TestCase):
 
         open(self.listfile, "w").write(filelist_ext_content)
 
-        args = "--name foobar --template-path %s -w %s --format %s --itype filelist.ext %s" % \
+        args = "--name foobar --template-path %s -w %s --format %s --itype filelist %s" % \
             (self.template_path, self.pmworkdir, "tgz", self.listfile)
         helper_run_with_args(args)
 
@@ -87,7 +87,7 @@ class Test_00_multi_files_tgz(unittest.TestCase):
 
         print open(self.listfile).read()
 
-        args = "--name foobar --template-path %s -w %s --format %s --itype filelist.ext %s" % \
+        args = "--name foobar --template-path %s -w %s --format %s --itype filelist %s" % \
             (self.template_path, self.pmworkdir, "tgz", self.listfile)
         helper_run_with_args(args)
 
