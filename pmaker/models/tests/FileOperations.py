@@ -18,7 +18,8 @@
 from pmaker.models.FileOperations import *
 from pmaker.models.FileInfoFactory import FileInfoFactory
 from pmaker.models.FileInfo import FileInfo
-from pmaker.utils import checksum, rm_rf
+from pmaker.utils import checksum
+from pmaker.tests.common import setup_workdir, cleanup_workdir
 
 import copy
 import os
@@ -46,12 +47,12 @@ class Test_00_FileOperations(unittest.TestCase):
 class Test_01_FileOperations__with_side_effects(unittest.TestCase):
 
     def setUp(self):
-        self.workdir = tempfile.mkdtemp(dir="/tmp", prefix="pmaker-tests")
+        self.workdir = setup_workdir()
         self.testfile1 = os.path.join(self.workdir, "test1.txt")
         open(self.testfile1, "w").write("test1\n")
 
     def tearDown(self):
-        rm_rf(self.workdir)
+        cleanup_workdir(self.workdir)
 
     def test_copy_main__and__remove(self):
         fileinfo = FileInfoFactory().create(self.testfile1)

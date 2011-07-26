@@ -17,18 +17,16 @@
 from pmaker.makers.DebPackageMaker import *
 from pmaker.collectors.Collectors import FilelistCollector
 from pmaker.globals import *
-from pmaker.utils import rm_rf, memoize
+from pmaker.utils import memoize
 from pmaker.config import Config
 from pmaker.package import Package
+from pmaker.tests.common import setup_workdir, cleanup_workdir
 
-import glob
 import logging
 import optparse
 import os
 import os.path
-import random
 import sys
-import tempfile
 import unittest
 
 
@@ -42,7 +40,7 @@ def is_cmd_available(cmd="dpkg-buildpackage"):
 class Test_00_AutotoolsDebPackageMaker(unittest.TestCase):
 
     def setUp(self):
-        self.workdir = tempfile.mkdtemp(dir="/tmp", prefix="pmaker-tests")
+        self.workdir = setup_workdir()
 
         paths = [
             "#/etc/aliases.db",
@@ -89,7 +87,7 @@ class Test_00_AutotoolsDebPackageMaker(unittest.TestCase):
         logging.getLogger().setLevel(logging.WARNING) # suppress log messages
 
     def tearDown(self):
-        rm_rf(self.workdir)
+        cleanup_workdir(self.workdir)
 
     def helper_run_upto_step(self, step):
         self.pmaker.upto = step

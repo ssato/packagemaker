@@ -17,14 +17,12 @@
 from pmaker.package import *
 from pmaker.models.FileInfoFactory import FileInfoFactory
 from pmaker.config import Config
-from pmaker.utils import rm_rf
 
 import glob
 import optparse
 import os
 import os.path
 import random
-import tempfile
 import unittest
 
 

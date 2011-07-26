@@ -16,6 +16,7 @@
 #
 from pmaker.utils import *
 from pmaker.globals import DATE_FMT_SIMPLE, DATE_FMT_RFC2822
+from pmaker.tests.common import setup_workdir, cleanup_workdir
 
 import copy
 import doctest
@@ -53,11 +54,12 @@ class TestMemoized(unittest.TestCase):
 class TestChecksum(unittest.TestCase):
 
     def setUp(self):
-        (_, self.f) = tempfile.mkstemp()
+        self.workdir = setup_workdir()
+        (_, self.f) = tempfile.mkstemp(dir=self.workdir)
         open(self.f, "w").write(str(random.random()))
 
     def tearDown(self):
-        os.remove(self.f)
+        cleanup_workdir(self.workdir)
 
     def test_checksum_no_file(self):
         csum_ref = "0" * len(sha1("").hexdigest())
@@ -248,10 +250,10 @@ class Test_on_debug_mode(unittest.TestCase):
 class Test_rm_rf_and_createdir(unittest.TestCase):
 
     def setUp(self):
-        self.workdir = tempfile.mkdtemp(dir="/tmp", prefix="pmaker-tests")
+        self.workdir = setup_workdir()
 
     def tearDown(self):
-        rm_rf(self.workdir)
+        cleanup_workdir(self.workdir)
 
     def test_createdir_and_rm_rf__simple(self):
         path = os.path.join(self.workdir, "a")
@@ -292,13 +294,13 @@ class Test_rm_rf_and_createdir(unittest.TestCase):
 class Test_find_template(unittest.TestCase):
 
     def setUp(self):
-        self.workdir = tempfile.mkdtemp(dir="/tmp", prefix="pmaker-tests")
+        self.workdir = setup_workdir()
         self.template = os.path.join(self.workdir, "a.tmpl")
 
         open(self.template, "w").write("$a\n")
 
     def tearDown(self):
-        rm_rf(self.workdir)
+        cleanup_workdir(self.workdir)
 
     def test_find_template__None(self):
         tmpl = find_template("not_exist.tmpl")
@@ -321,10 +323,10 @@ class Test_find_template(unittest.TestCase):
 class Test_compile_template(unittest.TestCase):
 
     def setUp(self):
-        self.workdir = tempfile.mkdtemp(dir="/tmp", prefix="pmaker-tests")
+        self.workdir = setup_workdir()
 
     def tearDown(self):
-        rm_rf(self.workdir)
+        cleanup_workdir(self.workdir)
 
     def test_compile_template__str(self):
         tmpl_s = "a=$a b=$b"
@@ -345,10 +347,10 @@ class Test_compile_template(unittest.TestCase):
 class Test_sort_out_paths_by_dir(unittest.TestCase):
 
     def setUp(self):
-        self.workdir = tempfile.mkdtemp(dir="/tmp", prefix="pmaker-tests")
+        self.workdir = setup_workdir()
 
     def tearDown(self):
-        rm_rf(self.workdir)
+        cleanup_workdir(self.workdir)
 
     def test_sort_out_paths_by_dir(self):
         path_list = [

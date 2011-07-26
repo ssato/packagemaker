@@ -15,7 +15,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 from pmaker.config import *
-from pmaker.utils import rm_rf
+from pmaker.tests.common import setup_workdir, cleanup_workdir
 
 import optparse
 import os
@@ -31,7 +31,7 @@ class TestConfig(unittest.TestCase):
     _multiprocess_can_split_ = True
 
     def setUp(self):
-        self.workdir = tempfile.mkdtemp(dir="/tmp", prefix="pmaker-tests")
+        self.workdir = setup_workdir()
 
         conf = """\
 [DEFAULT]
@@ -48,7 +48,7 @@ b: yyy
         self.paths = [path]
 
     def tearDown(self):
-        rm_rf(self.workdir)
+        cleanup_workdir(self.workdir)
 
     def test_list_paths__None(self):
         prog = "testapp"

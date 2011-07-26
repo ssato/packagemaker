@@ -17,7 +17,6 @@
 from pmaker.makers.PackageMaker import *
 from pmaker.models.FileInfoFactory import FileInfoFactory
 from pmaker.collectors.Filters import *
-from pmaker.utils import rm_rf
 from pmaker.config import Config
 from pmaker.package import Package
 
@@ -46,7 +45,7 @@ class Test_00_to_srcdir(unittest.TestCase):
 class Test_01_PackageMaker__generated_files(unittest.TestCase):
 
     def setUp(self):
-        self.workdir = tempfile.mkdtemp(dir="/tmp", prefix="pmaker-tests")
+        self.workdir = setup_workdir()
 
         targets = [os.path.join(self.workdir, p) for p in ("aaa.txt", "bbb.txt", "c/d/e.txt")]
         os.makedirs(os.path.join(self.workdir, "c/d/"))
@@ -64,7 +63,7 @@ class Test_01_PackageMaker__generated_files(unittest.TestCase):
         self.package = Package(self.options)
 
     def tearDown(self):
-        rm_rf(self.workdir)
+        cleanup_workdir(self.workdir)
 
     def helper_run_upto_step(self, step):
         pmaker = PackageMaker(self.package, self.fileinfos, self.options)
@@ -132,7 +131,7 @@ class Test_01_PackageMaker__generated_files(unittest.TestCase):
 class Test_02_PackageMaker__system_files(unittest.TestCase):
 
     def setUp(self):
-        self.workdir = tempfile.mkdtemp(dir="/tmp", prefix="pmaker-tests")
+        self.workdir = setup_workdir()
 
         paths = [
             "/etc/aliases.db",
@@ -172,7 +171,7 @@ class Test_02_PackageMaker__system_files(unittest.TestCase):
         logging.getLogger().setLevel(logging.WARNING) # suppress log messages
 
     def tearDown(self):
-        rm_rf(self.workdir)
+        cleanup_workdir(self.workdir)
 
     def helper_run_upto_step(self, step):
         self.pmaker.upto = step
@@ -201,7 +200,7 @@ class Test_02_PackageMaker__system_files(unittest.TestCase):
 class Test_03_AutotoolsTgzPackageMaker__single(unittest.TestCase):
 
     def setUp(self):
-        self.workdir = tempfile.mkdtemp(dir="/tmp", prefix="pmaker-tests")
+        self.workdir = setup_workdir()
         target_path = os.path.join(self.workdir, "a.txt")
 
         open(target_path, "w").write("a\n")
@@ -221,7 +220,7 @@ class Test_03_AutotoolsTgzPackageMaker__single(unittest.TestCase):
         logging.getLogger().setLevel(logging.WARNING) # suppress log messages
 
     def tearDown(self):
-        rm_rf(self.workdir)
+        cleanup_workdir(self.workdir)
 
     def helper_run_upto_step(self, step):
         self.pmaker.upto = step

@@ -19,6 +19,7 @@ from pmaker.utils import *
 from pmaker.shell import shell
 from pmaker.environ import hostname
 from pmaker.package import Package
+from pmaker.tests.common import setup_workdir, cleanup_workdir
 
 import cPickle as pickle
 import itertools

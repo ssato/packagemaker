@@ -18,7 +18,7 @@
 from pmaker.models.DirOperations import DirOperations
 from pmaker.models.FileInfoFactory import FileInfoFactory
 from pmaker.models.FileInfo import DirInfo
-from pmaker.utils import rm_rf
+from pmaker.tests.common import setup_workdir, cleanup_workdir
 
 import os
 import os.path
@@ -30,10 +30,10 @@ import unittest
 class TestDirOperations(unittest.TestCase):
 
     def setUp(self):
-        self.workdir = tempfile.mkdtemp(dir="/tmp", prefix="pmaker-tests")
+        self.workdir = setup_workdir()
 
     def tearDown(self):
-        rm_rf(self.workdir)
+        cleanup_workdir(self.workdir)
 
     def test_remove(self):
         path = os.path.join(self.workdir, "test0")
