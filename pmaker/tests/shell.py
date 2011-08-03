@@ -37,4 +37,30 @@ class Test_shell(unittest.TestCase):
             pass
 
 
+class Test_ThreadedCommand(unittest.TestCase):
+
+    def test_run__00(self):
+        cmd = "true"
+
+        self.assertEquals(ThreadedCommand(cmd).run(), 0)
+
+    def test_run__01_workdir(self):
+        cmd = "true"
+        workdir = "/tmp"
+
+        self.assertEquals(ThreadedCommand(cmd, workdir).run(), 0)
+
+    def test_run__02_stop_on_failure(self):
+        cmd = "false"
+        tcmd = ThreadedCommand(cmd, stop_on_failure=True)
+
+        self.assertRaises(RuntimeError, tcmd.run)
+
+    def test_run__03_timeout(self):
+        cmd = "sleep 10"
+        tcmd = ThreadedCommand(cmd, timeout=1)
+
+        self.assertRaises(RuntimeError, tcmd.run)
+
+
 # vim: set sw=4 ts=4 expandtab:

@@ -15,7 +15,11 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 import logging
+import os
 import subprocess
+import sys
+import threading
+
 
 
 def shell(cmd, workdir=None, dryrun=False, stop_on_error=True):
@@ -64,6 +68,112 @@ def shell(cmd, workdir=None, dryrun=False, stop_on_error=True):
         else:
             logging.error(" cmd=%s, rc=%d" % (cmd, rc))
             return rc
+
+
+CURDIR = os.getcwd()
+
+
+
+class ThreadedCommand(object):
+    """
+    Based on the idea found at
+    http://stackoverflow.com/questions/1191374/subprocess-with-timeout
+    """
+
+    def __init__(self, cmd, workdir=CURDIR, stop_on_failure=True,
+            timeout=None):
+        """
+        :param cmd:     Command string
+        :param workdir: Working directory to run cmd
+        :param stop_on_failure:  Stop main thread if something goes wrong
+        :param timeout: Timeout value
+        """
+        self.cmd = cmd
+        self.workdir = workdir
+        self.stop_on_failure = stop_on_failure
+        self.timeout = timeout
+
+        llevel = logging.getLogger().level
+        if llevel < logging.WARN:
+            self.cmd += " > /dev/null"
+        elif llevel < logging.INFO:
+            self.cmd += " 2> /dev/null"
+        else:
+            pass
+
+        self.cmd_str = "%s [%s]" % (self.cmd[:65] + "...", self.workdir)
+
+        if "~" in workdir:
+            workdir = os.path.expanduser(workdir)
+
+        self.process = None
+        self.thread = None
+        self.result = None
+
+    def run_async(self):
+        def func():
+            """
+            if logging.getLogger().level < logging.INFO:  # logging.DEBUG
+                stdout = sys.stdout
+            else:
+                stdout = open("/dev/null", "w")
+            """
+
+            logging.info("Run: " + self.cmd_str)
+
+            self.process = subprocess.Popen(self.cmd,
+                                            bufsize=4096,
+                                            shell=True,
+                                            cwd=self.workdir
+            )
+            self.result = self.process.wait()
+
+            logging.debug("Finished: " + self.cmd_str)
+
+        self.thread = threading.Thread(target=func)
+        self.thread.start()
+
+    def get_result(self):
+        if self.thread is None:
+            logging.warn("Thread does not exist. Did you call %s.run_async() ?" % self.__class__.__name__)
+            return None
+
+        # it will block.
+        self.thread.join(self.timeout)
+
+        if self.thread.is_alive():
+            logging.warn("Terminating: " + self.cmd_str)
+
+            self.process.terminate()
+            self.thread.join()
+
+        rc = self.result
+
+        if rc != 0:
+            emsg = "Failed: %s, rc=%d" % (self.cmd, rc)
+
+            if self.stop_on_failure:
+                raise RuntimeError(emsg)
+            else:
+                logging.warn(emsg)
+
+        return rc
+
+    def run(self):
+        self.run_async()
+        return self.get_result()
+
+
+
+def run(cmd, workdir=CURDIR, dryrun=False, stop_on_failure=True, timeout=None):
+
+    if dryrun:
+        logging.info(" Run: %s [%s]" % (cmd, workdir))
+        logging.debug(" (exit as we're in dry run mode.)")
+        return
+
+    tcmd = ThreadedCommand(cmd, workdir, stop_on_failure, timeout)
+    return tcmd.run()
 
 
 # vim: set sw=4 ts=4 expandtab:
