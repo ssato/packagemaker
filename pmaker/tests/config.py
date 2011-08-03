@@ -182,41 +182,6 @@ class Test_relations_option_parser(unittest.TestCase):
 
 
 
-class Test_workdir_option_parser(unittest.TestCase):
-
-    def setUp(self):
-        defaults = workdir_defaults()
-
-        p = optparse.OptionParser()
-        p.add_option("", "--name", default="foo")
-        p.add_option("", "--pversion", default="0.1")
-        p.add_option("", "--workdir", **defaults)
-
-        self.parser = p
-        self.defaults = defaults
-
-    def parse_args(self, args):
-        return self.parser.parse_args(args.split())
-
-    def test_default(self):
-        """test_default: Cases that this option not given"""
-        (options, _) = self.parse_args("")
-
-        self.assertEquals(options.workdir, self.defaults["default"])
-
-    def test_set__abspath(self):
-        (options, _) = self.parse_args("--workdir /a/b/c")
-        expected = os.path.join("/a/b/c", "foo-0.1")
-
-        self.assertEquals(options.workdir, expected)
-
-    def test_set__relpath(self):
-        (options, _) = self.parse_args("--workdir a/b/c")
-        expected = os.path.join(os.getcwd(), "a/b/c", "foo-0.1")
-
-        self.assertEquals(options.workdir, expected)
-
-
 class Test_parse_args(unittest.TestCase):
 
     def test__min(self):
