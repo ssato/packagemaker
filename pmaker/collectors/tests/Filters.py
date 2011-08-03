@@ -51,8 +51,8 @@ class TestReadAccessFilter(unittest.TestCase):
             return
 
         path = random.choice(
-            [p for p in ("/etc/at.deny", "/etc/securetty", "/etc/sudoer", "/etc/shadow") \
-                if os.path.exists(p)]
+            [p for p in ("/etc/at.deny", "/etc/securetty", "/etc/sudoer", "/etc/shadow", "/etc/grub.conf") \
+                if os.path.exists(p) and not os.access(p, os.R_OK)]
         )
         fi = FileInfoFactory().create(path)
 
