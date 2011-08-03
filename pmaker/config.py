@@ -163,21 +163,17 @@ targets are varied depends on package format to use"""
                 default="", help=_help)
 
 
+def set_workdir(workdir, name, pversion):
+    return os.path.join(workdir, "%s-%s" % (name, pversion))
+
+
 def workdir_defaults():
-    """Relation option parameters.
+    """Wokrdir option parameter's default.
     """
-    def cb(option, opt_str, value, parser):
-        name = parser.values.name
-        version = parser.values.pversion
-        workdir = os.path.join(value, "%s-%s" % (name, version))
-
-        parser.values.workdir = os.path.abspath(workdir)
-
     _help="Working dir to dump outputs [%default]"
     _default = os.path.join(os.getcwd(), "workdir")
 
-    return dict(action="callback", callback=cb, type="string",
-        default=_default, help=_help)
+    return dict(default=_default, help=_help)
 
 
 def parse_args(argv=sys.argv[1:], defaults=None, upto=UPTO,
@@ -252,6 +248,8 @@ def parse_args(argv=sys.argv[1:], defaults=None, upto=UPTO,
     p.add_option("", "--debug", action='store_const', dest='verbosity', const=2, help="Debug mode (same as -vv)")
 
     (options, args) = p.parse_args(argv)
+
+    options.workdir = set_workdir(options.workdir, options.name, options.pversion)
 
     return (p, options, args)
 
