@@ -46,13 +46,31 @@ It's easier than the above but only possible to make a rpm for build host.
 1. python setup.py rpm
 
 
-
 How to test
 ================
 
 * Unit tests: `python setup.py test`
 * Unit tests + System tests: `python setup.py test --full`
 
+
+
+HACKING
+================
+
+This is my usual way for enhancements:
+
+1. create a branch: git branch foo
+2. modify or add code to archive objective enhancements in that branch: git checkout foo; vim ...
+3. add (unit) tests for enhancements to verify the correctness of changes
+4. commit and run full test (unit + system tests)
+
+if all looks ok, merge the branch to main.
+
+And here is my usual way for bug fixes:
+
+1. Write tests for the bug
+2. Modify / add code for the fix
+3. Run the tests causes the bug and confirm the fix was right
 
 
 TODO
@@ -73,9 +91,7 @@ TODO
 
 * define schema for input (JSON, YAML?, XML?, ...)
 
-  * support VirtualFileInfo (or whatever) model: its content is embedded in
-    JSON data and will be generated on demand.
-  * and more, perhasp, its content will be gotten from external site pointed by
+  * perhaps, the contents of files will be gotten from external site pointed by
     URL reference in JSON data
 
 * more complete tests
