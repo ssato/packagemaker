@@ -164,7 +164,7 @@ targets are varied depends on package format to use"""
 
 
 def set_workdir(workdir, name, pversion):
-    return os.path.join(workdir, "%s-%s" % (name, pversion))
+    return os.path.join(os.path.abspath(workdir), "%s-%s" % (name, pversion))
 
 
 def workdir_defaults():
