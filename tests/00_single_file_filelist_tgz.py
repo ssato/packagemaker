@@ -17,6 +17,7 @@
 from pmaker.utils import rm_rf
 from tests.utils import *
 
+import copy
 import glob
 import logging
 import os
@@ -33,7 +34,7 @@ class Test_00_single_file_tgz(unittest.TestCase):
         self.listfile = os.path.join(self.workdir, "files.list")
         self.template_path = os.path.join(os.getcwd(), "templates")
 
-        p = PKG_0
+        p = self.p = PKG_0
         p["tpath"] = self.template_path
         p["wdir"] = self.pmworkdir
         p["fmt"] = "tgz"
@@ -61,6 +62,26 @@ class Test_00_single_file_tgz(unittest.TestCase):
 
         self.assertTrue(os.path.exists(self.tgz))
 
+    def test_00_generated_file__with_pversion(self):
+        p = copy.copy(self.p)
+
+        pversion = "1.2.3"
+        p["version"] = pversion
+
+        pnv = "%(name)s-%(version)s" % p
+
+        tgz = os.path.join(self.pmworkdir, pnv, pnv + ".tar." + helper_get_compressor_ext())
+
+        target = os.path.join(self.workdir, "bbb.txt")
+        os.system("touch " + target)
+
+        open(self.listfile, "w").write("%s\n" % target)
+
+        helper_run_with_args(self.args + " --pversion " + pversion + " ")
+
+        print "tgz=" + tgz
+        self.assertTrue(os.path.exists(tgz))
+
     def test_01_system_file(self):
         target = helper_random_system_files(1)
 
@@ -68,6 +89,7 @@ class Test_00_single_file_tgz(unittest.TestCase):
 
         helper_run_with_args(self.args)
 
+        print "tgz=" + self.tgz
         self.assertTrue(os.path.exists(self.tgz))
 
 
