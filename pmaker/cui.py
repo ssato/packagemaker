@@ -103,6 +103,9 @@ def main(argv=sys.argv, collector=COLLECTORS):
     collector = ccls(listfile, options)
     fis = collector.collect()
 
+    if len(fis) == 0:
+        raise RuntimeError("Failed to collect fileinfo list from " + listfile)
+
     #logging.debug("Collected fileinfos: " + ", ".join(fi.path for fi in fis))
 
     dcls = _get_class(options.driver, PACKAGE_MAKERS, AutotoolsTgzPackageMaker)
