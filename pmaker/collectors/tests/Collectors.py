@@ -19,6 +19,7 @@ from pmaker.models.FileInfo import FileInfo
 from pmaker.utils import dicts_comp
 from pmaker.tests.common import setup_workdir, cleanup_workdir
 
+import json
 import optparse
 import os.path
 import unittest
@@ -213,16 +214,13 @@ class Test_02_JsonFilelistCollector(unittest.TestCase):
     ]
 }
 """
-
-    def tearDown(self):
-        cleanup_workdir(self.workdir)
-
-    def test_list_fileinfos(self):
         listfile = os.path.join(self.workdir, "files.json")
 
         f = open(listfile, "w")
         f.write(self.json_data)
         f.close()
+
+        self.listfile = listfile
 
         option_values = {
             "name": "foo",
@@ -233,9 +231,15 @@ class Test_02_JsonFilelistCollector(unittest.TestCase):
         }
 
         options = optparse.Values(option_values)
-        fc = JsonFilelistCollector(listfile, options)
+        self.fc = JsonFilelistCollector(self.listfile, options)
 
-        ts = fc.list_fileinfos(listfile)
+    def tearDown(self):
+        cleanup_workdir(self.workdir)
+
+    def test_01_list_fileinfos(self):
+        ts = self.fc.list_fileinfos(self.listfile)
+
+        self.assertFalse(len(ts) == 0)
 
 
 # vim: set sw=4 ts=4 expandtab:
