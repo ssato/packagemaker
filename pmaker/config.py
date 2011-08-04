@@ -16,7 +16,7 @@
 #
 from pmaker.globals import *
 from pmaker.environ import *
-from pmaker.utils import parse_conf_value, memoize, parse_list_str
+from pmaker.utils import singleton, memoize, parse_conf_value, parse_list_str
 from pmaker.collectors.Collectors import FilelistCollector, init as init_collectors
 from pmaker.makers.PackageMaker import init as init_packagemaker
 from pmaker.makers.RpmPackageMaker import init as init_rpmpackagemaker
@@ -43,36 +43,36 @@ init_rpmpackagemaker()
 init_debpackagemaker()
 
 
-HELP_HEADER = """%prog [OPTION ...] FILE_LIST
+HELP_HEADER = """%prog [OPTION ...] INPUT
 
 Arguments:
 
-  FILE_LIST  a file contains file paths list or "-" (read paths list from
-             stdin).
+  INPUT   A file path or "-" (read data from stdin) to gather file paths.
 
-             Various format such as JSON data is supported but most basic
-             and simplest format is like the followings:
+          Various format such as JSON is supported but most basic and simplest
+          format is like the followings:
 
-             - Lines are consist of aboslute path of target file/dir/symlink
-             - The lines starting with "#" in the list file are ignored
-             - "*" in paths are intepreted as glob matching pattern;
+          - Lines are consist of aboslute path of target file/dir/symlink
+          - The lines starting with "#" in the list file are ignored
+          - "*" in paths are intepreted as glob matching pattern;
 
-               ex. if there were files 'c', 'd' and 'e' in the dir and the
-                   path '/a/b/*' was given, it's just same as
-                   '/a/b/c', '/a/b/d' and '/a/b/e' were given.
+          ex. if there were files 'c', 'd' and 'e' in the dir and the path
+              '/a/b/*' was given, it's just same as '/a/b/c', '/a/b/d' and
+              '/a/b/e' were given.
 
 Configuration files:
 
-  It loads parameter configurations from multiple configuration files if there
-  are in order of /etc/pmaker.conf, /etc/pmaker.d/*.conf, ~/.config/pmaker, any
-  path set in the environment variable PMAKERRC and ~/.pmakerrc.
+  Pmaker loads parameter configurations from multiple configuration files if
+  there are in order of /etc/pmaker.conf, /etc/pmaker.d/*.conf,
+  ~/.config/pmaker, any path set in the environment variable PMAKERRC and
+  ~/.pmakerrc.
 
 Examples:
   %prog -n foo files.list
   cat files.list | %prog -n foo -  # same as above.
 
   %prog -n foo --pversion 0.2 --license MIT files.list
-  %prog -n foo --relations "requires:httpd,/sbin/service;obsoletes:foo-old" files.list
+  %prog -n foo --relations "requires:httpd,/sbin/service;obsoletes:bar" files.list
 """
 
 
@@ -208,14 +208,6 @@ def parse_args(argv=sys.argv[1:], defaults=None, upto=UPTO,
 
     bog.add_option("-P", "--template-path", action="append", dest="template_paths", default=tmpl_search_paths)
 
-    #bog.add_option("", "--templates", help="Use custom template files. "
-    #    "TEMPLATES is a comma separated list of template output and file after the form of "
-    #    "RELATIVE_OUTPUT_PATH_IN_SRCDIR:TEMPLATE_FILE such like \"package.spec:/tmp/foo.spec.tmpl\", "
-    #    "and \"debian/rules:mydebrules.tmpl, Makefile.am:/etc/foo/mymakefileam.tmpl\". "
-    #    "Supported template syntax is Python Cheetah: http://www.cheetahtemplate.org .")
-
-    #bog.add_option("", "--link", action="store_true", help="Make symlinks for symlinks instead of copying them")
-    #bog.add_option("", "--with-pyxattr", action="store_true", help="Get/set xattributes of files with pure python code.")
     p.add_option_group(bog)
 
     pog = optparse.OptionGroup(p, "Package metadata options")
@@ -336,9 +328,6 @@ class Config(object):
             destdir = "",
 
             template_paths = tmpl_paths,
-
-            #link = False,
-            #with_pyxattr = False,
 
             name = "",
             pversion = "0.1",
