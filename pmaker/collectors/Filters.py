@@ -83,7 +83,7 @@ class ReadAccessFilter(BaseFilter):
     _reason = "You don't have read access"
 
     def _pred(self, fileinfo):
-        return not os.access(fileinfo.path, os.R_OK)
+        return not fileinfo.create and not os.access(fileinfo.path, os.R_OK)
 
 
 # vim: set sw=4 ts=4 expandtab:

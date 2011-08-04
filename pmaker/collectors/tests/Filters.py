@@ -44,19 +44,27 @@ class TestReadAccessFilter(unittest.TestCase):
 
     def setUp(self):
         self.filter = ReadAccessFilter()
+        path = random.choice(
+            [p for p in ("/etc/at.deny", "/etc/securetty", "/etc/sudoer", "/etc/shadow", "/etc/grub.conf") \
+                if os.path.exists(p) and not os.access(p, os.R_OK)]
+        )
+        self.fi = FileInfoFactory().create(path)
 
     def test__pred__dont_have_read_access(self):
         if os.getuid() == 0:
             print >> sys.stderr, "You look root and cannot test this. Skipped"
             return
 
-        path = random.choice(
-            [p for p in ("/etc/at.deny", "/etc/securetty", "/etc/sudoer", "/etc/shadow", "/etc/grub.conf") \
-                if os.path.exists(p) and not os.access(p, os.R_OK)]
-        )
-        fi = FileInfoFactory().create(path)
+        self.assertTrue(self.filter._pred(self.fi))
 
-        self.assertTrue(self.filter._pred(fi))
+
+    def test__pred__dont_have_read_access_but_to_be_created(self):
+        if os.getuid() == 0:
+            print >> sys.stderr, "You look root and cannot test this. Skipped"
+            return
+
+        fi = self.fi; fi.create = True; fi.content = "# ..."
+        self.assertFalse(self.filter._pred(fi))
 
 
 # vim: set sw=4 ts=4 expandtab:
