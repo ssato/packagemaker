@@ -141,14 +141,16 @@ class Test_00_FilelistCollector(unittest.TestCase):
         option_values["no_rpmdb"] = False
 
     def test_03_parse_line__ext(self):
-        line = "/etc/resolv.conf,install_path=/var/lib/network/resolv.conf,uid=0,gid=0"
+        line = "/etc/resolv.conf,install_path=/var/lib/network/resolv.conf,uid=0,rpmattr='%config',create=1,content='nameserver 192.168.151.1\\n'"
 
         (paths, attrs) = FilelistCollector.parse_line(line)
 
         self.assertEquals(paths, ["/etc/resolv.conf"])
         self.assertEquals(attrs["install_path"], "/var/lib/network/resolv.conf")
         self.assertEquals(attrs["uid"], 0)
-        self.assertEquals(attrs["gid"], 0)
+        self.assertEquals(attrs["rpmattr"], "%config")
+        self.assertEquals(attrs["create"], 1)
+        self.assertEquals(attrs["content"], "nameserver 192.168.151.1\\n")
 
     def test_04_collect__ext(self):
         paths = [
