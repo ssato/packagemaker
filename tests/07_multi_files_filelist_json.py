@@ -37,14 +37,14 @@ JSON_FILELIST_0 = """
         },
         {
             "path": "bbb.txt",
-            "target": {
+            "attrs": {
                 "uid": 100,
                 "gid": 0
             }
         },
         {
             "path": "c/d/e/f.txt",
-            "target": {
+            "attrs": {
                 "rpmattr": "%config(noreplace)"
             }
         }
@@ -58,7 +58,7 @@ JSON_FILELIST_1 = """
     "files": [
         {
             "path": "/etc/aliases.db",
-            "target": {
+            "attrs": {
                 "uid": 10,
                 "gid": 10
             }
@@ -67,23 +67,26 @@ JSON_FILELIST_1 = """
             "path": "/etc/at.deny"
         },
         {
+            "path": "/etc/grub.conf"
+        },
+        {
             "path": "/etc/auto.master"
         },
         {
             "path": "/etc/hosts",
-            "target": {
+            "attrs": {
                 "rpmattr": "%config(noreplace)"
             }
         },
         {
             "path": "/etc/httpd/conf/httpd.conf",
-            "target": {
+            "attrs": {
                 "rpmattr": "%config(noreplace)"
             }
         },
         {
             "path": "/etc/modprobe.d/blacklist.conf",
-            "target": {
+            "attrs": {
                 "rpmattr": "%config(noreplace)"
             }
         },
@@ -92,38 +95,40 @@ JSON_FILELIST_1 = """
         },
         {
             "path": "/etc/rc.d/rc",
-            "target": {
+            "attrs": {
                 "rpmattr": "%config(noreplace)"
             }
         },
         {
             "path": "/etc/resolv.conf",
-            "target": {
-                "target": "/var/lib/networks.d/resolv.conf",
+            "attrs": {
+                "create": 1,
+                "content": "nameserver 192.168.122.1\\n",
+                "install_path": "/var/lib/networks.d/resolv.conf",
                 "rpmattr": "%config(noreplace)"
             }
         },
         {
             "path": "/etc/secure.tty",
-            "target": {
+            "attrs": {
                 "rpmattr": "%config(noreplace)"
             }
         },
         {
             "path": "/etc/security/access.conf",
-            "target": {
+            "attrs": {
                 "rpmattr": "%config(noreplace)"
             }
         },
         {
             "path": "/etc/security/limits.conf",
-            "target": {
+            "attrs": {
                 "rpmattr": "%config(noreplace)"
             }
         },
         {
             "path": "/etc/shadow",
-            "target": {
+            "attrs": {
                 "rpmattr": "%config(noreplace)"
             }
         },
@@ -132,13 +137,13 @@ JSON_FILELIST_1 = """
         },
         {
             "path": "/etc/system-release",
-            "target": {
+            "attrs": {
                 "rpmattr": "%config"
             }
         },
         {
             "path": "/etc/sudoers",
-            "target": {
+            "attrs": {
                 "rpmattr": "%config(noreplace)"
             }
         }
@@ -182,8 +187,11 @@ class Test_00_multi_files_filelist_json(unittest.TestCase):
         data2 = dict(); data2["files"] = []
 
         for t in data["files"]:
-            if os.path.exists(t["path"]):
-                data2["files"].append(t)
+            if bool(t.get("create", 0)):
+                    data2["files"].append(t)
+            else:
+                if os.path.exists(t["path"]):
+                    data2["files"].append(t)
 
         json.dump(data2, open(self.listfile, "w"))
 
