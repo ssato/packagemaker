@@ -43,6 +43,22 @@ class TestMemoize(unittest.TestCase):
         self.assertEquals(f(0), f(1))
 
 
+
+class Test_singleton(unittest.TestCase):
+
+    def test_singleton(self):
+        class A(object):
+            pass
+
+        A = singleton(A)
+
+        a0 = A()
+        a1 = A()
+
+        self.assertTrue(a0 == a1)
+
+
+
 class TestMemoized(unittest.TestCase):
 
     def test_memoized(self):

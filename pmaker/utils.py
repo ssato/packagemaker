@@ -310,6 +310,18 @@ def true(x):
     return True
 
 
+def singleton(cls):
+    instances = dict()
+
+    def getinstance():
+        if cls not in instances:
+            instances[cls] = cls()
+
+        return instances[cls]
+
+    return getinstance
+
+
 @memoize
 def is_superuser():
     return os.getuid() == 0
