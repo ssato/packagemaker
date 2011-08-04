@@ -479,6 +479,7 @@ def parse_conf_value(s):
     intp = re.compile(r"^([0-9]|([1-9][0-9]+))$")
     boolp = re.compile(r"^(true|false)$", re.I)
     listp = re.compile(r"^(\[\s*((\S+),?)*\s*\])$")
+    strp = re.compile(r"^['\"](.*)['\"]$")
 
     def matched(pat, s):
         m = pat.match(s)
@@ -492,6 +493,9 @@ def parse_conf_value(s):
 
     if matched(intp, s):
         return int(s)
+
+    if matched(strp, s):
+        return s[1:-1]
 
     if matched(listp, s):
         return eval(s)  # TODO: too danger. safer parsing should be needed.

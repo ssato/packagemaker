@@ -402,6 +402,7 @@ class Test_parse_conf_value(unittest.TestCase):
         self.assertEquals([1,2,3], parse_conf_value("[1,2,3]"))
         self.assertEquals("a string", parse_conf_value("a string"))
         self.assertEquals("0.1", parse_conf_value("0.1"))
+        self.assertEquals("%config", parse_conf_value("'%config'"))
 
 
 # vim: set sw=4 ts=4 et:
