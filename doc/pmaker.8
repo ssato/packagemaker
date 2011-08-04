@@ -1,13 +1,14 @@
 .TH PMAKER "8" "Jul 2011" "packagemaker" "User Commands"
 .SH NAME
-pmaker \- Automated Package Maker
+pmaker \- Package Maker
 .SH SYNOPSIS
-.B pmaker [Options...] PATH_LIST_FILE
+.B pmaker [Options...] INPUT
 
 
 .SH DESCRIPTION
 .B PackageMaker(pmaker)
-is a tool to automate process to package files, dirs and symlinks.
+is a tool to automate most parts of process to package files, dirs and
+symlinks.
 .LP
 It helps building packages of existing files on your system by automating
 almost all of the steps needed for packaing: arrange source tree, create
@@ -16,9 +17,9 @@ makefiles and rpm specs or debina packaging files, etc.
 
 .SH Packaging Steps
 .B Pmaker
-will try gathering the information of files, dirs and symlinks in given path
-list, and then makes a package contains these. By default, it will goes upto 
-the final step of packaing process: make a package but it can be controled with 
+will try gathering the information of files, dirs and symlinks from input file,
+and then makes a package contains these. By default, it will goes upto the
+final step of packaing process: make a package but it can be controled with 
 .B upto
 option. The possible packaing steps are:
 .TP
@@ -38,29 +39,76 @@ Create a source package
 .B build
 Create binary packages
 
-.SH Path list file
-Argument PATH_LIST_FILE is a path of input file contains paths in various
-format or "-" (stdin). The option
+.SH Input
+Argument INPUT is a file path or "-" (read data from stdin) to get file paths.
+The option
 .B --itype 
 specifies its format and supported format is:
 .TP
 .B filelist
-is the simplest input format. In this format, lines are consist of aboslute
-path of target file/dir/symlink.  The lines starting with "#" in the list file
-are ignored, and "*" in paths are intepreted as glob matching pattern and will
-be expanded to the files match this pattern.  For example, if there were files
- 'c', 'd' and 'e' in the dir and the path '/a/b/*' was given, it's just same as
- '/a/b/c', '/a/b/d' and '/a/b/e' were given.
-.TP
-.B filelist.ext
-is similar to filelist but allows specifying attributes such like target
-(installation path), uid/gid (owner), rpmattr (rpm specific attributes). These
-attributes follows path spec in filelist and separated with comma, e.g.
-"/etc/auto.*,uid=0,gid=0", "/etc/rc.d/rc,target=/etc/init.d/rc,uid=0,gid=0",
+In this format, lines are consist of aboslute path of target file/dir/symlink
+and optional attribute specifications.  The lines starting with "#" in the list
+file are ignored, and "*" in paths are intepreted as glob matching pattern and
+will be expanded to the files match this pattern.  For example, if there were
+files 'c', 'd' and 'e' in the dir and the path '/a/b/*' was given, it's just
+same as '/a/b/c', '/a/b/d' and '/a/b/e'.
+.IP
+It is also allowed to specify attributes such like target (installation path),
+uid/gid (owner), rpmattr (rpm specific attributes). These attributes are put at
+just after path and separated with comma, e.g.  "/etc/auto.*,uid=0,gid=0",
+"/etc/rc.d/rc,target=/etc/init.d/rc,uid=0,gid=0",
 "/etc/rc.d/rc.local,rpmattr=%config(noreplace)". 
 .TP
 .B filelist.json
-is simillar to filelist.ext but formated in JSON. [TBD]
+This format simillar to filelist but formated in JSON. File paths must be in
+"files":[]. Here is an example:
+.IP
+{
+.BR
+    "files": [
+.BR
+        {
+.BR
+            "path": "/etc/resolv.conf",
+.BR
+            "attrs": {
+.BR
+                "target": "/var/lib/network/resolv.conf",
+.BR
+                "uid": 0,
+.BR
+                "gid": 0,
+.BR
+                "conflicts": "NetworkManager"
+.BR
+            }
+.BR
+        },
+.BR
+        {
+.BR
+            "path": "/etc/hosts",
+.BR
+            "attrs": {
+.BR
+                "conflicts": "setup",
+.BR
+                "rpmattr": "%config(noreplace)"
+.BR
+            }
+.BR
+        },
+.BR
+        {
+.BR
+            "path": "/etc/sysctl.conf"
+.BR
+        }
+.BR
+    ]
+.IP
+}
+
 
 
 .SH OPTIONS
@@ -103,7 +151,7 @@ Package format: tgz, rpm, deb [automatically detected based on os]
 Packaging driver: autotools.rpm, autotools.tgz [autotools.FORMAT]
 .IP "\-\-itype"
 .IX Item "--itype=ITYPE"
-Input type: filelist, filelist.ext, filelist.json [filelist]
+Input type: filelist, filelist.json [filelist]
 .IP "\-\-destdir=DESTDIR"
 .IX Item "--destdir=DESTDIR"
 Destdir (prefix) you want to strip from installed path []. For example, if the
