@@ -171,8 +171,8 @@ class FilelistCollector(Collector):
         @listfile  str  File, dir and symlink paths list
         """
         for fi in self.list_fileinfos(listfile):
-            if not fi.create:
-                fi = self.fi_factory.create(fi.path)
+            if not fi:
+                fi = self.fi_factory.create_from_path(fi.path)
 
             # filter out if any filter(fi) -> True
             filtered = any(filter(fi) for filter in self.filters)
