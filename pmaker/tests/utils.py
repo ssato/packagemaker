@@ -168,8 +168,11 @@ class TestUnique(unittest.TestCase):
     def test_unique_empty(self):
         self.assertListEqual(unique([]), [])
 
-    def test_unique_lists(self):
+    def test_unique_num_lists(self):
         self.assertListEqual(unique([0, 3, 1, 2, 1, 0, 4, 5]), [0, 1, 2, 3, 4, 5])
+
+    def test_unique_str_list(self):
+        self.assertListEqual(unique(c for c in "dagcbfefagb"), ["a", "b", "c", "d", "e", "f", "g"])
 
 
 
