@@ -90,9 +90,7 @@ class FilelistCollector(Collector):
         """
         self.filelist = filelist
 
-        # TBD:
-        #self.trace = options.trace
-        self.trace = False
+        self.trace = options.trace
 
         self.filters = [UnsupportedTypesFilter(), ReadAccessFilter()]
         self.modifiers = [AttributeModifier()]
@@ -171,6 +169,9 @@ class FilelistCollector(Collector):
         @listfile  str  File, dir and symlink paths list
         """
         for fi in self.list_fileinfos(listfile):
+            if self.trace:
+                logging.debug(" fi from Collector.list_fileinfos() = " + str(fi))
+
             if not fi:
                 fi = self.fi_factory.create_from_path(fi.path)
 
@@ -180,12 +181,12 @@ class FilelistCollector(Collector):
             if not filtered:
                 fi.conflicts = dict()
 
-                # Too verbose but useful in some cases:
-                if self.trace:
-                    logging.debug(" fi=%s" % str(fi))
-
                 for modifier in self.get_modifiers():
                     fi = modifier.update(fi)
+
+                # Too verbose but useful in some cases:
+                if self.trace:
+                    logging.debug(" (filtered + modified) fi = " + str(fi))
 
                 yield fi
 
