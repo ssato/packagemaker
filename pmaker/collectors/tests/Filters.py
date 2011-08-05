@@ -66,5 +66,15 @@ class TestReadAccessFilter(unittest.TestCase):
         fi = self.fi; fi.create = True
         self.assertFalse(self.filter.pred(fi))
 
+    def test_pred__have_read_access(self):
+        path = random.choice(
+            [p for p in ("/etc/hosts", "/etc/resolv.conf", "/etc/sysctl.conf") \
+                if os.path.exists(p) and os.access(p, os.R_OK)]
+        )
+
+        fi = FileInfoFactory().create(path)
+        self.assertFalse(self.filter.pred(fi))
+
+
 
 # vim: set sw=4 ts=4 expandtab:
