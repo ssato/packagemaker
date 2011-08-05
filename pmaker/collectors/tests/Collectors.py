@@ -195,7 +195,7 @@ class Test_02_JsonFilelistCollector(unittest.TestCase):
         {
             "path": "/etc/resolv.conf",
             "attrs": {
-                "target": "/var/lib/network/resolv.conf",
+                "install_path": "/var/lib/network/resolv.conf",
                 "uid": 0,
                 "gid": 0,
                 "conflicts": "NetworkManager"
@@ -210,6 +210,16 @@ class Test_02_JsonFilelistCollector(unittest.TestCase):
         },
         {
             "path": "/etc/sysctl.conf"
+        },
+        {
+            "path": "/etc/foo.conf",
+            "attrs": {
+                "uid": 1,
+                "gid": 1,
+                "create": 1,
+                "content": "# foo config",
+                "rpmattr": "%config(noreplace)"
+            }
         }
     ]
 }
@@ -237,9 +247,13 @@ class Test_02_JsonFilelistCollector(unittest.TestCase):
         cleanup_workdir(self.workdir)
 
     def test_01_list_fileinfos(self):
-        ts = self.fc.list_fileinfos(self.listfile)
+        fis = self.fc.list_fileinfos(self.listfile)
 
-        self.assertFalse(len(ts) == 0)
+        data = json.load(open(self.listfile))
+        len_fis = len(data["files"])
+
+        self.assertFalse(len(fis) == 0)
+        self.assertEquals(len(fis), len_fis, "len: expected=%d, result=%d" % (len(fis), len_fis))
 
 
 # vim: set sw=4 ts=4 expandtab:
