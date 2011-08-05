@@ -64,6 +64,7 @@ class Test_00_FilelistCollector(unittest.TestCase):
             "/etc/rc.d/init.d",
             "/etc/rc.d/rc",
             "/etc/reslv.conf",
+            "/etc/grub.conf",
         ]
         listfile = os.path.join(self.workdir, "files.list")
 
@@ -75,6 +76,7 @@ class Test_00_FilelistCollector(unittest.TestCase):
             "destdir": "",
             "ignore_owner": False,
             "no_rpmdb": False,
+            "trace": True,
         }
 
         options = optparse.Values(option_values)
@@ -85,7 +87,7 @@ class Test_00_FilelistCollector(unittest.TestCase):
 
     def test_02_collect(self):
         paths = [
-            "/etc/at.deny",
+            "/etc/at.deny",  # users cannot read 
             "/etc/auto.*",
             "#/etc/aliases.db",
             "/etc/httpd/conf.d",
@@ -95,15 +97,13 @@ class Test_00_FilelistCollector(unittest.TestCase):
             "/etc/rc.d/rc",
             "/etc/resolv.conf",
             "/etc/reslv.conf",  # should not be exist.
-            "/etc/securetty",  # should not be exist.
+            "/etc/securetty",  # users cannot read 
         ]
         listfile = os.path.join(self.workdir, "files.list")
 
+        len_fs_min = len(paths) - 3
+
         open(listfile, "w").write("\n".join(p for p in paths))
-        #f = open(listfile, "w")
-        #for p in paths:
-        #    f.write("%s\n" % p)
-        #f.close()
 
         option_values = {
             "name": "foo",
@@ -111,11 +111,15 @@ class Test_00_FilelistCollector(unittest.TestCase):
             "destdir": "",
             "ignore_owner": False,
             "no_rpmdb": False,
+            "trace": True,
         }
 
         options = optparse.Values(option_values)
         fc = FilelistCollector(listfile, options)
         fs = fc.collect()
+
+        self.assertFalse(len(fs) == 0)
+        self.assertTrue(len(fs) >= len_fs_min, "len: expected >= %d, result = %d" % (len_fs_min, len(fs)))
 
         option_values["format"] = "deb"
         options = optparse.Values(option_values)
@@ -127,18 +131,30 @@ class Test_00_FilelistCollector(unittest.TestCase):
         options = optparse.Values(option_values)
         fc = FilelistCollector(listfile, options)
         fs = fc.collect()
+
+        self.assertFalse(len(fs) == 0)
+        self.assertTrue(len(fs) >= len_fs_min, "len: expected >= %d, result = %d" % (len_fs_min, len(fs)))
+
         option_values["destdir"] = ""
 
         option_values["ignore_owner"] = True
         options = optparse.Values(option_values)
         fc = FilelistCollector(listfile, options)
         fs = fc.collect()
+
+        self.assertFalse(len(fs) == 0)
+        self.assertTrue(len(fs) >= len_fs_min, "len: expected >= %d, result = %d" % (len_fs_min, len(fs)))
+
         option_values["ignore_owner"] = False
 
         option_values["no_rpmdb"] = True
         options = optparse.Values(option_values)
         fc = FilelistCollector(listfile, options)
         fs = fc.collect()
+
+        self.assertFalse(len(fs) == 0)
+        self.assertTrue(len(fs) >= len_fs_min, "len: expected >= %d, result = %d" % (len_fs_min, len(fs)))
+
         option_values["no_rpmdb"] = False
 
     def test_03_parse_line__ext(self):
@@ -162,6 +178,7 @@ class Test_00_FilelistCollector(unittest.TestCase):
             "/etc/rc.d/rc.local,rpmattr=%config(noreplace)",
         ]
         listfile = os.path.join(self.workdir, "files.list")
+        len_fs_min = len(paths)
 
         f = open(listfile, "w")
         for p in paths:
@@ -174,11 +191,15 @@ class Test_00_FilelistCollector(unittest.TestCase):
             "destdir": "",
             "ignore_owner": False,
             "no_rpmdb": False,
+            "trace": True,
         }
 
         options = optparse.Values(option_values)
         fc = FilelistCollector(listfile, options)
         fs = fc.collect()
+
+        self.assertFalse(len(fs) == 0)
+        self.assertTrue(len(fs) >= len_fs_min, "len: expected >= %d, result = %d" % (len_fs_min, len(fs)))
 
 
 
@@ -238,6 +259,7 @@ class Test_02_JsonFilelistCollector(unittest.TestCase):
             "destdir": "",
             "ignore_owner": False,
             "no_rpmdb": False,
+            "trace": True,
         }
 
         options = optparse.Values(option_values)
@@ -253,7 +275,7 @@ class Test_02_JsonFilelistCollector(unittest.TestCase):
         len_fis = len(data["files"])
 
         self.assertFalse(len(fis) == 0)
-        self.assertEquals(len(fis), len_fis, "len: expected=%d, result=%d" % (len(fis), len_fis))
+        self.assertEquals(len(fis), len_fis, "len: expected=%d, result=%d" % (len_fis, len(fis)))
 
 
 # vim: set sw=4 ts=4 expandtab:
