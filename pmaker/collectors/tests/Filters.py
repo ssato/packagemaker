@@ -30,13 +30,13 @@ class TestUnsupportedTypesFilter(unittest.TestCase):
     def setUp(self):
         self.filter = UnsupportedTypesFilter()
 
-    def test__pred__supported(self):
+    def test_pred__supported(self):
         fi = FileInfo("/dummy/path", 33204, 0, 0, checksum(), dict())
-        self.assertFalse(self.filter._pred(fi))
+        self.assertFalse(self.filter.pred(fi))
 
-    def test__pred__unsupported(self):
+    def test_pred__unsupported(self):
         fi = UnknownInfo("/dummy/path")
-        self.assertTrue(self.filter._pred(fi))
+        self.assertTrue(self.filter.pred(fi))
 
 
 
@@ -50,21 +50,21 @@ class TestReadAccessFilter(unittest.TestCase):
         )
         self.fi = FileInfoFactory().create(path)
 
-    def test__pred__dont_have_read_access(self):
+    def test_pred__dont_have_read_access(self):
         if os.getuid() == 0:
             print >> sys.stderr, "You look root and cannot test this. Skipped"
             return
 
-        self.assertTrue(self.filter._pred(self.fi))
+        self.assertTrue(self.filter.pred(self.fi))
 
 
-    def test__pred__dont_have_read_access_but_to_be_created(self):
+    def test_pred__dont_have_read_access_but_to_be_created(self):
         if os.getuid() == 0:
             print >> sys.stderr, "You look root and cannot test this. Skipped"
             return
 
-        fi = self.fi; fi.create = True; fi.content = "# ..."
-        self.assertFalse(self.filter._pred(fi))
+        fi = self.fi; fi.create = True
+        self.assertFalse(self.filter.pred(fi))
 
 
 # vim: set sw=4 ts=4 expandtab:
