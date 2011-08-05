@@ -1,0 +1,10 @@
+/etc/auto.*
+#/etc/aliases.db
+/etc/httpd/conf.d
+/etc/httpd/conf.d/*
+/etc/modprobe.d/*
+/etc/rc.d/init.d
+/etc/rc.d/rc
+/etc/reslv.conf
+/etc/resolv.conf
+/etc/grub.conf
