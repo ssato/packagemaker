@@ -238,6 +238,7 @@ def parse_args(argv=sys.argv[1:], defaults=None, upto=UPTO,
 
     p.add_option("-v", "--verbose", action="count", dest='verbosity', help="Verbose mode")
     p.add_option("", "--debug", action='store_const', dest='verbosity', const=2, help="Debug mode (same as -vv)")
+    p.add_option("", "--trace", action='store_true', help="Trace mode")
 
     (options, args) = p.parse_args(argv)
 
@@ -324,6 +325,7 @@ class Config(object):
             force = False,
 
             verbosity = 0,
+            trace = False,
 
             destdir = "",
 
