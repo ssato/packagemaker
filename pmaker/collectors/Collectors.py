@@ -170,7 +170,7 @@ class FilelistCollector(Collector):
         """
         for fi in self.list_fileinfos(listfile):
             if self.trace:
-                logging.debug(" fi from Collector.list_fileinfos() = " + str(fi))
+                logging.debug(" fi from Collector.list_fileinfos(): path=" + fi.path)
 
             if not fi:
                 fi = self.fi_factory.create_from_path(fi.path)
@@ -178,7 +178,11 @@ class FilelistCollector(Collector):
             # filter out if any filter(fi) -> True
             filtered = any(filter(fi) for filter in self.filters)
 
-            if not filtered:
+            if filtered:
+                logging.debug(" filter out fi: path=" + fi.path)
+                yield False
+
+            else:
                 fi.conflicts = dict()
 
                 for modifier in self.get_modifiers():
@@ -186,12 +190,12 @@ class FilelistCollector(Collector):
 
                 # Too verbose but useful in some cases:
                 if self.trace:
-                    logging.debug(" (filtered + modified) fi = " + str(fi))
+                    logging.debug(" (not filtered out + modified) fi: path=" + fi.path)
 
                 yield fi
 
     def collect(self):
-        return [fi for fi in self._collect(self.filelist)]
+        return [fi for fi in self._collect(self.filelist) if fi]
 
 
 
