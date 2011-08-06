@@ -82,13 +82,13 @@ class FilelistCollector(Collector):
 
     _type = "filelist"
 
-    def __init__(self, filelist, options):
+    def __init__(self, listfile, options):
         """
-        @filelist  str  file to list files and dirs to collect or "-"
+        @listfile  str  file to list files and dirs to collect or "-"
                         (files and dirs list will be read from stdin)
         @options   optparse.Values
         """
-        self.filelist = filelist
+        self.listfile = listfile
 
         self.trace = options.trace
 
@@ -161,7 +161,7 @@ class FilelistCollector(Collector):
 
         @listfile  str  Path list file name or "-" (read list from stdin)
         """
-        return unique(concat(self._parse(l) for l in self.open(listfile).readlines()))
+        return unique(concat(self._parse(l) for l in self.open(listfile).readlines() if l))
 
     def _collect(self, listfile):
         """Collect FileInfo objects from given path list.
@@ -172,7 +172,7 @@ class FilelistCollector(Collector):
             if self.trace:
                 logging.debug(" fi from Collector.list_fileinfos(): path=" + fi.path)
 
-            if not fi:
+            if not getattr(fi, "create", False):
                 fi = self.fi_factory.create_from_path(fi.path)
 
             # filter out if any filter(fi) -> True
@@ -190,12 +190,12 @@ class FilelistCollector(Collector):
 
                 # Too verbose but useful in some cases:
                 if self.trace:
-                    logging.debug(" (not filtered out + modified) fi: path=" + fi.path)
+                    logging.debug(" (result) fi: path=" + fi.path)
 
                 yield fi
 
     def collect(self):
-        return [fi for fi in self._collect(self.filelist) if fi]
+        return [fi for fi in self._collect(self.listfile) if fi]
 
 
 
