@@ -18,6 +18,7 @@ from pmaker.rpmutils import *
 from pmaker.utils import checksum
 from pmaker.models.FileInfo import FileInfo, DirInfo
 
+import os
 import random
 import unittest
 
@@ -33,21 +34,57 @@ class TestFunctions(unittest.TestCase):
 
         self.assertNotEquals(d, NULL_DICT)
         self.assertEquals(d["name"], "foo")
+        self.assertEquals(d["version"], "0.1")
+        self.assertEquals(d["release"], "1")
+        self.assertEquals(d["arch"], "i386")
+        self.assertEquals(d["epoch"], "0")
 
-    def test_rpmh2nvrae(self):
+    def test_rpmh2nvrae__no_rpmdb__epoch_is_None(self):
+        h = dict(name="foo", version="0.1", release="1", arch="i386", epoch=None)
+        d = rpmh2nvrae(h)
+
+        self.assertNotEquals(d, NULL_DICT)
+        self.assertEquals(d["name"], "foo")
+        self.assertEquals(d["version"], "0.1")
+        self.assertEquals(d["release"], "1")
+        self.assertEquals(d["arch"], "i386")
+        self.assertEquals(d["epoch"], "0")
+
+    def test_rpmh2nvrae__no_rpmdb__epoch_is_a_whitespace(self):
+        h = dict(name="foo", version="0.1", release="1", arch="i386", epoch=" ")
+        d = rpmh2nvrae(h)
+
+        self.assertNotEquals(d, NULL_DICT)
+        self.assertEquals(d["name"], "foo")
+        self.assertEquals(d["version"], "0.1")
+        self.assertEquals(d["release"], "1")
+        self.assertEquals(d["arch"], "i386")
+        self.assertEquals(d["epoch"], "0")
+
+    def test_rpmh2nvrae__w_rpmdb__no_epoch(self):
         hs = [h for h in ts().dbMatch("name", "bash")]
         for h in hs:
             d = rpmh2nvrae(h)
 
             self.assertNotEquals(d, NULL_DICT)
             self.assertEquals(d["name"], "bash")
+            self.assertEquals(d["epoch"], "0")
+
+    def test_rpmh2nvrae__w_rpmdb__w_epoch(self):
+        hs = [h for h in ts().dbMatch("name", "bind-utils")]
+        for h in hs:
+            d = rpmh2nvrae(h)
+
+            self.assertNotEquals(d, NULL_DICT)
+            self.assertEquals(d["name"], "bind-utils")
+            self.assertNotEquals(d["epoch"], "0")
 
     def test_srcrpm_name_by_rpmspec(self):
-        """FIXME: Implement tests for this function"""
+        """FIXME: Implement tests for this function: srcrpm_name_by_rpmspec"""
         pass
 
     def test_srcrpm_name_by_rpmspec_2(self):
-        """FIXME: Implement tests for this function"""
+        """FIXME: Implement tests for this function: srcrpm_name_by_rpmspec_2"""
         pass
 
     def test_info_by_path(self):
@@ -58,9 +95,15 @@ class TestFunctions(unittest.TestCase):
             self.assertTrue(d.has_key(key))
 
     def test_filelist(self):
-        """FIXME: Implement tests for this function"""
-        #db = filelist()
-        pass
+        if not os.environ.get("RUN_TIME_CONSUMING_TESTS", False):
+            logging.warn("set RUN_TIME_CONSUMING_TESTS=1 to run this test")
+            return
+
+        db = filelist()
+        p = db.get("/bin/bash")
+
+        self.assertNotEquals(p, NULL_DICT)
+        self.assertEquals(p["name"], "bash")
 
     def test_rpm_search_provides_by_path(self):
         d = rpm_search_provides_by_path("/bin/bash")
