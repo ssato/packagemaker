@@ -15,7 +15,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 from pmaker.models.FileOperations import FileOperations
-from pmaker.shell import shell
+from pmaker.shell import run
 
 import os
 
@@ -34,7 +34,7 @@ class SymlinkOperations(FileOperations):
         if cls.link_instead_of_copy:
             cls.create(fileinfo, dest)
         else:
-            shell("cp -a %s %s" % (fileinfo.path, dest))
+            run("cp -a %s %s" % (fileinfo.path, dest))
 
 
 # vim: set sw=4 ts=4 expandtab:

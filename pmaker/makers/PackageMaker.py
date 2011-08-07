@@ -16,7 +16,7 @@
 #
 from pmaker.globals import *
 from pmaker.utils import *
-from pmaker.shell import shell
+from pmaker.shell import run
 from pmaker.environ import hostname
 from pmaker.package import Package
 from pmaker.tests.common import setup_workdir, cleanup_workdir
@@ -100,8 +100,11 @@ class PackageMaker(object):
         for k, v in self._templates.iteritems():
             yield (v, k)  # v: template, k: file to be generated
 
-    def shell(self, cmd_s):
-        return shell(cmd_s, workdir=self.workdir)
+    def shell(self, cmd_s, **kwargs):
+        if not kwargs.get("workdir", False):
+            kwargs["workdir"] = self.workdir
+
+        return run(cmd_s, **kwargs)
 
     def genfile(self, template, output=False):
         """
@@ -157,7 +160,7 @@ class PackageMaker(object):
                 return
 
         getattr(self, step, do_nothing)()
-        self.shell("touch %s" % self.touch_file(step))
+        self.shell("touch " + self.touch_file(step), timeout=10)
 
         if step == self.upto:
             if step == STEP_BUILD:
@@ -229,16 +232,17 @@ class AutotoolsTgzPackageMaker(PackageMaker):
     def configure(self):
         logfile = os.path.join(self.workdir, "pmaker.configure.log")
         self.shell(
-            on_debug_mode() and "autoreconf -vfi" or "autoreconf -fi > " + logfile
+            on_debug_mode() and "autoreconf -vfi" or "autoreconf -fi > " + logfile,
+            timeout = 180
         )
 
     def sbuild(self):
         if on_debug_mode():
-            self.shell("./configure --quiet")
+            self.shell("./configure --quiet", timeout=180)
             self.shell("make")
             self.shell("make dist")
         else:
-            self.shell("./configure --quiet --enable-silent-rules")
+            self.shell("./configure --quiet --enable-silent-rules", timeout=180)
             self.shell("make V=0 > /dev/null")
             self.shell("make dist V=0 > /dev/null")
 

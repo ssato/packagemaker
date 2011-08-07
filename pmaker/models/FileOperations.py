@@ -15,7 +15,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 from pmaker.utils import *  # import 'all' if not pre-defined.
-from pmaker.shell import shell
+from pmaker.shell import run
 
 import logging
 import os
@@ -60,7 +60,7 @@ class FileOperations(object):
         @fileinfo   FileInfo object
         @dest  str  Destination path to copy to
         """
-        shell("cp -a %s %s" % (fileinfo.path, dest))
+        run("cp -a %s %s" % (fileinfo.path, dest))
 
     @classmethod
     def create(cls, fileinfo, dest):
