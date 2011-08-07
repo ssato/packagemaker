@@ -22,7 +22,11 @@ import threading
 
 
 
-def shell(cmd, workdir=None, dryrun=False, stop_on_error=True):
+CURDIR = os.getcwd()
+
+
+
+def shell(cmd, workdir=CURDIR, dryrun=False, stop_on_error=True):
     """
     @cmd      str   command string, e.g. "ls -l ~".
     @workdir  str   in which dir to run given command?
@@ -70,9 +74,6 @@ def shell(cmd, workdir=None, dryrun=False, stop_on_error=True):
             return rc
 
 
-CURDIR = os.getcwd()
-
-
 
 class ThreadedCommand(object):
     """
@@ -80,18 +81,21 @@ class ThreadedCommand(object):
     http://stackoverflow.com/questions/1191374/subprocess-with-timeout
     """
 
-    def __init__(self, cmd, workdir=CURDIR, stop_on_failure=True,
-            timeout=None):
+    def __init__(self, cmd, workdir=CURDIR, stop_on_error=True, timeout=None):
         """
         :param cmd:     Command string
         :param workdir: Working directory to run cmd
-        :param stop_on_failure:  Stop main thread if something goes wrong
+        :param stop_on_error:  Stop main thread if something goes wrong
         :param timeout: Timeout value
         """
         self.cmd = cmd
-        self.workdir = workdir
-        self.stop_on_failure = stop_on_failure
+        self.stop_on_error = stop_on_error
         self.timeout = timeout
+
+        if "~" in workdir:
+            workdir = os.path.expanduser(workdir)
+
+        self.workdir = workdir
 
         llevel = logging.getLogger().level
         if llevel < logging.WARN:
@@ -101,10 +105,7 @@ class ThreadedCommand(object):
         else:
             pass
 
-        self.cmd_str = "%s [%s]" % (self.cmd[:65] + "...", self.workdir)
-
-        if "~" in workdir:
-            workdir = os.path.expanduser(workdir)
+        self.cmd_str = "%s [%s]" % (self.cmd, self.workdir)
 
         self.process = None
         self.thread = None
@@ -152,7 +153,7 @@ class ThreadedCommand(object):
         if rc != 0:
             emsg = "Failed: %s, rc=%d" % (self.cmd, rc)
 
-            if self.stop_on_failure:
+            if self.stop_on_error:
                 raise RuntimeError(emsg)
             else:
                 logging.warn(emsg)
@@ -165,14 +166,14 @@ class ThreadedCommand(object):
 
 
 
-def run(cmd, workdir=CURDIR, dryrun=False, stop_on_failure=True, timeout=None):
+def run(cmd, workdir=CURDIR, dryrun=False, stop_on_error=True, timeout=None):
 
     if dryrun:
-        logging.info(" Run: %s [%s]" % (cmd, workdir))
+        print cmd
         logging.debug(" (exit as we're in dry run mode.)")
         return
 
-    tcmd = ThreadedCommand(cmd, workdir, stop_on_failure, timeout)
+    tcmd = ThreadedCommand(cmd, workdir, stop_on_error, timeout)
     return tcmd.run()
 
 

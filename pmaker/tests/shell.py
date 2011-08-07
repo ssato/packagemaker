@@ -23,8 +23,6 @@ import unittest
 class Test_shell(unittest.TestCase):
 
     def test_shell_success(self):
-        """TODO: More portable test target
-        """
         if os.path.exists("/dev") and os.path.exists("/dev/null"):
             self.assertEquals(shell("echo ok > /dev/null"), 0)
             self.assertEquals(shell("ls null", "/dev"), 0)
@@ -50,9 +48,9 @@ class Test_ThreadedCommand(unittest.TestCase):
 
         self.assertEquals(ThreadedCommand(cmd, workdir).run(), 0)
 
-    def test_run__02_stop_on_failure(self):
+    def test_run__02_stop_on_error(self):
         cmd = "false"
-        tcmd = ThreadedCommand(cmd, stop_on_failure=True)
+        tcmd = ThreadedCommand(cmd, stop_on_error=True)
 
         self.assertRaises(RuntimeError, tcmd.run)
 
