@@ -35,9 +35,9 @@ $host by $packager at $date.date.
 Summary:        Some more extra data override files owned by other packages
 Group:          $group
 Requires:       %{name} = %{version}-%{release}
-#set $reqs = list(set([(fi.conflicts["name"], fi.conflicts["version"], fi.conflicts["release"]) for fi in $conflicted_fileinfos]))
-#for $name, $version, $release in $reqs
-Requires:       $name = ${version}-$release
+#set $reqs = list(set([(fi.conflicts["name"], fi.conflicts["version"], fi.conflicts["release"], fi.conflicts["epoch"]) for fi in $conflicted_fileinfos]))
+#for $name, $version, $release, $epoch in $reqs
+Requires:       $name = ${epoch}:${version}-$release
 #end for
 
 
