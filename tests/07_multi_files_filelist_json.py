@@ -38,7 +38,7 @@ JSON_FILELIST_0 = """
         {
             "path": "bbb.txt",
             "attrs": {
-                "uid": 100,
+                "uid": 1,
                 "gid": 0
             }
         },
@@ -59,8 +59,8 @@ JSON_FILELIST_1 = """
         {
             "path": "/etc/aliases.db",
             "attrs": {
-                "uid": 10,
-                "gid": 10
+                "uid": 1,
+                "gid": 100
             }
         },
         {

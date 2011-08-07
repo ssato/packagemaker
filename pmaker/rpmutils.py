@@ -170,8 +170,16 @@ def __rpm_attr(fileinfo):
     >>> assert __rpm_attr(fi) == "%attr(0755, bin, bin)"
     """
     m = fileinfo.permission() # ex. "0755"
-    u = (fileinfo.uid == 0 and "-" or pwd.getpwuid(fileinfo.uid).pw_name)
-    g = (fileinfo.gid == 0 and "-" or grp.getgrgid(fileinfo.gid).gr_name)
+
+    try:
+        u = fileinfo.uid == 0 and "-" or pwd.getpwuid(fileinfo.uid).pw_name
+    except KeyError:  # maybe fileinfo.uid not in pwd database.
+        u = "-"
+
+    try:
+        g = fileinfo.gid == 0 and "-" or grp.getgrgid(fileinfo.gid).gr_name
+    except KeyError:  # likewise
+        g = "-"
 
     return "%%attr(%(m)s, %(u)s, %(g)s)" % {"m":m, "u":u, "g":g,}
 
