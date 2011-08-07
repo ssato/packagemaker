@@ -70,6 +70,31 @@ def ts(rpmdb_path=None):
     return rpm.TransactionSet()
 
 
+def normalize_epoch(epoch):
+    """
+
+    >>> normalize_epoch("(none)")  # rpmdb style
+    0
+    >>> normalize_epoch(" ")  # yum style
+    0
+    >>> normalize_epoch("0")
+    0
+    >>> normalize_epoch("1")
+    1
+    """
+    if epoch is None:
+        return 0
+    else:
+        if isinstance(epoch, str):
+            epoch = epoch.strip()
+            if epoch and epoch != "(none)":
+                return int(epoch)
+            else:
+                return 0
+        else:
+            return epoch  # int?
+
+
 def srcrpm_name_by_rpmspec(rpmspec):
     """Returns the name of src.rpm gotten from given RPM spec file.
     """
