@@ -87,7 +87,7 @@ class FileInfoFactory(object):
         st = self._stat(path)
 
         if st is None:
-            return pmaker.models.FileInfo.UnknownInfo(path)
+            return pmaker.models.FileInfo.UnknownInfo(path, **attrs)
 
         (st_mode, _uid, _gid) = st
 
