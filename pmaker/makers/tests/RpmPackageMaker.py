@@ -65,6 +65,7 @@ class Test_00_AutotoolsRpmPackageMaker(unittest.TestCase):
             "destdir": "",
             "ignore_owner": False,
             "no_rpmdb": False,
+            "trace": False,
         }
 
         options = optparse.Values(option_values)

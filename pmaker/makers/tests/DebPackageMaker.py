@@ -68,6 +68,7 @@ class Test_00_AutotoolsDebPackageMaker(unittest.TestCase):
             "format": "deb",
             "destdir": "",
             "ignore_owner": False,
+            "trace": False,
         }
 
         options = optparse.Values(option_values)
