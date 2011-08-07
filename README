@@ -52,6 +52,51 @@ How to test
 * Unit tests: `python setup.py test`
 * Unit tests + System tests: `python setup.py test --full`
 
+If you want to test specific python code:
+
+a. source code: ./runtest.sh <path_to_python_source>
+b. a class in source code: ./runtest.sh <path_to_python_source>:<class_name>
+c. a method of a class in source code:./runtest.sh <path_to_python_source>:<class_name>.<method_name>
+
+
+SEE ALSO: nosetests(1)
+
+
+Here are some examples:
+
+::
+
+  $ ./runtest.sh pmaker/tests/rpmutils.py
+  FIXME: Implement tests for this function ... ok
+  test_info_by_path (pmaker.tests.rpmutils.TestFunctions) ... ok
+  test_rpm_attr (pmaker.tests.rpmutils.TestFunctions) ... ok
+  test_rpm_search_provides_by_path (pmaker.tests.rpmutils.TestFunctions) ... ok
+  test_rpmh2nvrae (pmaker.tests.rpmutils.TestFunctions) ... ok
+  test_rpmh2nvrae__no_rpmdb (pmaker.tests.rpmutils.TestFunctions) ... ok
+  FIXME: Implement tests for this function ... ok
+  FIXME: Implement tests for this function ... ok
+
+  ----------------------------------------------------------------------
+  Ran 8 tests in 0.517s
+
+  OK
+  $ ./runtest.sh pmaker/models/tests/FileInfo.py:TestFileInfo
+  test__init__ (pmaker.models.tests.FileInfo.TestFileInfo) ... ok
+
+  ----------------------------------------------------------------------
+  Ran 1 test in 0.019s
+
+  OK
+  $ ./runtest.sh tests/07_multi_files_filelist_json.py:Test_00_multi_files_filelist_json.test_01_system_files__tgz
+  test_01_system_files__tgz (tests.07_multi_files_filelist_json.Test_00_multi_files_filelist_json) ... configure.ac:2: installing `./install-sh'
+  configure.ac:2: installing `./missing'
+  ok
+
+  ----------------------------------------------------------------------
+  Ran 1 test in 21.479s
+
+  OK
+  $
 
 
 HACKING
@@ -66,11 +111,12 @@ This is my usual way for enhancements:
 
 if all looks ok, merge the branch to main.
 
+
 And here is my usual way for bug fixes:
 
 1. Write tests for the bug
 2. Modify / add code for the fix
-3. Run the tests causes the bug and confirm the fix was right
+3. Run the tests and confirm if the fix was right
 
 
 TODO
@@ -158,3 +204,5 @@ Author
 
 Satoru SATOH <ssato at redhat.com>
 
+
+.. vim: sw=2 ts=2 et
