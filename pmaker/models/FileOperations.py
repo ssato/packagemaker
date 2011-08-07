@@ -32,6 +32,10 @@ class FileOperations(object):
 
     @classmethod
     def equals(cls, lhs, rhs):
+        return lhs.path == rhs.path and cls.same(lhs, rhs)
+
+    @classmethod
+    def same(cls, lhs, rhs):
         """lhs and rhs are identical, that is, these contents and metadata
         (except for path) are exactly same.
 

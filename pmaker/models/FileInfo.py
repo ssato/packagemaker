@@ -74,6 +74,9 @@ class FileInfo(object):
     def isfile(self):
         return self.type() == TYPE_FILE
 
+    def __cmp__(self, other):
+        return cmp(self.path, other.path)
+
     def __eq__(self, other):
         return self.operations.equals(self, other)
 
