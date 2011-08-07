@@ -189,6 +189,7 @@ def __rpm_attr(fileinfo):
     """Returns "%attr(...)" to specify the file/dir attribute for given
     fileinfo object, which will be used in the %files section in rpm spec.
 
+    >>> from pmaker.models.FileInfo import FileInfo
     >>> fi = FileInfo("/dummy/path", "0664")
     >>> assert __rpm_attr(fi) == "%attr(0664, -, -)"
     >>> fi = FileInfo("/bin/foo", "0755", 1, 1)
