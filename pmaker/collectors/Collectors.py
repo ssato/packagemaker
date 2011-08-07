@@ -186,7 +186,7 @@ class FilelistCollector(Collector):
                 fi.conflicts = dict()
 
                 for modifier in self.get_modifiers():
-                    fi = modifier.update(fi, attrs=fi.attrs)
+                    fi = modifier.update(fi)
 
                 # Too verbose but useful in some cases:
                 if self.trace:
