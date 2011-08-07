@@ -173,7 +173,7 @@ class FilelistCollector(Collector):
                 logging.debug(" fi from Collector.list_fileinfos(): path=" + fi.path)
 
             if not getattr(fi, "create", False):
-                fi = self.fi_factory.create_from_path(fi.path)
+                fi = self.fi_factory.create_from_path(fi.path, fi.attrs)
 
             # filter out if any filter(fi) -> True
             filtered = any(filter(fi) for filter in self.filters)
@@ -186,7 +186,7 @@ class FilelistCollector(Collector):
                 fi.conflicts = dict()
 
                 for modifier in self.get_modifiers():
-                    fi = modifier.update(fi)
+                    fi = modifier.update(fi, attrs=fi.attrs)
 
                 # Too verbose but useful in some cases:
                 if self.trace:
