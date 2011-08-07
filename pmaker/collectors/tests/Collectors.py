@@ -63,6 +63,7 @@ class Test_00_FilelistCollector(unittest.TestCase):
             "/etc/modprobe.d/*",
             "/etc/rc.d/init.d",
             "/etc/rc.d/rc",
+            "/etc/resolv.conf",
             "/etc/reslv.conf",
             "/etc/grub.conf",
         ]
