@@ -73,6 +73,17 @@ rm -rf $RPM_BUILD_ROOT
 
 
 %changelog
+* Thu Jul 14 2011 Satoru SATOH <ssato@redhat.com> - 0.3.1-1
+- bug fix release
+- new option --trace to get tracing logs
+- fixed some grave bugs around pmaker.collectors.Collector.collect()
+- changed behavior of FileInfo.__eq__ to take care of paths
+- enhanced test cases to catch more bugs before release
+- fixed some bugs in updating workdir originally passed as --workdir option when --pversion option used
+- merged functions of pmaker.models.Target into pmaker.models.FileInfo and removed it
+- migrated ExtFileListCollector into FileListCollector
+- merged Virtul*FileInfo to FileInfo
+
 * Thu Jul 14 2011 Satoru SATOH <ssato@redhat.com> - 0.3.0.20110714-2
 - Fixed bugs related to deprecated and removed option --scriptlets
 
