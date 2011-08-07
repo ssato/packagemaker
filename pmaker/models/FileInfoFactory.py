@@ -77,7 +77,7 @@ class FileInfoFactory(object):
         else:
             return self.create_from_path(path, fileinfo_map, **kwargs)
 
-    def create_from_path(self, path, fileinfo_map=FILEINFOS, **kwargs):
+    def create_from_path(self, path, attrs=dict(), fileinfo_map=FILEINFOS, **kwargs):
         """
         Factory method. Creates and returns the *Info instance.
 
@@ -101,6 +101,11 @@ class FileInfoFactory(object):
 
         _cls = fileinfo_map.get(_filetype, False)
         assert _cls, "Could not get a class for filetype=" + _filetype
+
+        _mode = attrs.get("mode", _mode)
+        _uid = attrs.get("uid", _uid)
+        _gid = attrs.get("gid", _gid)
+        _checksum = attrs.get("checksum", _checksum)
 
         fi = _cls(path, _mode, _uid, _gid, _checksum, **kwargs)
 
