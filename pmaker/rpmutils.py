@@ -60,7 +60,10 @@ def rpmh2nvrae(h):
 
     @h  Rpm header-like object to allow access such like $h["name"].
     """
-    return dict((k, h[k]) for k in ("name", "version", "release", "arch", "epoch"))
+    d = dict((k, h[k]) for k in ("name", "version", "release", "arch", "epoch"))
+    d["epoch"] = str(normalize_epoch(d["epoch"]))
+
+    return d
 
 
 def ts(rpmdb_path=None):
