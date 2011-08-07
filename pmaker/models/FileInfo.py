@@ -63,6 +63,15 @@ class FileInfo(object):
         for k, v in kwargs.iteritems():
             setattr(self, k, v)
 
+        self.attrs = dict(
+            mode=mode,
+            uid=uid,
+            gid=gid,
+            checksum=checksum,
+            create=create,
+            content=content,
+        )
+
     @classmethod
     def type(cls):
         return cls.filetype
