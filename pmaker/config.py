@@ -332,7 +332,7 @@ class Config(object):
             template_paths = tmpl_paths,
 
             name = "",
-            pversion = "0.1",
+            pversion = "0.0.1",
             release = "1",
             group = "System Environment/Base",
             license = "GPLv2+",
