@@ -202,11 +202,19 @@ def __rpm_attr(fileinfo):
 
     try:
         u = fileinfo.uid == 0 and "-" or pwd.getpwuid(fileinfo.uid).pw_name
+
+    except TypeError: # It's not an integer such like 'bin'.
+        u = fileinfo.uid
+
     except KeyError:  # maybe fileinfo.uid not in pwd database.
         u = "-"
 
     try:
         g = fileinfo.gid == 0 and "-" or grp.getgrgid(fileinfo.gid).gr_name
+
+    except TypeError: # It's not an integer.
+        g = fileinfo.gid
+
     except KeyError:  # likewise
         g = "-"
 
