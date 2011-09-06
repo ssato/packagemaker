@@ -197,11 +197,13 @@ def __rpm_attr(fileinfo):
     >>> assert __rpm_attr(fi) == "%attr(0664, -, -)"
     >>> fi = FileInfo("/bin/foo", "0755", 1, 1)
     >>> assert __rpm_attr(fi) == "%attr(0755, bin, bin)"
+    >>> fi = FileInfo("/bin/bar", "0755", "root", "bin")
+    >>> assert __rpm_attr(fi) == "%attr(0755, -, bin)"
     """
     m = fileinfo.permission() # ex. "0755"
 
     try:
-        u = fileinfo.uid == 0 and "-" or pwd.getpwuid(fileinfo.uid).pw_name
+        u = fileinfo.uid in (0, "root") and "-" or pwd.getpwuid(fileinfo.uid).pw_name
 
     except TypeError: # It's not an integer such like 'bin'.
         u = fileinfo.uid
@@ -210,9 +212,9 @@ def __rpm_attr(fileinfo):
         u = "-"
 
     try:
-        g = fileinfo.gid == 0 and "-" or grp.getgrgid(fileinfo.gid).gr_name
+        g = fileinfo.gid in (0, "root") and "-" or grp.getgrgid(fileinfo.gid).gr_name
 
-    except TypeError: # It's not an integer.
+    except (TypeError, ValueError): # It's not an integer.
         g = fileinfo.gid
 
     except KeyError:  # likewise
