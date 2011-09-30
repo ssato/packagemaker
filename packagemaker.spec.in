@@ -10,7 +10,7 @@
 
 Name:           packagemaker
 Version:        @VERSION@
-Release:        2%{?dist}
+Release:        1%{?dist}
 Summary:        Tool to make packages of files on your system automatically
 Group:          System Environment/Base
 License:        GPLv3+
