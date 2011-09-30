@@ -16,6 +16,7 @@
 #
 from pmaker.collectors.Collectors import *
 from pmaker.models.FileInfo import FileInfo
+from pmaker.models.FileInfoFactory import FileInfoFactory
 from pmaker.utils import dicts_comp
 from pmaker.tests.common import setup_workdir, cleanup_workdir
 
@@ -37,6 +38,25 @@ class Test_00_FilelistCollector(unittest.TestCase):
         cleanup_workdir(self.workdir)
 
     def test_00__parse(self):
+        paths = [
+            "/etc/auto.*",
+        ]
+        listfile = os.path.join(self.workdir, "files.list")
+
+        open(listfile, "w").write("\n".join(p for p in paths))
+
+        option_values = {
+            "name": "foo",
+            "format": "rpm",
+            "destdir": "",
+            "ignore_owner": False,
+            "no_rpmdb": False,
+            "trace": True,
+        }
+
+        options = optparse.Values(option_values)
+        fc = FilelistCollector(listfile, options)
+
         p0 = ""
         p1 = "#xxxxx"
         p2 = os.path.join(self.workdir, "a")
@@ -46,13 +66,15 @@ class Test_00_FilelistCollector(unittest.TestCase):
         for p in (p2, p3):
             os.system("touch " + p)
 
-        ps2 = [FileInfo(p) for p in [p2]]
-        ps3 = [FileInfo(p) for p in (p2, p3)]
+        ff = FileInfoFactory()
 
-        self.assertListEqual(FilelistCollector._parse(p0 + "\n"), [])
-        self.assertListEqual(FilelistCollector._parse(p1 + "\n"), [])
-        self.assertListEqual(FilelistCollector._parse(p2 + "\n"), ps2)
-        self.assertListEqual(sorted(FilelistCollector._parse(p4 + "\n")), sorted(ps3))
+        ps2 = [ff.create(p) for p in [p2]]
+        ps3 = [ff.create(p) for p in (p2, p3)]
+
+        self.assertListEqual(fc._parse(p0 + "\n"), [])
+        self.assertListEqual(fc._parse(p1 + "\n"), [])
+        self.assertListEqual(fc._parse(p2 + "\n"), ps2)
+        self.assertListEqual(sorted(fc._parse(p4 + "\n")), sorted(ps3))
 
     def test_01_list_fileinfos(self):
         paths = [
@@ -83,7 +105,7 @@ class Test_00_FilelistCollector(unittest.TestCase):
         options = optparse.Values(option_values)
         fc = FilelistCollector(listfile, options)
 
-        fis = unique(concat(FilelistCollector._parse(p + "\n") for p in paths))
+        fis = unique(concat(fc._parse(p + "\n") for p in paths))
         self.assertListEqual(fis, fc.list_fileinfos(listfile))
 
     def test_02_collect(self):

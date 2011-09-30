@@ -138,8 +138,7 @@ class FilelistCollector(Collector):
 
         return (paths, attrs)
 
-    @classmethod
-    def _parse(cls, line):
+    def _parse(self, line):
         """Parse the line and returns FileInfo list generator.
         """
         line = line.rstrip().strip() # remove extra white spaces at the top and the end.
@@ -147,8 +146,11 @@ class FilelistCollector(Collector):
         if not line or line.startswith("#"):
             return []
         else:
-            (paths, attrs) = cls.parse_line(line)
-            return [FileInfo(path, **attrs) for path in paths]
+            (paths, attrs) = self.parse_line(line)
+            if not attrs.get("filetype", False):
+                attrs["filetype"] = TYPE_UNKNOWN  # ... will be filtered out.
+
+            return [self.fi_factory.create(path, **attrs) for path in paths]
 
     def list_fileinfos(self, listfile):
         """Read paths from given file line by line and returns path list sorted by
@@ -226,8 +228,7 @@ class JsonFilelistCollector(FilelistCollector):
     _enabled = JSON_ENABLED
     _type = "filelist.json"
 
-    @classmethod
-    def _parse(cls, params):
+    def _parse(self, params):
         path = params.get("path", False)
 
         if not path or path.startswith("#"):
@@ -235,8 +236,10 @@ class JsonFilelistCollector(FilelistCollector):
         else:
             paths = "*" in path and glob.glob(path) or [path]
             attrs = params.get("attrs", dict())
+            if not attrs.get("filetype", False):
+                attrs["filetype"] = TYPE_UNKNOWN
 
-            return (FileInfo(path, **attrs) for path in paths)
+            return [self.fi_factory.create(path, **attrs) for path in paths]
 
     def list_fileinfos(self, listfile):
         data = json.load(self.open(listfile))

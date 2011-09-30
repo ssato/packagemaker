@@ -75,7 +75,7 @@ class FileInfoFactory(object):
 
             return _cls(path, create=True, **kwargs)
         else:
-            return self.create_from_path(path, fileinfo_map, **kwargs)
+            return self.create_from_path(path, **kwargs)
 
     def create_from_path(self, path, attrs=dict(), fileinfo_map=FILEINFOS, **kwargs):
         """
@@ -107,9 +107,14 @@ class FileInfoFactory(object):
         _gid = attrs.get("gid", _gid)
         _checksum = attrs.get("checksum", _checksum)
 
-        fi = _cls(path, _mode, _uid, _gid, _checksum, **kwargs)
+        kwargs2 = dict(
+            (k, v) for k, v in kwargs.iteritems() \
+                if k not in ("path", "mode", "uid", "gid", "checksum")
+        )
+
+        fi = _cls(path, _mode, _uid, _gid, _checksum, **kwargs2)
 
         return fi
 
 
-# vim: set sw=4 ts=4 expandtab:
+# vim:sw=4 ts=4 expandtab:
