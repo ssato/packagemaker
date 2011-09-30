@@ -73,6 +73,12 @@ rm -rf $RPM_BUILD_ROOT
 
 
 %changelog
+* Thu Sep 29 2011 Satoru SATOH <ssato@redhat.com> - 0.3.1.20110930-1
+- snapshot release
+- fixed a bug that collectors instatiate FileInfo objects directry instead by factory class
+- fixed a bug that '%dir ' is missing in the rpm attribute of DirInfo objects
+- started to write internal design notes in README
+
 * Thu Sep 29 2011 Satoru SATOH <ssato@redhat.com> - 0.3.1.20110906-1
 - snapshot release
 - fixed a bug when str gid passed
