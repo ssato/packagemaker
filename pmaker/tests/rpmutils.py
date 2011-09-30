@@ -122,5 +122,8 @@ class TestFunctions(unittest.TestCase):
         fi = FileInfo("/bin/baz", "0700", "root", "bin")
         self.assertEquals(rpm_attr(fi), "%attr(0700, -, bin) ")
 
+        fi = DirInfo("/bin")
+        self.assertEquals(rpm_attr(fi), "%dir ")
 
-# vim: set sw=4 ts=4 expandtab:
+
+# vim:sw=4 ts=4 expandtab:

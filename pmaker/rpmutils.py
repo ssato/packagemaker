@@ -233,8 +233,8 @@ def rpm_attr(fileinfo):
         if fileinfo.need_to_chmod() or fileinfo.need_to_chown():
             rattr = __rpm_attr(fileinfo) + " "
 
-            if fileinfo.type() == TYPE_DIR:
-                rattr  += "%dir "
+        if fileinfo.type() == TYPE_DIR:
+            rattr  += "%dir "
 
     return rattr
 
