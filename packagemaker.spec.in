@@ -73,6 +73,14 @@ rm -rf $RPM_BUILD_ROOT
 
 
 %changelog
+* Thu Sep 29 2011 Satoru SATOH <ssato@redhat.com> - 0.3.1.20110906-1
+- snapshot release
+- fixed a bug when str gid passed
+- make it allowed string represation of uids and gids (yamato@redhat.com)
+- changed default package version (customizable with --pversion option) from 0.1 to 0.0.1
+- corrected an wrong English expression: it should not be a singular form
+- started to switch to thread based pmaker.shell.run from pmaker.shell.shell
+
 * Thu Jul 14 2011 Satoru SATOH <ssato@redhat.com> - 0.3.1-1
 - bug fix release
 - new option --trace to get tracing logs
