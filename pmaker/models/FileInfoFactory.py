@@ -75,7 +75,7 @@ class FileInfoFactory(object):
 
             return _cls(path, create=True, **kwargs)
         else:
-            return self.create_from_path(path, **kwargs)
+            return self.create_from_path(path, kwargs)
 
     def create_from_path(self, path, attrs=dict(), fileinfo_map=FILEINFOS, **kwargs):
         """
@@ -85,6 +85,11 @@ class FileInfoFactory(object):
         @attrs  dict  Attributes set to FileInfo object result after creation
         """
         st = self._stat(path)
+
+        attrs2 = dict(
+            (k, v) for k, v in attrs.iteritems() \
+                if k not in ("path", "mode", "uid", "gid", "checksum")
+        )
 
         if st is None:
             return pmaker.models.FileInfo.UnknownInfo(path, **attrs)
@@ -107,12 +112,7 @@ class FileInfoFactory(object):
         _gid = attrs.get("gid", _gid)
         _checksum = attrs.get("checksum", _checksum)
 
-        kwargs2 = dict(
-            (k, v) for k, v in kwargs.iteritems() \
-                if k not in ("path", "mode", "uid", "gid", "checksum")
-        )
-
-        fi = _cls(path, _mode, _uid, _gid, _checksum, **kwargs2)
+        fi = _cls(path, _mode, _uid, _gid, _checksum, **attrs2)
 
         return fi
 
