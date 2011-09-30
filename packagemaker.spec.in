@@ -10,7 +10,7 @@
 
 Name:           packagemaker
 Version:        @VERSION@
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        Tool to make packages of files on your system automatically
 Group:          System Environment/Base
 License:        GPLv3+
@@ -73,7 +73,12 @@ rm -rf $RPM_BUILD_ROOT
 
 
 %changelog
-* Thu Sep 29 2011 Satoru SATOH <ssato@redhat.com> - 0.3.1.20110930-1
+* Fri Sep 30 2011 Satoru SATOH <ssato@redhat.com> - 0.3.1.20110930-2
+- snapshot release
+- fixed a grave bug introduced in previous commits that attributes user
+  specified are ignored
+
+* Fri Sep 29 2011 Satoru SATOH <ssato@redhat.com> - 0.3.1.20110930-1
 - snapshot release
 - fixed a bug that collectors instatiate FileInfo objects directry instead by factory class
 - fixed a bug that '%dir ' is missing in the rpm attribute of DirInfo objects
