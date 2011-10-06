@@ -16,6 +16,4 @@
 #
 
 
-
-
-# vim: set sw=4 ts=4 expandtab:
+# vim:sw=4 ts=4 expandtab:
