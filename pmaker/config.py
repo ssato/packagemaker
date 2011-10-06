@@ -17,7 +17,8 @@
 from pmaker.globals import *
 from pmaker.environ import *
 from pmaker.utils import singleton, memoize, parse_conf_value, parse_list_str
-from pmaker.collectors.Collectors import FilelistCollector, init as init_collectors
+from pmaker.collectors.Collectors import FilelistCollector, \
+    init as init_collectors
 from pmaker.makers.PackageMaker import init as init_packagemaker
 from pmaker.makers.RpmPackageMaker import init as init_rpmpackagemaker
 from pmaker.makers.DebPackageMaker import init as init_debpackagemaker
@@ -72,7 +73,7 @@ Examples:
   cat files.list | %prog -n foo -  # same as above.
 
   %prog -n foo --pversion 0.2 --license MIT files.list
-  %prog -n foo --relations "requires:httpd,/sbin/service;obsoletes:bar" files.list
+  %prog -n foo --relations "requires:httpd,/bin/tar;obsoletes:bar" files.list
 """
 
 
@@ -80,8 +81,10 @@ def parse_relations(optstr):
     """
     Returns list of (relation_type, relation_targets).
 
-    >>> parse_relations("requires:bash,zsh;obsoletes:sysdata;conflicts:sysdata-old")
-    [('requires', ['bash', 'zsh']), ('obsoletes', ['sysdata']), ('conflicts', ['sysdata-old'])]
+    >>> parse_relations("requires:bash,zsh")
+    [('requires', ['bash', 'zsh'])]
+    >>> parse_relations("obsoletes:sysdata;conflicts:sysdata-old")
+    [('obsoletes', ['sysdata']), ('conflicts', ['sysdata-old'])]
     """
     def type_and_targets(optstr):
         for rel in parse_list_str(optstr, ";"):
@@ -142,7 +145,7 @@ def compressor_defaults(compressors=COMPRESSORS):
     compressor = get_compressor(compressors)  # cmd, extension, am_option,
 
     choices = [ext for _c, ext, _a in compressors]
-    help = "Tool to compress src archive when building src distribution [%default]"
+    help = "Tool to compress archive when building src distribution [%default]"
     default = compressor[1]  # extension
 
     return dict(choices=choices, help=help, default=default)
@@ -170,7 +173,7 @@ def set_workdir(workdir, name, pversion):
 def workdir_defaults():
     """Wokrdir option parameter's default.
     """
-    _help="Working dir to dump outputs [%default]"
+    _help = "Working dir to dump outputs [%default]"
     _default = os.path.join(os.getcwd(), "workdir")
 
     return dict(default=_default, help=_help)
@@ -187,65 +190,82 @@ def parse_args(argv=sys.argv[1:], defaults=None, upto=UPTO,
     if defaults is None:
         defaults = Config.defaults()
 
-    p = optparse.OptionParser(HELP_HEADER, version = "%prog " + PMAKER_VERSION)
+    p = optparse.OptionParser(HELP_HEADER, version="%prog " + PMAKER_VERSION)
     p.set_defaults(**defaults)
 
-    p.add_option("-C", "--config", help="Configuration file path", default=None)
+    p.add_option("-C", "--config", help="Configuration file path")
 
     bog = optparse.OptionGroup(p, "Build options")
     bog.add_option("-w", "--workdir", **workdir_defaults())
 
-    bog.add_option("", "--upto", type="choice", **upto_defaults(upto, build_steps))
+    bog.add_option("", "--upto", type="choice",
+        **upto_defaults(upto, build_steps))
     bog.add_option("", "--format", type="choice", **format_defaults(formats))
     bog.add_option("", "--driver", type="choice", **driver_defaults(drivers))
     bog.add_option("", "--itype", type="choice", **itype_defaults(itypes))
 
-    bog.add_option("", "--destdir", help="Destdir (prefix) you want to strip from installed path [%default]. "
-        "For example, if the target path is \"/builddir/dest/usr/share/data/foo/a.dat\", "
-        "and you want to strip \"/builddir/dest\" from the path when packaging \"a.dat\" and "
-        "make it installed as \"/usr/share/foo/a.dat\" with the package , you can accomplish "
-        "that by this option: \"--destdir=/builddir/destdir\"")
+    bog.add_option("", "--destdir",
+        help="Destdir (prefix) to strip from installed path [%default]. "
+        "For example, if target's path is \"/builddir/dest/etc/foo/a.dat\", "
+        "and \"/builddir/dest\" to be stripped from the path when packaging "
+        "\"a.dat\", and it needs to be installed as \"/etc/foo/a.dat\" "
+        "with that package, you can accomplish this by this option "
+        ": \"--destdir=/builddir/destdir\"")
 
-    bog.add_option("-P", "--template-path", action="append", dest="template_paths", default=tmpl_search_paths)
+    bog.add_option("-P", "--template-path", action="append",
+        dest="template_paths")
 
     p.add_option_group(bog)
 
     pog = optparse.OptionGroup(p, "Package metadata options")
     pog.add_option("-n", "--name", help="Package name [%default]")
     pog.add_option("", "--group", help="The group of the package [%default]")
-    pog.add_option("", "--license", help="The license of the package [%default]")
+    pog.add_option("", "--license",
+        help="The license of the package [%default]")
     pog.add_option("", "--url", help="The url of the package [%default]")
     pog.add_option("", "--summary", help="The summary of the package")
-    pog.add_option("-z", "--compressor", type="choice", **compressor_defaults())
-    pog.add_option("", "--arch", action="store_true", help="Make package arch-dependent [false = noarch]")
+    pog.add_option("-z", "--compressor", type="choice",
+        **compressor_defaults())
+    pog.add_option("", "--arch", action="store_true",
+        help="Make package arch-dependent [false = noarch]")
     pog.add_option("", "--relations", **relations_defaults()),
     pog.add_option("", "--packager", help="Specify packager's name [%default]")
-    pog.add_option("", "--email", help="Specify packager's mail address [%default]")
-    pog.add_option("", "--pversion", help="Specify the package's version [%default]")
-    pog.add_option("", "--release", help="Specify the package's release [%default]")
+    pog.add_option("", "--email",
+        help="Specify packager's mail address [%default]")
+    pog.add_option("", "--pversion",
+        help="Specify the package's version [%default]")
+    pog.add_option("", "--release",
+        help="Specify the package's release [%default]")
     pog.add_option("", "--ignore-owner", action="store_true",
         help="Ignore owner and group of files and then treat as root's")
-    pog.add_option("", "--changelog", help="Specify text file contains changelog")
+    pog.add_option("", "--changelog",
+        help="Specify text file contains changelog")
     p.add_option_group(pog)
 
     rog = optparse.OptionGroup(p, "Options for rpm")
-    rog.add_option("", "--dist", help="Target distribution (for mock) [%default]")
-    rog.add_option("", "--no-rpmdb", action="store_true", help="Do not refer rpm db to get extra information of target files")
-    rog.add_option("", "--no-mock", action="store_true", help="Build RPM with only using rpmbuild (not recommended)")
+    rog.add_option("", "--dist",
+        help="Target distribution for mock [%default]")
+    rog.add_option("", "--no-rpmdb", action="store_true",
+        help="Do not refer rpm db to get extra information of target files")
+    rog.add_option("", "--no-mock", action="store_true",
+        help="Build RPM with only using rpmbuild (not recommended)")
     p.add_option_group(rog)
 
-    p.add_option("", "--force", action="store_true", help="Force going steps even if the steps looks done")
+    p.add_option("", "--force", action="store_true",
+        help="Force going steps even if the steps looks done")
 
-    p.add_option("-v", "--verbose", action="count", dest='verbosity', help="Verbose mode")
-    p.add_option("", "--debug", action='store_const', dest='verbosity', const=2, help="Debug mode (same as -vv)")
-    p.add_option("", "--trace", action='store_true', help="Trace mode")
+    p.add_option("-v", "--verbose", action="count", dest="verbosity",
+        help="Verbose mode")
+    p.add_option("", "--debug", action="store_const", dest="verbosity",
+        const=2, help="Debug mode (same as -vv)")
+    p.add_option("", "--trace", action="store_true", help="Trace mode")
 
     (options, args) = p.parse_args(argv)
 
-    options.workdir = set_workdir(options.workdir, options.name, options.pversion)
+    options.workdir = set_workdir(options.workdir, options.name,
+                                  options.pversion)
 
     return (p, options, args)
-
 
 
 class Config(object):
@@ -272,7 +292,12 @@ class Config(object):
             paths = ["/etc/%s.conf" % prog]
             paths += sorted(glob.glob("/etc/%s.d/*.conf" % prog))
             paths += [os.path.join(home, ".config", prog)]
-            paths += [os.environ.get("%sRC" % prog.upper(), os.path.join(home, ".%src" % prog))]
+            paths += [
+                os.environ.get(
+                    "%sRC" % prog.upper(),
+                    os.path.join(home, ".%src" % prog)
+                )
+            ]
         else:
             assert isinstance(paths, list)
 
@@ -295,16 +320,17 @@ class Config(object):
                     logging.warn(e)
 
         if not loaded:
-            return dict() 
+            return dict()
 
         if profile is None:
             return cparser.defaults()
         else:
-            return dict((k, parse_conf_value(v)) for k, v in cparser.items(profile))
+            return dict((k, parse_conf_value(v)) for k, v in \
+                cparser.items(profile))
 
     def load(self, path=None):
         paths = path is None and self._paths or [path]
-        delta = self._load(paths, self._profile) 
+        delta = self._load(paths, self._profile)
         self._config.update(delta)
 
     @classmethod
@@ -315,39 +341,41 @@ class Config(object):
         Load default configurations.
         """
         defaults = dict(
-            workdir = workdir_defaults()["default"],
-            upto = upto_defaults()["default"],
-            format = get_package_format(),
-            driver = driver_defaults()["default"],
-            itype = itype_defaults()["default"],
-            compressor = compressor_defaults()["default"],
-            ignore_owner = False,
-            force = False,
+            workdir=workdir_defaults()["default"],
+            upto=upto_defaults()["default"],
+            format=get_package_format(),
+            driver=driver_defaults()["default"],
+            itype=itype_defaults()["default"],
+            compressor=compressor_defaults()["default"],
+            ignore_owner=False,
+            force=False,
 
-            verbosity = 0,
-            trace = False,
+            config=None,
 
-            destdir = "",
+            verbosity=0,
+            trace=False,
 
-            template_paths = tmpl_paths,
+            destdir="",
 
-            name = "",
-            pversion = "0.0.1",
-            release = "1",
-            group = "System Environment/Base",
-            license = "GPLv2+",
-            url = "http://localhost.localdomain",
-            summary = "",
-            arch = False,
-            relations = relations_defaults()["default"],
-            packager = get_fullname(),
-            email = get_email(),
-            changelog = "",
+            template_paths=tmpl_paths,
 
-            dist = "%s-%s-%s" % get_distribution(),
+            name="",
+            pversion="0.0.1",
+            release="1",
+            group="System Environment/Base",
+            license="GPLv2+",
+            url="http://localhost.localdomain",
+            summary="",
+            arch=False,
+            relations=relations_defaults()["default"],
+            packager=get_fullname(),
+            email=get_email(),
+            changelog="",
 
-            no_rpmdb = False,
-            no_mock = False,
+            dist="%s-%s-%s" % get_distribution(),
+
+            no_rpmdb=False,
+            no_mock=False,
         )
 
         return defaults
@@ -356,5 +384,4 @@ class Config(object):
         return self._config
 
 
-
-# vim: set sw=4 ts=4 expandtab:
+# vim:sw=4 ts=4 expandtab:
