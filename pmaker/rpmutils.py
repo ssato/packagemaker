@@ -1,5 +1,6 @@
 #
 # Copyright (C) 2011 Satoru SATOH <satoru.satoh @ gmail.com>
+# Copyright (C) 2011 Satoru SATOH <ssato @ redhat.com>
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -33,8 +34,9 @@ except ImportError:
     pass
 
 
-
-RPM_FILELIST_CACHE = os.path.join(os.environ["HOME"], ".cache", "pmaker.rpm.filelist.pkl")
+RPM_FILELIST_CACHE = os.path.join(
+    os.environ["HOME"], ".cache", "pmaker.rpm.filelist.pkl"
+)
 
 # RpmFi (FileInfo) keys:
 RPM_FI_KEYS = (
@@ -54,13 +56,14 @@ RPM_FI_KEYS = (
 )
 
 
-
 def rpmh2nvrae(h):
     """Transform rpm header (like) object to a dict.
 
     @h  Rpm header-like object to allow access such like $h["name"].
     """
-    d = dict((k, h[k]) for k in ("name", "version", "release", "arch", "epoch"))
+    d = dict(
+        (k, h[k]) for k in ("name", "version", "release", "arch", "epoch")
+    )
     d["epoch"] = str(normalize_epoch(d["epoch"]))
 
     return d
@@ -127,7 +130,10 @@ def info_by_path(path, fi_keys=RPM_FI_KEYS, rpmdb_path=None):
     apath = os.path.abspath(path)
 
     try:
-        fis = [h.fiFromHeader() for h in ts(rpmdb_path).dbMatch("basenames", apath)]
+        fis = [
+            h.fiFromHeader() for h in \
+                ts(rpmdb_path).dbMatch("basenames", apath)
+        ]
         if fis:
             xs = [x for x in fis[0] if x and x[0] == apath]
             if xs:
@@ -160,7 +166,10 @@ def filelist(cache=True, expires=1, pkl_proto=pickle.HIGHEST_PROTOCOL,
             date = None
 
     if data is None:
-        data = dict(concat(((f, rpmh2nvrae(h)) for f in h["filenames"]) for h in ts(rpmdb_path).dbMatch()))
+        data = dict(
+            concat(((f, rpmh2nvrae(h)) for f in h["filenames"]) \
+                for h in ts(rpmdb_path).dbMatch())
+        )
 
         try:
             # TODO: How to detect errors during/after pickle.dump.
@@ -200,27 +209,29 @@ def __rpm_attr(fileinfo):
     >>> fi = FileInfo("/bin/bar", "0755", "root", "bin")
     >>> assert __rpm_attr(fi) == "%attr(0755, -, bin)"
     """
-    m = fileinfo.permission() # ex. "0755"
+    m = fileinfo.permission()  # ex. "0755"
 
     try:
-        u = fileinfo.uid in (0, "root") and "-" or pwd.getpwuid(fileinfo.uid).pw_name
+        u = fileinfo.uid in (0, "root") and "-" or \
+            pwd.getpwuid(fileinfo.uid).pw_name
 
-    except TypeError: # It's not an integer such like 'bin'.
+    except TypeError:  # It's not an integer such like 'bin'.
         u = fileinfo.uid
 
     except KeyError:  # maybe fileinfo.uid not in pwd database.
         u = "-"
 
     try:
-        g = fileinfo.gid in (0, "root") and "-" or grp.getgrgid(fileinfo.gid).gr_name
+        g = fileinfo.gid in (0, "root") and "-" or \
+            grp.getgrgid(fileinfo.gid).gr_name
 
-    except (TypeError, ValueError): # It's not an integer.
+    except (TypeError, ValueError):  # It's not an integer.
         g = fileinfo.gid
 
     except KeyError:  # likewise
         g = "-"
 
-    return "%%attr(%(m)s, %(u)s, %(g)s)" % {"m":m, "u":u, "g":g,}
+    return "%%attr(%(m)s, %(u)s, %(g)s)" % {"m": m, "u": u, "g": g}
 
 
 def rpm_attr(fileinfo):
@@ -234,9 +245,9 @@ def rpm_attr(fileinfo):
             rattr = __rpm_attr(fileinfo) + " "
 
         if fileinfo.type() == TYPE_DIR:
-            rattr  += "%dir "
+            rattr += "%dir "
 
     return rattr
 
 
-# vim: set sw=4 ts=4 expandtab:
+# vim:sw=4 ts=4 expandtab:

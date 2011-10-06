@@ -24,14 +24,13 @@ except ImportError:
     pass
 
 
+PMAKER_TITLE = "packagemaker"
+PMAKER_AUTHOR = "Satoru SATOH"
+PMAKER_EMAIL = "satoru.satoh@gmail.com"
+PMAKER_WEBSITE = "https://github.com/ssato/packagemaker"
 
-PMAKER_TITLE    = "packagemaker"
-PMAKER_AUTHOR   = "Satoru SATOH"
-PMAKER_EMAIL    = "satoru.satoh@gmail.com"
-PMAKER_WEBSITE  = "https://github.com/ssato/packagemaker"
-
-PMAKER_VERSION  = "0.3.1" + "." + datetime.datetime.now().strftime("%Y%m%d")
-#PMAKER_VERSION  = "0.3.1"
+PMAKER_VERSION = "0.3.1" + "." + datetime.datetime.now().strftime("%Y%m%d")
+#PMAKER_VERSION = "0.3.1"
 
 
 FILEINFOS = dict()
@@ -53,10 +52,10 @@ CONFLICTS_SAVEDIR = os.path.join(CONFLICTS_STATEDIR, "saved")
 CONFLICTS_NEWDIR = os.path.join(CONFLICTS_STATEDIR, "new")
 
 
-TYPE_FILE    = "file"
-TYPE_DIR     = "dir"
+TYPE_FILE = "file"
+TYPE_DIR = "dir"
 TYPE_SYMLINK = "symlink"
-TYPE_OTHER   = "other"
+TYPE_OTHER = "other"
 TYPE_UNKNOWN = "unknown"
 
 TYPES_SUPPORTED = (TYPE_FILE, TYPE_DIR, TYPE_SYMLINK)
@@ -82,15 +81,16 @@ BUILD_STEPS = (
         "setup the package' src dir and copy target files in it"),
 
     (STEP_PRECONFIGURE, "Making up autotool-ized src directory: %(pname)s",
-        "arrange build aux files such like configure.ac, Makefile.am, rpm spec" + \
-        "file, debian/* and so on. python-cheetah will be needed."),
+        "arrange build aux files such like configure.ac, Makefile.am, " + \
+        "rpm spec file, debian/* and so on. python-cheetah will be needed."),
 
     (STEP_CONFIGURE, "Configuring src distribution: %(pname)s",
         "setup src dir to run './configure'. autotools will be needed"),
 
     (STEP_SBUILD, "Building src package: %(pname)s", "build src package[s]"),
 
-    (STEP_BUILD, "Building bin packages: %(pname)s", "build binary package[s]"),
+    (STEP_BUILD, "Building bin packages: %(pname)s",
+        "build binary package[s]"),
 )
 
 
@@ -106,7 +106,10 @@ try:
 
 except ImportError:
     UPTO = STEP_SETUP
-    logging.warn("python-cheetah is not found. It will go up to \"%s\" step." % STEP_SETUP)
+    logging.warn(
+        "python-cheetah is not found. It will go up to \"%s\" step." % \
+            STEP_SETUP
+    )
 
 
 try:
@@ -119,7 +122,9 @@ except ImportError:
         JSON_ENABLED = True
 
     except ImportError:
-        logging.warn("json module is not found. JSON support will be disabled.")
+        logging.warn(
+            "json module is not found. JSON support will be disabled."
+        )
 
 
 try:
@@ -127,7 +132,9 @@ try:
     PYXATTR_ENABLED = True
 
 except ImportError:
-    logging.warn("pyxattr module is not found. Its support will be disabled.")
+    logging.warn(
+        "pyxattr module is not found. Its support will be disabled."
+    )
 
 
 DIST_NAMES = (DIST_RHEL, DIST_FEDORA, DIST_DEBIAN) = \
@@ -137,4 +144,4 @@ DIST_NAMES = (DIST_RHEL, DIST_FEDORA, DIST_DEBIAN) = \
 PKG_FORMATS = (PKG_FORMAT_TGZ, PKG_FORMAT_RPM, PKG_FORMAT_DEB) = \
     ("tgz", "rpm", "deb")
 
-# vim: set sw=4 ts=4 expandtab:
+# vim:sw=4 ts=4 expandtab:

@@ -36,7 +36,7 @@ def hostname():
 def get_arch():
     """Returns "normalized" architecutre this host can support.
     """
-    ia32_re = re.compile(r"i.86") # i386, i686, etc.
+    ia32_re = re.compile(r"i.86")  # i386, i686, etc.
 
     arch = platform.machine() or "i386"
 
@@ -104,13 +104,16 @@ def get_username():
 def get_email():
     if is_git_available():
         try:
-            email = subprocess.check_output("git config --get user.email 2>/dev/null", shell=True)
+            email = subprocess.check_output(
+                "git config --get user.email 2>/dev/null", shell=True
+            )
             return email.rstrip()
         except Exception, e:
             logging.warn("get_email: " + str(e))
             pass
 
-    return os.environ.get("MAIL_ADDRESS", False) or "%s@localhost.localdomain" % get_username()
+    return os.environ.get("MAIL_ADDRESS", False) or \
+        "%s@localhost.localdomain" % get_username()
 
 
 @memoize
@@ -119,7 +122,9 @@ def get_fullname():
     """
     if is_git_available():
         try:
-            fullname = subprocess.check_output("git config --get user.name 2>/dev/null", shell=True)
+            fullname = subprocess.check_output(
+                "git config --get user.name 2>/dev/null", shell=True
+            )
             return fullname.rstrip()
         except Exception, e:
             logging.warn("get_fullname: " + str(e))
@@ -138,7 +143,9 @@ def get_compressor(compressors=COMPRESSORS):
 
     if len(glob.glob(am_dir_pattern)) == 0:
         UPTO = CHEETAH_ENABLED and STEP_PRECONFIGURE or STEP_SETUP
-        logging.warn("Automake not found. The process will go up to the step: " + UPTO)
+        logging.warn(
+            "Automake not found. The process will go up to the step: " + UPTO
+        )
 
         return ("gzip",  "gz",  "")  # fallback to the default.
 
@@ -148,17 +155,14 @@ def get_compressor(compressors=COMPRESSORS):
         cmd_c = "%s --version > /dev/null 2> /dev/null < /dev/null" % cmd
 
         if os.system(cmd_c) == 0:
-            am_support_c = "grep -q -e '^dist-%s:' %s 2> /dev/null" % (cmd, am_files_pattern)
+            am_support_c = "grep -q -e '^dist-%s:' %s 2> /dev/null" % \
+                (cmd, am_files_pattern)
 
             if os.system(am_support_c) == 0:
                 found = True
                 break
 
     if not found:
-        #logging.warn("any compressors not found. Packaging process can go up to \"setup\" step.")
-        #UPTO = STEP_SETUP
-        #return False
-
         # gzip must exist at least and not reached here:
         raise RuntimeError("No compressor found! Aborting...")
 

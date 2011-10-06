@@ -1,5 +1,6 @@
 #
 # Copyright (C) 2011 Satoru SATOH <satoru.satoh @ gmail.com>
+# Copyright (C) 2011 Satoru SATOH <ssato @ redhat.com>
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -21,9 +22,7 @@ import sys
 import threading
 
 
-
 CURDIR = os.getcwd()
-
 
 
 def shell(cmd, workdir=CURDIR, dryrun=False, stop_on_error=True):
@@ -62,7 +61,9 @@ def shell(cmd, workdir=CURDIR, dryrun=False, stop_on_error=True):
         rc = proc.returncode
 
     except Exception, e:
-        raise RuntimeError("Error (%s) when running: %s" % (repr(e.__class__), str(e)))
+        raise RuntimeError(
+            "Error (%s) when running: %s" % (repr(e.__class__), str(e))
+        )
 
     if rc == 0:
         return rc
@@ -72,7 +73,6 @@ def shell(cmd, workdir=CURDIR, dryrun=False, stop_on_error=True):
         else:
             logging.error(" cmd=%s, rc=%d" % (cmd, rc))
             return rc
-
 
 
 class ThreadedCommand(object):
@@ -136,7 +136,10 @@ class ThreadedCommand(object):
 
     def get_result(self):
         if self.thread is None:
-            logging.warn("Thread does not exist. Did you call %s.run_async() ?" % self.__class__.__name__)
+            logging.warn(
+                "Thread does not exist. Did you call %s.run_async() ?" \
+                    % self.__class__.__name__
+            )
             return None
 
         # it will block.
@@ -165,7 +168,6 @@ class ThreadedCommand(object):
         return self.get_result()
 
 
-
 def run(cmd, workdir=CURDIR, dryrun=False, stop_on_error=True, timeout=None):
 
     if dryrun:
@@ -177,4 +179,4 @@ def run(cmd, workdir=CURDIR, dryrun=False, stop_on_error=True, timeout=None):
     return tcmd.run()
 
 
-# vim: set sw=4 ts=4 expandtab:
+# vim:sw=4 ts=4 expandtab:

@@ -1,5 +1,6 @@
 #
 # Copyright (C) 2011 Satoru SATOH <satoru.satoh @ gmail.com>
+# Copyright (C) 2011 Satoru SATOH <ssato @ redhat.com>
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -20,7 +21,6 @@ from pmaker.utils import load_changelog_content, date_params, \
     compressor_params, sort_out_paths_by_dir
 
 import os.path
-
 
 
 class Package(object):
@@ -54,7 +54,8 @@ class Package(object):
         self.conflicts_newdir = CONFLICTS_NEWDIR % self.as_dict()
 
     def add_fileinfos(self, fileinfos):
-        self.fileinfos = self.fileinfos + [fi for fi in fileinfos if fi not in self.fileinfos]
+        self.fileinfos = self.fileinfos + \
+            [fi for fi in fileinfos if fi not in self.fileinfos]
 
         self.distdata = sort_out_paths_by_dir(
             fi.target for fi in self.fileinfos if fi.isfile()
@@ -73,4 +74,4 @@ class Package(object):
         return self.__dict__
 
 
-# vim: set sw=4 ts=4 expandtab:
+# vim:sw=4 ts=4 expandtab:

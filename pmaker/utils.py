@@ -52,11 +52,13 @@ if CHEETAH_ENABLED:
     from Cheetah.Template import Template
 else:
     def Template(*args, **kwargs):
-        raise RuntimeError("python-cheetah is missing and cannot proceed any more.")
+        raise RuntimeError(
+            "python-cheetah is missing and cannot proceed any more."
+        )
 
 
 try:
-    from hashlib import sha1 # md5, sha256, sha512
+    from hashlib import sha1  # md5, sha256, sha512
 
 except ImportError:  # python < 2.5
     from sha import sha as sha1
@@ -82,7 +84,6 @@ except NameError:
             if x:
                 return True
         return False
-
 
 
 def dicts_comp(lhs, rhs, keys=False):
@@ -113,7 +114,10 @@ def dicts_comp(lhs, rhs, keys=False):
     elif rhs == {}:
         return False
     else:
-        return all((lhs.get(key) == rhs.get(key)) for key in keys and keys or lhs.keys())
+        return all(
+            (lhs.get(key) == rhs.get(key)) for key in keys and \
+                keys or lhs.keys()
+        )
 
 
 def memoize(fn):
@@ -123,13 +127,12 @@ def memoize(fn):
 
     def wrapped(*args, **kwargs):
         key = repr(args) + repr(kwargs)
-        if not cache.has_key(key):
+        if key not in cache:
             cache[key] = fn(*args, **kwargs)
 
         return cache[key]
 
     return wrapped
-
 
 
 class memoized(object):
@@ -169,13 +172,12 @@ class memoized(object):
         return curry(self.__call__, obj)
 
 
-
 @memoize
 def checksum(filepath="", algo=sha1, buffsize=8192):
     """compute and check md5 or sha1 message digest of given file path.
 
-    TODO: What should be done when any exceptions such like IOError (e.g. could
-    not open $filepath) occur?
+    TODO: What should be done when any exceptions such like IOError (e.g.
+    could not open $filepath) occur?
     """
     if not filepath:
         return "0" * len(algo("").hexdigest())
@@ -357,7 +359,8 @@ def find_template(template, search_paths=TEMPLATE_SEARCH_PATHS):
     1. Try the path ($template)
     2. Try $path + $template where $path in $search_paths
 
-    @param  template  Template file path may be relative to path in search paths.
+    @param  template  Template file path may be relative to path in search
+                      paths.
     @param  search_paths  Path list to search for the template
     """
     # The path at the top is special (system search path).
@@ -395,13 +398,15 @@ def compile_template(template, params, is_file=False):
 def createdir(targetdir, mode=0700):
     """Create a dir with specified mode.
     """
-    logging.debug(" Creating a directory: %s" % targetdir)
+    logging.debug(" Creating a directory: " + targetdir)
 
     if os.path.exists(targetdir):
         if os.path.isdir(targetdir):
-            logging.warn(" Directory already exists! Skip it: %s" % targetdir)
+            logging.warn(" Directory already exists! Skip it: " + targetdir)
         else:
-            raise RuntimeError(" Already exists but not a directory: %s" % targetdir)
+            raise RuntimeError(
+                " Already exists but not a directory: " + targetdir
+            )
     else:
         os.makedirs(targetdir, mode)
 
@@ -414,13 +419,14 @@ def rm_rf(target):
 
     if os.path.isfile(target) or os.path.islink(target):
         os.remove(target)
-        return 
+        return
 
     warnmsg = "You're trying to rm -rf / !"
     assert target != "/", warnmsg
     assert os.path.realpath(target) != "/", warnmsg
 
-    xs = glob.glob(os.path.join(target, "*")) + glob.glob(os.path.join(target, ".*"))
+    xs = glob.glob(os.path.join(target, "*")) + \
+         glob.glob(os.path.join(target, ".*"))
 
     for x in xs:
         if os.path.isdir(x):
@@ -454,11 +460,13 @@ def sort_out_paths_by_dir(paths):
     Sort out files by dirs.
 
     @paths  path list, e.g.
-        ["/etc/resolv.conf", "/etc/sysconfig/iptables", "/etc/sysconfig/network"]
+        ["/etc/resolv.conf", "/etc/sysconfig/iptables",
+            "/etc/sysconfig/network"]
 
-    @return path list grouped by dirs, e.g. 
+    @return path list grouped by dirs, e.g.
         [{"dir": "/etc", "files": ["/etc/resolv.conf"], "id": "0"},
-         {"dir": "/etc/sysconfig", "files": ["/etc/sysconfig/iptables"], "id": "1"}]
+         {"dir": "/etc/sysconfig", "files": ["/etc/sysconfig/iptables"],
+            "id": "1"}]
     """
     cntr = itertools.count()
 
@@ -505,7 +513,7 @@ def parse_conf_value(s):
 
 def parse_list_str(optstr, sep=","):
     """
-    simple parser for optstr gives a list of items separated with "," (comma).
+    Simple parser for optstr gives a list of items separated with "," (comma).
 
     >>> assert parse_list_str("") == []
     >>> assert parse_list_str("a,b") == ["a", "b"]
@@ -524,16 +532,17 @@ def date_params():
 
 
 def load_changelog_content(changelog_txt):
+    changelog = ""
+
     if changelog_txt:
         try:
             changelog = open(changelog_txt).read()
         except IOError:
-            logging.warn(" Could not open %s to read changelog" % options.changelog)
-            changelog = ""
-    else:
-        changelog = ""
+            logging.warn(
+                " Could not open %s to read changelog" % options.changelog
+            )
 
     return changelog
 
 
-# vim: set sw=4 ts=4 expandtab:
+# vim:sw=4 ts=4 expandtab:

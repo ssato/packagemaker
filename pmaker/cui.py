@@ -67,7 +67,7 @@ def _get_class(ctype, cpool, default):
 
 
 def init_log():
-    datefmt = "%H:%M:%S" # too much? "%a, %d %b %Y %H:%M:%S"
+    datefmt = "%H:%M:%S"  # too much? "%a, %d %b %Y %H:%M:%S"
     fmt = "%(asctime)s [%(levelname)-4s] %(message)s"
 
     logging.basicConfig(level=logging.INFO, format=fmt, datefmt=datefmt)
@@ -90,14 +90,13 @@ def main(argv=sys.argv, collector=COLLECTORS):
     listfile = args[0]
 
     if not options.name:
-        sys.stderr.write("You must specify the package name with \"--name\" option\n")
+        sys.stderr.write("Package name must be set with \"--name\" option\n")
         options.name = raw_input("You must specify the package name. Name: ")
 
     if options.format:
         options.driver = options.driver.split(".")[0] + "." + options.format
 
     pkg = Package(options)
-    #pprint.pprint(pkg.as_dict())
 
     ccls = _get_class(options.itype, COLLECTORS, FilelistCollector)
     collector = ccls(listfile, options)
