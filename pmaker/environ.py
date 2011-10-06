@@ -27,7 +27,6 @@ import socket
 import subprocess
 
 
-
 @memoize
 def hostname():
     return socket.gethostname() or os.uname()[1]
@@ -136,7 +135,7 @@ def get_compressor(compressors=COMPRESSORS):
 
     am_dir_pattern = "/usr/share/automake-*"
     am_files_pattern = am_dir_pattern + "/am/*.am"
-    
+
     if len(glob.glob(am_dir_pattern)) == 0:
         UPTO = CHEETAH_ENABLED and STEP_PRECONFIGURE or STEP_SETUP
         logging.warn("Automake not found. The process will go up to the step: " + UPTO)
@@ -166,4 +165,4 @@ def get_compressor(compressors=COMPRESSORS):
     return (cmd, ext, am_opt)
 
 
-# vim: set sw=4 ts=4 expandtab:
+# vim:sw=4 ts=4 expandtab:
