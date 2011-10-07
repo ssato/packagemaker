@@ -26,7 +26,28 @@ from pmaker.models.FileObjectOperations import FileOps, DirOps, SymlinkOps
 import os.path
 
 
-class FileObject(Bunch):
+class InvalidFileTypeError(RuntimeError):
+    pass
+
+
+def typestr_to_type(s):
+    """
+    Convert string representation of type to TYPE_*.
+    """
+    typemap = dict(
+        f=TYPE_FILE, d=TYPE_DIR, s=TYPE_SYMLINK,
+        o=TYPE_OTHER, u=TYPE_UNKNOWN
+    )
+
+    filetype = typemap.get(s[0], None)
+
+    if filetype is None:
+        raise InvalidFileTypeError("filetype=" + s)
+
+    return filetype
+
+
+class XObject(Bunch):
     """
     This class represents regular files, dirs, symlinks and other objects on
     filesystem.
@@ -35,13 +56,11 @@ class FileObject(Bunch):
     same time.
     """
 
-    ops = FileOps
-    filetype = TYPE_FILE
-    is_copyable = True
-    perm_default = "0644"
+    defaults = Bunch(mode="0644", uid=0, gid=0, checksum=checksum())
 
-    def __init__(self, path, mode=None, uid=0, gid=0, checksum=checksum(),
-            create=False, content="", src=None, **kwargs):
+    def __init__(self, path=None, mode=None, uid=None, gid=None,
+            checksum=None, create=False, content="", src=None,
+            **kwargs):
         """
         :param path: Target object's path :: str
         :param mode: File mode, e.g. "0644", "1755" :: str
@@ -53,8 +72,10 @@ class FileObject(Bunch):
         :param content:   The string represents the content of path to create.
         :param src:  Path or URL to the actual location of the file object.
         """
+        assert path is not None, "Path must not be None!"  # MUST
+
         self.path = path
-        self.mode = mode is None and self.perm_default or mode
+        self.mode = mode
         self.uid= uid
         self.gid = gid
         self.checksum = checksum
@@ -66,6 +87,19 @@ class FileObject(Bunch):
 
         for k, v in kwargs.iteritems():
             setattr(self, k, v)
+
+
+class FileObject(XObject):
+    """File object
+    """
+
+    ops = FileOps
+    filetype = TYPE_FILE
+    is_copyable = True
+
+    def __init__(self, path, mode=None, **kwargs):
+        super(FileObject, self).__init__(path, mode, **kwargs)
+        self.mode = mode is None and self.defaults.mode or mode
 
     @classmethod
     def type(cls):
@@ -89,7 +123,7 @@ class FileObject(Bunch):
         return self.mode
 
     def need_to_chmod(self):
-        return self.permission() != self.perm_default
+        return self.mode != self.defaults.mode
 
     def need_to_chown(self):
         return self.uid != 0 or self.gid != 0  # 0 == root
@@ -102,7 +136,10 @@ class DirObject(FileObject):
 
     ops = DirOps
     filetype = TYPE_DIR
-    perm_default = "0755"
+
+    def __init__(self, path, **kwargs):
+        self.defaults.mode = "0755"
+        super(DirObject, self).__init__(path, **kwargs)
 
 
 class SymlinkObject(FileObject):
@@ -110,14 +147,12 @@ class SymlinkObject(FileObject):
     ops = SymlinkOps
     filetype = TYPE_SYMLINK
 
-    def __init__(self, path, mode=None, uid=0, gid=0, checksum=checksum(),
-            create=False, content="", src=None, linkto=None, **kwargs):
+    def __init__(self, path, linkto=None, **kwargs):
         """
         :param linkto: The path to link to :: str
         """
-        super(SymlinkObject, self).__init__(path, mode, uid, gid,
-            checksum, create, content, src, **kwargs)
-        self.linkto = linkto is None and os.path.realpath(path) or linkto
+        super(SymlinkObject, self).__init__(path, **kwargs)
+        self.linkto = linkto
 
     def need_to_chmod(self):
         return False

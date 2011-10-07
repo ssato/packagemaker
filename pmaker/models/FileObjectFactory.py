@@ -16,6 +16,7 @@
 #
 from pmaker.globals import TYPE_FILE, TYPE_DIR, TYPE_SYMLINK, \
     TYPE_OTHER, TYPE_UNKNOWN
+from pmaker.models.Bunch import Bunch
 
 import pmaker.utils as U
 import pmaker.models.FileObjects as FO
@@ -26,7 +27,7 @@ import os.path
 import stat
 
 
-def __stat(path):
+def lstat(path):
     """
     stat the path to get file metadata.
 
@@ -35,15 +36,15 @@ def __stat(path):
               if OSError was raised.
     """
     try:
-        _stat = os.lstat(path)
+        st = os.lstat(path)
     except OSError, e:
         logging.warn(e)
         return None
 
-    return (_stat.st_mode, _stat.st_uid, _stat.st_gid)
+    return (st.st_mode, st.st_uid, st.st_gid)
 
 
-def __guess_filetype(st_mode):
+def guess_filetype(st_mode):
     """
     Guess file type by st_mode.
 
@@ -67,7 +68,7 @@ def __guess_filetype(st_mode):
     return ft
 
 
-def __create_from_path(fo):
+def create_from_real_object(fo):
     """
     Creates and returns an appropriate type of FileObjects' instance from a
     FileObject's instance. The entity of FileObject's instance must exists.
@@ -76,23 +77,24 @@ def __create_from_path(fo):
     """
     assert os.path.exists(fo.path)
 
-    st = __stat(fo.path)
+    basic_attr_names = ("mode", "uid", "gid")
+    st = lstat(fo.path)
 
     if st is None:
         return FO.UnknownObject(**fo)
 
-    basic_attr_names = ("mode", "uid", "gid")
-
     attrs = dict(zip(basic_attr_names, st))
-    attrs["mode"] = U.st_mode_to_mode(real_attrs["mode"])
+    attrs["mode"] = U.st_mode_to_mode(attrs["mode"])
 
-    filetype = __guess_filetype(real_st_mode)
+    filetype = guess_filetype(st[0])
 
     if filetype == TYPE_FILE:
         fo.checksum = U.checksum(fo.path)
     else:
+        fo.checksum = U.checksum()
+
         if filetype == TYPE_UNKNOWN:
-            logging.warn(" Failed to resolve filetype: " + fo.path)
+            logging.warn(" Failed to detect filetype: " + fo.path)
 
         elif filetype == TYPE_SYMLINK:
             if not fo.get("linkto", False):
@@ -100,7 +102,8 @@ def __create_from_path(fo):
 
     # override with real (stat-ed) values if not specified.
     for n in basic_attr_names:
-        fo[n] = fo.get(n, attrs[n])
+        if not fo.get(n, False):
+            fo[n] = attrs[n]
 
     cls = FO.FILEOBJECTS.get(filetype, None)
     assert cls is not None
@@ -120,8 +123,8 @@ def create(path, **attrs):
     fo = FO.XObject(path, **attrs)
 
     if not fo.create:
-        if os.path.exists(path):
-            return __create_from_path(fo)
+        if os.path.exists(fo.path):
+            return create_from_real_object(fo)
         else:
             fo.create = True
 
@@ -136,6 +139,11 @@ def create(path, **attrs):
 
         else:  # TODO: Is there any specific features in dirs?
             filetype = TYPE_DIR
+
+    # set default values to necessary parameters if not set:
+    for attr in ("mode", "uid", "gid", "checksum"):
+        if not fo.get(attr, False):
+            fo[attr] = fo.defaults[attr]
 
     cls = FO.FILEOBJECTS.get(filetype, None)
     assert cls is not None

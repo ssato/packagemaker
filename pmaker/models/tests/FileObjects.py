@@ -46,7 +46,7 @@ class TestFileObject(unittest.TestCase):
 
         self.assertTrue(isinstance(fo, FO.FileObject))
         self.assertEquals(fo.path, self.path)
-        self.assertEquals(fo.mode, fo.perm_default)
+        self.assertEquals(fo.mode, fo.defaults.mode)
 
     def test__init__w_path_and_mode(self):
         for mode in ("0644", "0755", "1600"):
@@ -81,7 +81,7 @@ class TestDirObject(unittest.TestCase):
 
         self.assertTrue(isinstance(fo, FO.DirObject))
         self.assertEquals(fo.path, self.path)
-        self.assertEquals(fo.mode, fo.perm_default)
+        self.assertEquals(fo.mode, fo.defaults.mode)
 
 
 
@@ -90,7 +90,7 @@ class TestSymlinkInfo(unittest.TestCase):
     def setUp(self):
         self.linkto = None
 
-        for p in ("/etc/modprobe.d", "/usr/share", "/var/lib"):
+        for p in ("/etc/hosts", "/etc/resolv.conf", "/etc/bashrc"):
             if os.path.exists(p):
                 self.linkto = p
                 break
@@ -107,11 +107,11 @@ class TestSymlinkInfo(unittest.TestCase):
         cleanup_workdir(self.workdir)
 
     def test__init__w_path(self):
-        fo = FO.SymlinkObject(self.path)
+        fo = FO.SymlinkObject(self.path, self.linkto)
 
         self.assertTrue(isinstance(fo, FO.SymlinkObject))
         self.assertEquals(fo.path, self.path)
-        self.assertEquals(fo.mode, fo.perm_default)
+        self.assertEquals(fo.mode, fo.defaults.mode)
         self.assertEquals(fo.linkto, self.linkto)
 
     def test__init__w_path_and_linkto(self):
