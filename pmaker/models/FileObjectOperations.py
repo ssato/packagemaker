@@ -14,7 +14,6 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
-from pmaker.utils import *  # import 'all' if not pre-defined.
 from pmaker.shell import run
 
 import logging
@@ -23,6 +22,11 @@ import os.path
 import re
 import shutil
 import urllib2
+
+try:
+    all
+except NameError:
+    from pmaker.utils import all
 
 
 def same(lhs, rhs):
@@ -115,7 +119,7 @@ class FileOps(object):
         open(dest, "w").write(content)
 
     @classmethod
-    def __copy(cls, fileobj, dest):
+    def copy_impl(cls, fileobj, dest):
         """
         Copy the file of fileobj to dest.
         
@@ -178,9 +182,67 @@ class FileOps(object):
             cls.create(fileobj, dest)
         else:
             logging.debug(" Copying: from=%s, to=%s" % (fileobj.path, dest))
-            cls.__copy(fileobj, dest)
+            cls.copy_impl(fileobj, dest)
 
         return True
 
 
-# vim:sw=4 ts=4 expandtab:
+class DirOps(FileOps):
+
+    @classmethod
+    def remove(cls, path):
+        assert os.path.isdir(path), "Not a directory! path=" + path
+        os.removedirs(path)
+
+    @classmethod
+    def create(cls, fileobj, dest):
+        try:
+            mode = int(fileobj.permission(), 8)  # in octal, e.g. 0755
+            os.makedirs(dest, mode)
+
+        except OSError, e:   # It may be OK, ex. non-root user cannot set perms.
+            logging.debug(
+                " Failed (may be ignorable): os.makedirs, dest=%s, mode=%o" % \
+                    (dest, mode)
+            )
+            logging.warn(e)
+            logging.info(" Skipped: " + dest)
+
+            if not os.path.exists(dest):
+                run("mkdir -p " + dest)
+
+        uid = os.getuid()
+        gid = os.getgid()
+
+        if uid == 0 or (uid == fileobj.uid and gid == fileobj.gid):
+            os.chown(dest, fileobj.uid, fileobj.gid)
+        else:
+            logging.debug("Chown is not permitted so do nothing.")
+
+    @classmethod
+    def copy_impl(cls, fileobj, dest):
+        cls.create(fileobj, dest)
+
+        try:
+            shutil.copystat(fileobj.path, dest)
+        except OSError, e:
+            logging.warn(str(e))
+
+
+class SymlinkOps(FileOps):
+
+    link_instead_of_copy = False
+
+    @classmethod
+    def create(cls, fileobj, dest):
+        os.symlink(fileobj.linkto, dest)
+
+    @classmethod
+    def copy_impl(cls, fileobj, dest):
+        if cls.link_instead_of_copy:
+            cls.create(fileobj, dest)
+        else:
+            run("cp -a %s %s" % (fileobj.path, dest))
+
+
+# vim:sw=4 ts=4 et:
