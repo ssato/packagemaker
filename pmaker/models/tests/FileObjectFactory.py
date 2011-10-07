@@ -159,16 +159,86 @@ class Test__create(unittest.TestCase):
         cleanup_workdir(self.workdir)
 
     def test__create_w_filetype_file(self):
-        filetype = "file"
-        fo = Factory.create(self.path, content="Hello, world")
+        filetype = FO.typestr_to_type("file")
+        fo = Factory.create(self.path, filetype=filetype)
 
         self.assertTrue(isinstance(fo, FO.FileObject))
         self.assertEquals(fo.type(), TYPE_FILE)
         self.assertEquals(fo.path, self.path)
-        self.assertEquals(fo.mode, FO.FileObject.defaults.mode)
-        self.assertEquals(fo.uid, FO.FileObject.defaults.uid)
-        self.assertEquals(fo.gid, FO.FileObject.defaults.gid)
-        self.assertEquals(fo.checksum, FO.FileObject.defaults.checksum)
+        self.assertEquals(fo.mode, fo.defaults.mode)
+        self.assertEquals(fo.uid, fo.defaults.uid)
+        self.assertEquals(fo.gid, fo.defaults.gid)
+        self.assertEquals(fo.checksum, fo.defaults.checksum)
+
+    def test__create_w_filetype_dir(self):
+        filetype = FO.typestr_to_type("dir")
+        fo = Factory.create(self.path, filetype=filetype)
+
+        self.assertTrue(isinstance(fo, FO.DirObject))
+        self.assertEquals(fo.type(), TYPE_DIR)
+        self.assertEquals(fo.path, self.path)
+        self.assertEquals(fo.mode, fo.defaults.mode)
+        self.assertEquals(fo.uid, fo.defaults.uid)
+        self.assertEquals(fo.gid, fo.defaults.gid)
+        self.assertEquals(fo.checksum, fo.defaults.checksum)
+
+    def test__create_w_filetype_symlink(self):
+        filetype = FO.typestr_to_type("symlink")
+        fo = Factory.create(self.path, filetype=filetype)
+
+        self.assertTrue(isinstance(fo, FO.SymlinkObject))
+        self.assertEquals(fo.type(), TYPE_SYMLINK)
+        self.assertEquals(fo.path, self.path)
+        self.assertEquals(fo.mode, fo.defaults.mode)
+        self.assertEquals(fo.uid, fo.defaults.uid)
+        self.assertEquals(fo.gid, fo.defaults.gid)
+        self.assertEquals(fo.checksum, fo.defaults.checksum)
+
+    def test__create_w_content(self):
+        content = "Hello, world\n"
+        fo = Factory.create(self.path, content=content)
+
+        self.assertTrue(isinstance(fo, FO.FileObject))
+        self.assertEquals(fo.path, self.path)
+        self.assertEquals(fo.mode, fo.defaults.mode)
+        self.assertEquals(fo.uid, fo.defaults.uid)
+        self.assertEquals(fo.gid, fo.defaults.gid)
+        self.assertEquals(fo.checksum, fo.defaults.checksum)
+        self.assertEquals(fo.content, content)
+
+    def test__create_w_src(self):
+        src = "/etc/hosts"
+        fo = Factory.create(self.path, src=src)
+
+        self.assertTrue(isinstance(fo, FO.FileObject))
+        self.assertEquals(fo.path, self.path)
+        self.assertEquals(fo.mode, fo.defaults.mode)
+        self.assertEquals(fo.uid, fo.defaults.uid)
+        self.assertEquals(fo.gid, fo.defaults.gid)
+        self.assertEquals(fo.checksum, fo.defaults.checksum)
+        self.assertEquals(fo.src, src)
+
+    def test__create_w_linkto(self):
+        linkto = "/etc/hosts"
+        fo = Factory.create(self.path, linkto=linkto)
+
+        self.assertTrue(isinstance(fo, FO.SymlinkObject))
+        self.assertEquals(fo.path, self.path)
+        self.assertEquals(fo.mode, fo.defaults.mode)
+        self.assertEquals(fo.uid, fo.defaults.uid)
+        self.assertEquals(fo.gid, fo.defaults.gid)
+        self.assertEquals(fo.checksum, fo.defaults.checksum)
+        self.assertEquals(fo.linkto, linkto)
+
+    def test__create_wo_attrs(self):
+        fo = Factory.create(self.path)
+
+        self.assertTrue(isinstance(fo, FO.DirObject))
+        self.assertEquals(fo.mode, fo.defaults.mode)
+        self.assertEquals(fo.uid, fo.defaults.uid)
+        self.assertEquals(fo.gid, fo.defaults.gid)
+        self.assertEquals(fo.checksum, fo.defaults.checksum)
+        self.assertEquals(fo.path, self.path)
 
 
 # vim:sw=4 ts=4 et:

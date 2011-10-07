@@ -97,10 +97,6 @@ class FileObject(XObject):
     filetype = TYPE_FILE
     is_copyable = True
 
-    def __init__(self, path, mode=None, **kwargs):
-        super(FileObject, self).__init__(path, mode, **kwargs)
-        self.mode = mode is None and self.defaults.mode or mode
-
     @classmethod
     def type(cls):
         return cls.filetype
@@ -137,9 +133,8 @@ class DirObject(FileObject):
     ops = DirOps
     filetype = TYPE_DIR
 
-    def __init__(self, path, **kwargs):
-        self.defaults.mode = "0755"
-        super(DirObject, self).__init__(path, **kwargs)
+    defaults = XObject.defaults
+    defaults.mode = "0755"
 
 
 class SymlinkObject(FileObject):
