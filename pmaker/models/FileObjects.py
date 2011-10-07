@@ -115,7 +115,8 @@ class SymlinkObject(FileObject):
         """
         :param linkto: The path to link to :: str
         """
-        super(SymlinkInfo, self).__init__(path, *args, **kwargs)
+        super(SymlinkObject, self).__init__(path, mode, uid, gid,
+            checksum, create, content, src, **kwargs)
         self.linkto = linkto is None and os.path.realpath(path) or linkto
 
     def need_to_chmod(self):
