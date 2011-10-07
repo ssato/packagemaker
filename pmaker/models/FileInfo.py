@@ -25,10 +25,13 @@ import logging
 import os.path
 
 
-
 class FileInfo(object):
-    """The class of which objects to hold meta data of regular files, dirs and
-    symlinks. This is for regular file and the super class for other types.
+    """
+    The class of which objects to hold meta data of regular files, dirs,
+    symlinks and others.
+
+    This class is for regular file and the super class for other types at the
+    same time.
     """
 
     operations = FileOperations
