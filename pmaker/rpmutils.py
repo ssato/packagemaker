@@ -15,8 +15,8 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
-from pmaker.globals import *  # TYPE_DIR
-from pmaker.utils import *    # memoize, cache_needs_updates_p
+from pmaker.globals import TYPE_DIR
+from pmaker.utils import memoize, cache_needs_updates_p
 
 import cPickle as pickle
 import grp
@@ -54,6 +54,16 @@ RPM_FI_KEYS = (
     "gid",
     "checksum",
 )
+
+
+@memoize
+def is_rpmdb_available():
+    try:
+        rc = subprocess.check_call("rpm -qf /bin/sh 2>&1 > /dev/null", shell=True)
+        return bool(rc == 0)
+
+    except subprocess.CalledProcessError, e:
+        return False
 
 
 def rpmh2nvrae(h):
@@ -250,4 +260,4 @@ def rpm_attr(fileinfo):
     return rattr
 
 
-# vim:sw=4 ts=4 expandtab:
+# vim:sw=4 ts=4 et:
