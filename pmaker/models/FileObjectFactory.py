@@ -18,23 +18,55 @@ from pmaker.globals import TYPE_FILE, TYPE_DIR, TYPE_SYMLINK, \
     TYPE_OTHER, TYPE_UNKNOWN
 from pmaker.models.Bunch import Bunch
 
+import pmaker.rpmutils as R
 import pmaker.utils as U
 import pmaker.models.FileObjects as FO
 
+import grp
 import logging
 import os
 import os.path
+import pwd
 import stat
 
 
-def lstat(path):
+def rpm_lstat(path):
+    """Stat with using RPM database instead of lstat().
+
+    There are cases to get no results if the target objects not owned by
+    any packages.
+    """
+    try:
+        fi = R.info_by_path(path)
+        if fi:
+            uid = pwd.getpwnam(fi["uid"]).pw_uid   # uid: name -> id
+            gid = grp.getgrnam(fi["gid"]).gr_gid   # gid: name -> id
+
+            return (fi["mode"], uid, gid)
+    except:
+        return None
+
+
+def lstat(path, use_rpmdb=False):
     """
     stat the path to get file metadata.
 
     :param path:  Object's path (relative or absolute) :: str
+    :param use_rpmdb:  Whether to use rpm database or not :: bool
     :return:  A tuple of (mode, uid, gid) or (None, None, None)
               if OSError was raised.
     """
+    if use_rpmdb:
+        if R.is_rpmdb_available():
+            st = rpm_lstat(path)
+            if st is None:
+                logging.warn(" Failed to get stat from rpm database.")
+            else:
+                return st
+        else:
+            logging.warn(
+                " use_rpmdb is set but rpm database looks not available."
+            )
     try:
         st = os.lstat(path)
     except OSError, e:
@@ -68,7 +100,7 @@ def guess_filetype(st_mode):
     return ft
 
 
-def create_from_real_object(fo):
+def create_from_real_object(fo, use_rpmdb=False):
     """
     Creates and returns an appropriate type of FileObjects' instance from a
     FileObject's instance. The entity of FileObject's instance must exists.
@@ -78,7 +110,7 @@ def create_from_real_object(fo):
     assert os.path.exists(fo.path)
 
     basic_attr_names = ("mode", "uid", "gid")
-    st = lstat(fo.path)
+    st = lstat(fo.path, use_rpmdb)
 
     if st is None:
         return FO.UnknownObject(**fo)
@@ -111,7 +143,7 @@ def create_from_real_object(fo):
     return cls(**fo)
 
 
-def create(path, **attrs):
+def create(path, use_rpmdb=False, **attrs):
     """
     A kind of factory method to create an appropriate type of FileObjects'
     instance from path.
@@ -124,7 +156,7 @@ def create(path, **attrs):
 
     if not fo.create:
         if os.path.exists(fo.path):
-            return create_from_real_object(fo)
+            return create_from_real_object(fo, use_rpmdb)
         else:
             fo.create = True
 

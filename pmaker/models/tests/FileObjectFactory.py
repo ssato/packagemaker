@@ -18,6 +18,7 @@ from pmaker.globals import TYPE_FILE, TYPE_DIR, TYPE_SYMLINK, \
     TYPE_OTHER, TYPE_UNKNOWN
 from pmaker.tests.common import setup_workdir, cleanup_workdir
 
+import pmaker.rpmutils as R
 import pmaker.models.FileObjects as FO
 import pmaker.models.FileObjectFactory as Factory
 
@@ -33,6 +34,12 @@ def modestr_to_mode(mode):
     '0644'
     """
     return int(mode, 8)
+
+
+class Test__rpm_lstat(unittest.TestCase):
+
+    def test__bin_sh(self):
+        self.assertFalse(Factory.rpm_lstat("/bin/sh") is None)
 
 
 class Test__guess_filetype(unittest.TestCase):
