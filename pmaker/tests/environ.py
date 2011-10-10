@@ -52,4 +52,11 @@ class TestFunctions(unittest.TestCase):
         (cmd, ext, am_opt) = get_compressor()
 
 
-# vim: set sw=4 ts=4 expandtab:
+class TestEnv(unittest.TestCase):
+
+    def test__init__(self):
+        env = Env()
+        self.assertTrue(isinstance(env, Env))
+
+
+# vim:sw=4 ts=4 et:

@@ -14,8 +14,10 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
-from pmaker.globals import *  # COMPRESSORS, UPTO, CHEETAH_ENABLED
-from pmaker.utils import *    # memoize
+from pmaker.globals import PKG_FORMAT_TGZ, PKG_FORMAT_RPM, PKG_FORMAT_RPM, \
+    COMPRESSORS, UPTO, CHEETAH_ENABLED, STEP_PRECONFIGURE, STEP_SETUP
+from pmaker.utils import memoize
+from pmaker.models.Bunch import Bunch
 
 import glob
 import logging
@@ -25,6 +27,10 @@ import platform
 import re
 import socket
 import subprocess
+
+
+DIST_NAMES = (DIST_RHEL, DIST_FEDORA, DIST_DEBIAN) = \
+    ("rhel", "fedora", "debian")
 
 
 @memoize
@@ -169,4 +175,27 @@ def get_compressor(compressors=COMPRESSORS):
     return (cmd, ext, am_opt)
 
 
-# vim:sw=4 ts=4 expandtab:
+class Env(Bunch):
+
+    def __init__(self):
+        self.hostname = hostname()
+        self.arch = get_arch()
+        self.format = get_package_format()
+        self.is_git_available = is_git_available()
+        self.username = get_username()
+        self.email = get_email()
+        self.fullname = get_fullname()
+
+        n, v, _a = get_distribution()
+        self.dist = Bunch()
+        self.dist.name = n
+        self.dist.version = v
+
+        compressor_cmd, compressor_ext, compressor_am_opt = get_compressor()
+        self.compressor = Bunch()
+        self.compressor.command = compressor_cmd
+        self.compressor.extension = compressor_ext
+        self.compressor.autmake_option = compressor_am_opt
+
+
+# vim:sw=4 ts=4 et:
