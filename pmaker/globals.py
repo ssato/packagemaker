@@ -137,10 +137,6 @@ except ImportError:
     )
 
 
-DIST_NAMES = (DIST_RHEL, DIST_FEDORA, DIST_DEBIAN) = \
-    ("rhel", "fedora", "debian")
-
-
 PKG_FORMATS = (PKG_FORMAT_TGZ, PKG_FORMAT_RPM, PKG_FORMAT_DEB) = \
     ("tgz", "rpm", "deb")
 
