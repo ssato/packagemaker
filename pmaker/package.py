@@ -15,12 +15,53 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
-from pmaker.globals import CONFLICTS_NEWDIR, CONFLICTS_SAVEDIR
+from pmaker.globals import CONFLICTS_NEWDIR, CONFLICTS_SAVEDIR, \
+    COMPRESSORS, DATE_FMT_RFC2822, DATE_FMT_SIMPLE
 from pmaker.environ import hostname
-from pmaker.utils import load_changelog_content, date_params, \
-    compressor_params, sort_out_paths_by_dir
+from pmaker.utils import sort_out_paths_by_dir
 
+import datetime
+import locale
+import logging
 import os.path
+
+
+def date(type=None):
+    """
+    TODO: how to output in rfc2822 format w/o email.Utils.formatdate?
+    ("%z" for strftime does not look working.)
+    """
+    locale.setlocale(locale.LC_TIME, "C")
+
+    if type == DATE_FMT_RFC2822:
+        fmt = "%a, %d %b %Y %T +0000"
+
+    elif type == DATE_FMT_SIMPLE:
+        fmt = "%Y%m%d"
+
+    else:
+        fmt = "%a %b %_d %Y"
+
+    return datetime.datetime.now().strftime(fmt)
+
+
+def date_params():
+    return dict(date=date(DATE_FMT_RFC2822), timestamp=date())
+
+
+def compressor_params(extopt, compressors=COMPRESSORS):
+    am_opt = [ao for _c, ext, ao in compressors if ext == extopt][0]
+    return dict(ext=extopt, am_opt=am_opt)
+
+
+def load_txt_content(txtpath):
+    try:
+        return open(txtpath).read()
+
+    except IOError:
+        logging.warn(
+            " Could not open %s to read content." % txtpath
+        )
 
 
 class Package(object):
@@ -42,7 +83,7 @@ class Package(object):
 
         self.version = options.pversion
         self.noarch = not options.arch
-        self.changelog = load_changelog_content(options.changelog)
+        self.changelog = load_txt_content(options.changelog)
         self.host = hostname()
         self.date = date_params()
         self.compressor = compressor_params(options.compressor)
@@ -74,4 +115,4 @@ class Package(object):
         return self.__dict__
 
 
-# vim:sw=4 ts=4 expandtab:
+# vim:sw=4 ts=4 et:

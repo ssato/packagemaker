@@ -329,22 +329,6 @@ def is_superuser():
     return os.getuid() == 0
 
 
-def date(type=None):
-    """TODO: how to output in rfc2822 format w/o email.Utils.formatdate?
-    ("%z" for strftime does not look working.)
-    """
-    locale.setlocale(locale.LC_TIME, "C")
-
-    if type == DATE_FMT_RFC2822:
-        fmt = "%a, %d %b %Y %T +0000"
-    elif type == DATE_FMT_SIMPLE:
-        fmt = "%Y%m%d"
-    else:
-        fmt = "%a %b %_d %Y"
-
-    return datetime.datetime.now().strftime(fmt)
-
-
 def do_nothing(*args, **kwargs):
     return
 
@@ -522,27 +506,4 @@ def parse_list_str(optstr, sep=","):
     return [p for p in optstr.split(sep) if p]
 
 
-def compressor_params(extopt, compressors=COMPRESSORS):
-    am_opt = [ao for _c, ext, ao in compressors if ext == extopt][0]
-    return dict(ext=extopt, am_opt=am_opt)
-
-
-def date_params():
-    return dict(date=date(DATE_FMT_RFC2822), timestamp=date())
-
-
-def load_changelog_content(changelog_txt):
-    changelog = ""
-
-    if changelog_txt:
-        try:
-            changelog = open(changelog_txt).read()
-        except IOError:
-            logging.warn(
-                " Could not open %s to read changelog" % options.changelog
-            )
-
-    return changelog
-
-
-# vim:sw=4 ts=4 expandtab:
+# vim:sw=4 ts=4 et:

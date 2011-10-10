@@ -15,6 +15,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 from pmaker.package import *
+from pmaker.globals import DATE_FMT_RFC2822, DATE_FMT_SIMPLE
 from pmaker.models.FileInfoFactory import FileInfoFactory
 from pmaker.config import Config
 
@@ -22,9 +23,24 @@ import glob
 import optparse
 import os
 import os.path
+import re
 import random
 import unittest
 
+
+class Test_date(unittest.TestCase):
+
+    def test_date__default(self):
+        self.assertNotEquals(re.match(r".{3} .{3} +\d+ \d{4}", date()), None)
+
+    def test_date__simple(self):
+        self.assertNotEquals(re.match(r"\d{8}", date(DATE_FMT_SIMPLE)), None)
+
+    def test_date__rfc2822(self):
+        self.assertNotEquals(
+            re.match(r".{3}, \d{1,2} .* \d{4} \d{2}:\d{2}:\d{2} \+\d{4}", date(DATE_FMT_RFC2822)),
+            None
+        )
 
 
 class TestPackage(unittest.TestCase):

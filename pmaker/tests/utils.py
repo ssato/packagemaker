@@ -224,29 +224,6 @@ class Test_true(unittest.TestCase):
 
 
 
-class Test_true(unittest.TestCase):
-
-    def test_true(self):
-        self.assertTrue(true(False))
-
-
-
-class Test_date(unittest.TestCase):
-
-    def test_date__default(self):
-        self.assertNotEquals(re.match(r".{3} .{3} +\d+ \d{4}", date()), None)
-
-    def test_date__simple(self):
-        self.assertNotEquals(re.match(r"\d{8}", date(DATE_FMT_SIMPLE)), None)
-
-    def test_date__rfc2822(self):
-        self.assertNotEquals(
-            re.match(r".{3}, \d{1,2} .* \d{4} \d{2}:\d{2}:\d{2} \+\d{4}", date(DATE_FMT_RFC2822)),
-            None
-        )
-
-
-
 class Test_do_nothing(unittest.TestCase):
 
     def test_do_nothing(self):
