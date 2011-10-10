@@ -16,7 +16,8 @@
 #
 from pmaker.globals import *
 from pmaker.environ import *
-from pmaker.utils import singleton, memoize, parse_conf_value, parse_list_str
+from pmaker.utils import singleton, memoize, parse_conf_value, \
+    parse_list_str, unique
 from pmaker.collectors.Collectors import FilelistCollector, \
     init as init_collectors
 from pmaker.makers.PackageMaker import init as init_packagemaker
