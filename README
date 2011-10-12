@@ -8,7 +8,6 @@ almost all of the steps needed for packaing: arrange source tree, create
 makefiles and rpm specs or debina packaging files, etc.
 
 
-
 How it works
 =======================
 
@@ -30,6 +29,61 @@ specify these explicitly in Makefile.am or rpm spec, etc.
 
 
 
+"Package-based system construction" - the concept behind packagemaker
+==============================================================================
+
+Usually, systems are constructed through the following steps:
+
+1. kitting: setup hardware
+2. install os
+3. configure os
+4. install middleware and apps
+5. configure middleware and apps
+
+
+It is possible to automate some of steps 2..4, above but it takes much time and
+hard sometime because most steps consist of procedual steps with side effects.
+
+However, if those procedual steps with side effects are wrapped and "lift"-ed
+to a kind of "monad", it should be easy to manage and helps making these
+processes less procedual and more functional a lot. For example, if all of the
+changes (file/dir/symlink additions and modifications) after the step 2 could
+be packaged into some RPMs, we can re-play these steps with a kickstart file
+with basic os installatio and package list which these additional RPMs are
+added.
+
+Along with that, most important point is that all we want are just *what*
+files, dirs and symlinks makes that system and we don't care *how* these were
+made actaully in most cases.
+
+PackageMaker is one of the important pieces to actualize and establish "package
+based system construction" methodology because it should enable reducing the
+cost of packaging files, dirs and sysmlinks (captureing what objects making
+that system), and may enables re-playing the system construction process.
+
+
+Comparison with configuration management system
+-------------------------------------------------------
+
+Some configuration management systems such like puppet, chef also can
+accomplish the same goal packagemaker focusing but:
+
+* These add some more extra software layers to os-native software management
+  systems. Puppet conflicts with and overrides package management system for
+  example.
+
+* Most of all are based on server-client architecture and client and central
+  management systems are tightly-coupled as usual.
+
+* Custom scripts are required: kickstart does not support puppet natively and
+  some kinds of post scripts are needed to make use of puppet, for example.
+
+
+Packages built with packagemaker do not need any runtime system or libraries
+and should be able to work well with os-native package management systems in
+standalone mode.
+
+
 Architecture
 ===========================
 
@@ -47,7 +101,7 @@ a. Models
 \*FileInfo classes implement the basic model of target objects: files, dirs and
 symlinks.  Because many instance of these objects should be created as user
 requested, operations (copy, move, etc.) for these models are implemented in
-separate other classes (\*Operations classes).
+separated other classes (\*Operations classes).
 
 Model classes are instantiated from dedicated factory class and never
 instantiated directly.
