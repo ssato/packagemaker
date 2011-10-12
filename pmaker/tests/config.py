@@ -50,21 +50,6 @@ b: yyy
     def tearDown(self):
         cleanup_workdir(self.workdir)
 
-    def test_list_paths__None(self):
-        prog = "testapp"
-        home = os.environ.get("HOME", os.curdir)
-
-        paths = [
-            "/etc/%s.conf" % prog,
-            os.path.join(home, ".config", prog),
-            os.environ.get("%sRC" % prog.upper(), os.path.join(home, ".%src" % prog))
-        ]
-
-        self.assertEquals(paths, Config._list_paths(prog, None))
- 
-    def test_list_paths__not_None(self):
-        self.assertEquals(["/a/b/c"], Config._list_paths("testapp", ["/a/b/c"]))
-
     def test__load__default(self):
         params = Config._load(self.paths, profile=None)
 

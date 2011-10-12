@@ -14,9 +14,11 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
+from pmaker.anycfg import list_paths
 from pmaker.globals import *
 from pmaker.environ import *
-from pmaker.utils import singleton, memoize, parse_conf_value, \
+from pmaker.parser import parse
+from pmaker.utils import parse_conf_value, \
     parse_list_str, unique
 from pmaker.collectors.Collectors import FilelistCollector, \
     init as init_collectors
@@ -87,18 +89,7 @@ def parse_relations(optstr):
     >>> parse_relations("obsoletes:sysdata;conflicts:sysdata-old")
     [('obsoletes', ['sysdata']), ('conflicts', ['sysdata-old'])]
     """
-    def type_and_targets(optstr):
-        for rel in parse_list_str(optstr, ";"):
-            if ":" not in rel or rel.endswith(":"):
-                continue
-
-            (_type, _targets) = parse_list_str(rel, ":")
-            _targets = parse_list_str(_targets, ",")
-
-            if _targets:
-                yield (_type, _targets)
-
-    return [(t, ts) for t, ts in type_and_targets(optstr)]
+    return parse(optstr)
 
 
 # FIXME: Ugly
@@ -282,27 +273,8 @@ class Config(object):
         """
         self._prog = prog
         self._profile = profile
-        self._paths = self._list_paths(prog, paths)
+        self._paths = list_paths(prog, paths)
         self._config = self.defaults()
-
-    @classmethod
-    def _list_paths(cls, prog, paths=None):
-        if paths is None:
-            home = os.environ.get("HOME", os.curdir)
-
-            paths = ["/etc/%s.conf" % prog]
-            paths += sorted(glob.glob("/etc/%s.d/*.conf" % prog))
-            paths += [os.path.join(home, ".config", prog)]
-            paths += [
-                os.environ.get(
-                    "%sRC" % prog.upper(),
-                    os.path.join(home, ".%src" % prog)
-                )
-            ]
-        else:
-            assert isinstance(paths, list)
-
-        return paths
 
     @classmethod
     def _load(cls, paths, profile=None):
@@ -385,4 +357,4 @@ class Config(object):
         return self._config
 
 
-# vim:sw=4 ts=4 expandtab:
+# vim:sw=4 ts=4 et:
