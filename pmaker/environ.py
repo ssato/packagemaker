@@ -196,16 +196,20 @@ class Env(Bunch):
         self.email = get_email()
         self.fullname = get_fullname()
 
-        n, v, _a = get_distribution()
+        n, v, a = get_distribution()
         self.dist = Bunch()
         self.dist.name = n
         self.dist.version = v
+        self.dist.arch = a
 
         compressor_cmd, compressor_ext, compressor_am_opt = get_compressor()
         self.compressor = Bunch()
         self.compressor.command = compressor_cmd
         self.compressor.extension = compressor_ext
         self.compressor.autmake_option = compressor_am_opt
+        self.compressor.triple = (
+            compressor_cmd, compressor_ext, compressor_am_opt
+        )
 
         # from globals
         self.upto = UPTO
