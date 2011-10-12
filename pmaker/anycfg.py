@@ -1,5 +1,5 @@
 #
-# Copyright (C) 2011 Satoru SATOH <satoru.satoh @ gmail.com>
+# Copyright (C) 2011 Satoru SATOH <ssato @ redhat.com>
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -15,8 +15,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 from pmaker.models.Bunch import Bunch
-from pmaker.utils import singleton, memoize, parse_conf_value, \
-    parse_list_str, unique
+from pmaker.parser import parse
 
 import ConfigParser as configparser
 import glob
@@ -60,152 +59,78 @@ def list_paths(basename, paths=None):
     return paths
 
 
-class ConfigParser(object):
+class IniParser(object):
 
-    def __init__(self, sep=","):
-        pass
+    def __init__(self, basename):
+        self._parser = configparser.SafeConfigParser()
+        self._basename = basename
+        self.config = Bunch()
 
+    def load(self, path_, sep=","):
+        if not os.path.exists(path_):
+            logging.warn("%s does not exist. Do nothing." % path_)
+            return
 
-def configparser_load(paths, sep=","):
-    config = Bunch()
-    cparser = configparser.SafeConfigParser()
+        logging.info("Loading config: " + path_)
+        config = Bunch()
 
-    for c in paths:
-        if os.path.exists(c):
-            logging.info("Loading config: " + c)
+        try:
+            self._parser.read(path_)
 
-            try:
-                cparser.read(c)
+            for k, v in self._parser.defaults().iteritems():
+                config.defaults = Bunch()
 
-                for k, v in cparser.defaults().iteritems():
+                if sep in v:
+                    config.defaults[k] = [
+                        parse(x) for x in parse_list_str(v)
+                    ]
+                else:
+                    config.defaults[k] = parse(v)
+
+            for s in self._parser.sections():
+                config[s] = Bunch()
+
+                for k in self._parser.options(s):
+                    v = self._parser.get(s, k)
                     if sep in v:
-                        config[k] = [
-                            parse_conf_value(x) for x in parse_list_str(v)
+                        config[s][k] = [
+                            parse(x) for x in parse_list_str(v)
                         ]
                     else:
-                        config[k] = parse_conf_value(v)
+                        config[s][k] = parse(v)
 
-                for s in cparser.sections():
-                    for k in cparser.options(s):
-                        v = cparser.get(s, k)
-                        if sep in v:
-                            config[k] = [
-                                parse_conf_value(x) for x in parse_list_str(v)
-                            ]
-                        else:
-                            config[k] = parse_conf_value(v)
+        except Exception, e:
+            logging.warn(e)
 
-            except Exception, e:
-                logging.warn(e)
+        return config
 
-    return config
+    def loads(self, paths=[]):
+        if not paths:
+            paths = list_paths(self._basename)
+
+        for p in paths:
+            c = self.load(p)
+            self.config.update(c)
 
 
-def configparser_load(paths, sep=","):
-    config = Bunch()
-    cparser = configparser.SafeConfigParser()
+class YamlConfigPaser(IniParser):
 
-    for c in paths:
-        if os.path.exists(c):
-            logging.info("Loading config: " + c)
-
-            try:
-                cparser.read(c)
-
-                for k, v in cparser.defaults().iteritems():
-                    if sep in v:
-                        config[k] = [
-                            parse_conf_value(x) for x in parse_list_str(v)
-                        ]
-                    else:
-                        config[k] = parse_conf_value(v)
-
-                for s in cparser.sections():
-                    for k in cparser.options(s):
-                        v = cparser.get(s, k)
-                        if sep in v:
-                            config[k] = [
-                                parse_conf_value(x) for x in parse_list_str(v)
-                            ]
-                        else:
-                            config[k] = parse_conf_value(v)
-
-            except Exception, e:
-                logging.warn(e)
-
-    return config
+    def load(self, path_, sep=","):
+        if yaml is None:
+            return yaml.load(open(path_))
+        else:
+            logging.warn("YAML is not a supported configuration format.")
+            return dict()
 
 
-class Config(object):
-    """Object to get/set configuration values.
-    """
+class JsonConfigPaser(IniParser):
 
-    def __init__(self, prog="pmaker", profile=None, paths=None):
-        """
-        @param  prog      Program name
-        @param  profile   Profile name will be used for config selection
-        @param  paths     Configuration file path list
-        @param  defaults  Default configuration values
-        """
-        self._prog = prog
-        self._profile = profile
-        self._paths = self._list_paths(prog, paths)
-        self._config = self.defaults()
-
-    def load(self, path=None):
-        paths = path is None and self._paths or [path]
-        delta = self._load(paths, self._profile)
-        self._config.update(delta)
-
-    @classmethod
-    def defaults(cls, bsteps=BUILD_STEPS, upto=UPTO, itypes=COLLECTORS,
-            pmakers=PACKAGE_MAKERS, compressors=COMPRESSORS,
-            tmpl_paths=TEMPLATE_SEARCH_PATHS):
-        """
-        Load default configurations.
-        """
-        defaults = dict(
-            workdir=workdir_defaults()["default"],
-            upto=upto_defaults()["default"],
-            format=get_package_format(),
-            driver=driver_defaults()["default"],
-            itype=itype_defaults()["default"],
-            compressor=compressor_defaults()["default"],
-            ignore_owner=False,
-            force=False,
-
-            config=None,
-
-            verbosity=0,
-            trace=False,
-
-            destdir="",
-
-            template_paths=tmpl_paths,
-
-            name="",
-            pversion="0.0.1",
-            release="1",
-            group="System Environment/Base",
-            license="GPLv2+",
-            url="http://localhost.localdomain",
-            summary="",
-            arch=False,
-            relations=relations_defaults()["default"],
-            packager=get_fullname(),
-            email=get_email(),
-            changelog="",
-
-            dist="%s-%s-%s" % get_distribution(),
-
-            no_rpmdb=False,
-            no_mock=False,
-        )
-
-        return defaults
-
-    def as_dict(self):
-        return self._config
+    def load(self, path_, sep=","):
+        if json is None:
+            return json.load(open(path_))
+        else:
+            logging.warn("JSON is not a supported configuration format.")
+            return dict()
 
 
-# vim:sw=4 ts=4 expandtab:
+# vim:sw=4 ts=4 et:
