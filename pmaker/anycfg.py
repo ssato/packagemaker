@@ -120,7 +120,7 @@ class YamlConfigPaser(IniParser):
             return yaml.load(open(path_))
         else:
             logging.warn("YAML is not a supported configuration format.")
-            return dict()
+            return Bunch()
 
 
 class JsonConfigPaser(IniParser):
@@ -130,7 +130,7 @@ class JsonConfigPaser(IniParser):
             return json.load(open(path_))
         else:
             logging.warn("JSON is not a supported configuration format.")
-            return dict()
+            return Bunch()
 
 
 # vim:sw=4 ts=4 et:
