@@ -16,7 +16,7 @@
 #
 from pmaker.globals import PKG_FORMAT_TGZ, PKG_FORMAT_RPM, PKG_FORMAT_RPM, \
     COMPRESSORS, UPTO, CHEETAH_ENABLED, STEP_PRECONFIGURE, STEP_SETUP
-from pmaker.utils import memoize
+from pmaker.utils import memoize, singleton
 from pmaker.models.Bunch import Bunch
 
 import glob
@@ -139,6 +139,7 @@ def get_fullname():
     return os.environ.get("FULLNAME", False) or get_username()
 
 
+@memoize
 def get_compressor(compressors=COMPRESSORS):
     global UPTO, CHEETAH_ENABLED
 
@@ -175,7 +176,14 @@ def get_compressor(compressors=COMPRESSORS):
     return (cmd, ext, am_opt)
 
 
+@singleton
 class Env(Bunch):
+    """
+
+    >>> env1 = Env()
+    >>> env2 = Env()
+    >>> env1 == env2
+    """
 
     def __init__(self):
         self.hostname = hostname()
