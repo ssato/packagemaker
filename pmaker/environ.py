@@ -186,6 +186,8 @@ class Env(Bunch):
     """
 
     def __init__(self):
+        global UPTO, CHEETAH_ENABLED, COMPRESSORS
+
         self.hostname = hostname()
         self.arch = get_arch()
         self.format = get_package_format()
@@ -204,6 +206,17 @@ class Env(Bunch):
         self.compressor.command = compressor_cmd
         self.compressor.extension = compressor_ext
         self.compressor.autmake_option = compressor_am_opt
+
+        # from globals
+        self.upto = UPTO
+        self.cheetah_enabled = CHEETAH_ENABLED
+        self.compressor = COMPRESSORS[1]
+
+        # other complex defaults:
+        self.driver = "autotools." + self.format
+        self.itype = "filelist"
+        self.relations = ""
+        self.workdir = os.path.join(os.getcwd(), "workdir")
 
 
 # vim:sw=4 ts=4 et:
