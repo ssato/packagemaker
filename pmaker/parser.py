@@ -99,4 +99,13 @@ def parse_attrlist(s, avs_sep=":", vs_sep=",", as_sep=";"):
     return [(a, vs) for a, vs in attr_and_values(s)]
 
 
+def parse(s):
+    if ":" in s:
+        return parse_attrlist(s)
+    elif "," in s:
+        return parse_list(s)
+    else:
+        return parse_single(s)
+
+
 # vim:sw=4 ts=4 et:
