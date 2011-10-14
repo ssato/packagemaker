@@ -79,7 +79,7 @@ b: yyy
         cleanup_workdir(self.workdir)
 
     def test__load(self):
-        parser = PA.IniConfigParser("testapp")
+        parser = PA.IniConfigParser()
         config = parser.load(self.paths[0])
 
         for k, v in config.defaults.iteritems():
@@ -123,7 +123,7 @@ if PA.json is not None:
             cleanup_workdir(self.workdir)
 
         def test__load(self):
-            parser = PA.JsonConfigPaser("testapp")
+            parser = PA.JsonConfigPaser()
             config = parser.load(self.paths[0])
 
             #pprint.pprint(config)
@@ -168,7 +168,7 @@ array0: [1, 2, 3]
             cleanup_workdir(self.workdir)
 
         def test__load(self):
-            parser = PA.YamlConfigPaser("testapp")
+            parser = PA.YamlConfigPaser()
             config = parser.load(self.paths[0])
 
             for k, v in config.defaults.iteritems():

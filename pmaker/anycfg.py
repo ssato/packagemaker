@@ -49,19 +49,22 @@ json = Env().json
 yaml = Env().yaml
 
 
-def list_paths(basename, paths=None):
+def list_paths(basename=None, paths=None):
     if paths is None:
         home = os.environ.get("HOME", os.curdir)
 
-        paths = ["/etc/%s.conf" % basename]
-        paths += sorted(glob.glob("/etc/%s.d/*.conf" % basename))
-        paths += [os.path.join(home, ".config", basename)]
-        paths += [
-            os.environ.get(
-                "%sRC" % basename.upper(),
-                os.path.join(home, ".%src" % basename)
-            )
-        ]
+        paths = []
+
+        if basename is not None:
+            paths += ["/etc/%s.conf" % basename]
+            paths += sorted(glob.glob("/etc/%s.d/*.conf" % basename))
+            paths += [os.path.join(home, ".config", basename)]
+            paths += [
+                os.environ.get(
+                    "%sRC" % basename.upper(),
+                    os.path.join(home, ".%src" % basename)
+                )
+            ]
     else:
         assert isinstance(paths, list)
 
@@ -70,12 +73,11 @@ def list_paths(basename, paths=None):
 
 class IniConfigParser(object):
 
-    def __init__(self, basename):
+    def __init__(self):
         self._parser = configparser.SafeConfigParser()
-        self._basename = basename
         self.config = Bunch()
 
-    def load(self, path_, sep=","):
+    def load(self, path_, sep=",", **kwargs):
         if not os.path.exists(path_):
             logging.warn("%s does not exist. Do nothing." % path_)
             return
@@ -113,9 +115,9 @@ class IniConfigParser(object):
 
         return config
 
-    def loads(self, paths=[]):
+    def loads(self, name=None, paths=[]):
         if not paths:
-            paths = list_paths(self._basename)
+            paths = list_paths(name)
 
         for p in paths:
             c = self.load(p)
@@ -179,6 +181,26 @@ class YamlConfigPaser(IniConfigParser):
             return Bunch()
         else:
             return yaml.load(open(path_), Loader=YamlBunchLoader)
+
+
+class AnyConfigParser(IniConfigParser):
+
+    def load(self, conf, **kwargs):
+        """
+        :param conf:  Path to configuration file.
+        """
+        fn_ext = os.path.splitext(conf)
+        parser = IniConfigParser()
+
+        if len(fn_ext) > 1:
+            ext = fn_ext[1].lower()
+
+            if ext in ("json", "jsn"):
+                parser = JsonConfigPaser()
+            elif ext in ("yaml", "yml"):
+                parser = YamlConfigPaser()
+
+        return parser.load(conf, **kwargs)
 
 
 # vim:sw=4 ts=4 et:
