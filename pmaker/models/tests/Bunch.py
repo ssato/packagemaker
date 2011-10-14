@@ -39,5 +39,8 @@ class TestBunch(unittest.TestCase):
         bunch.newkey = True
         self.assertTrue(newkey in bunch)
 
+        # TODO: The order of keys may be lost currently.
+        #self.assertEquals(bunch.keys(), ("name", "category", "newkey"))
 
-# vim:sw=4 ts=4 expandtab:
+
+# vim:sw=4 ts=4 et:

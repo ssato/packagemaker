@@ -15,6 +15,11 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 #
+
+# TODO: Keep items' order:
+#from collections import OrderedDict as dict
+
+
 class Bunch(dict):
     """
     Simple class implements 'Bunch Pattern'.
@@ -27,4 +32,4 @@ class Bunch(dict):
     __delattr__ = dict.__delitem__
 
 
-# vim:sw=4 ts=4 expandtab:
+# vim:sw=4 ts=4 et:
