@@ -14,6 +14,7 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
+from pmaker.environ import Env
 from pmaker.globals import *
 from pmaker.utils import *
 from pmaker.collectors.Filters import *
@@ -28,16 +29,6 @@ import logging
 import os
 import os.path
 import sys
-
-
-if JSON_ENABLED:
-    import json
-else:
-    class json:
-        @staticmethod
-        def load(*args):
-            return ()
-
 
 
 class Collector(object):
@@ -223,9 +214,7 @@ class JsonFilelistCollector(FilelistCollector):
         ]
     }
     """
-    global JSON_ENABLED
-
-    _enabled = JSON_ENABLED
+    _enabled = Env().json is not None
     _type = "filelist.json"
 
     def _parse(self, params):
@@ -253,4 +242,4 @@ def init(collectors_map=COLLECTORS):
             collectors_map[cls.type()] = cls
 
 
-# vim: set sw=4 ts=4 expandtab:
+# vim:sw=4 ts=4 et:
