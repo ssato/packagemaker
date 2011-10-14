@@ -29,6 +29,22 @@ import socket
 import subprocess
 
 
+try:
+    import json
+except ImportError:
+    try:
+        import simplejson as json
+    except ImportError:
+        logging.warn(" JSON module is not available. Disabled its support.")
+        json = None
+
+try:
+    import yaml
+except ImportError:
+    logging.warn(" YAML module is not available. Disabled its support.")
+    yaml = None
+
+
 DIST_NAMES = (DIST_RHEL, DIST_FEDORA, DIST_DEBIAN) = \
     ("rhel", "fedora", "debian")
 
@@ -185,8 +201,8 @@ class Env(Bunch):
     >>> env1 == env2
     """
 
-    def __init__(self):
-        global UPTO, CHEETAH_ENABLED, COMPRESSORS
+    def __init__(self, **kwargs):
+        global UPTO, CHEETAH_ENABLED, COMPRESSORS, json, yaml
 
         self.hostname = hostname()
         self.arch = get_arch()
@@ -221,6 +237,14 @@ class Env(Bunch):
         self.itype = "filelist"
         self.relations = ""
         self.workdir = os.path.join(os.getcwd(), "workdir")
+
+        # modules
+        self.json = json
+        self.yaml = yaml
+
+        for k, v in kwargs.iteritems():
+            if k not in self:
+                self[k] = v
 
 
 # vim:sw=4 ts=4 et:
