@@ -24,6 +24,7 @@ except ImportError:
     pass
 
 
+PMAKER_NAME = "pmaker"
 PMAKER_TITLE = "packagemaker"
 PMAKER_AUTHOR = "Satoru SATOH"
 PMAKER_EMAIL = "satoru.satoh@gmail.com"
@@ -36,6 +37,7 @@ PMAKER_VERSION = "0.3.1" + "." + datetime.datetime.now().strftime("%Y%m%d")
 FILEINFOS = dict()
 PACKAGE_MAKERS = dict()
 COLLECTORS = dict()
+BACKENDS = dict()
 
 TEMPLATE_SEARCH_PATHS = ["/usr/share/pmaker/templates", ]
 
