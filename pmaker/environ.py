@@ -15,7 +15,8 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 from pmaker.globals import PKG_FORMAT_TGZ, PKG_FORMAT_RPM, PKG_FORMAT_RPM, \
-    COMPRESSORS, UPTO, CHEETAH_ENABLED, STEP_PRECONFIGURE, STEP_SETUP
+    COMPRESSORS, UPTO, CHEETAH_ENABLED, STEP_PRECONFIGURE, STEP_SETUP, \
+    COLLECTORS
 from pmaker.utils import memoize, singleton
 from pmaker.models.Bunch import Bunch
 
@@ -113,6 +114,18 @@ def get_package_format():
 
 
 @memoize
+def get_package_formats():
+    (dist, _v, _a) = get_distribution()
+
+    if dist in (DIST_RHEL, DIST_FEDORA):
+        return (PKG_FORMAT_TGZ, PKG_FORMAT_RPM)
+    elif dist in (DIST_DEBIAN):
+        return (PKG_FORMAT_TGZ, PKG_FORMAT_DEB, PKG_FORMAT_RPM)
+    else:
+        return (PKG_FORMAT_TGZ, )
+
+
+@memoize
 def is_git_available():
     return os.system("git --version > /dev/null 2> /dev/null") == 0
 
@@ -207,6 +220,7 @@ class Env(Bunch):
         self.hostname = hostname()
         self.arch = get_arch()
         self.format = get_package_format()
+        self.formats = get_package_formats()
         self.is_git_available = is_git_available()
         self.username = get_username()
         self.email = get_email()
@@ -235,6 +249,7 @@ class Env(Bunch):
         # other complex defaults:
         self.driver = "autotools." + self.format
         self.itype = "filelist"
+        self.frontends = COLLECTORS
         self.relations = ""
         self.workdir = os.path.join(os.getcwd(), "workdir")
 
