@@ -115,4 +115,5 @@ def main(argv=sys.argv, collector=COLLECTORS):
 if __name__ == '__main__':
     main()
 
-# vim: set sw=4 ts=4 expandtab:
+
+# vim:sw=4 ts=4 et:
