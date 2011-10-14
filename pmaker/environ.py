@@ -16,7 +16,7 @@
 #
 from pmaker.globals import PKG_FORMAT_TGZ, PKG_FORMAT_RPM, PKG_FORMAT_RPM, \
     COMPRESSORS, UPTO, CHEETAH_ENABLED, STEP_PRECONFIGURE, STEP_SETUP, \
-    COLLECTORS
+    COLLECTORS, TEMPLATE_SEARCH_PATHS
 from pmaker.utils import memoize, singleton
 from pmaker.models.Bunch import Bunch
 
@@ -245,6 +245,7 @@ class Env(Bunch):
         self.upto = UPTO
         self.cheetah_enabled = CHEETAH_ENABLED
         self.compressor = COMPRESSORS[1]
+        self.template_paths = TEMPLATE_SEARCH_PATHS
 
         # other complex defaults:
         self.driver = "autotools." + self.format

@@ -110,7 +110,7 @@ class Defaults(Bunch):
 
         self.destdir = ""
 
-        self.template_paths = tmpl_paths
+        self.template_paths = env.template_paths
 
         self.name = ""
         self.pversion = "0.0.1"
