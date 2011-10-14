@@ -23,6 +23,7 @@ import glob
 import optparse
 import os
 import os.path
+import pprint
 import sys
 import tempfile
 import unittest
@@ -51,7 +52,7 @@ class Test__list_paths(unittest.TestCase):
         self.assertEquals(["/a/b/c"], PA.list_paths("testapp", ["/a/b/c"]))
 
 
-class TestIniParser(unittest.TestCase):
+class TestIniConfigParser(unittest.TestCase):
 
     def setUp(self):
         self.workdir = setup_workdir()
@@ -78,7 +79,7 @@ b: yyy
         cleanup_workdir(self.workdir)
 
     def test__load(self):
-        parser = PA.IniParser("testapp")
+        parser = PA.IniConfigParser("testapp")
         config = parser.load(self.paths[0])
 
         for k, v in config.defaults.iteritems():
@@ -86,6 +87,97 @@ b: yyy
 
         for k, v in config.profile0.iteritems():
             self.assertEquals(self.config.profile0[k], v)
+
+
+if PA.json is not None: 
+
+    class TestJsonConfigParser(unittest.TestCase):
+
+        def setUp(self):
+            self.workdir = setup_workdir()
+
+            conf = """\
+{
+    "defaults": {
+        "a": "aaa",
+        "b": "bbb"
+    },
+    "profile0": {
+        "a": "xxx",
+        "b": "yyy"
+    },
+    "array0": [1, 2, 3]
+}
+"""
+            path = os.path.join(self.workdir, "config.json")
+            open(path, "w").write(conf)
+
+            self.paths = [path]
+            self.config = Bunch(
+                defaults=Bunch(a="aaa", b="bbb"),
+                profile0=Bunch(a="xxx", b="yyy"),
+                array0=[1, 2, 3],
+            )
+
+        def tearDown(self):
+            cleanup_workdir(self.workdir)
+
+        def test__load(self):
+            parser = PA.JsonConfigPaser("testapp")
+            config = parser.load(self.paths[0])
+
+            #pprint.pprint(config)
+            for k, v in config.defaults.iteritems():
+                self.assertEquals(self.config.defaults[k], v)
+
+            for k, v in config.profile0.iteritems():
+                self.assertEquals(self.config.profile0[k], v)
+
+            self.assertEquals(self.config.array0, config.array0)
+
+
+if PA.yaml is not None: 
+
+    class TestYamlConfigParser(unittest.TestCase):
+
+        def setUp(self):
+            self.workdir = setup_workdir()
+
+            conf = """\
+defaults:
+    a: aaa
+    b: bbb
+
+profile0:
+    a: xxx
+    b: yyy
+
+array0: [1, 2, 3]
+"""
+            path = os.path.join(self.workdir, "config.yml")
+            open(path, "w").write(conf)
+
+            self.paths = [path]
+            self.config = Bunch(
+                defaults=Bunch(a="aaa", b="bbb"),
+                profile0=Bunch(a="xxx", b="yyy"),
+                array0=[1, 2, 3],
+            )
+
+        def tearDown(self):
+            cleanup_workdir(self.workdir)
+
+        def test__load(self):
+            parser = PA.YamlConfigPaser("testapp")
+            config = parser.load(self.paths[0])
+
+            for k, v in config.defaults.iteritems():
+                self.assertEquals(self.config.defaults[k], v)
+
+            for k, v in config.profile0.iteritems():
+                self.assertEquals(self.config.profile0[k], v)
+
+            self.assertEquals(self.config.array0, config.array0)
 
 
 # vim:sw=4 ts=4 et:
