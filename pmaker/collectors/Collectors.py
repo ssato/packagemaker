@@ -191,7 +191,6 @@ class FilelistCollector(Collector):
         return [fi for fi in self._collect(self.listfile) if fi]
 
 
-
 class JsonFilelistCollector(FilelistCollector):
     """
     Collector for files list in JSON format such as:
@@ -240,6 +239,13 @@ def init(collectors_map=COLLECTORS):
     for cls in (FilelistCollector, JsonFilelistCollector):
         if cls.enabled():
             collectors_map[cls.type()] = cls
+
+
+def map():
+    return dict(
+        (c.type(), c) for c in (FilelistCollector, JsonFilelistCollector) \
+            if c.enabled()
+    )
 
 
 # vim:sw=4 ts=4 et:
