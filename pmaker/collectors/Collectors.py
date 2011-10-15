@@ -14,7 +14,6 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
-from pmaker.environ import Env
 from pmaker.globals import *
 from pmaker.utils import *
 from pmaker.collectors.Filters import *
@@ -23,6 +22,8 @@ from pmaker.collectors.RpmModifiers import *
 from pmaker.models.FileInfo import *
 from pmaker.models.FileInfoFactory import FileInfoFactory
 from pmaker.models.RpmFileInfoFactory import RpmFileInfoFactory
+
+import pmaker.environ as E
 
 import glob
 import logging
@@ -213,7 +214,8 @@ class JsonFilelistCollector(FilelistCollector):
         ]
     }
     """
-    _enabled = Env().json is not None
+
+    _enabled = E.json is not None
     _type = "filelist.json"
 
     def _parse(self, params):
@@ -246,6 +248,10 @@ def map():
         (c.type(), c) for c in (FilelistCollector, JsonFilelistCollector) \
             if c.enabled()
     )
+
+
+def default():
+    return FilelistCollector.type()
 
 
 # vim:sw=4 ts=4 et:
