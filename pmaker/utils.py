@@ -370,7 +370,7 @@ def find_template(template, search_paths=TEMPLATE_SEARCH_PATHS):
     return tmpl
 
 
-def compile_template(template, params, is_file=False):
+def compile_template(template, params, is_file=True):
     if is_file:
         tmpl = Template(file=template, searchList=params)
     else:

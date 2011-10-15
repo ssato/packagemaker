@@ -328,7 +328,7 @@ class Test_compile_template(unittest.TestCase):
         tmpl_s = "a=$a b=$b"
         params = {"a": 1, "b": "b"}
 
-        self.assertEquals("a=1 b=b", compile_template(tmpl_s, params))
+        self.assertEquals("a=1 b=b", compile_template(tmpl_s, params, False))
 
     def test_compile_template__file(self):
         tmpl = os.path.join(self.workdir, "test.tmpl")
@@ -336,7 +336,7 @@ class Test_compile_template(unittest.TestCase):
 
         params = {"a": 1, "b": "b"}
 
-        self.assertEquals("a=1 b=b", compile_template(tmpl, params, is_file=True))
+        self.assertEquals("a=1 b=b", compile_template(tmpl, params))
 
 
 
