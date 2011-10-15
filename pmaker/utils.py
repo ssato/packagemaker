@@ -86,11 +86,19 @@ except NameError:
         return False
 
 
-def dicts_comp(lhs, rhs, keys=False):
+def dicts_comp(lhs, rhs, keys=None, strict=False):
     """Compare dicts. $rhs may have keys (and values) $lhs does not have.
+
+    :param lhs:  target dict
+    :param rhs:  a dict to compare with
+    :param keys: keys to compare
+    :param strict: Compare if lhs and rhs have same keys and values exactly
+                   when True.
 
     >>> dicts_comp({},{})
     True
+    >>> dicts_comp({}, {"a":1})
+    False
     >>> dicts_comp({"a":1},{})
     False
     >>> d0 = {"a": 0, "b": 1, "c": 2}
@@ -102,6 +110,8 @@ def dicts_comp(lhs, rhs, keys=False):
     True
     >>> dicts_comp(d0, d1, ("d"))
     False
+    >>> dicts_comp(d0, d1, strict=True)
+    False
     >>> d2 = copy.copy(d0)
     >>> d2["c"] = 3
     >>> dicts_comp(d0, d2)
@@ -109,15 +119,16 @@ def dicts_comp(lhs, rhs, keys=False):
     >>> dicts_comp(d0, d2, ("a", "b"))
     True
     """
-    if lhs == {}:
-        return True
-    elif rhs == {}:
-        return False
+    if lhs and rhs:
+        if not keys:
+            if strict:
+                keys = set(lhs.keys() + rhs.keys())
+            else:
+                keys = lhs.keys()
+
+        return all(lhs.get(k) == rhs.get(k) for k in keys)
     else:
-        return all(
-            (lhs.get(key) == rhs.get(key)) for key in keys and \
-                keys or lhs.keys()
-        )
+        return lhs == rhs
 
 
 def memoize(fn):
