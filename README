@@ -236,9 +236,11 @@ TODO
 
   * central configuration management:
 
-    * package metadata passed thru JSON/YAML/XML data
+    * package metadata passed thru JSON/YAML/XML data: on going
+    * eliminate globals: on going
 
   * central object registration system
+
   * plugin system: stabilize the API of the plugin system
   * make collector (generator) and packagemaker classes loosely-coupled
   * separate packaging strategy (PackageMaker._scheme) and packaging format
