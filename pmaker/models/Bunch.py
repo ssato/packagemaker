@@ -31,5 +31,18 @@ class Bunch(dict):
     __setattr__ = dict.__setitem__
     __delattr__ = dict.__delitem__
 
+    def __getstate__(self):
+        return self.copy()
+
+    def __setstate__(self, dic):
+        self.__dict__ = dic
+
+    def __str__(self):
+        """
+        Remove special methods and attributes which starts with "__" from
+        string representation.
+        """
+        return str(dict((k, v) for k, v in self.iteritems() if not k.startswith("__")))
+
 
 # vim:sw=4 ts=4 et:

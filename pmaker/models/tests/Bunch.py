@@ -14,8 +14,11 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
-from pmaker.models.Bunch import *  # Bunch class
+from pmaker.models.Bunch import Bunch
+from pmaker.tests.common import setup_workdir, cleanup_workdir
 
+import cPickle as pickle
+import os.path
 import unittest
 
 
@@ -24,15 +27,18 @@ class TestBunch(unittest.TestCase):
     def test_create_set_and_get(self):
         name = "Bunch"
         category = "pattern"
+        tags = ["a", "b", "c"]
         newkey = "newkey"
 
-        bunch = Bunch(name=name, category=category)
+        bunch = Bunch(name=name, category=category, tags=tags)
 
         self.assertEquals(bunch.name, name)
         self.assertEquals(bunch.category, category)
+        self.assertEquals(bunch.tags, tags)
 
         self.assertEquals(bunch["name"], name)
         self.assertEquals(bunch["category"], category)
+        self.assertEquals(bunch["tags"], tags)
 
         self.assertFalse(newkey in bunch)
 
@@ -41,6 +47,34 @@ class TestBunch(unittest.TestCase):
 
         # TODO: The order of keys may be lost currently.
         #self.assertEquals(bunch.keys(), ("name", "category", "newkey"))
+
+
+class TestBunch_pickle(unittest.TestCase):
+
+    def setUp(self):
+        self.workdir = setup_workdir()
+
+    def tearDown(self):
+        cleanup_workdir(self.workdir)
+
+    def test_pickle(self):
+        name = "Bunch"
+        tags = ["a", "b", "c"]
+
+        bunch = Bunch(name=name, tags=tags)
+
+        bf = os.path.join(self.workdir, "test.pkl")
+        pickle.dump(bunch, open(bf, "wb"))
+
+        bunch2 = pickle.load(open(bf, "rb"))
+
+        self.assertEquals(bunch2.name, bunch.name)
+        self.assertEquals(bunch2.tags, bunch.tags)
+
+        self.assertEquals(bunch2["name"], bunch["name"])
+        self.assertEquals(bunch2["tags"], bunch["tags"])
+
+        self.assertEquals(str(bunch2), str(bunch))
 
 
 # vim:sw=4 ts=4 et:
