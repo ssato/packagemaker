@@ -23,8 +23,6 @@ from pmaker.models.FileInfo import *
 from pmaker.models.FileInfoFactory import FileInfoFactory
 from pmaker.models.RpmFileInfoFactory import RpmFileInfoFactory
 
-import pmaker.environ as E
-
 import glob
 import logging
 import os
@@ -214,8 +212,9 @@ class JsonFilelistCollector(FilelistCollector):
         ]
     }
     """
+    global JSON_ENABLED  # defined in pmaker.globals
 
-    _enabled = E.json is not None
+    _enabled = JSON_ENABLED
     _type = "filelist.json"
 
     def _parse(self, params):
