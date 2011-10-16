@@ -107,7 +107,7 @@ BUILD_STEPS = (
         "build binary package[s]"),
 )
 
-STEPS = [
+PACKAGING_STEPS = [
     Bunch(
         name=STEP_SETUP,
         message="Setting up src tree in %(workdir)s: %(name)s",
