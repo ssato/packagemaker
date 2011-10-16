@@ -30,7 +30,6 @@ import tempfile
 import unittest
 
 
-
 class TestMemoize(unittest.TestCase):
 
     def test_memoize(self):
@@ -41,7 +40,6 @@ class TestMemoize(unittest.TestCase):
         x = 1
 
         self.assertEquals(f(0), f(1))
-
 
 
 class Test_singleton(unittest.TestCase):
@@ -56,7 +54,6 @@ class Test_singleton(unittest.TestCase):
         a1 = A()
 
         self.assertTrue(a0 == a1)
-
 
 
 class TestMemoized(unittest.TestCase):
@@ -99,7 +96,6 @@ class TestChecksum(unittest.TestCase):
         self.assertEquals(checksum(self.f), csum_ref)
 
 
-
 class Test_st_mode_to_mode(unittest.TestCase):
 
     def test_st_mode_to_mode(self):
@@ -114,7 +110,6 @@ class Test_st_mode_to_mode(unittest.TestCase):
         if os.path.exists(gshadow):
             mode = os.lstat(gshadow).st_mode
             self.assertEquals("0000", st_mode_to_mode(mode))
-
 
 
 class TestIsFoldable(unittest.TestCase):
@@ -132,7 +127,6 @@ class TestIsFoldable(unittest.TestCase):
         self.assertFalse(is_foldable(1))
 
 
-
 class TestFlatten(unittest.TestCase):
 
     def test_flatten_empty(self):
@@ -145,7 +139,6 @@ class TestFlatten(unittest.TestCase):
 
     def test_flatten_generator_expression(self):
         self.assertListEqual(flatten((i, i * 2) for i in range(5)), [0, 0, 1, 2, 2, 4, 3, 6, 4, 8])
-
 
 
 class TestConcat(unittest.TestCase):
@@ -173,7 +166,6 @@ class TestUnique(unittest.TestCase):
 
     def test_unique_str_list(self):
         self.assertListEqual(unique(c for c in "dagcbfefagb"), ["a", "b", "c", "d", "e", "f", "g"])
-
 
 
 NULL_DICT = dict()
@@ -209,12 +201,10 @@ class Test_dicts_comp(unittest.TestCase):
         self.assertTrue(dicts_comp(d0, d1, ("a", "b")))
 
 
-
 class Test_listplus(unittest.TestCase):
 
     def test_listplus(self):
         self.assertTrue(isinstance(listplus([0], (i for i in range(10))), list))
-
 
 
 class Test_true(unittest.TestCase):
@@ -223,12 +213,10 @@ class Test_true(unittest.TestCase):
         self.assertTrue(true(False))
 
 
-
 class Test_do_nothing(unittest.TestCase):
 
     def test_do_nothing(self):
         do_nothing()
-
 
 
 class Test_on_debug_mode(unittest.TestCase):
@@ -240,7 +228,6 @@ class Test_on_debug_mode(unittest.TestCase):
     def test_on_debug_mode__info(self):
         logging.getLogger().setLevel(logging.INFO)
         self.assertFalse(on_debug_mode())
-
 
 
 class Test_rm_rf_and_createdir(unittest.TestCase):
@@ -286,7 +273,6 @@ class Test_rm_rf_and_createdir(unittest.TestCase):
         self.assertFalse(os.path.exists(topdir))
 
 
-
 class Test_find_template(unittest.TestCase):
 
     def setUp(self):
@@ -315,7 +301,6 @@ class Test_find_template(unittest.TestCase):
         self.assertTrue(tmpl is not None)
 
 
-
 class Test_compile_template(unittest.TestCase):
 
     def setUp(self):
@@ -337,7 +322,6 @@ class Test_compile_template(unittest.TestCase):
         params = {"a": 1, "b": "b"}
 
         self.assertEquals("a=1 b=b", compile_template(tmpl, params))
-
 
 
 class Test_sort_out_paths_by_dir(unittest.TestCase):
@@ -365,13 +349,11 @@ class Test_sort_out_paths_by_dir(unittest.TestCase):
             self.assertTrue(dicts_comp(d, expected_result[i]))
 
 
-
 class Test_cache_needs_updates_p(unittest.TestCase):
 
     def test_cache_needs_updates_p(self):
         """TODO: Implement this.
         """
-
 
 class Test_parse_conf_value(unittest.TestCase):
 
@@ -385,4 +367,4 @@ class Test_parse_conf_value(unittest.TestCase):
         self.assertEquals("%config", parse_conf_value("'%config'"))
 
 
-# vim: set sw=4 ts=4 et:
+# vim:sw=4 ts=4 et:

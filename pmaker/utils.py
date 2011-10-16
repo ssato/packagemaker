@@ -48,9 +48,7 @@ except ImportError:
         return newfunc
 
 
-if CHEETAH_ENABLED:
-    from Cheetah.Template import Template
-else:
+if not CHEETAH_ENABLED:
     def Template(*args, **kwargs):
         raise RuntimeError(
             "python-cheetah is missing and cannot proceed any more."
