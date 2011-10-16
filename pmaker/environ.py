@@ -20,9 +20,6 @@ from pmaker.globals import PKG_FORMAT_TGZ, PKG_FORMAT_RPM, PKG_FORMAT_RPM, \
 from pmaker.utils import memoize, singleton
 from pmaker.models.Bunch import Bunch
 
-import pmaker.collectors.Collectors as C
-import pmaker.backend.registry as BR
-
 import glob
 import logging
 import os
@@ -239,8 +236,9 @@ class Env(Bunch):
             json, yaml
 
         # from globals
-        self.upto = UPTO
         self.steps = PACKAGING_STEPS
+        self.upto = self.stepto = UPTO
+
         self.cheetah_enabled = CHEETAH_ENABLED
         self.template_paths = TEMPLATE_SEARCH_PATHS
 
@@ -267,13 +265,6 @@ class Env(Bunch):
             self.compressor.am_option,
         )
         self.compressors = COMPRESSING_TOOLS
-
-        # other complex defaults:
-        self.drivers = BR.map()  # {backend_type: backend_class}
-        self.driver = BR.default()  # e.g. "autotools.single.rpm"
-
-        self.input_types = C.map()  # {collector_type: collector_class}
-        self.input_type = C.default()  # e.g. "filelist"
 
         self.workdir = os.path.join(os.getcwd(), "workdir")
 
