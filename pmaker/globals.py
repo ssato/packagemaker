@@ -14,6 +14,8 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
+from pmaker.models.Bunch import Bunch
+
 import datetime
 import logging
 import os.path
@@ -48,6 +50,23 @@ COMPRESSORS = (
     ("gzip",  "gz",  ""),
 )
 
+COMPRESSING_TOOLS = [
+    Bunch(
+        command="xz",
+        extension="xz",
+        am_option="no-dist-gzip dist-xz"
+    ),
+    Bunch(
+        command="bzip2",
+        extension="bz2",
+        am_option="no-dist-gzip dist-bzip2"
+    ),
+    Bunch(
+        command="gzip",
+        extension="gz",
+        am_option=""
+    ),
+]
 
 CONFLICTS_STATEDIR = "/var/lib/%(name)s-overrides"
 CONFLICTS_SAVEDIR = os.path.join(CONFLICTS_STATEDIR, "saved")
@@ -95,10 +114,41 @@ BUILD_STEPS = (
         "build binary package[s]"),
 )
 
+STEPS = [
+    Bunch(
+        name=STEP_SETUP,
+        message="Setting up src tree in %(workdir)s: %(name)s",
+        help="Setup a src dir to save objects and make package",
+    ),
+    Bunch(
+        name=STEP_PRECONFIGURE,
+        message="Preparing aux files in %(workdir)s: %(name)s",
+        help="""\
+Preparing build aux files such like configure.ac, rpm spec, etc.
+Template engine (python-cheetah) is required for this step.""",
+    ),
+    Bunch(
+        name=STEP_CONFIGURE,
+        message="Configuring build aux files: %(name)s",
+        help="""\
+Configure build aux files such as configure and Makefile.
+Tools like autoconf may be needed depends on drivers""",
+    ),
+    Bunch(
+        name=STEP_SBUILD,
+        message="Building source package: %(name)s",
+        help="Build source package[s]",
+    ),
+    Bunch(
+        name=STEP_BUILD,
+        message="Building binary package[s]: %(name)s",
+        help="Build binary package[s]",
+    ),
+]
+
 
 CHEETAH_ENABLED = False
 JSON_ENABLED = False
-PYXATTR_ENABLED = False
 
 
 try:
@@ -129,17 +179,8 @@ except ImportError:
         )
 
 
-try:
-    import xattr  # pyxattr
-    PYXATTR_ENABLED = True
-
-except ImportError:
-    logging.warn(
-        "pyxattr module is not found. Its support will be disabled."
-    )
-
-
 PKG_FORMATS = (PKG_FORMAT_TGZ, PKG_FORMAT_RPM, PKG_FORMAT_DEB) = \
     ("tgz", "rpm", "deb")
 
-# vim:sw=4 ts=4 expandtab:
+
+# vim:sw=4 ts=4 et:
