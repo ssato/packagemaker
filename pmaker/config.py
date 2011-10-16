@@ -130,15 +130,15 @@ def itype_defaults(itypes=COLLECTORS):
     return dict(choices=choices, help=help, default=default)
 
 
-def compressor_defaults(compressors=COMPRESSORS):
+def compressor_defaults(ctools=COMPRESSING_TOOLS):
     """
-    @param  compressors  list of (cmd, extension, am_option) of compressor.
+    :param ctools: Compressing tool objects :: [Bunch] (see pmaker.globals)
     """
-    compressor = get_compressor(compressors)  # cmd, extension, am_option,
+    ct = get_compressor(ctools)
 
-    choices = [ext for _c, ext, _a in compressors]
-    help = "Tool to compress archive when building src distribution [%default]"
-    default = compressor[1]  # extension
+    choices = [ct.extension for ct in ctools]
+    help = "Tool to compress the distribution source archive [%default]"
+    default = ct.extension
 
     return dict(choices=choices, help=help, default=default)
 
