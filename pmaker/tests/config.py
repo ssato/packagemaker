@@ -25,7 +25,6 @@ import tempfile
 import unittest
 
 
-
 class TestConfig(unittest.TestCase):
 
     _multiprocess_can_split_ = True
@@ -76,7 +75,6 @@ b: yyy
         config.as_dict()
 
 
-
 class Test_parse_list_str(unittest.TestCase):
 
     def test_no_arg(self):
@@ -89,21 +87,27 @@ class Test_parse_list_str(unittest.TestCase):
         self.assertEquals(parse_list_str("a,b,c,"), ["a", "b", "c"])
 
 
-
 class Test_parse_relations(unittest.TestCase):
 
     def test_relations_str(self):
         self.assertEquals(
-            parse_relations("requires:bash,zsh;obsoletes:sysdata;conflicts:sysdata-old"),
-            [('requires', ['bash', 'zsh']), ('obsoletes', ['sysdata']), ('conflicts', ['sysdata-old'])]
+            parse_relations(
+                "requires:bash,zsh;obsoletes:sysdata;conflicts:sysdata-old"
+            ),
+            [
+                ('requires', ['bash', 'zsh']),
+                ('obsoletes', ['sysdata']),
+                ('conflicts', ['sysdata-old'])
+            ]
         )
 
     def test_relations_str__invalid_args(self):
         self.assertEquals(
-            parse_relations("requires:,zsh;;obsoletes:;conflicts:sysdata-old,"),
+            parse_relations(
+                "requires:,zsh;;obsoletes:;conflicts:sysdata-old,"
+            ),
             [('requires', ['zsh']), ('conflicts', ['sysdata-old'])]
         )
-
 
 
 class Test_x_defaults(unittest.TestCase):
@@ -129,7 +133,6 @@ class Test_x_defaults(unittest.TestCase):
         self.assertTrue(bool(defaults["choices"]))
 
 
-
 class Test_relations_option_parser(unittest.TestCase):
 
     def setUp(self):
@@ -151,11 +154,13 @@ class Test_relations_option_parser(unittest.TestCase):
         self.assertEquals(options.relations, self.defaults["default"])
 
     def test_set(self):
-        (options, _) = self.parse_args("--relations requires:bash,zsh;obsoletes:sysdata;conflicts:sysdata-old")
+        (options, _) = self.parse_args(
+            "--relations requires:bash,zsh;obsoletes:sysdata;conflicts:foo"
+        )
         expected = [
             ('requires', ['bash', 'zsh']),
             ('obsoletes', ['sysdata']),
-            ('conflicts', ['sysdata-old']),
+            ('conflicts', ['foo']),
         ]
 
         d = dict(options.relations)
@@ -164,7 +169,6 @@ class Test_relations_option_parser(unittest.TestCase):
         self.assertEquals(d["requires"], d_ref["requires"])
         self.assertEquals(d["obsoletes"], d_ref["obsoletes"])
         self.assertEquals(d["conflicts"], d_ref["conflicts"])
-
 
 
 class Test_parse_args(unittest.TestCase):
@@ -176,4 +180,4 @@ class Test_parse_args(unittest.TestCase):
         self.assertTrue(isinstance(options, optparse.Values))
 
 
-# vim: set sw=4 ts=4 expandtab:
+# vim:sw=4 ts=4 et:
