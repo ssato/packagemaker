@@ -16,30 +16,19 @@
 #
 from pmaker.models.Bunch import Bunch
 from pmaker.anycfg import AnyConfigParser
-from pmaker.environ import Env
-from pmaker.globals import PMAKER_NAME, PMAKER_VERSION, \
-    BUILD_STEPS, COLLECTORS
-from pmaker.utils import singleton, unique
+from pmaker.globals import PMAKER_NAME, PMAKER_VERSION
+from pmaker.utils import singleton
 from pmaker.parser import parse
 
-from pmaker.collectors.Collectors import FilelistCollector, \
-    init as init_collectors
-from pmaker.makers.PackageMaker import init as init_packagemaker
-from pmaker.makers.RpmPackageMaker import init as init_rpmpackagemaker
-from pmaker.makers.DebPackageMaker import init as init_debpackagemaker
+import pmaker.collectors.Collectors as Collectors
+import pmaker.backend.registry as Backends
+import pmaker.environ as E
 
 import logging
 import optparse
 import os
 import os.path
 import sys
-
-
-# Initialize some global hash tables: COLLECTORS, PACKAGE_MAKERS
-init_collectors()
-init_packagemaker()
-init_rpmpackagemaker()
-init_debpackagemaker()
 
 
 HELP_HEADER = """%prog [OPTION ...] INPUT
@@ -74,11 +63,10 @@ Examples:
   %prog -n foo --relations "requires:httpd,/bin/tar;obsoletes:bar" files.list
 """
 
-HELP_VERSION = "%prog " + PMAKER_VERSION
-
+VERSION_STRING = "%prog " + PMAKER_VERSION
 
 DESTDIR_OPTION_HELP = """\
-Destdir (prefix) to strip from installation path [%default]. 
+Destdir (prefix) to strip from installation path.
 
 For example, if the path is \"/builddir/dest/etc/foo/a.dat\"
 and \"/builddir/dest\" to be stripped from the path when
@@ -86,49 +74,6 @@ packaging \"a.dat\", and it needs to be installed as
 \"/etc/foo/a.dat\" with that package, you can accomplish
 this by this option: \"--destdir=/builddir/destdir\".
 """
-
-
-class Defaults(Bunch):
-
-    def __init__(self, env=Env()):
-        self.workdir = env.workdir
-        self.upto = env.upto
-        self.format = env.format
-        self.compressor = env.compressor.triple
-        self.ignore_owner = False
-        self.force = False
-
-        self.backend = env.driver
-        self.driver = env.driver
-        self.frontend = env.itype
-        self.itype = env.itype
-
-        self.config = None
-
-        self.verbosity = 0
-        self.trace = False
-
-        self.destdir = ""
-
-        self.template_paths = env.template_paths
-
-        self.name = ""
-        self.pversion = "0.0.1"
-        self.release = "1"
-        self.group = "System Environment/Base"
-        self.license = "GPLv2+"
-        self.url = "http://localhost.localdomain"
-        self.summary = ""
-        self.arch = False
-        self.relations = env.relations
-        self.packager = env.fullname
-        self.email = env.email
-        self.changelog = ""
-
-        self.dist = "%s-%s-%s" % env.dist
-
-        self.no_rpmdb = False
-        self.no_mock = False
 
 
 def setup_relations_option():
@@ -155,123 +100,186 @@ def set_workdir(workdir, name, pversion):
 
 
 @singleton
-class Config(Bunch):
+class Options(Bunch):
 
-    def __init__(self, app, defaults=None, **kwargs):
-        self.oparser = optparse.OptionParser(HELP_HEADER,
-                                             version=HELP_VERSION,
-                                             )
+    def __init__(self, defaults=None, env=None, **kwargs):
+        """
+        :param defaults: Defalut values :: Bunch
+        :param env: Env instance :: Env
+        """
+        self.env = env is None and E.Env() or env
+
         if defaults is None:
-            defaults = Defaults()
+            defaults = self._defaults(self.env)
 
+        self.oparser = optparse.OptionParser(HELP_HEADER,
+                                             version=VERSION_STRING,
+                                             )
         self.oparser.set_defaults(**defaults)
 
-        self.env = Env()
+        self.__setup_common_options()
+        self.__setup_build_options()
+        self.__setup_metadata_options()
+        self.__setup_rpm_options()
 
-        self.add_global_options()
-        self.add_build_options()
-        self.add_metadata_options()
-        self.add_rpm_options()
-
-    def add_option(self, *args, **kwargs):
-        self.oparser.add_option(*args, **kwargs)
-
-    def add_global_options(self):
+    def __defaults(self, env):
         """
-        Setup global (common/basic) options.
         """
-        self.add_option("-C", "--config", help="Configuration file path")
-        self.add_option("", "--force", action="store_true",
+        defaults = Bunch()
+
+        defaults.config = None
+        defaults.force = False
+        defaults.verbosity = 0  # verbose and debug option.
+
+        # build options:
+        defaults.workdir = env.workdir
+        defaults.stepto = env.upto
+        defaults.input_type = Collectors.default()  # e.g. "filelist.json"
+        defaults.driver = Backends.default()  # e.g. "autotools.single.rpm"
+        defaults.destdir = ""
+        defaults.template_paths = env.template_paths
+
+        # package metadata options:
+        defaults.name = None
+        defaults.group = "System Environment/Base"
+        defaults.license = "GPLv3+"
+        defaults.url = "http://localhost.localdomain"
+        defaults.summary = None
+        defaults.compressor = env.compressor.extension  # extension
+        defaults.arch = False
+        defaults.relations = ""
+        defaults.packager = env.fullname
+        defaults.email = env.email
+        defaults.pversion = "0.0.1"
+        defaults.release = "1"
+        defaults.ignore_owner = False
+        defaults.changelog = None
+
+        # rpm options:
+        defaults.dist = env.dist.label
+        defaults.no_rpmdb = False
+        defaults.no_mock = False
+
+        return defaults
+
+    def __setup_common_options(self):
+        """
+        Setup common options.
+        """
+        add_option = self.oparser.add_option
+
+        add_option("-C", "--config", help="Configuration file path")
+        add_option("", "--force", action="store_true",
             help="Force going steps even if the steps looks done")
-        self.add_option("-v", "--verbose", action="count", dest="verbosity",
+        add_option("-v", "--verbose", action="count", dest="verbosity",
             help="Verbose mode")
-        self.add_option("", "--debug", action="store_const", dest="verbosity",
+        add_option("", "--debug", action="store_const", dest="verbosity",
             const=2, help="Debug mode (same as -vv)")
-        self.add_option("", "--trace", action="store_true", help="Trace mode")
+        add_option("", "--trace", action="store_true", help="Trace mode")
 
-    def add_build_options(self):
-        """
-        Setup build options.
-        """
-        global BUILD_STEPS, DESTDIR_OPTION_HELP
+    def __setup_build_options(self):
+        global PACKAGING_STEPS, DESTDIR_OPTION_HELP
 
         bog = optparse.OptionGroup(self.oparser, "Build options")
-        bog.add_option("-w", "--workdir",
-            help="Working dir to dump outputs [%default]")
+        add_option = bog.add_option
 
-        choices = [n for n, _l, _h in BUILD_STEPS]
-        help = "Packaging step to proceed to: %s [%%default]" % choices
-        bog.add_option("", "--upto", choices=choices, help=help)
+        add_option("-w", "--workdir",
+            help="Specify working dir to output results [%default]"
+        )
 
-        choices = self.env.formats
-        help = "Package format: %s [%%default]" % ", ".join(choices)
-        bog.add_option("", "--format", choices=choices, help=help)
+        choices = [step.name for step in self.env.steps]
+        help = "Target step you want to go to: %s [%%default]" % choices
+        add_option("", "--stepto", choices=choices, help=help)
+        add_option("", "--upto", dest="stepto", choices=choices,
+            help="Same as --stepto option (kept for backward compatibility)."
+        )
 
-        #choices = self.env.backends
-        choices = ["autotools.single"]
-        help = "Packaging backend: %s [%%default]" % ", ".join(choices)
-        bog.add_option("", "--backend",  choices=choices, help=help)
-
-        choices = self.env.frontends.keys()
+        collectors = Collectors.map()  # {collector_type: collector_class}
+        choices = collectors.keys()
         help = "Input type: %s [%%default]" % ", ".join(choices)
-        bog.add_option("", "--frontend", choices=choices, help=help)
+        add_option("", "--input-type", choices=choices, help=help)
 
-        choices = [e for _c, e, _a in self.env.compressor.triple]
-        help = "Tool to compress src distribution archive: %s [%default]" \
-            % ", ".join(choices)
-        bog.add_option("-z", "--compressor", choices=choices, help=help)
+        ## Deprecated (substituted with --driver/--backend option):
+        #choices = self.env.formats
+        #help = "Package format: %s [%%default]" % ", ".join(choices)
+        #add_option("", "--format", choices=choices, help=help)
 
-        bog.add_option("", "--destdir", help=DESTDIR_OPTION_HELP)
+        drivers = Backends.map()  # {backend_type: backend_class}
+        choices = drivers.keys()
+        help = "Packaging driver: %s [%%default]" % ", ".join(choices)
+        add_option("", "--driver", choices=choices, help=help)
+        add_option("", "--backend", dest="driver", choices=choices,
+            help="Same as --driver option"
+        )
 
-        bog.add_option("-P", "--template-path", action="append",
-            dest="template_paths")
+        add_option("", "--destdir", help=DESTDIR_OPTION_HELP)
+
+        add_option("-P", "--template-path", action="append",
+            dest="template_paths"
+        )
 
         self.oparser.add_option_group(bog)
 
-    def add_metadata_options(self):
-        """
-        Setup package metadata options.
-        """
+    def __setup_metadata_options(self):
         pog = optparse.OptionGroup(self.oparser, "Package metadata options")
+        add_option = pog.add_option
 
-        pog.add_option("-n", "--name", help="Package name [%default]")
-        pog.add_option("", "--group", help="The group of the package [%default]")
-        pog.add_option("", "--license",
-            help="The license of the package [%default]")
-        pog.add_option("", "--url", help="The url of the package [%default]")
-        pog.add_option("", "--summary", help="The summary of the package")
-        pog.add_option("", "--arch", action="store_true",
-            help="Make package arch-dependent [false = noarch]")
-        pog.add_option("", "--relations", **setup_relations_option()),
-        pog.add_option("", "--packager",
-            help="Specify packager's name [%default]")
-        pog.add_option("", "--email",
-            help="Specify packager's mail address [%default]")
-        pog.add_option("", "--pversion",
-            help="Specify the package's version [%default]")
-        pog.add_option("", "--release",
-            help="Specify the package's release [%default]")
-        pog.add_option("", "--ignore-owner", action="store_true",
-            help="Force set owner and group of targets to root")
-        pog.add_option("", "--changelog",
-            help="Specify text file contains changelog")
+        add_option("-n", "--name", help="Package name")  # Must not be None
+        add_option("", "--group", help="The group of the package [%default]")
+        add_option("", "--license",
+            help="The license of the package [%default]"
+        )
+        add_option("", "--url", help="The url of the package [%default]")
+        add_option("", "--summary", help="The summary of the package")
+
+        choices = [ct.extension for ct in self.env.compressors]
+        help = "Tool to compress the src distribution archive: %s [%default]" \
+            % ", ".join(choices)
+        add_option("-z", "--compressor", choices=choices, help=help)
+
+        add_option("", "--arch", action="store_true",
+            help="Make package arch-dependent [false = noarch]"
+        )
+
+        add_option("", "--relations", **setup_relations_option())
+
+        add_option("", "--packager", help="Packager's fullname [%default]")
+        add_option("", "--email", help="Packager's email address [%default]")
+        add_option("", "--pversion", help="Package's version [%default]")
+        add_option("", "--release", help="Package's release [%default]")
+        add_option("", "--ignore-owner", action="store_true",
+            help="Force set owner and group of targets to root"
+        )
+        add_option("", "--changelog",
+            help="Specify text file contains changelog"
+        )
+
         self.oparser.add_option_group(pog)
 
-    def add_rpm_options(self):
-        """
-        Setup package metadata options.
-        """
-        rog = optparse.OptionGroup(self.oparser, "Options for rpm")
-        rog.add_option("", "--dist",
-            help="Target distribution for mock [%default]")
-        rog.add_option("", "--no-rpmdb", action="store_true",
-            help="Do not refer rpm database to get metadata of targets")
+    def __setup_rpm_options(self):
+        rog = optparse.OptionGroup(self.oparser, "Rpm options")
+        add_option = rog.add_option
+
+        add_option("", "--dist",
+            help="Build target distribution for mock [%default]"
+        )
+        add_option("", "--no-rpmdb", action="store_true",
+            help="Do not refer rpm database to get metadata of objects"
+        )
         rog.add_option("", "--no-mock", action="store_true",
-            help="Build RPM with only using rpmbuild (not recommended)")
+            help="Build RPM with only using rpmbuild (not recommended)"
+        )
+
         self.oparser.add_option_group(rog)
 
     def parse_args(self, argv):
         (options, args) = self.oparser.parse_args(argv)
+
+        if options.name is None:
+            options.name = raw_input("Package's name: ")
+
+        if options.summary is None:
+            options.summary = "Custom package " + options.name
 
         return (options, args)
 
