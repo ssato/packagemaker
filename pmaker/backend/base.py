@@ -14,7 +14,7 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
-from pmaker.globals import BUILD_STEPS, STEP_BUILD
+from pmaker.globals import PACKAGING_STEPS, STEP_BUILD
 from pmaker.models.Bunch import Bunch
 
 import pmaker.utils as U
@@ -30,12 +30,10 @@ class Base(object):
     """
     Abstract class for children to implement packaging backends.
     """
-    global BUILD_STEPS
-
     _format = None  # packaging format, e.g. rpm, deb.
     _strategy = None  # packaging strategy, e.g. autotools.single.
 
-    _steps = BUILD_STEPS  # packaging (build) steps to run.
+    _steps = PACKAGING_STEPS  # packaging (build) steps to run.
 
     # Relations between packages :: { relation_key: package_specific_repr }
     _relations = {
@@ -201,11 +199,9 @@ class Base(object):
         """
         Run all of the processes to make a package: setup, configure, ...
         """
-        d = dict(workdir=self.package.workdir, pname=self.package.name)
-
         for step, msgfmt, _helptxt in self._steps:
-            logging.info(msgfmt % d)
-            self.try_the_step(step)
+            logging.info(step.message % self.package)
+            self.try_the_step(step.name)
 
 
 # vim:sw=4 ts=4 et:
