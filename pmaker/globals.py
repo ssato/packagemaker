@@ -43,13 +43,6 @@ BACKENDS = dict()
 
 TEMPLATE_SEARCH_PATHS = ["/usr/share/pmaker/templates", ]
 
-COMPRESSORS = (
-    # cmd, extension, am_option,
-    ("xz",    "xz",  "no-dist-gzip dist-xz"),
-    ("bzip2", "bz2", "no-dist-gzip dist-bzip2"),
-    ("gzip",  "gz",  ""),
-)
-
 COMPRESSING_TOOLS = [
     Bunch(
         command="xz",

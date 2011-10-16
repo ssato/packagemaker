@@ -308,8 +308,7 @@ class Config(object):
 
     @classmethod
     def defaults(cls, bsteps=BUILD_STEPS, upto=UPTO, itypes=COLLECTORS,
-            pmakers=PACKAGE_MAKERS, compressors=COMPRESSORS,
-            tmpl_paths=TEMPLATE_SEARCH_PATHS):
+            pmakers=PACKAGE_MAKERS, tmpl_paths=TEMPLATE_SEARCH_PATHS):
         """
         Load default configurations.
         """

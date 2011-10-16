@@ -16,7 +16,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 from pmaker.globals import CONFLICTS_NEWDIR, CONFLICTS_SAVEDIR, \
-    COMPRESSORS, DATE_FMT_RFC2822, DATE_FMT_SIMPLE
+    COMPRESSING_TOOLS, DATE_FMT_RFC2822, DATE_FMT_SIMPLE
 from pmaker.environ import hostname
 from pmaker.utils import sort_out_paths_by_dir
 
@@ -49,9 +49,9 @@ def date_params():
     return dict(date=date(DATE_FMT_RFC2822), timestamp=date())
 
 
-def compressor_params(extopt, compressors=COMPRESSORS):
-    am_opt = [ao for _c, ext, ao in compressors if ext == extopt][0]
-    return dict(ext=extopt, am_opt=am_opt)
+def compressor_params(extopt, ctools=COMPRESSING_TOOLS):
+    ct = [ct for ct in ctools if ct.extension == extopt][0]
+    return dict(ext=extopt, am_opt=ct.am_option)
 
 
 def load_txt_content(txtpath):
