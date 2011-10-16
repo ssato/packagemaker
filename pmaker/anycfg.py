@@ -14,7 +14,6 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
-from pmaker.environ import Env
 from pmaker.models.Bunch import Bunch
 from pmaker.parser import parse
 
@@ -25,8 +24,6 @@ import os
 import os.path
 import sys
 
-
-"""Uncomment the followings if it's used standalone (w/ pmaker.parser):
 
 try:
     import yaml
@@ -42,11 +39,6 @@ except ImportError:
     except ImportError:
         logging.warn(" JSON module is not available. Disabled its support.")
         json = None
-"""
-
-# ... and comment this:
-json = Env().json
-yaml = Env().yaml
 
 
 def list_paths(basename=None, paths=None):
