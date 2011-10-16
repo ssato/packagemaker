@@ -15,10 +15,13 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 from pmaker.globals import PKG_FORMAT_TGZ, PKG_FORMAT_RPM, PKG_FORMAT_RPM, \
-    COMPRESSORS, UPTO, CHEETAH_ENABLED, STEP_PRECONFIGURE, STEP_SETUP, \
-    COLLECTORS, TEMPLATE_SEARCH_PATHS
+    BUILD_STEPS, STEP_PRECONFIGURE, STEP_SETUP, STEP_BUILD, COLLECTORS, \
+    TEMPLATE_SEARCH_PATHS, COMPRESSING_TOOLS
 from pmaker.utils import memoize, singleton
 from pmaker.models.Bunch import Bunch
+
+import pmaker.collectors.Collectors as C
+import pmaker.backend.registry as BR
 
 import glob
 import logging
@@ -44,6 +47,20 @@ try:
 except ImportError:
     logging.warn(" YAML module is not available. Disabled its support.")
     yaml = None
+
+
+try:
+    from Cheetah.Template import Template
+    UPTO = STEP_BUILD
+    CHEETAH_ENABLED = True
+
+except ImportError:
+    UPTO = STEP_SETUP
+    CHEETAH_ENABLED = False
+
+    logging.warn(
+        " python-cheetah is not found. It will go up to the step: " + UPTO
+    )
 
 
 DIST_NAMES = (DIST_RHEL, DIST_FEDORA, DIST_DEBIAN) = \
@@ -169,40 +186,43 @@ def get_fullname():
 
 
 @memoize
-def get_compressor(compressors=COMPRESSORS):
+def get_compressor(ctools=COMPRESSING_TOOLS):
     global UPTO, CHEETAH_ENABLED
-
-    found = False
 
     am_dir_pattern = "/usr/share/automake-*"
     am_files_pattern = am_dir_pattern + "/am/*.am"
 
-    if len(glob.glob(am_dir_pattern)) == 0:
-        UPTO = CHEETAH_ENABLED and STEP_PRECONFIGURE or STEP_SETUP
+    if len(glob.glob(am_dir_pattern)) == 0:  # automake is not installed.
+        if CHEETAH_ENABLED:
+            UPTO = STEP_PRECONFIGURE
+        else:
+            UPTO = STEP_SETUP
+
         logging.warn(
             "Automake not found. The process will go up to the step: " + UPTO
         )
 
-        return ("gzip",  "gz",  "")  # fallback to the default.
+        return ctools[-1]  # fallback to the default (gzip).
 
-    for cmd, ext, am_opt in compressors:
-        # bzip2 tries compressing input from stdin even it
-        # is invoked with --version option. So give null input to it.
-        cmd_c = "%s --version > /dev/null 2> /dev/null < /dev/null" % cmd
+    for ct in ctools:
+        # NOTE: bzip2 tries compressing input from stdin even it is invoked
+        # with --version option. So give null input (/dev/null) to it.
+        c_exists = 0 == subprocess.check_call(
+            "%(command)s --version > /dev/null 2> /dev/null < /dev/null" % ct,
+            shell=True,
+        )
 
-        if os.system(cmd_c) == 0:
-            am_support_c = "grep -q -e '^dist-%s:' %s 2> /dev/null" % \
-                (cmd, am_files_pattern)
+        if c_exists:
+            am_support_c = 0 == subprocess.check_call(
+                "grep -q -e '^dist-%s:' %s 2> /dev/null" % \
+                    (ct.command, am_files_pattern),
+                shell=True,
+            )
+            if am_support_c:
+                return ct
 
-            if os.system(am_support_c) == 0:
-                found = True
-                break
-
-    if not found:
-        # gzip must exist at least and not reached here:
-        raise RuntimeError("No compressor found! Aborting...")
-
-    return (cmd, ext, am_opt)
+    # gzip must exist at least and not reached here:
+    raise RuntimeError("No compressor found! Aborting...")
 
 
 @singleton
@@ -215,7 +235,14 @@ class Env(Bunch):
     """
 
     def __init__(self, **kwargs):
-        global UPTO, CHEETAH_ENABLED, COMPRESSORS, json, yaml
+        global UPTO, BUILD_STEPS, CHEETAH_ENABLED, COMPRESSING_TOOLS, \
+            json, yaml
+
+        # from globals
+        self.upto = UPTO
+        self.build_steps = BUILD_STEPS
+        self.cheetah_enabled = CHEETAH_ENABLED
+        self.template_paths = TEMPLATE_SEARCH_PATHS
 
         self.hostname = hostname()
         self.arch = get_arch()
@@ -231,27 +258,23 @@ class Env(Bunch):
         self.dist.name = n
         self.dist.version = v
         self.dist.arch = a
+        self.dist.label = "-".join((n, v, a))
 
-        compressor_cmd, compressor_ext, compressor_am_opt = get_compressor()
-        self.compressor = Bunch()
-        self.compressor.command = compressor_cmd
-        self.compressor.extension = compressor_ext
-        self.compressor.autmake_option = compressor_am_opt
+        self.compressor = get_compressor()
         self.compressor.triple = (
-            compressor_cmd, compressor_ext, compressor_am_opt
+            self.compressor.command,
+            self.compressor.extension,
+            self.compressor.am_option,
         )
-
-        # from globals
-        self.upto = UPTO
-        self.cheetah_enabled = CHEETAH_ENABLED
-        self.compressor = COMPRESSORS[1]
-        self.template_paths = TEMPLATE_SEARCH_PATHS
+        self.compressors = COMPRESSING_TOOLS
 
         # other complex defaults:
-        self.driver = "autotools." + self.format
-        self.itype = "filelist"
-        self.frontends = COLLECTORS
-        self.relations = ""
+        self.drivers = BR.map()  # {backend_type: backend_class}
+        self.driver = BR.default()  # e.g. "autotools.single.rpm"
+
+        self.input_types = C.map()  # {collector_type: collector_class}
+        self.input_type = C.default()  # e.g. "filelist"
+
         self.workdir = os.path.join(os.getcwd(), "workdir")
 
         # modules

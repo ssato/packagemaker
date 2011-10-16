@@ -15,7 +15,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 from pmaker.environ import *
-from pmaker.globals import PKG_FORMATS, COMPRESSORS
+from pmaker.globals import PKG_FORMATS, COMPRESSING_TOOLS
 
 import unittest
 
@@ -49,15 +49,8 @@ class TestFunctions(unittest.TestCase):
         self.assertNotEquals(get_fullname(), "")
 
     def test_get_compressor(self):
-        (cmd, ext, am_opt) = get_compressor()
-
-        cmds = [c for c, _e, _a in COMPRESSORS]
-        exts = [e for _c, e, _a in COMPRESSORS]
-        am_opts = [a for _c, _e, a in COMPRESSORS]
-
-        self.assertTrue(cmd in cmds)
-        self.assertTrue(ext in exts)
-        self.assertTrue(am_opt in am_opts)
+        ct = get_compressor()
+        self.assertTrue(ct in COMPRESSING_TOOLS)
 
 
 class TestEnv(unittest.TestCase):
