@@ -15,7 +15,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 from pmaker.globals import PKG_FORMAT_TGZ, PKG_FORMAT_RPM, PKG_FORMAT_RPM, \
-    BUILD_STEPS, STEP_PRECONFIGURE, STEP_SETUP, STEP_BUILD, COLLECTORS, \
+    PACKAGING_STEPS, STEP_PRECONFIGURE, STEP_SETUP, STEP_BUILD, COLLECTORS, \
     TEMPLATE_SEARCH_PATHS, COMPRESSING_TOOLS
 from pmaker.utils import memoize, singleton
 from pmaker.models.Bunch import Bunch
@@ -235,12 +235,12 @@ class Env(Bunch):
     """
 
     def __init__(self, **kwargs):
-        global UPTO, BUILD_STEPS, CHEETAH_ENABLED, COMPRESSING_TOOLS, \
+        global UPTO, PACKAGING_STEPS, CHEETAH_ENABLED, COMPRESSING_TOOLS, \
             json, yaml
 
         # from globals
         self.upto = UPTO
-        self.build_steps = BUILD_STEPS
+        self.steps = PACKAGING_STEPS
         self.cheetah_enabled = CHEETAH_ENABLED
         self.template_paths = TEMPLATE_SEARCH_PATHS
 
