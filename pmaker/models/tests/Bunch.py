@@ -48,6 +48,18 @@ class TestBunch(unittest.TestCase):
         # TODO: The order of keys may be lost currently.
         #self.assertEquals(bunch.keys(), ("name", "category", "newkey"))
 
+    def test_update(self):
+        a = Bunch(name="a", a=1, b=Bunch(b=[1, 2], c="C"))
+        b = Bunch(a=2, b=Bunch(b=[1, 2, 3], d="D"))
+
+        ref = Bunch(**a.copy())
+        ref.a = 2
+        ref.b = Bunch(b=[1, 2, 3], c="C", d="D")
+
+        a.update(b)
+
+        self.assertEquals(a, ref)
+
 
 class TestBunch_pickle(unittest.TestCase):
 
