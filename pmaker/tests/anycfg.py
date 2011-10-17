@@ -62,6 +62,7 @@ b: bbb
 [profile0]
 a: xxx
 b: yyy
+c: 1,2,3
 """
 
 JSON_CONFIG_CONTENT = """{
@@ -104,7 +105,7 @@ class Test_01_IniConfigParser(unittest.TestCase):
         self.paths = [path]
         self.config = Bunch(
             defaults=Bunch(a="aaa", b="bbb"),
-            profile0=Bunch(a="xxx", b="yyy"),
+            profile0=Bunch(a="xxx", b="yyy", c=[1, 2, 3]),
         )
 
     def tearDown(self):
@@ -179,7 +180,7 @@ class Test_04_AnyConfigParser(unittest.TestCase):
         path = dump_conf(self.workdir, INI_CONFIG_CONTENT)
         config_ref = Bunch(
             defaults=Bunch(a="aaa", b="bbb"),
-            profile0=Bunch(a="xxx", b="yyy"),
+            profile0=Bunch(a="xxx", b="yyy", c=[1, 2, 3]),
         )
         config = parser.load(path)
         self.assertEquals(config, config_ref)
@@ -203,6 +204,35 @@ class Test_04_AnyConfigParser(unittest.TestCase):
             )
             config = parser.load(path)
             self.assertEquals(config, config_ref)
+
+    def test_02_loads(self):
+        parser = PA.AnyConfigParser()
+
+        path = dump_conf(self.workdir, INI_CONFIG_CONTENT)
+        config_ref = Bunch(
+            defaults=Bunch(a="aaa", b="bbb"),
+            profile0=Bunch(a="xxx", b="yyy", c=[1, 2, 3]),
+        )
+        paths = [path]
+
+        if PA.json:
+            content = '{"array0": [1, 2, 3]}'
+            path = dump_conf(self.workdir, content, ".json")
+            config_ref["array0"] = [1, 2, 3]
+            paths.append(path)
+
+        if PA.yaml:
+            content = """\
+profile0:
+    b: zzz
+"""
+            path = dump_conf(self.workdir, content, ".yaml")
+            config_ref.profile0.b = "zzz"
+            paths.append(path)
+
+        config = parser.loads("dummy_name", paths)
+
+        self.assertEquals(config, config_ref)
 
 
 # vim:sw=4 ts=4 et:
