@@ -59,7 +59,9 @@ RPM_FI_KEYS = (
 @memoize
 def is_rpmdb_available():
     try:
-        rc = subprocess.check_call("rpm -qf /bin/sh 2>&1 > /dev/null", shell=True)
+        rc = subprocess.check_call(
+            "rpm -qf /bin/sh 2>&1 > /dev/null", shell=True
+        )
         return bool(rc == 0)
 
     except subprocess.CalledProcessError, e:
