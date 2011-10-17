@@ -24,7 +24,6 @@ import pmaker.environ as E
 import optparse
 import os
 import os.path
-import shlex
 import tempfile
 import unittest
 
@@ -114,6 +113,31 @@ class Test_01_Options(unittest.TestCase):
                     self.assertEquals(v2, name)
                 else:
                     self.assertEquals(v2, o.make_default_summary(name))
+
+    def test_03_parse_args_w_name_and_verbose(self):
+        name = "foo"
+
+        o = Options()
+        (opts, args) = o.parse_args(["-n", name, "-v"])
+
+        self.assertEquals(opts.name, name)
+        self.assertEquals(opts.verbosity, 1)
+
+        (opts, args) = o.parse_args(["-n", name, "-vv"])
+        self.assertEquals(opts.verbosity, 2)
+
+        (opts, args) = o.parse_args(["-n", name, "--debug"])
+        self.assertEquals(opts.verbosity, 2)
+
+    def test_04_parse_args_w_name_and_template_path(self):
+        name = "foo"
+        cwd = os.path.join(os.getcwd(), "templates")
+        paths_ref = E.Env().template_paths + [cwd]
+
+        o = Options()
+        (opts, args) = o.parse_args(["-n", name, "--template-path", cwd])
+
+        self.assertEquals(opts.template_paths, paths_ref)
 
 
 # vim:sw=4 ts=4 et:

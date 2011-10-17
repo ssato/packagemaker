@@ -94,6 +94,14 @@ on package format to use.
     return dict(action="callback", callback=cb, type="string",
                 default="", help=_help)
 
+def setup_template_path_option():
+    def cb(option, opt_str, value, parser):
+        if value not in parser.values.template_paths:
+            parser.values.template_paths.append(value)
+
+    return dict(action="callback", callback=cb, type="string",
+                dest="template_paths", )
+
 
 def set_workdir(workdir, name, pversion):
     return os.path.join(os.path.abspath(workdir), "%s-%s" % (name, pversion))
@@ -229,10 +237,7 @@ class Options(Bunch):
         )
 
         add_option("", "--destdir", help=DESTDIR_OPTION_HELP)
-
-        add_option("-P", "--template-path", action="append",
-            dest="template_paths"
-        )
+        add_option("-P", "--template-path", **setup_template_path_option())
 
         self.oparser.add_option_group(bog)
 
