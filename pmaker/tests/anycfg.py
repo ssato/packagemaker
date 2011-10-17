@@ -29,7 +29,7 @@ import tempfile
 import unittest
 
 
-class Test__list_paths(unittest.TestCase):
+class Test_00__list_paths(unittest.TestCase):
 
     def test_list_paths__None(self):
         prog = "testapp"
@@ -39,7 +39,10 @@ class Test__list_paths(unittest.TestCase):
         paths += sorted(glob.glob("/etc/%s.d/*.conf" % prog))
         paths += [os.path.join(home, ".config", prog)]
         paths += [
-            os.environ.get("%sRC" % prog.upper(), os.path.join(home, ".%src" % prog))
+            os.environ.get(
+                "%sRC" % prog.upper(),
+                os.path.join(home, ".%src" % prog)
+            )
         ]
 
         paths_r = PA.list_paths(prog, None)
@@ -52,13 +55,7 @@ class Test__list_paths(unittest.TestCase):
         self.assertEquals(["/a/b/c"], PA.list_paths("testapp", ["/a/b/c"]))
 
 
-class TestIniConfigParser(unittest.TestCase):
-
-    def setUp(self):
-        self.workdir = setup_workdir()
-
-        conf = """\
-[DEFAULT]
+INI_CONFIG_CONTENT = """[DEFAULT]
 a: aaa
 b: bbb
 
@@ -66,9 +63,44 @@ b: bbb
 a: xxx
 b: yyy
 """
-        path = os.path.join(self.workdir, "config")
-        open(path, "w").write(conf)
 
+JSON_CONFIG_CONTENT = """{
+    "defaults": {
+        "a": "aaa",
+        "b": "bbb"
+    },
+    "profile0": {
+        "a": "xxx",
+        "b": "yyy"
+    },
+    "array0": [1, 2, 3]
+}
+"""
+
+YAML_CONFIG_CONTENT = """defaults:
+    a: aaa
+    b: bbb
+
+profile0:
+    a: xxx
+    b: yyy
+
+array0: [1, 2, 3]
+"""
+
+
+def dump_conf(workdir, content, ext=""):
+        path = os.path.join(workdir, "config" + ext)
+        print >> open(path, "w"), content
+
+        return path
+
+
+class Test_01_IniConfigParser(unittest.TestCase):
+
+    def setUp(self):
+        self.workdir = setup_workdir()
+        path = dump_conf(self.workdir, INI_CONFIG_CONTENT)
         self.paths = [path]
         self.config = Bunch(
             defaults=Bunch(a="aaa", b="bbb"),
@@ -82,36 +114,16 @@ b: yyy
         parser = PA.IniConfigParser()
         config = parser.load(self.paths[0])
 
-        for k, v in config.defaults.iteritems():
-            self.assertEquals(self.config.defaults[k], v)
-
-        for k, v in config.profile0.iteritems():
-            self.assertEquals(self.config.profile0[k], v)
+        self.assertEquals(config, self.config)
 
 
-if PA.json is not None: 
+if PA.json is not None:
 
-    class TestJsonConfigParser(unittest.TestCase):
+    class Test_02_JsonConfigParser(unittest.TestCase):
 
         def setUp(self):
             self.workdir = setup_workdir()
-
-            conf = """\
-{
-    "defaults": {
-        "a": "aaa",
-        "b": "bbb"
-    },
-    "profile0": {
-        "a": "xxx",
-        "b": "yyy"
-    },
-    "array0": [1, 2, 3]
-}
-"""
-            path = os.path.join(self.workdir, "config.json")
-            open(path, "w").write(conf)
-
+            path = dump_conf(self.workdir, JSON_CONFIG_CONTENT, ".json")
             self.paths = [path]
             self.config = Bunch(
                 defaults=Bunch(a="aaa", b="bbb"),
@@ -126,37 +138,16 @@ if PA.json is not None:
             parser = PA.JsonConfigPaser()
             config = parser.load(self.paths[0])
 
-            #pprint.pprint(config)
-            for k, v in config.defaults.iteritems():
-                self.assertEquals(self.config.defaults[k], v)
-
-            for k, v in config.profile0.iteritems():
-                self.assertEquals(self.config.profile0[k], v)
-
-            self.assertEquals(self.config.array0, config.array0)
+            self.assertEquals(config, self.config)
 
 
-if PA.yaml is not None: 
+if PA.yaml is not None:
 
-    class TestYamlConfigParser(unittest.TestCase):
+    class Test_03_YamlConfigParser(unittest.TestCase):
 
         def setUp(self):
             self.workdir = setup_workdir()
-
-            conf = """\
-defaults:
-    a: aaa
-    b: bbb
-
-profile0:
-    a: xxx
-    b: yyy
-
-array0: [1, 2, 3]
-"""
-            path = os.path.join(self.workdir, "config.yml")
-            open(path, "w").write(conf)
-
+            path = dump_conf(self.workdir, YAML_CONFIG_CONTENT, ".yml")
             self.paths = [path]
             self.config = Bunch(
                 defaults=Bunch(a="aaa", b="bbb"),
@@ -171,13 +162,47 @@ array0: [1, 2, 3]
             parser = PA.YamlConfigPaser()
             config = parser.load(self.paths[0])
 
-            for k, v in config.defaults.iteritems():
-                self.assertEquals(self.config.defaults[k], v)
+            self.assertEquals(config, self.config)
 
-            for k, v in config.profile0.iteritems():
-                self.assertEquals(self.config.profile0[k], v)
 
-            self.assertEquals(self.config.array0, config.array0)
+class Test_04_AnyConfigParser(unittest.TestCase):
+
+    def setUp(self):
+        self.workdir = setup_workdir()
+
+    def tearDown(self):
+        cleanup_workdir(self.workdir)
+
+    def test_01_load(self):
+        parser = PA.AnyConfigParser()
+
+        path = dump_conf(self.workdir, INI_CONFIG_CONTENT)
+        config_ref = Bunch(
+            defaults=Bunch(a="aaa", b="bbb"),
+            profile0=Bunch(a="xxx", b="yyy"),
+        )
+        config = parser.load(path)
+        self.assertEquals(config, config_ref)
+
+        if PA.json:
+            path = dump_conf(self.workdir, JSON_CONFIG_CONTENT, ".json")
+            config_ref = Bunch(
+                defaults=Bunch(a="aaa", b="bbb"),
+                profile0=Bunch(a="xxx", b="yyy"),
+                array0=[1, 2, 3],
+            )
+            config = parser.load(path)
+            self.assertEquals(config, config_ref)
+
+        if PA.yaml:
+            path = dump_conf(self.workdir, YAML_CONFIG_CONTENT, ".yaml")
+            config_ref = Bunch(
+                defaults=Bunch(a="aaa", b="bbb"),
+                profile0=Bunch(a="xxx", b="yyy"),
+                array0=[1, 2, 3],
+            )
+            config = parser.load(path)
+            self.assertEquals(config, config_ref)
 
 
 # vim:sw=4 ts=4 et:

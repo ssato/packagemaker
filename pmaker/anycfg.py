@@ -41,7 +41,7 @@ except ImportError:
         json = None
 
 
-def list_paths(basename=None, paths=None):
+def list_paths(basename, paths=None):
     if paths is None:
         home = os.environ.get("HOME", os.curdir)
 
@@ -67,7 +67,6 @@ class IniConfigParser(object):
 
     def __init__(self):
         self._parser = configparser.SafeConfigParser()
-        self.config = Bunch()
 
     def load(self, path_, sep=",", **kwargs):
         if not os.path.exists(path_):
@@ -80,9 +79,8 @@ class IniConfigParser(object):
         try:
             self._parser.read(path_)
 
+            config.defaults = Bunch()
             for k, v in self._parser.defaults().iteritems():
-                config.defaults = Bunch()
-
                 if sep in v:
                     config.defaults[k] = [
                         parse(x) for x in parse_list_str(v)
@@ -107,14 +105,6 @@ class IniConfigParser(object):
 
         return config
 
-    def loads(self, name=None, paths=[]):
-        if not paths:
-            paths = list_paths(name)
-
-        for p in paths:
-            c = self.load(p)
-            self.config.update(c)
-
 
 def dict_to_bunch(json_obj_dict):
     return Bunch(**json_obj_dict)
@@ -130,17 +120,21 @@ class JsonConfigPaser(IniConfigParser):
             return json.load(open(path_), object_hook=dict_to_bunch)
 
 
-# @see http://stackoverflow.com/questions/5121931/in-python-how-can-you-load-yaml-mappings-as-ordereddicts
+# @see http://bit.ly/pxKVqS
 class YamlBunchLoader(yaml.Loader):
 
     def __init__(self, *args, **kwargs):
         yaml.Loader.__init__(self, *args, **kwargs)
 
-        self.add_constructor(u'tag:yaml.org,2002:map', type(self).construct_yaml_map)
+        self.add_constructor(
+            u"tag:yaml.org,2002:map",
+            type(self).construct_yaml_map
+        )
 
     def construct_yaml_map(self, node):
         data = Bunch()
         yield data
+
         value = self.construct_mapping(node)
         data.update(value)
 
@@ -149,16 +143,23 @@ class YamlBunchLoader(yaml.Loader):
             self.flatten_mapping(node)
         else:
             raise yaml.constructor.ConstructorError(None, None,
-                'expected a mapping node, but found %s' % node.id, node.start_mark)
+                "expected a mapping node, but found %s" % node.id,
+                node.start_mark
+            )
 
         mapping = Bunch()
+
         for key_node, value_node in node.value:
             key = self.construct_object(key_node, deep=deep)
             try:
                 hash(key)
             except TypeError, exc:
-                raise yaml.constructor.ConstructorError('while constructing a mapping',
-                    node.start_mark, 'found unacceptable key (%s)' % exc, key_node.start_mark)
+                raise yaml.constructor.ConstructorError(
+                    "while constructing a mapping",
+                    node.start_mark,
+                    "found unacceptable key (%s)" % exc,
+                    key_node.start_mark
+                )
             value = self.construct_object(value_node, deep=deep)
             mapping[key] = value
 
@@ -175,7 +176,7 @@ class YamlConfigPaser(IniConfigParser):
             return yaml.load(open(path_), Loader=YamlBunchLoader)
 
 
-class AnyConfigParser(IniConfigParser):
+class AnyConfigParser(object):
 
     def load(self, conf, **kwargs):
         """
@@ -185,14 +186,29 @@ class AnyConfigParser(IniConfigParser):
         parser = IniConfigParser()
 
         if len(fn_ext) > 1:
-            ext = fn_ext[1].lower()
+            ext = fn_ext[1].lower()[1:]  # strip '.' at the head.
+            print ext
 
             if ext in ("json", "jsn"):
+                logging.debug(" Use JsonConfigPaser for " + conf)
                 parser = JsonConfigPaser()
+
             elif ext in ("yaml", "yml"):
+                logging.debug(" Use YamlConfigPaser for " + conf)
                 parser = YamlConfigPaser()
 
         return parser.load(conf, **kwargs)
 
+    def loads(self, name, paths=[]):
+        if not paths:
+            paths = list_paths(name)
+
+        config = Bunch()
+
+        for p in paths:
+            c = self.load(p)
+            config.update(c)
+
+        return config
 
 # vim:sw=4 ts=4 et:
