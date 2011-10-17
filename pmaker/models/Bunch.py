@@ -14,10 +14,13 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
-#
 
 # TODO: Keep items' order:
 #from collections import OrderedDict as dict
+
+
+def is_Bunch_or_dict(x):
+    return isinstance(x, (Bunch, dict))
 
 
 class Bunch(dict):
@@ -48,9 +51,10 @@ class Bunch(dict):
         """
         Update members recursively.
         """
-        if isinstance(other, (Bunch, dict)):
+        if is_Bunch_or_dict(other):
             for k, v in other.iteritems():
-                if k in self and isinstance(v, (Bunch, dict)):
+                if k in self and is_Bunch_or_dict(v) and \
+                        is_Bunch_or_dict(self[k]):
                     self[k].update(v)  # update recursively.
                 else:
                     self[k] = v
