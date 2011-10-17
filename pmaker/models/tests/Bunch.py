@@ -60,6 +60,14 @@ class TestBunch(unittest.TestCase):
 
         self.assertEquals(a, ref)
 
+    def test_update__w_None(self):
+        a = Bunch(name="a", a=1, b=Bunch(b=[1, 2], c="C"))
+        ref = Bunch(**a.copy())
+
+        a.update(None)
+
+        self.assertEquals(a, ref)
+
 
 class TestBunch_pickle(unittest.TestCase):
 

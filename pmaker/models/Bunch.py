@@ -48,11 +48,12 @@ class Bunch(dict):
         """
         Update members recursively.
         """
-        for k, v in other.iteritems():
-            if k in self and isinstance(v, (Bunch, dict)):
-                self[k].update(v)  # update recursively.
-            else:
-                self[k] = v
+        if isinstance(other, (Bunch, dict)):
+            for k, v in other.iteritems():
+                if k in self and isinstance(v, (Bunch, dict)):
+                    self[k].update(v)  # update recursively.
+                else:
+                    self[k] = v
 
 
 # vim:sw=4 ts=4 et:
