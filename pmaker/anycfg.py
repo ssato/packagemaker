@@ -15,7 +15,9 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 from pmaker.models.Bunch import Bunch
-from pmaker.parser import parse
+
+import pmaker.parser as P
+import pmaker.utils as U
 
 import ConfigParser as configparser
 import glob
@@ -83,10 +85,10 @@ class IniConfigParser(object):
             for k, v in self._parser.defaults().iteritems():
                 if sep in v:
                     config.defaults[k] = [
-                        parse(x) for x in parse_list_str(v)
+                        P.parse(x) for x in U.parse_list_str(v)
                     ]
                 else:
-                    config.defaults[k] = parse(v)
+                    config.defaults[k] = P.parse(v)
 
             for s in self._parser.sections():
                 config[s] = Bunch()
@@ -95,10 +97,10 @@ class IniConfigParser(object):
                     v = self._parser.get(s, k)
                     if sep in v:
                         config[s][k] = [
-                            parse(x) for x in parse_list_str(v)
+                            P.parse(x) for x in U.parse_list_str(v)
                         ]
                     else:
-                        config[s][k] = parse(v)
+                        config[s][k] = P.parse(v)
 
         except Exception, e:
             logging.warn(e)
@@ -183,7 +185,7 @@ class AnyConfigParser(object):
         :param conf:  Path to configuration file.
         """
         fn_ext = os.path.splitext(conf)
-        parser = IniConfigParser()
+        parser = IniConfigParser()  # Default parser.
 
         if len(fn_ext) > 1:
             ext = fn_ext[1].lower()[1:]  # strip '.' at the head.
@@ -199,8 +201,8 @@ class AnyConfigParser(object):
 
         return parser.load(conf, **kwargs)
 
-    def loads(self, name, paths=[]):
-        if not paths:
+    def loads(self, name, paths=None):
+        if paths is None:
             paths = list_paths(name)
 
         config = Bunch()
