@@ -18,7 +18,7 @@ from pmaker.models.Bunch import Bunch
 from pmaker.globals import PMAKER_NAME, PMAKER_VERSION
 from pmaker.utils import singleton
 
-import pmaker.anycfg
+import pmaker.anycfg as Anycfg
 import pmaker.collectors.Collectors as Collectors
 import pmaker.backend.registry as Backends
 import pmaker.environ as E
@@ -104,15 +104,16 @@ class Options(Bunch):
 
     def __init__(self, defaults=None, env=None, **kwargs):
         """
-        :param defaults: Defalut values :: Bunch
-        :param env: Env instance :: Env
+        :param defaults: Defalut values for options :: Bunch
+        :param env: environment values :: E.Env
         """
         self.env = env is None and E.Env() or env
 
+        self.cparser = Anycfg.AnyConfigParser()
         self.oparser = optparse.OptionParser(HELP_HEADER,
                                              version=VERSION_STRING,
                                              )
-        self.defaults = self.__set_defaults()
+        self.defaults = self.set_defaults()
 
         self.__setup_common_options()
         self.__setup_build_options()
@@ -159,11 +160,21 @@ class Options(Bunch):
 
         return defaults
 
-    def __set_defaults(self, defaults=None, env=None):
+    def set_defaults(self, defaults=None, config=None, env=None):
+        """
+        :param defaults: Default values for options :: Bunch
+        :param config:  Configuration file path :: str
+        :param env: Some default values from environment :: Bunch
+        """
         env = env is None and self.env or env
 
         if defaults is None:
-            defaults = self._defaults(env)
+            defaults = self.__defaults(env)
+
+        if config is None:
+            config = self.cparser.loads(PMAKER_NAME)
+        else:
+            config = self.cparser.load(config)
 
         self.oparser.set_defaults(**defaults)
 
@@ -240,7 +251,7 @@ class Options(Bunch):
         add_option("", "--summary", help="The summary of the package")
 
         choices = [ct.extension for ct in self.env.compressors]
-        help = "Tool to compress the src distribution archive: %s [%default]" \
+        help = "Tool to compress src distribution archive: %s [%%default]" \
             % ", ".join(choices)
         add_option("-z", "--compressor", choices=choices, help=help)
 
@@ -283,16 +294,10 @@ class Options(Bunch):
         (options, args) = self.oparser.parse_args(argv)
 
         if options.config is not None:
-            cparser = anycfg.AnyConfigParser()
-            config = cparser.load(options.config)
-        else:
-            config = cparser.loads(PMAKER_NAME)
+            self.set_defaults(self.defaults, options.config)
 
-        self.defaults.update(config)
-        self.__set_defaults()
-
-        # retry with defaults w/ config's defaults:
-        (options, args) = self.oparser.parse_args(argv)
+            # retry with defaults from env *and* configs:
+            (options, args) = self.oparser.parse_args(argv)
 
         if options.name is None:
             options.name = raw_input("Package name: ")

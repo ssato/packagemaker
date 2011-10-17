@@ -61,6 +61,15 @@ class Test_00_functions(unittest.TestCase):
 
 class Test_01_Options(unittest.TestCase):
 
-    pass
+    def test_00__init__wo_args(self):
+        o = Options()
+        o2 = Options()
+
+        # pmaker.options.Options is not resolvable because it would be hide
+        # (decorated) with pmaker.utils.singleton(). Here we use Bunch (parent
+        # class of Options class) instead.
+        self.assertTrue(isinstance(o, Bunch))
+        self.assertEquals(o, o2)
+
 
 # vim:sw=4 ts=4 et:
