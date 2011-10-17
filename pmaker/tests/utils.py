@@ -84,15 +84,18 @@ class TestChecksum(unittest.TestCase):
             return
 
         path = random.choice(
-            [p for p in ("/etc/at.deny", "/etc/securetty", "/etc/sudoer", "/etc/shadow") \
-                if os.path.exists(p) and not os.access(p, os.R_OK)]
+            [p for p in ("/etc/at.deny", "/etc/securetty", "/etc/sudoer", \
+                "/etc/shadow") \
+                    if os.path.exists(p) and not os.access(p, os.R_OK)]
         )
 
         csum_ref = "0" * len(sha1("").hexdigest())
         self.assertEquals(checksum(path), csum_ref)
 
     def test_checksum(self):
-        csum_ref = subprocess.check_output("sha1sum " + self.f, shell=True).split()[0]
+        csum_ref = subprocess.check_output(
+            "sha1sum " + self.f, shell=True
+        ).split()[0]
         self.assertEquals(checksum(self.f), csum_ref)
 
 
@@ -134,11 +137,16 @@ class TestFlatten(unittest.TestCase):
 
     def test_flatten_lists(self):
         self.assertListEqual(flatten([[1, 2, 3], [4, 5]]), [1, 2, 3, 4, 5])
-        self.assertListEqual(flatten([[1, 2, [3]], [4, [5, 6]]]), [1, 2, 3, 4, 5, 6])
+        self.assertListEqual(flatten([[1, 2, [3]], [4, [5, 6]]]),
+            [1, 2, 3, 4, 5, 6]
+        )
         self.assertListEqual(flatten([(1, 2, 3), (4, 5)]), [1, 2, 3, 4, 5])
 
     def test_flatten_generator_expression(self):
-        self.assertListEqual(flatten((i, i * 2) for i in range(5)), [0, 0, 1, 2, 2, 4, 3, 6, 4, 8])
+        self.assertListEqual(
+            flatten((i, i * 2) for i in range(5)),
+            [0, 0, 1, 2, 2, 4, 3, 6, 4, 8]
+        )
 
 
 class TestConcat(unittest.TestCase):
@@ -149,11 +157,17 @@ class TestConcat(unittest.TestCase):
 
     def test_concat_lists(self):
         self.assertListEqual(concat([[1, 2, 3], [4, 5]]), [1, 2, 3, 4, 5])
-        self.assertListEqual(concat([[1, 2, [3]], [4, [5, 6]]]), [1, 2, [3], 4, [5, 6]])
-        self.assertListEqual(concat([(1, 2, [3]), (4, [5, 6])]), [1, 2, [3], 4, [5, 6]])
+        self.assertListEqual(concat([[1, 2, [3]], [4, [5, 6]]]),
+            [1, 2, [3], 4, [5, 6]]
+        )
+        self.assertListEqual(concat([(1, 2, [3]), (4, [5, 6])]),
+            [1, 2, [3], 4, [5, 6]]
+        )
 
     def test_concat_generator_expression(self):
-        self.assertListEqual(concat((i, i * 2) for i in range(5)), [0, 0, 1, 2, 2, 4, 3, 6, 4, 8])
+        self.assertListEqual(concat((i, i * 2) for i in range(5)),
+            [0, 0, 1, 2, 2, 4, 3, 6, 4, 8]
+        )
 
 
 class TestUnique(unittest.TestCase):
@@ -162,10 +176,14 @@ class TestUnique(unittest.TestCase):
         self.assertListEqual(unique([]), [])
 
     def test_unique_num_lists(self):
-        self.assertListEqual(unique([0, 3, 1, 2, 1, 0, 4, 5]), [0, 1, 2, 3, 4, 5])
+        self.assertListEqual(unique([0, 3, 1, 2, 1, 0, 4, 5]),
+            [0, 1, 2, 3, 4, 5]
+        )
 
     def test_unique_str_list(self):
-        self.assertListEqual(unique(c for c in "dagcbfefagb"), ["a", "b", "c", "d", "e", "f", "g"])
+        self.assertListEqual(unique(c for c in "dagcbfefagb"),
+            ["a", "b", "c", "d", "e", "f", "g"]
+        )
 
 
 NULL_DICT = dict()
@@ -204,7 +222,9 @@ class Test_dicts_comp(unittest.TestCase):
 class Test_listplus(unittest.TestCase):
 
     def test_listplus(self):
-        self.assertTrue(isinstance(listplus([0], (i for i in range(10))), list))
+        self.assertTrue(isinstance(listplus([0],
+            (i for i in range(10))), list)
+        )
 
 
 class Test_true(unittest.TestCase):
@@ -313,7 +333,9 @@ class Test_compile_template(unittest.TestCase):
         tmpl_s = "a=$a b=$b"
         params = {"a": 1, "b": "b"}
 
-        self.assertEquals("a=1 b=b", compile_template(tmpl_s, params, False))
+        self.assertEquals("a=1 b=b",
+            compile_template(tmpl_s, params, False)
+        )
 
     def test_compile_template__file(self):
         tmpl = os.path.join(self.workdir, "test.tmpl")
@@ -342,7 +364,10 @@ class Test_sort_out_paths_by_dir(unittest.TestCase):
         expected_result = [
             dict(dir="/etc", files=["/etc/resolv.conf"], id="0"),
             dict(dir="/etc/sysconfig",
-                files=["/etc/sysconfig/iptables", "/etc/sysconfig/networks"],
+                files=[
+                    "/etc/sysconfig/iptables",
+                    "/etc/sysconfig/networks"
+                ],
                 id="1"),
         ]
         for i, d in enumerate(sort_out_paths_by_dir(path_list)):
@@ -354,6 +379,8 @@ class Test_cache_needs_updates_p(unittest.TestCase):
     def test_cache_needs_updates_p(self):
         """TODO: Implement this.
         """
+        pass
+
 
 class Test_parse_conf_value(unittest.TestCase):
 
@@ -361,7 +388,7 @@ class Test_parse_conf_value(unittest.TestCase):
         self.assertEquals(0, parse_conf_value("0"))
         self.assertEquals(123, parse_conf_value("123"))
         self.assertEquals(True, parse_conf_value("True"))
-        self.assertEquals([1,2,3], parse_conf_value("[1,2,3]"))
+        self.assertEquals([1, 2, 3], parse_conf_value("[1,2,3]"))
         self.assertEquals("a string", parse_conf_value("a string"))
         self.assertEquals("0.1", parse_conf_value("0.1"))
         self.assertEquals("%config", parse_conf_value("'%config'"))

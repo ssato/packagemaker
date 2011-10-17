@@ -29,7 +29,13 @@ NULL_DICT = dict()
 class TestFunctions(unittest.TestCase):
 
     def test_rpmh2nvrae__no_rpmdb(self):
-        h = dict(name="foo", version="0.1", release="1", arch="i386", epoch="0")
+        h = dict(
+            name="foo",
+            version="0.1",
+            release="1",
+            arch="i386",
+            epoch="0",
+        )
         d = rpmh2nvrae(h)
 
         self.assertNotEquals(d, NULL_DICT)
@@ -40,7 +46,13 @@ class TestFunctions(unittest.TestCase):
         self.assertEquals(d["epoch"], "0")
 
     def test_rpmh2nvrae__no_rpmdb__epoch_is_None(self):
-        h = dict(name="foo", version="0.1", release="1", arch="i386", epoch=None)
+        h = dict(
+            name="foo",
+            version="0.1",
+            release="1",
+            arch="i386",
+            epoch=None,
+        )
         d = rpmh2nvrae(h)
 
         self.assertNotEquals(d, NULL_DICT)
@@ -51,7 +63,13 @@ class TestFunctions(unittest.TestCase):
         self.assertEquals(d["epoch"], "0")
 
     def test_rpmh2nvrae__no_rpmdb__epoch_is_a_whitespace(self):
-        h = dict(name="foo", version="0.1", release="1", arch="i386", epoch=" ")
+        h = dict(
+            name="foo",
+            version="0.1",
+            release="1",
+            arch="i386",
+            epoch=" ",
+        )
         d = rpmh2nvrae(h)
 
         self.assertNotEquals(d, NULL_DICT)
@@ -80,11 +98,15 @@ class TestFunctions(unittest.TestCase):
             self.assertNotEquals(d["epoch"], "0")
 
     def test_srcrpm_name_by_rpmspec(self):
-        """FIXME: Implement tests for this function: srcrpm_name_by_rpmspec"""
+        """
+        FIXME: Implement tests for this function: srcrpm_name_by_rpmspec
+        """
         pass
 
     def test_srcrpm_name_by_rpmspec_2(self):
-        """FIXME: Implement tests for this function: srcrpm_name_by_rpmspec_2"""
+        """
+        FIXME: Implement tests for this function: srcrpm_name_by_rpmspec_2
+        """
         pass
 
     def test_info_by_path(self):
@@ -92,7 +114,7 @@ class TestFunctions(unittest.TestCase):
         self.assertNotEquals(d, NULL_DICT)
 
         for key in RPM_FI_KEYS:
-            self.assertTrue(d.has_key(key))
+            self.assertTrue(key in d)
 
     def test_filelist(self):
         if not os.environ.get("RUN_TIME_CONSUMING_TESTS", False):
@@ -126,4 +148,4 @@ class TestFunctions(unittest.TestCase):
         self.assertEquals(rpm_attr(fi), "%dir ")
 
 
-# vim:sw=4 ts=4 expandtab:
+# vim:sw=4 ts=4 et:

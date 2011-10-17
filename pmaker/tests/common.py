@@ -15,10 +15,8 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 #
-from pmaker.utils import rm_rf
-
+import pmaker.utils as U
 import tempfile
-
 
 
 def setup_workdir():
@@ -26,7 +24,7 @@ def setup_workdir():
 
 
 def cleanup_workdir(workdir):
-    rm_rf(workdir)
+    U.rm_rf(workdir)
 
 
-# vim: set sw=4 ts=4 expandtab:
+# vim:sw=4 ts=4 et:

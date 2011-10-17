@@ -38,7 +38,10 @@ class Test_date(unittest.TestCase):
 
     def test_date__rfc2822(self):
         self.assertNotEquals(
-            re.match(r".{3}, \d{1,2} .* \d{4} \d{2}:\d{2}:\d{2} \+\d{4}", date(DATE_FMT_RFC2822)),
+            re.match(
+                r".{3}, \d{1,2} .* \d{4} \d{2}:\d{2}:\d{2} \+\d{4}",
+                date(DATE_FMT_RFC2822)
+            ),
             None
         )
 
@@ -60,7 +63,8 @@ class TestPackage(unittest.TestCase):
         self.assertTrue(self.package.foobar, "baz")
 
     def test_add_fileinfos(self):
-        files = (p for p in random.sample(glob.glob("/etc/*"), 10) if os.access(p, os.R_OK))
+        files = (p for p in random.sample(glob.glob("/etc/*"), 10) \
+            if os.access(p, os.R_OK))
         fis = [FileInfoFactory().create(p) for p in files]
 
         self.package.add_fileinfos(fis)
@@ -69,4 +73,4 @@ class TestPackage(unittest.TestCase):
         self.assertEquals(self.package.fileinfos, fis)
 
 
-# vim: set sw=4 ts=4 expandtab:
+# vim:sw=4 ts=4 et:
