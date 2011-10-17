@@ -109,13 +109,10 @@ class Options(Bunch):
         """
         self.env = env is None and E.Env() or env
 
-        if defaults is None:
-            defaults = self._defaults(self.env)
-
         self.oparser = optparse.OptionParser(HELP_HEADER,
                                              version=VERSION_STRING,
                                              )
-        self.oparser.set_defaults(**defaults)
+        self.defaults = self.__set_defaults()
 
         self.__setup_common_options()
         self.__setup_build_options()
@@ -159,6 +156,16 @@ class Options(Bunch):
         defaults.dist = env.dist.label
         defaults.no_rpmdb = False
         defaults.no_mock = False
+
+        return defaults
+
+    def __set_defaults(self, defaults=None, env=None):
+        env = env is None and self.env or env
+
+        if defaults is None:
+            defaults = self._defaults(env)
+
+        self.oparser.set_defaults(**defaults)
 
         return defaults
 
@@ -277,9 +284,15 @@ class Options(Bunch):
 
         if options.config is not None:
             cparser = anycfg.AnyConfigParser()
-            config_from_file = cparser.load(options.config)
+            config = cparser.load(options.config)
         else:
-            config_from_file = cparser.loads("pmaker", options.template_paths)
+            config = cparser.loads(PMAKER_NAME)
+
+        self.defaults.update(config)
+        self.__set_defaults()
+
+        # retry with defaults w/ config's defaults:
+        (options, args) = self.oparser.parse_args(argv)
 
         if options.name is None:
             options.name = raw_input("Package name: ")
