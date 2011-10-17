@@ -19,6 +19,7 @@ from pmaker.models.Bunch import Bunch
 from pmaker.tests.common import setup_workdir, cleanup_workdir
 
 import pmaker.parser as P
+import pmaker.environ as E
 
 import optparse
 import os
@@ -63,13 +64,38 @@ class Test_01_Options(unittest.TestCase):
 
     def test_00__init__wo_args(self):
         o = Options()
-        o2 = Options()
 
-        # pmaker.options.Options is not resolvable because it would be hide
-        # (decorated) with pmaker.utils.singleton(). Here we use Bunch (parent
-        # class of Options class) instead.
-        self.assertTrue(isinstance(o, Bunch))
-        self.assertEquals(o, o2)
+        # # pmaker.options.Options is not resolvable because it would be
+        # # hide (decorated) with pmaker.utils.singleton(). Here we use
+        # # Bunch (parent class of Options class) instead.
+        # self.assertTrue(isinstance(o, Bunch))
+        ## pmaker.options.Options is now not singleton:
+        self.assertTrue(isinstance(o, Options))
+
+        initial_defaults = o._defaults()
+        self.assertEquals(o.defaults, initial_defaults)
+
+    def test_01__init__w_modified_env(self):
+        o_ref = Options()
+
+        env = E.Env()
+        env.workdir = "/tmp/a/b/c"  # Override it.
+
+        o = Options(env=env)
+
+        self.assertNotEquals(o.defaults, o_ref.defaults)
+        self.assertEquals(o.defaults.workdir, env.workdir)
+
+    def test_01__init__w_modified_defaults(self):
+        o_ref = Options()
+
+        defaults = Bunch(**o_ref.defaults.copy())
+        defaults.verbosity = 100
+
+        o = Options(defaults=defaults)
+
+        self.assertNotEquals(o.defaults, o_ref.defaults)
+        self.assertEquals(o.defaults.verbosity, defaults.verbosity)
 
 
 # vim:sw=4 ts=4 et:

@@ -99,7 +99,6 @@ def set_workdir(workdir, name, pversion):
     return os.path.join(os.path.abspath(workdir), "%s-%s" % (name, pversion))
 
 
-@singleton
 class Options(Bunch):
 
     def __init__(self, defaults=None, env=None, **kwargs):
@@ -113,16 +112,18 @@ class Options(Bunch):
         self.oparser = optparse.OptionParser(HELP_HEADER,
                                              version=VERSION_STRING,
                                              )
-        self.defaults = self.set_defaults()
+        self.set_defaults(defaults, env)
 
         self.__setup_common_options()
         self.__setup_build_options()
         self.__setup_metadata_options()
         self.__setup_rpm_options()
 
-    def __defaults(self, env):
+    def _defaults(self, env=None):
         """
         """
+        env = env is None and self.env or env
+
         defaults = Bunch()
 
         defaults.config = None
@@ -169,16 +170,13 @@ class Options(Bunch):
         env = env is None and self.env or env
 
         if defaults is None:
-            defaults = self.__defaults(env)
+            defaults = self._defaults(env)
 
-        if config is None:
-            config = self.cparser.loads(PMAKER_NAME)
-        else:
-            config = self.cparser.load(config)
+        if config is not None:
+            defaults.update(config)
 
+        self.defaults = defaults
         self.oparser.set_defaults(**defaults)
-
-        return defaults
 
     def __setup_common_options(self):
         """
@@ -293,11 +291,15 @@ class Options(Bunch):
     def parse_args(self, argv):
         (options, args) = self.oparser.parse_args(argv)
 
-        if options.config is not None:
-            self.set_defaults(self.defaults, options.config)
+        if options.config is None:
+            config = self.cparser.load(config)
+        else:
+            config = self.cparser.loads(PMAKER_NAME)
 
-            # retry with defaults from env *and* configs:
-            (options, args) = self.oparser.parse_args(argv)
+        self.set_defaults(self.defaults, config)
+
+        # retry with defaults from env *and* configs:
+        (options, args) = self.oparser.parse_args(argv)
 
         if options.name is None:
             options.name = raw_input("Package name: ")
