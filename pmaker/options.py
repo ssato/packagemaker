@@ -288,13 +288,16 @@ class Options(Bunch):
 
         self.oparser.add_option_group(rog)
 
+    def make_default_summary(self, name):
+        return "Custom package of " + name
+
     def parse_args(self, argv):
         (options, args) = self.oparser.parse_args(argv)
 
-        if options.config is None:
-            config = self.cparser.load(config)
-        else:
+        if options.config is None:  # try to load default config files.
             config = self.cparser.loads(PMAKER_NAME)
+        else:
+            config = self.cparser.load(config)
 
         self.set_defaults(self.defaults, config)
 
@@ -305,7 +308,7 @@ class Options(Bunch):
             options.name = raw_input("Package name: ")
 
         if options.summary is None:
-            options.summary = "Custom package of " + options.name
+            options.summary = self.make_default_summary(options.name)
 
         return (options, args)
 

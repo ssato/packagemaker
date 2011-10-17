@@ -24,6 +24,7 @@ import pmaker.environ as E
 import optparse
 import os
 import os.path
+import shlex
 import tempfile
 import unittest
 
@@ -96,6 +97,23 @@ class Test_01_Options(unittest.TestCase):
 
         self.assertNotEquals(o.defaults, o_ref.defaults)
         self.assertEquals(o.defaults.verbosity, defaults.verbosity)
+
+    def test_02_parse_args_w_name(self):
+        name = "foo"
+
+        o = Options()
+        (opts, args) = o.parse_args(["-n", name])
+
+        for k, v in o.defaults.iteritems():
+            if k not in ("name", "summary"):
+                self.assertEquals(getattr(opts, k), v)
+            else:
+                v2 = getattr(opts, k)
+
+                if k == "name":
+                    self.assertEquals(v2, name)
+                else:
+                    self.assertEquals(v2, o.make_default_summary(name))
 
 
 # vim:sw=4 ts=4 et:
