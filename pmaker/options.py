@@ -17,12 +17,12 @@
 from pmaker.models.Bunch import Bunch
 from pmaker.globals import PMAKER_NAME, PMAKER_VERSION
 from pmaker.utils import singleton
-from pmaker.parser import parse
 
 import pmaker.anycfg
 import pmaker.collectors.Collectors as Collectors
 import pmaker.backend.registry as Backends
 import pmaker.environ as E
+import pmaker.parser as P
 
 import logging
 import optparse
@@ -80,7 +80,7 @@ def setup_relations_option():
     """Relation option parameters.
     """
     def cb(option, opt_str, value, parser):
-        parser.values.relations = parse(value)
+        parser.values.relations = P.parse(value)
 
     _help = """\
 Semicolon (;) separated list of a pair of relation type and
