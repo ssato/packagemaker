@@ -15,11 +15,11 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 from pmaker.models.Bunch import Bunch
-from pmaker.anycfg import AnyConfigParser
 from pmaker.globals import PMAKER_NAME, PMAKER_VERSION
 from pmaker.utils import singleton
 from pmaker.parser import parse
 
+import pmaker.anycfg
 import pmaker.collectors.Collectors as Collectors
 import pmaker.backend.registry as Backends
 import pmaker.environ as E
@@ -275,11 +275,17 @@ class Options(Bunch):
     def parse_args(self, argv):
         (options, args) = self.oparser.parse_args(argv)
 
+        if options.config is not None:
+            cparser = anycfg.AnyConfigParser()
+            config_from_file = cparser.load(options.config)
+        else:
+            config_from_file = cparser.loads("pmaker", options.template_paths)
+
         if options.name is None:
-            options.name = raw_input("Package's name: ")
+            options.name = raw_input("Package name: ")
 
         if options.summary is None:
-            options.summary = "Custom package " + options.name
+            options.summary = "Custom package of " + options.name
 
         return (options, args)
 
