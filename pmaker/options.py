@@ -222,7 +222,7 @@ class Options(Bunch):
         collectors = Collectors.map()  # {collector_type: collector_class}
         choices = collectors.keys()
         help = "Input type: %s [%%default]" % ", ".join(choices)
-        add_option("", "--input-type", choices=choices, help=help)
+        add_option("-I", "--input-type", choices=choices, help=help)
 
         ## Deprecated (substituted with --driver/--backend option):
         #choices = self.env.formats

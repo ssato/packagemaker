@@ -24,6 +24,7 @@ import pmaker.environ as E
 import optparse
 import os
 import os.path
+import random
 import tempfile
 import unittest
 
@@ -136,8 +137,49 @@ class Test_01_Options(unittest.TestCase):
 
         o = Options()
         (opts, args) = o.parse_args(["-n", name, "--template-path", cwd])
-
         self.assertEquals(opts.template_paths, paths_ref)
+
+    def test_05_parse_args_w_name_and_input_type(self):
+        name = "foo"
+        input_type = "filelist.json"
+
+        o = Options()
+        (opts, args) = o.parse_args(["-n", name, "--input-type", input_type])
+        self.assertEquals(opts.input_type, input_type)
+
+    def test_06_parse_args_w_name_and_driver(self):
+        name = "foo"
+        driver = random.choice(
+            [b for b in Backends.map().keys() if b != Backends.default()]
+        )
+
+        o = Options()
+        (opts, args) = o.parse_args(["-n", name, "--driver", driver])
+        self.assertEquals(opts.driver, driver)
+
+        (opts, args) = o.parse_args(["-n", name, "--backend", driver])
+        self.assertEquals(opts.driver, driver)
+
+    def test_07_parse_args_w_name_and_compressor(self):
+        name = "foo"
+        env = E.Env()
+        compressor = random.choice(
+            [
+                ct.extension for ct in env.compressors \
+                    if ct.extension != env.compressor.extension
+            ]
+        )
+
+        o = Options()
+        (opts, args) = o.parse_args(["-n", name, "--compressor", compressor])
+        self.assertEquals(opts.compressor, compressor)
+
+    def test_08_parse_args_w_name_and_no_mock(self):
+        name = "foo"
+
+        o = Options()
+        (opts, args) = o.parse_args(["-n", name, "--no-mock"])
+        self.assertTrue(opts.no_mock)
 
 
 # vim:sw=4 ts=4 et:
