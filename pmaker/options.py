@@ -94,6 +94,7 @@ on package format to use.
     return dict(action="callback", callback=cb, type="string",
                 default="", help=_help)
 
+
 def setup_template_path_option():
     def cb(option, opt_str, value, parser):
         if value not in parser.values.template_paths:
@@ -296,18 +297,23 @@ class Options(Bunch):
     def make_default_summary(self, name):
         return "Custom package of " + name
 
-    def parse_args(self, argv):
-        (options, args) = self.oparser.parse_args(argv)
-
-        if options.config is None:  # try to load default config files.
-            config = self.cparser.loads(PMAKER_NAME)
-        else:
-            config = self.cparser.load(config)
-
+    def load_default_configs(self):
+        """
+        Try loading default config files and applying configurations.
+        """
+        config = self.cparser.loads(PMAKER_NAME)
         self.set_defaults(self.defaults, config)
 
-        # retry with defaults from env *and* configs:
+    def parse_args(self, argv):
+        self.load_default_configs()
         (options, args) = self.oparser.parse_args(argv)
+
+        if options.config is not None:
+            config = self.cparser.load(config)
+            self.set_defaults(self.defaults, config)
+
+            # retry option parsing with this configuration:
+            (options, args) = self.oparser.parse_args(argv)
 
         if options.name is None:
             options.name = raw_input("Package name: ")
