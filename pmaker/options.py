@@ -288,7 +288,7 @@ class Options(Bunch):
         add_option("", "--no-rpmdb", action="store_true",
             help="Do not refer rpm database to get metadata of objects"
         )
-        rog.add_option("", "--no-mock", action="store_true",
+        add_option("", "--no-mock", action="store_true",
             help="Build RPM with only using rpmbuild (not recommended)"
         )
 
