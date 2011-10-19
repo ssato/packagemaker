@@ -104,7 +104,8 @@ class Test_01_IniConfigParser(unittest.TestCase):
         path = dump_conf(self.workdir, INI_CONFIG_CONTENT)
         self.paths = [path]
         self.config = Bunch(
-            defaults=Bunch(a="aaa", b="bbb"),
+            a="aaa",
+            b="bbb",
             profile0=Bunch(a="xxx", b="yyy", c=[1, 2, 3]),
         )
 
@@ -179,7 +180,8 @@ class Test_04_AnyConfigParser(unittest.TestCase):
 
         path = dump_conf(self.workdir, INI_CONFIG_CONTENT)
         config_ref = Bunch(
-            defaults=Bunch(a="aaa", b="bbb"),
+            a="aaa",
+            b="bbb",
             profile0=Bunch(a="xxx", b="yyy", c=[1, 2, 3]),
         )
         config = parser.load(path)
@@ -210,7 +212,8 @@ class Test_04_AnyConfigParser(unittest.TestCase):
 
         path = dump_conf(self.workdir, INI_CONFIG_CONTENT)
         config_ref = Bunch(
-            defaults=Bunch(a="aaa", b="bbb"),
+            a="aaa",
+            b="bbb",
             profile0=Bunch(a="xxx", b="yyy", c=[1, 2, 3]),
         )
         paths = [path]

@@ -81,14 +81,14 @@ class IniConfigParser(object):
         try:
             self._parser.read(path_)
 
-            config.defaults = Bunch()
+            # Treat key and value pairs in [DEFAULTS] as special.
             for k, v in self._parser.defaults().iteritems():
                 if sep in v:
-                    config.defaults[k] = [
+                    config[k] = [
                         P.parse(x) for x in U.parse_list_str(v)
                     ]
                 else:
-                    config.defaults[k] = P.parse(v)
+                    config[k] = P.parse(v)
 
             for s in self._parser.sections():
                 config[s] = Bunch()
