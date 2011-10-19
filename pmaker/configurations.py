@@ -21,67 +21,64 @@ import pmaker.anycfg as Anycfg
 import pmaker.collectors.Collectors as Collectors
 import pmaker.backend.registry as Backends
 import pmaker.environ as E
-import pmaker.parser as P
 
-import logging
-import optparse
-import os
-import os.path
-import sys
+
+def _defaults(env):
+    """
+    Make a Bunch object holding default values and returns it.
+    """
+    defaults = Bunch()
+
+    defaults.force = False
+    defaults.verbosity = 0  # verbose and debug option.
+
+    # build options:
+    defaults.workdir = env.workdir
+    defaults.stepto = env.upto
+    defaults.input_type = Collectors.default()  # e.g. "filelist.json"
+    defaults.driver = Backends.default()  # e.g. "autotools.single.rpm"
+    defaults.destdir = ""
+    defaults.template_paths = env.template_paths
+
+    # package metadata options:
+    defaults.name = None
+    defaults.group = "System Environment/Base"
+    defaults.license = "GPLv3+"
+    defaults.url = "http://localhost.localdomain"
+    defaults.summary = None
+    defaults.compressor = env.compressor.extension  # extension
+    defaults.arch = False
+    defaults.relations = ""
+    defaults.packager = env.fullname
+    defaults.email = env.email
+    defaults.pversion = "0.0.1"
+    defaults.release = "1"
+    defaults.ignore_owner = False
+    defaults.changelog = None
+
+    # rpm options:
+    defaults.dist = env.dist.label
+    defaults.no_rpmdb = False
+    defaults.no_mock = False
+
+    return defaults
 
 
 class Config(Bunch):
 
-    def __init__(self):
+    def __init__(self, norc=False):
+        """
+        :param norc: No rc, i.e. do not load any RC (config) files.
+        """
         self._env = E.Env()
         self._cparser = Anycfg.AnyConfigParser()
 
         self.files = []
 
-        self.update(self._defaults())
-        self.load_default_configs()
+        self.update(_defaults(self._env))
 
-    def _defaults(self, env=None):
-        """
-        """
-        env = env is None and self._env or env
-
-        defaults = Bunch()
-
-        defaults.config = None
-        defaults.force = False
-        defaults.verbosity = 0  # verbose and debug option.
-
-        # build options:
-        defaults.workdir = env.workdir
-        defaults.stepto = env.upto
-        defaults.input_type = Collectors.default()  # e.g. "filelist.json"
-        defaults.driver = Backends.default()  # e.g. "autotools.single.rpm"
-        defaults.destdir = ""
-        defaults.template_paths = env.template_paths
-
-        # package metadata options:
-        defaults.name = None
-        defaults.group = "System Environment/Base"
-        defaults.license = "GPLv3+"
-        defaults.url = "http://localhost.localdomain"
-        defaults.summary = None
-        defaults.compressor = env.compressor.extension  # extension
-        defaults.arch = False
-        defaults.relations = ""
-        defaults.packager = env.fullname
-        defaults.email = env.email
-        defaults.pversion = "0.0.1"
-        defaults.release = "1"
-        defaults.ignore_owner = False
-        defaults.changelog = None
-
-        # rpm options:
-        defaults.dist = env.dist.label
-        defaults.no_rpmdb = False
-        defaults.no_mock = False
-
-        return defaults
+        if not norc:
+            self.load_default_configs()
 
     def load(self, config):
         config = self._cparser.load(config)
@@ -91,7 +88,7 @@ class Config(Bunch):
         """
         Try loading default config files and applying configurations.
         """
-        config = self.cparser.loads(PMAKER_NAME)  # :: Bunch
+        config = self._cparser.loads(PMAKER_NAME)  # :: Bunch
         self.update(config)
 
     def missing_files(self):
