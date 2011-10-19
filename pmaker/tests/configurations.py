@@ -37,7 +37,7 @@ class Test_02_Config(unittest.TestCase):
 
     def setUp(self):
         self.workdir = setup_workdir()
-        self.config = os.path.join(self.workdir, "test.config")
+        self.config = os.path.join(self.workdir, "test_config.json")
 
     def tearDown(self):
         cleanup_workdir(self.workdir)
@@ -49,13 +49,44 @@ class Test_02_Config(unittest.TestCase):
         for k, v in dfs.iteritems():
             self.assertEquals(getattr(cfg, k), v)
 
-    def test_01__norc_and_load_config(self):
+        self.assertTrue(cfg.missing_files())
+
+    def test_01__norc_and_load_json_config(self):
         cfg = Config(norc=True)
         dfs = _defaults(E.Env())
 
-        # TBD: It looks pmaker.anycfg must be changed: typical one is defauls
-        # configuraion should be overloaded by profile's configurations in
-        # IniConfigParser.
+        content = """
+{
+    "verbosity": 1,
+    "input_type": "filelist.json",
+    "summary": "JSON Configuration test",
+    "ignore_owner": true,
+    "no_mock": true,
+    "files": [
+        {
+            "path": "/a/b/c",
+            "attrs" : {
+                "create": true,
+                "install_path": "/a/c",
+                "uid": 100,
+                "gid": 0,
+                "rpmattr": "%config(noreplace)"
+            }
+        }
+    ]
+}
+"""
+        open(self.config, "w").write(content)
+        cfg.load(self.config)
+
+        self.assertEquals(cfg.verbosity, 1)
+        self.assertEquals(cfg.input_type, "filelist.json")
+        self.assertEquals(cfg.summary, "JSON Configuration test")
+        self.assertEquals(cfg.ignore_owner, True)
+        self.assertEquals(cfg.no_mock, True)
+
+        self.assertNotEquals(cfg.files, None)
+        self.assertFalse(cfg.missing_files())
 
 
 # vim:sw=4 ts=4 et:
