@@ -352,9 +352,8 @@ def find_template(template, search_paths=TEMPLATE_SEARCH_PATHS):
     1. Try the path ($template)
     2. Try $path + $template where $path in $search_paths
 
-    @param  template  Template file path may be relative to path in search
-                      paths.
-    @param  search_paths  Path list to search for the template
+    :param template: Template file path may be relative to path in paths.
+    :param search_paths: Path list to search for the template
     """
     # The path at the top is special (system search path).
     # Make it searched at last.
@@ -431,6 +430,23 @@ def rm_rf(target):
         os.removedirs(target)
 
 
+def format_date(type=None):
+    """
+    TODO: how to output in rfc2822 format w/o email.Utils.formatdate?
+    ("%z" for strftime does not look working.)
+    """
+    locale.setlocale(locale.LC_TIME, "C")
+
+    if type == DATE_FMT_RFC2822:
+        fmt = "%a, %d %b %Y %T +0000"
+    elif type == DATE_FMT_SIMPLE:
+        fmt = "%Y%m%d"
+    else:
+        fmt = "%a %b %_d %Y"
+
+    return datetime.datetime.now().strftime(fmt)
+
+
 def cache_needs_updates_p(cache_file, expires=0):
     if expires == 0 or not os.path.exists(cache_file):
         return True
@@ -452,11 +468,11 @@ def sort_out_paths_by_dir(paths):
     """
     Sort out files by dirs.
 
-    @paths  path list, e.g.
+    :param paths: path list, e.g.
         ["/etc/resolv.conf", "/etc/sysconfig/iptables",
             "/etc/sysconfig/network"]
 
-    @return path list grouped by dirs, e.g.
+    :return: path list grouped by dirs, e.g.
         [{"dir": "/etc", "files": ["/etc/resolv.conf"], "id": "0"},
          {"dir": "/etc/sysconfig", "files": ["/etc/sysconfig/iptables"],
             "id": "1"}]

@@ -346,6 +346,30 @@ class Test_compile_template(unittest.TestCase):
         self.assertEquals("a=1 b=b", compile_template(tmpl, params))
 
 
+class Test_date(unittest.TestCase):
+
+    def test_date__default(self):
+        self.assertNotEquals(
+            re.match(r".{3} .{3} +\d+ \d{4}", format_date()),
+            None
+        )
+
+    def test_date__simple(self):
+        self.assertNotEquals(
+            re.match(r"\d{8}", format_date(DATE_FMT_SIMPLE)),
+            None
+        )
+
+    def test_date__rfc2822(self):
+        self.assertNotEquals(
+            re.match(
+                r".{3}, \d{1,2} .* \d{4} \d{2}:\d{2}:\d{2} \+\d{4}",
+                format_date(DATE_FMT_RFC2822)
+            ),
+            None
+        )
+
+
 class Test_sort_out_paths_by_dir(unittest.TestCase):
 
     def setUp(self):
