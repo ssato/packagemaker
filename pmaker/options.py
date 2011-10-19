@@ -116,6 +116,7 @@ class Options(Bunch):
         :param env: environment values :: E.Env
         """
         self.env = env is None and E.Env() or env
+        self.config = None
 
         self.cparser = Anycfg.AnyConfigParser()
         self.oparser = optparse.OptionParser(HELP_HEADER,
@@ -301,8 +302,19 @@ class Options(Bunch):
         """
         Try loading default config files and applying configurations.
         """
-        config = self.cparser.loads(PMAKER_NAME)
+        config = self.cparser.loads(PMAKER_NAME)  # :: Bunch
         self.set_defaults(self.defaults, config)
+
+        self.config = config
+
+    def __filelist_is_missing(self, args):
+        """
+        Check if filelist is given already through config files.
+
+        self.config.files may have [fileobj] or args[0] may be a input file
+        having list of file paths.
+        """
+        return "files" not in self.config and len(args) < 1
 
     def parse_args(self, argv):
         self.load_default_configs()
@@ -312,6 +324,8 @@ class Options(Bunch):
             config = self.cparser.load(config)
             self.set_defaults(self.defaults, config)
 
+            self.config.update(config)
+
             # retry option parsing with this configuration:
             (options, args) = self.oparser.parse_args(argv)
 
@@ -320,6 +334,19 @@ class Options(Bunch):
 
         if options.summary is None:
             options.summary = self.make_default_summary(options.name)
+
+        try:
+            loglevel = [
+                logging.WARN, logging.INFO, logging.DEBUG
+            ][options.verbosity]
+        except IndexError:
+            loglevel = logging.WARN
+
+        logging.getLogger().setLevel(loglevel)
+
+        if self.__filelist_is_missing(args):
+            self.oparser.print_usage()
+            raise RuntimeError("Filelist was not given.")
 
         return (options, args)
 

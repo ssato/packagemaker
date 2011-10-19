@@ -98,11 +98,11 @@ class Test_01_Options(unittest.TestCase):
         self.assertNotEquals(o.defaults, o_ref.defaults)
         self.assertEquals(o.defaults.verbosity, defaults.verbosity)
 
-    def test_02_parse_args_w_name(self):
+    def test_02_parse_args_w_name_and_filelist(self):
         name = "foo"
 
         o = Options()
-        (opts, args) = o.parse_args(["-n", name])
+        (opts, args) = o.parse_args(["-n", name, "dummy_filelist.txt"])
 
         for k, v in o.defaults.iteritems():
             if k not in ("name", "summary"):
@@ -115,52 +115,62 @@ class Test_01_Options(unittest.TestCase):
                 else:
                     self.assertEquals(v2, o.make_default_summary(name))
 
-    def test_03_parse_args_w_name_and_verbose(self):
+    def test_03_parse_args_w_name_and_filelist_and_verbose(self):
         name = "foo"
 
         o = Options()
-        (opts, args) = o.parse_args(["-n", name, "-v"])
+        (opts, args) = o.parse_args(["-n", name, "-v", "dummy_filelist.txt"])
 
         self.assertEquals(opts.name, name)
         self.assertEquals(opts.verbosity, 1)
 
-        (opts, args) = o.parse_args(["-n", name, "-vv"])
+        (opts, args) = o.parse_args(["-n", name, "-vv", "dummy_filelist.txt"])
         self.assertEquals(opts.verbosity, 2)
 
-        (opts, args) = o.parse_args(["-n", name, "--debug"])
+        (opts, args) = o.parse_args(
+            ["-n", name, "--debug", "dummy_filelist.txt"]
+        )
         self.assertEquals(opts.verbosity, 2)
 
-    def test_04_parse_args_w_name_and_template_path(self):
+    def test_04_parse_args_w_name_and_filelist_and_template_path(self):
         name = "foo"
         cwd = os.path.join(os.getcwd(), "templates")
         paths_ref = E.Env().template_paths + [cwd]
 
         o = Options()
-        (opts, args) = o.parse_args(["-n", name, "--template-path", cwd])
+        (opts, args) = o.parse_args(
+            ["-n", name, "--template-path", cwd, "dummy_filelist.txt"]
+        )
         self.assertEquals(opts.template_paths, paths_ref)
 
-    def test_05_parse_args_w_name_and_input_type(self):
+    def test_05_parse_args_w_name_and_filelist_and_input_type(self):
         name = "foo"
         input_type = "filelist.json"
 
         o = Options()
-        (opts, args) = o.parse_args(["-n", name, "--input-type", input_type])
+        (opts, args) = o.parse_args(
+            ["-n", name, "--input-type", input_type, "dummy_filelist.txt"]
+        )
         self.assertEquals(opts.input_type, input_type)
 
-    def test_06_parse_args_w_name_and_driver(self):
+    def test_06_parse_args_w_name_and_filelist_and_driver(self):
         name = "foo"
         driver = random.choice(
             [b for b in Backends.map().keys() if b != Backends.default()]
         )
 
         o = Options()
-        (opts, args) = o.parse_args(["-n", name, "--driver", driver])
+        (opts, args) = o.parse_args(
+            ["-n", name, "--driver", driver, "dummy_filelist.txt"]
+        )
         self.assertEquals(opts.driver, driver)
 
-        (opts, args) = o.parse_args(["-n", name, "--backend", driver])
+        (opts, args) = o.parse_args(
+            ["-n", name, "--backend", driver, "dummy_filelist.txt"]
+        )
         self.assertEquals(opts.driver, driver)
 
-    def test_07_parse_args_w_name_and_compressor(self):
+    def test_07_parse_args_w_name_and_filelist_and_compressor(self):
         name = "foo"
         env = E.Env()
         compressor = random.choice(
@@ -171,14 +181,18 @@ class Test_01_Options(unittest.TestCase):
         )
 
         o = Options()
-        (opts, args) = o.parse_args(["-n", name, "--compressor", compressor])
+        (opts, args) = o.parse_args(
+            ["-n", name, "--compressor", compressor, "dummy_filelist.txt"]
+        )
         self.assertEquals(opts.compressor, compressor)
 
-    def test_08_parse_args_w_name_and_no_mock(self):
+    def test_08_parse_args_w_name_and_filelist_and_no_mock(self):
         name = "foo"
 
         o = Options()
-        (opts, args) = o.parse_args(["-n", name, "--no-mock"])
+        (opts, args) = o.parse_args(
+            ["-n", name, "--no-mock", "dummy_filelist.txt"]
+        )
         self.assertTrue(opts.no_mock)
 
 
