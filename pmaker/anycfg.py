@@ -201,10 +201,15 @@ if yaml is not None:
 
 class AnyConfigParser(object):
 
+    def __init__(self, forced_class=None):
+        """
+         :param forced_class: Force set configuration parser class.
+        """
+        self.forced_class = forced_class
+
     def guess_class(self, conf, default=IniConfigParser):
         """
         :param conf: Configuration file path
-        :param default: Default configuration file parser's class
         """
         cls = default
         fn_ext = os.path.splitext(conf)
@@ -221,12 +226,13 @@ class AnyConfigParser(object):
     def load(self, conf, forced_class=None, **kwargs):
         """
         :param conf:  Path to configuration file.
-        :param forced_class: Force set configuration parser class.
         """
-        if forced_class is None:
-            cls = self.guess_class(conf)
-        else:
+        if forced_class is not None:
             cls = forced_class
+        elif self.forced_class is not None:
+            cls = self.forced_class
+        else:
+            cls = self.guess_class(conf)
 
         parser = cls()
 
