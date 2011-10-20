@@ -32,6 +32,17 @@ class Test_01_functions(unittest.TestCase):
 
         self.assertTrue(isinstance(dfs, Bunch))
 
+    def test_01__defaults_w_modified_env(self):
+        dfs_ref = _defaults(E.Env())
+
+        env = E.Env()
+        env.workdir = "/a/b/c"  # modified.
+
+        dfs = _defaults(E.Env())
+
+        self.assertNotEquals(dfs_ref, dfs)
+        self.assertEquals(dfs.workdir, env.workdir)
+
 
 class Test_02_Config(unittest.TestCase):
 

@@ -14,11 +14,10 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
+from pmaker.globals import PMAKER_VERSION
 from pmaker.models.Bunch import Bunch
-from pmaker.globals import PMAKER_NAME, PMAKER_VERSION
-from pmaker.utils import singleton
 
-import pmaker.anycfg as Anycfg
+import pmaker.configurations as Cfg
 import pmaker.collectors.Collectors as Collectors
 import pmaker.backend.registry as Backends
 import pmaker.environ as E
@@ -26,7 +25,6 @@ import pmaker.parser as P
 
 import logging
 import optparse
-import os
 import os.path
 import sys
 
@@ -110,83 +108,36 @@ def set_workdir(workdir, name, pversion):
 
 class Options(Bunch):
 
-    def __init__(self, defaults=None, env=None, **kwargs):
+    def __init__(self, **kwargs):
         """
-        :param defaults: Defalut values for options :: Bunch
-        :param env: environment values :: E.Env
         """
-        self.env = env is None and E.Env() or env
-        self.config = None
-
-        self.cparser = Anycfg.AnyConfigParser()
+        self.env = E.Env()
+        self.config = Cfg.Config()
         self.oparser = optparse.OptionParser(HELP_HEADER,
                                              version=VERSION_STRING,
                                              )
-        self.set_defaults(defaults, env)
+        self.set_defaults()
 
         self.__setup_common_options()
         self.__setup_build_options()
         self.__setup_metadata_options()
         self.__setup_rpm_options()
 
-    def _defaults(self, env=None):
+    def get_defaults(self):
+        return self.oparser.defaults
+
+    def set_defaults(self, config=None, norc=True):
         """
-        """
-        env = env is None and self.env or env
-
-        defaults = Bunch()
-
-        defaults.config = None
-        defaults.force = False
-        defaults.verbosity = 0  # verbose and debug option.
-
-        # build options:
-        defaults.workdir = env.workdir
-        defaults.stepto = env.upto
-        defaults.input_type = Collectors.default()  # e.g. "filelist.json"
-        defaults.driver = Backends.default()  # e.g. "autotools.single.rpm"
-        defaults.destdir = ""
-        defaults.template_paths = env.template_paths
-
-        # package metadata options:
-        defaults.name = None
-        defaults.group = "System Environment/Base"
-        defaults.license = "GPLv3+"
-        defaults.url = "http://localhost.localdomain"
-        defaults.summary = None
-        defaults.compressor = env.compressor.extension  # extension
-        defaults.arch = False
-        defaults.relations = ""
-        defaults.packager = env.fullname
-        defaults.email = env.email
-        defaults.pversion = "0.0.1"
-        defaults.release = "1"
-        defaults.ignore_owner = False
-        defaults.changelog = None
-
-        # rpm options:
-        defaults.dist = env.dist.label
-        defaults.no_rpmdb = False
-        defaults.no_mock = False
-
-        return defaults
-
-    def set_defaults(self, defaults=None, config=None, env=None):
-        """
-        :param defaults: Default values for options :: Bunch
         :param config:  Configuration file path :: str
-        :param env: Some default values from environment :: Bunch
+        :param norc: No rc, i.e. do not load any default configs at all.
         """
-        env = env is None and self.env or env
+        if config is None:
+            if not norc:
+                self.config.load_default_configs()
+        else:
+            self.config.load(config)
 
-        if defaults is None:
-            defaults = self._defaults(env)
-
-        if config is not None:
-            defaults.update(config)
-
-        self.defaults = defaults
-        self.oparser.set_defaults(**defaults)
+        self.oparser.set_defaults(**self.config)
 
     def __setup_common_options(self):
         """
@@ -195,6 +146,8 @@ class Options(Bunch):
         add_option = self.oparser.add_option
 
         add_option("-C", "--config", help="Configuration file path")
+        add_option("", "--norc", help="Make default configurations not loaded")
+
         add_option("", "--force", action="store_true",
             help="Force going steps even if the steps looks done")
         add_option("-v", "--verbose", action="count", dest="verbosity",
@@ -298,35 +251,26 @@ class Options(Bunch):
     def make_default_summary(self, name):
         return "Custom package of " + name
 
-    def load_default_configs(self):
+    def missing_files(self, args):
         """
-        Try loading default config files and applying configurations.
+        Check if filelist is given already through config files or as
+        rest of arguments.
         """
-        config = self.cparser.loads(PMAKER_NAME)  # :: Bunch
-        self.set_defaults(self.defaults, config)
+        return self.config.missing_files() and len(args) < 1
 
-        self.config = config
-
-    def __filelist_is_missing(self, args):
-        """
-        Check if filelist is given already through config files.
-
-        self.config.files may have [fileobj] or args[0] may be a input file
-        having list of file paths.
-        """
-        return "files" not in self.config and len(args) < 1
-
-    def parse_args(self, argv):
-        self.load_default_configs()
+    def parse_args(self, argv=sys.argv[1:]):
         (options, args) = self.oparser.parse_args(argv)
 
-        if options.config is not None:
-            config = self.cparser.load(config)
-            self.set_defaults(self.defaults, config)
-
-            self.config.update(config)
+        if not options.norc:
+            self.set_defaults(norc=False)
 
             # retry option parsing with this configuration:
+            (options, args) = self.oparser.parse_args(argv)
+
+        if options.config is not None:
+            self.set_defaults(options.config, norc=True)
+
+            # Likewise:
             (options, args) = self.oparser.parse_args(argv)
 
         if options.name is None:
@@ -344,7 +288,7 @@ class Options(Bunch):
 
         logging.getLogger().setLevel(loglevel)
 
-        if self.__filelist_is_missing(args):
+        if self.missing_files(args):
             self.oparser.print_usage()
             raise RuntimeError("Filelist was not given.")
 

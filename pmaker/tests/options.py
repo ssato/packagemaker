@@ -18,6 +18,7 @@ from pmaker.options import *
 from pmaker.models.Bunch import Bunch
 from pmaker.tests.common import setup_workdir, cleanup_workdir
 
+import pmaker.configurations as C
 import pmaker.parser as P
 import pmaker.environ as E
 
@@ -63,48 +64,29 @@ class Test_00_functions(unittest.TestCase):
 
 class Test_01_Options(unittest.TestCase):
 
-    def test_00__init__wo_args(self):
+    def test_00__init__(self):
         o = Options()
 
-        # # pmaker.options.Options is not resolvable because it would be
-        # # hide (decorated) with pmaker.utils.singleton(). Here we use
-        # # Bunch (parent class of Options class) instead.
+        # pmaker.options.Options is not resolvable because it would be hide
+        # (decorated) with pmaker.utils.singleton() if it's decorated with
+        # singleton() (@singleton). Here we use Bunch (parent class of Options
+        # class) instead in such cases:
         # self.assertTrue(isinstance(o, Bunch))
         ## pmaker.options.Options is now not singleton:
         self.assertTrue(isinstance(o, Options))
 
-        initial_defaults = o._defaults()
-        self.assertEquals(o.defaults, initial_defaults)
+        dfs = o.get_defaults()
 
-    def test_01__init__w_modified_env(self):
-        o_ref = Options()
+        for k, v in C._defaults(E.Env()).iteritems():
+            self.assertEquals(dfs[k], v)
 
-        env = E.Env()
-        env.workdir = "/tmp/a/b/c"  # Override it.
-
-        o = Options(env=env)
-
-        self.assertNotEquals(o.defaults, o_ref.defaults)
-        self.assertEquals(o.defaults.workdir, env.workdir)
-
-    def test_01__init__w_modified_defaults(self):
-        o_ref = Options()
-
-        defaults = Bunch(**o_ref.defaults.copy())
-        defaults.verbosity = 100
-
-        o = Options(defaults=defaults)
-
-        self.assertNotEquals(o.defaults, o_ref.defaults)
-        self.assertEquals(o.defaults.verbosity, defaults.verbosity)
-
-    def test_02_parse_args_w_name_and_filelist(self):
+    def test_01_parse_args_w_name_and_filelist(self):
         name = "foo"
 
         o = Options()
         (opts, args) = o.parse_args(["-n", name, "dummy_filelist.txt"])
 
-        for k, v in o.defaults.iteritems():
+        for k, v in o.get_defaults().iteritems():
             if k not in ("name", "summary"):
                 self.assertEquals(getattr(opts, k), v)
             else:
@@ -115,7 +97,7 @@ class Test_01_Options(unittest.TestCase):
                 else:
                     self.assertEquals(v2, o.make_default_summary(name))
 
-    def test_03_parse_args_w_name_and_filelist_and_verbose(self):
+    def test_02_parse_args_w_name_and_filelist_and_verbose(self):
         name = "foo"
 
         o = Options()
@@ -132,7 +114,7 @@ class Test_01_Options(unittest.TestCase):
         )
         self.assertEquals(opts.verbosity, 2)
 
-    def test_04_parse_args_w_name_and_filelist_and_template_path(self):
+    def test_03_parse_args_w_name_and_filelist_and_template_path(self):
         name = "foo"
         cwd = os.path.join(os.getcwd(), "templates")
         paths_ref = E.Env().template_paths + [cwd]
@@ -143,7 +125,7 @@ class Test_01_Options(unittest.TestCase):
         )
         self.assertEquals(opts.template_paths, paths_ref)
 
-    def test_05_parse_args_w_name_and_filelist_and_input_type(self):
+    def test_04_parse_args_w_name_and_filelist_and_input_type(self):
         name = "foo"
         input_type = "filelist.json"
 
@@ -153,7 +135,7 @@ class Test_01_Options(unittest.TestCase):
         )
         self.assertEquals(opts.input_type, input_type)
 
-    def test_06_parse_args_w_name_and_filelist_and_driver(self):
+    def test_05_parse_args_w_name_and_filelist_and_driver(self):
         name = "foo"
         driver = random.choice(
             [b for b in Backends.map().keys() if b != Backends.default()]
@@ -170,7 +152,7 @@ class Test_01_Options(unittest.TestCase):
         )
         self.assertEquals(opts.driver, driver)
 
-    def test_07_parse_args_w_name_and_filelist_and_compressor(self):
+    def test_06_parse_args_w_name_and_filelist_and_compressor(self):
         name = "foo"
         env = E.Env()
         compressor = random.choice(
@@ -186,7 +168,7 @@ class Test_01_Options(unittest.TestCase):
         )
         self.assertEquals(opts.compressor, compressor)
 
-    def test_08_parse_args_w_name_and_filelist_and_no_mock(self):
+    def test_07_parse_args_w_name_and_filelist_and_no_mock(self):
         name = "foo"
 
         o = Options()
