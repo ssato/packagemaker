@@ -29,6 +29,8 @@ def _defaults(env):
     """
     defaults = Bunch()
 
+    defaults.config = None
+    defaults.norc = False
     defaults.force = False
     defaults.verbosity = 0  # verbose and debug option.
 
