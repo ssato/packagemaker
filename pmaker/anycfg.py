@@ -43,15 +43,26 @@ except ImportError:
         json = None
 
 
-def list_paths(basename, paths=None):
+CONFIG_EXTS = [INI_EXTS, JSON_EXTS, YAML_EXTS] = [
+    ("ini", ), ("json", "jsn"), ("yaml", "yml")
+]
+EXT2CLASS_MAP = dict()
+
+
+def list_paths(basename, paths=None, ext="conf"):
+    """
+    :param basename: Application's basic name, e.g. pmaker.
+    :param paths: Configuration path list.
+    :param ext: Extension of configuration files.
+    """
     if paths is None:
         home = os.environ.get("HOME", os.curdir)
 
         paths = []
 
         if basename is not None:
-            paths += ["/etc/%s.conf" % basename]
-            paths += sorted(glob.glob("/etc/%s.d/*.conf" % basename))
+            paths += ["/etc/%s.%s" % (basename, ext)]
+            paths += sorted(glob.glob("/etc/%s.d/*.%s" % (basename, ext)))
             paths += [os.path.join(home, ".config", basename)]
             paths += [
                 os.environ.get(
@@ -108,96 +119,116 @@ class IniConfigParser(object):
         return config
 
 
+EXT2CLASS_MAP[INI_EXTS] = IniConfigParser
+
+
 def dict_to_bunch(json_obj_dict):
     return Bunch(**json_obj_dict)
 
 
-class JsonConfigPaser(IniConfigParser):
+if json is not None:
 
-    def load(self, path_, *args, **kwargs):
-        if json is None:
-            logging.warn("JSON is not a supported configuration format.")
-            return Bunch()
-        else:
-            return json.load(open(path_), object_hook=dict_to_bunch)
+    class JsonConfigPaser(IniConfigParser):
+
+        def load(self, path_, *args, **kwargs):
+            if json is None:
+                logging.warn("JSON is not a supported configuration format.")
+                return Bunch()
+            else:
+                return json.load(open(path_), object_hook=dict_to_bunch)
+
+    EXT2CLASS_MAP[JSON_EXTS] = JsonConfigPaser
 
 
-# @see http://bit.ly/pxKVqS
-class YamlBunchLoader(yaml.Loader):
+if yaml is not None:
 
-    def __init__(self, *args, **kwargs):
-        yaml.Loader.__init__(self, *args, **kwargs)
+    # @see http://bit.ly/pxKVqS
+    class YamlBunchLoader(yaml.Loader):
 
-        self.add_constructor(
-            u"tag:yaml.org,2002:map",
-            type(self).construct_yaml_map
-        )
+        def __init__(self, *args, **kwargs):
+            yaml.Loader.__init__(self, *args, **kwargs)
 
-    def construct_yaml_map(self, node):
-        data = Bunch()
-        yield data
-
-        value = self.construct_mapping(node)
-        data.update(value)
-
-    def construct_mapping(self, node, deep=False):
-        if isinstance(node, yaml.MappingNode):
-            self.flatten_mapping(node)
-        else:
-            raise yaml.constructor.ConstructorError(None, None,
-                "expected a mapping node, but found %s" % node.id,
-                node.start_mark
+            self.add_constructor(
+                u"tag:yaml.org,2002:map",
+                type(self).construct_yaml_map
             )
 
-        mapping = Bunch()
+        def construct_yaml_map(self, node):
+            data = Bunch()
+            yield data
 
-        for key_node, value_node in node.value:
-            key = self.construct_object(key_node, deep=deep)
-            try:
-                hash(key)
-            except TypeError, exc:
-                raise yaml.constructor.ConstructorError(
-                    "while constructing a mapping",
-                    node.start_mark,
-                    "found unacceptable key (%s)" % exc,
-                    key_node.start_mark
+            value = self.construct_mapping(node)
+            data.update(value)
+
+        def construct_mapping(self, node, deep=False):
+            if isinstance(node, yaml.MappingNode):
+                self.flatten_mapping(node)
+            else:
+                raise yaml.constructor.ConstructorError(None, None,
+                    "expected a mapping node, but found %s" % node.id,
+                    node.start_mark
                 )
-            value = self.construct_object(value_node, deep=deep)
-            mapping[key] = value
 
-        return mapping
+            mapping = Bunch()
 
+            for key_node, value_node in node.value:
+                key = self.construct_object(key_node, deep=deep)
+                try:
+                    hash(key)
+                except TypeError, exc:
+                    raise yaml.constructor.ConstructorError(
+                        "while constructing a mapping",
+                        node.start_mark,
+                        "found unacceptable key (%s)" % exc,
+                        key_node.start_mark
+                    )
+                value = self.construct_object(value_node, deep=deep)
+                mapping[key] = value
 
-class YamlConfigPaser(IniConfigParser):
+            return mapping
 
-    def load(self, path_, *args, **kwargs):
-        if yaml is None:
-            logging.warn("YAML is not a supported configuration format.")
-            return Bunch()
-        else:
-            return yaml.load(open(path_), Loader=YamlBunchLoader)
+    class YamlConfigPaser(IniConfigParser):
+
+        def load(self, path_, *args, **kwargs):
+            if yaml is None:
+                logging.warn("YAML is not a supported configuration format.")
+                return Bunch()
+            else:
+                return yaml.load(open(path_), Loader=YamlBunchLoader)
+
+    EXT2CLASS_MAP[YAML_EXTS] = YamlConfigPaser
 
 
 class AnyConfigParser(object):
 
-    def load(self, conf, **kwargs):
+    def guess_class(self, conf, default=IniConfigParser):
         """
-        :param conf:  Path to configuration file.
+        :param conf: Configuration file path
+        :param default: Default configuration file parser's class
         """
+        cls = default
         fn_ext = os.path.splitext(conf)
-        parser = IniConfigParser()  # Default parser.
 
         if len(fn_ext) > 1:
             ext = fn_ext[1].lower()[1:]  # strip '.' at the head.
-            print ext
 
-            if ext in ("json", "jsn"):
-                logging.debug(" Use JsonConfigPaser for " + conf)
-                parser = JsonConfigPaser()
+            for exts in EXT2CLASS_MAP.keys():
+                if ext in exts:
+                    cls = EXT2CLASS_MAP[exts]
 
-            elif ext in ("yaml", "yml"):
-                logging.debug(" Use YamlConfigPaser for " + conf)
-                parser = YamlConfigPaser()
+        return cls
+
+    def load(self, conf, forced_class=None, **kwargs):
+        """
+        :param conf:  Path to configuration file.
+        :param forced_class: Force set configuration parser class.
+        """
+        if forced_class is None:
+            cls = self.guess_class(conf)
+        else:
+            cls = forced_class
+
+        parser = cls()
 
         return parser.load(conf, **kwargs)
 
@@ -212,5 +243,6 @@ class AnyConfigParser(object):
             config.update(c)
 
         return config
+
 
 # vim:sw=4 ts=4 et:
