@@ -48,7 +48,7 @@ CONFIG_EXTS = [INI_EXTS, JSON_EXTS, YAML_EXTS, ] = [
 ]
 EXT2CLASS_MAP = dict()
 
-CONFIG_TYPES = [CONFIG_TYPE_INI, CONFIG_TYPE_JSON, CONFIG_TYPE_YAML, ] = [
+CTYPES = [CTYPE_INI, CTYPE_JSON, CTYPE_YAML, ] = [
     "ini", "json", "yaml",
 ]
 CTYPE2CLASS_MAP = dict()
@@ -125,7 +125,7 @@ class IniConfigParser(object):
 
 
 EXT2CLASS_MAP[INI_EXTS] = IniConfigParser
-CTYPE2CLASS_MAP[CONFIG_TYPE_INI] = IniConfigParser
+CTYPE2CLASS_MAP[CTYPE_INI] = IniConfigParser
 
 
 def dict_to_bunch(json_obj_dict):
@@ -143,7 +143,7 @@ class JsonConfigPaser(IniConfigParser):
 
 
 EXT2CLASS_MAP[JSON_EXTS] = JsonConfigPaser
-CTYPE2CLASS_MAP[CONFIG_TYPE_JSON] = JsonConfigPaser
+CTYPE2CLASS_MAP[CTYPE_JSON] = JsonConfigPaser
 
 
 if yaml is not None:
@@ -205,7 +205,7 @@ class YamlConfigPaser(IniConfigParser):
 
 
 EXT2CLASS_MAP[YAML_EXTS] = YamlConfigPaser
-CTYPE2CLASS_MAP[CONFIG_TYPE_YAML] = YamlConfigPaser
+CTYPE2CLASS_MAP[CTYPE_YAML] = YamlConfigPaser
 
 
 class AnyConfigParser(object):
