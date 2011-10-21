@@ -18,11 +18,10 @@ import logging
 import os.path
 
 
-
 class FileInfoModifier(object):
     """
-    Base class to transform some specific attributes of FileInfo objects during
-    Collector.collect().
+    Base class to transform some specific attributes of FileObject instances
+    during Collector.run().
     """
 
     _priority = 0
@@ -33,15 +32,13 @@ class FileInfoModifier(object):
     def __cmp__(self, other):
         return cmp(self._priority, other._priority)
 
-    def update(self, fileinfo, *args, **kwargs):
-        """This method is just a template and returns given fileinfo w/ no
+    def update(self, fileobj, *args, **kwargs):
+        """This method is just a template and returns given fileobj w/ no
         modification.
 
-        @fileinfo FileInfo object
-        @target   Target objecr
+        :param fileobj: FileObject object
         """
-        return fileinfo
-
+        return fileobj  # It's just a template and do nothing. 
 
 
 class DestdirModifier(FileInfoModifier):
@@ -71,16 +68,22 @@ class DestdirModifier(FileInfoModifier):
             if not new_path.startswith(os.path.sep):
                 new_path = os.path.sep + new_path
 
-            logging.debug("Rewrote installation path from %s to %s" % (path, new_path))
+            logging.debug(
+                "Rewrote installation path from %s to %s" % (path, new_path)
+            )
             return new_path
         else:
-            logging.error(" The path '%s' does not start with '%s'" % (path, self.destdir))
-            raise RuntimeError("Destdir and the actual file path are inconsistent.")
+            logging.error(
+                "The path '%s' does not start with '%s'" % (path, self.destdir)
+            )
+            raise RuntimeError(
+                "Destdir and the actual file path are inconsistent."
+            )
 
-    def update(self, fileinfo, *args, **kwargs):
-        fileinfo.target = fileinfo.install_path = self.rewrite_with_destdir(fileinfo.path)
-        return fileinfo
-
+    def update(self, fileobj, *args, **kwargs):
+        fileobj.target = fileobj.install_path = \
+            self.rewrite_with_destdir(fileobj.path)
+        return fileobj
 
 
 class OwnerModifier(FileInfoModifier):
@@ -91,32 +94,31 @@ class OwnerModifier(FileInfoModifier):
         self.uid = owner_uid
         self.gid = owner_gid
 
-    def update(self, fileinfo, *args, **kwargs):
-        fileinfo.uid = self.uid
-        fileinfo.gid = self.gid
+    def update(self, fileobj, *args, **kwargs):
+        fileobj.uid = self.uid
+        fileobj.gid = self.gid
 
-        return fileinfo
-
+        return fileobj
 
 
 class AttributeModifier(FileInfoModifier):
 
     _priority = 9
 
-    def update(self, fileinfo, attrs=dict(), *args, **kwargs):
+    def update(self, fileobj, attrs=dict(), *args, **kwargs):
         """
-        @fileinfo  FileInfo object
-        @attrs     FileInfo attributes to overwrite
+        :param fileobj:  FileObject instance
+        :param attrs:  FileObject's attributes to overwrite
         """
         for attr, val in attrs.iteritems():
-            if attr == "path":  # fileinfo.path must not be overridden.
-                logging.warn("You cannot overwrite path: path=" + fileinfo.path)
+            if attr == "path":  # fileobj.path must not be overridden.
+                logging.warn("You cannot overwrite path: path=" + fileobj.path)
                 continue
 
-            logging.info("Override %s=%s: path=%s" % (attr, val, fileinfo.path))
-            setattr(fileinfo, attr, val)
+            logging.info("Override %s=%s: path=%s" % (attr, val, fileobj.path))
+            setattr(fileobj, attr, val)
 
-        return fileinfo
+        return fileobj
 
 
-# vim: set sw=4 ts=4 expandtab:
+# vim:sw=4 ts=4 et:

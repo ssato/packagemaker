@@ -22,9 +22,8 @@ import os.path
 import unittest
 
 
-
 class Test_00_FileInfoModifier(unittest.TestCase):
-    
+
     def setUp(self):
         self.modifier = FileInfoModifier()
 
@@ -33,12 +32,17 @@ class Test_00_FileInfoModifier(unittest.TestCase):
         self.assertEquals(fi, self.modifier.update(fi))
 
 
-
 class Test_01_DestdirModifier(unittest.TestCase):
 
     def test_rewrite_with_destdir__normal(self):
-        self.assertEquals(DestdirModifier("/a/b").rewrite_with_destdir("/a/b/c"), "/c")
-        self.assertEquals(DestdirModifier("/a/b/").rewrite_with_destdir("/a/b/c"), "/c")
+        self.assertEquals(
+            DestdirModifier("/a/b").rewrite_with_destdir("/a/b/c"),
+            "/c"
+        )
+        self.assertEquals(
+            DestdirModifier("/a/b/").rewrite_with_destdir("/a/b/c"),
+            "/c"
+        )
 
     def test_00_rewrite_with_destdir__no_destdir(self):
         try:
@@ -54,12 +58,11 @@ class Test_01_DestdirModifier(unittest.TestCase):
         self.assertEquals(new_fi.install_path, "/c")
 
 
-
 class Test_02_OwnerModifier(unittest.TestCase):
 
     def test_00_wo_uid_and_gid(self):
         fi = FileInfo("/a/b/c", uid=1, gid=1)
-        modifier = OwnerModifier() # owner_{uid,gid} = 0
+        modifier = OwnerModifier()  # owner_{uid,gid} = 0
 
         fi = modifier.update(fi)
 
@@ -76,7 +79,6 @@ class Test_02_OwnerModifier(unittest.TestCase):
         self.assertEquals(fi.gid, 100)
 
 
-
 class Test_03_AttributeModifier(unittest.TestCase):
 
     def test_00_update(self):
@@ -89,4 +91,4 @@ class Test_03_AttributeModifier(unittest.TestCase):
         self.assertEquals(fi.uid, 0)
 
 
-# vim: set sw=4 ts=4 expandtab:
+# vim:sw=4 ts=4 et:
