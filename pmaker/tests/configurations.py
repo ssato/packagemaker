@@ -48,7 +48,6 @@ class Test_02_Config(unittest.TestCase):
 
     def setUp(self):
         self.workdir = setup_workdir()
-        self.config = os.path.join(self.workdir, "test_config.json")
 
     def tearDown(self):
         cleanup_workdir(self.workdir)
@@ -63,8 +62,12 @@ class Test_02_Config(unittest.TestCase):
         self.assertTrue(cfg.missing_files())
 
     def test_01__norc_and_load_json_config(self):
+        if E.json is None:
+            return True
+
         cfg = Config(norc=True)
         dfs = _defaults(E.Env())
+        config = os.path.join(self.workdir, "test_config.json")
 
         content = """
 {
@@ -87,12 +90,47 @@ class Test_02_Config(unittest.TestCase):
     ]
 }
 """
-        open(self.config, "w").write(content)
-        cfg.load(self.config)
+        open(config, "w").write(content)
+        cfg.load(config)
 
         self.assertEquals(cfg.verbosity, 1)
         self.assertEquals(cfg.input_type, "filelist.json")
         self.assertEquals(cfg.summary, "JSON Configuration test")
+        self.assertEquals(cfg.ignore_owner, True)
+        self.assertEquals(cfg.no_mock, True)
+
+        self.assertNotEquals(cfg.files, None)
+        self.assertFalse(cfg.missing_files())
+
+    def test_02__norc_and_load_yaml_config(self):
+        if E.yaml is None:
+            return True
+
+        cfg = Config(norc=True)
+        dfs = _defaults(E.Env())
+        config = os.path.join(self.workdir, "test_config.yaml")
+
+        content = """
+verbosity: 1
+input_type: filelist.yaml
+summary: YAML Configuration test
+ignore_owner: true
+no_mock: true
+files:
+    - path: /a/b/c
+      attrs:
+        create: true
+        install_path: /a/c
+        uid: 100
+        gid: 0
+        rpmattr: "%config(noreplace)"
+"""
+        open(config, "w").write(content)
+        cfg.load(config)
+
+        self.assertEquals(cfg.verbosity, 1)
+        self.assertEquals(cfg.input_type, "filelist.yaml")
+        self.assertEquals(cfg.summary, "YAML Configuration test")
         self.assertEquals(cfg.ignore_owner, True)
         self.assertEquals(cfg.no_mock, True)
 

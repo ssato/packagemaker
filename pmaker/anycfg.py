@@ -126,18 +126,17 @@ def dict_to_bunch(json_obj_dict):
     return Bunch(**json_obj_dict)
 
 
-if json is not None:
+class JsonConfigPaser(IniConfigParser):
 
-    class JsonConfigPaser(IniConfigParser):
+    def load(self, path_, *args, **kwargs):
+        if json is None:
+            logging.warn("JSON is not a supported configuration format.")
+            return Bunch()
+        else:
+            return json.load(open(path_), object_hook=dict_to_bunch)
 
-        def load(self, path_, *args, **kwargs):
-            if json is None:
-                logging.warn("JSON is not a supported configuration format.")
-                return Bunch()
-            else:
-                return json.load(open(path_), object_hook=dict_to_bunch)
 
-    EXT2CLASS_MAP[JSON_EXTS] = JsonConfigPaser
+EXT2CLASS_MAP[JSON_EXTS] = JsonConfigPaser
 
 
 if yaml is not None:
@@ -187,16 +186,18 @@ if yaml is not None:
 
             return mapping
 
-    class YamlConfigPaser(IniConfigParser):
 
-        def load(self, path_, *args, **kwargs):
-            if yaml is None:
-                logging.warn("YAML is not a supported configuration format.")
-                return Bunch()
-            else:
-                return yaml.load(open(path_), Loader=YamlBunchLoader)
+class YamlConfigPaser(IniConfigParser):
 
-    EXT2CLASS_MAP[YAML_EXTS] = YamlConfigPaser
+    def load(self, path_, *args, **kwargs):
+        if yaml is None:
+            logging.warn("YAML is not a supported configuration format.")
+            return Bunch()
+        else:
+            return yaml.load(open(path_), Loader=YamlBunchLoader)
+
+
+EXT2CLASS_MAP[YAML_EXTS] = YamlConfigPaser
 
 
 class AnyConfigParser(object):
