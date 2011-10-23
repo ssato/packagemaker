@@ -124,14 +124,16 @@ def parse_line_of_filelist(line):
     ...             )
     >>> line = "/etc/resolv.conf"
     >>> line += ",install_path=/var/lib/network/resolv.conf,uid=0,gid=0"
-    >>> fos = parse_line_of_filelist(line)
-    >>> assert fos[0].path == ref.path
-    >>> assert fos[0].install_path == ref.install_path
-    >>> assert fos[0].uid == ref.uid
-    >>> assert fos[0].gid == ref.gid
+    >>> (paths, attrs) = parse_line_of_filelist(line)
+    >>> assert paths[0] == ref.path
+    >>> assert attrs.install_path == ref.install_path
+    >>> assert attrs.uid == ref.uid
+    >>> assert attrs.gid == ref.gid
     """
     ss = parse_list(line.rstrip().strip(), ",")
     pp = ss[0]
+
+    paths = "*" in pp and glob.glob(pp) or [pp]
 
     avs = [
         av for av in (parse_list(a, "=") for a in ss[1:]) if av
@@ -140,7 +142,7 @@ def parse_line_of_filelist(line):
     if "*" in pp:
         attrs.create = False
 
-    return [XObject(p, **attrs) for p in ("*" in pp and glob.glob(pp) or [pp])]
+    return (paths, attrs)
 
 
 # vim:sw=4 ts=4 et:
