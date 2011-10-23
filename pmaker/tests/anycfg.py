@@ -237,5 +237,57 @@ profile0:
 
         self.assertEquals(config, config_ref)
 
+    def test_03_load__init__w_type__json(self):
+        parser = PA.AnyConfigParser(PA.CTYPE_JSON)
+
+        if PA.json:
+            path = dump_conf(self.workdir, JSON_CONFIG_CONTENT, ".conf")
+            config_ref = Bunch(
+                defaults=Bunch(a="aaa", b="bbb"),
+                profile0=Bunch(a="xxx", b="yyy"),
+                array0=[1, 2, 3],
+            )
+            config = parser.load(path)
+            self.assertEquals(config, config_ref)
+
+    def test_04_load__init__w_type__yaml(self):
+        parser = PA.AnyConfigParser(PA.CTYPE_YAML)
+
+        if PA.yaml:
+            path = dump_conf(self.workdir, YAML_CONFIG_CONTENT, ".conf")
+            config_ref = Bunch(
+                defaults=Bunch(a="aaa", b="bbb"),
+                profile0=Bunch(a="xxx", b="yyy"),
+                array0=[1, 2, 3],
+            )
+            config = parser.load(path)
+            self.assertEquals(config, config_ref)
+
+    def test_05_load__w_type_json(self):
+        parser = PA.AnyConfigParser()
+
+        if PA.json:
+            path = dump_conf(self.workdir, JSON_CONFIG_CONTENT, ".conf")
+            config_ref = Bunch(
+                defaults=Bunch(a="aaa", b="bbb"),
+                profile0=Bunch(a="xxx", b="yyy"),
+                array0=[1, 2, 3],
+            )
+            config = parser.load(path, PA.CTYPE_JSON)
+            self.assertEquals(config, config_ref)
+
+    def test_06_load__w_type_yaml(self):
+        parser = PA.AnyConfigParser()
+
+        if PA.yaml:
+            path = dump_conf(self.workdir, YAML_CONFIG_CONTENT, ".conf")
+            config_ref = Bunch(
+                defaults=Bunch(a="aaa", b="bbb"),
+                profile0=Bunch(a="xxx", b="yyy"),
+                array0=[1, 2, 3],
+            )
+            config = parser.load(path, PA.CTYPE_YAML)
+            self.assertEquals(config, config_ref)
+
 
 # vim:sw=4 ts=4 et:

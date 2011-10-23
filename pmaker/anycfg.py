@@ -210,11 +210,11 @@ CTYPE2CLASS_MAP[CTYPE_YAML] = YamlConfigPaser
 
 class AnyConfigParser(object):
 
-    def __init__(self, forced_class=None):
+    def __init__(self, forced_type=None):
         """
-         :param forced_class: Force set configuration parser class.
+        :param forced_type: Force set configuration parser class' type.
         """
-        self.forced_class = forced_class
+        self.forced_class = CTYPE2CLASS_MAP.get(forced_type, None)
 
     def guess_class(self, conf, default=IniConfigParser):
         """
@@ -232,12 +232,12 @@ class AnyConfigParser(object):
 
         return cls
 
-    def load(self, conf, forced_class=None, **kwargs):
+    def load(self, conf, forced_type=None, **kwargs):
         """
         :param conf:  Path to configuration file.
         """
-        if forced_class is not None:
-            cls = forced_class
+        if forced_type is not None:
+            cls = CTYPE2CLASS_MAP[forced_type]  # may throw KeyError
         elif self.forced_class is not None:
             cls = self.forced_class
         else:
