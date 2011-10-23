@@ -76,7 +76,7 @@ class XObject(Bunch):
 
         self.path = path
         self.mode = mode
-        self.uid= uid
+        self.uid = uid
         self.gid = gid
         self.checksum = checksum
         self.create = bool(create)
@@ -87,6 +87,20 @@ class XObject(Bunch):
 
         for k, v in kwargs.iteritems():
             setattr(self, k, v)
+
+    def equals(self, other):
+        ckeys = ("path",
+                 "mode",
+                 "uid",
+                 "gid",
+                 "checksum",
+                 "content",
+                 "src",
+                 "install_path"
+        )
+        return all(
+            getattr(self, k, None) == getattr(other, k, None) for k in ckeys
+        )
 
 
 class FileObject(XObject):
@@ -113,7 +127,7 @@ class FileObject(XObject):
         return cmp(self.path, other.path)
 
     def __eq__(self, other):
-        return self.ops.equals(self, other)
+        return self.equals(other)
 
     def permission(self):
         return self.mode
