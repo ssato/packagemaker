@@ -23,6 +23,9 @@ import pmaker.backend.registry as Backends
 import pmaker.environ as E
 
 
+TYPES = Anycfg.CTYPES
+
+
 def _defaults(env):
     """
     Make a Bunch object holding default values and returns it.
@@ -69,13 +72,13 @@ def _defaults(env):
 
 class Config(Bunch):
 
-    def __init__(self, norc=False, forced_class=None):
+    def __init__(self, norc=False, forced_type=None):
         """
         :param norc: No rc, i.e. do not load any RC (config) files.
-        :param forced_class: Force set configuration parser class.
+        :param forced_type: Force set configuration file type.
         """
         self._env = E.Env()
-        self._cparser = Anycfg.AnyConfigParser(forced_class)
+        self._cparser = Anycfg.AnyConfigParser(forced_type)
 
         self.files = []
 
@@ -84,8 +87,8 @@ class Config(Bunch):
         if not norc:
             self.load_default_configs()
 
-    def load(self, config, forced_class=None):
-        config = self._cparser.load(config, forced_class)
+    def load(self, config, forced_type=None):
+        config = self._cparser.load(config, forced_type)
         self.update(config)
 
     def load_default_configs(self):
