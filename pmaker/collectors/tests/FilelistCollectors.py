@@ -18,8 +18,8 @@ from pmaker.collectors.FilelistCollectors import FilelistCollector, \
     AnyFilelistCollector
 from pmaker.tests.common import setup_workdir, cleanup_workdir
 
-import pmaker.configurations as C
 import pmaker.options as O
+import pmaker.models.FileObjectFactory as Factory
 
 import os.path
 import unittest
@@ -31,15 +31,7 @@ def init_config(listfile):
     return opts
 
 
-class Test_00_FilelistCollector(unittest.TestCase):
-
-    _multiprocess_can_split_ = True
-
-    def setUp(self):
-        self.workdir = setup_workdir()
-
-    def tearDown(self):
-        cleanup_workdir(self.workdir)
+class Test_00_FilelistCollector__wo_side_effects(unittest.TestCase):
 
     def test_00__init__(self):
         listfile = "/a/b/c/path.conf"  # dummy
@@ -51,7 +43,7 @@ class Test_00_FilelistCollector(unittest.TestCase):
         self.assertEquals(collector.listfile, listfile)
 
     def test_01__parse__none(self):
-        listfile = os.path.join(self.workdir, "files.list")
+        listfile = "/a/b/c/path.conf"
         config = init_config(listfile)
 
         line = "# this is a comment line to be ignored\n"
@@ -60,6 +52,34 @@ class Test_00_FilelistCollector(unittest.TestCase):
         fos = collector._parse(line)
 
         self.assertEquals(fos, [])
+
+    def test_02__parse__single_virtual_file(self):
+        listfile = "/a/b/c/path.conf"
+        config = init_config(listfile)
+
+        line = " %s,create=1,content=\"generated file\" \n" % listfile
+
+        collector = FilelistCollector(listfile, config)
+        fos = collector._parse(line)
+        fos_ref = [
+            Factory.create(listfile, False,
+                create=1, content="generated file"
+            ),
+        ]
+
+        self.assertNotEquals(fos, [])
+        self.assertEquals(fos, fos_ref)
+
+
+class Test_01_FilelistCollector(unittest.TestCase):
+
+    _multiprocess_can_split_ = True
+
+    def setUp(self):
+        self.workdir = setup_workdir()
+
+    def tearDown(self):
+        cleanup_workdir(self.workdir)
 
 
 # vim:sw=4 ts=4 et:

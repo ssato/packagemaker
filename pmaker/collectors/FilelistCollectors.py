@@ -87,6 +87,7 @@ class FilelistCollector(Collector):
 
         self.filters = [F.UnsupportedTypesFilter(), F.ReadAccessFilter()]
         self.modifiers = [M.AttributeModifier()]
+        self.use_rpmdb = False
 
         if config.destdir:
             self.modifiers.append(M.DestdirModifier(config.destdir))
@@ -94,10 +95,10 @@ class FilelistCollector(Collector):
         if config.ignore_owner:
             self.modifiers.append(M.OwnerModifier())  # uid = gid = 0
 
-        self.use_rpmdb = not config.no_rpmdb
-
         if driver_to_format(config.driver) == PKG_FORMAT_RPM:
             self.modifiers.append(RM.RpmAttributeModifier())
+
+            self.use_rpmdb = not config.no_rpmdb
 
             if self.use_rpmdb:
                 self.modifiers.append(RM.RpmConflictsModifier(config.name))
