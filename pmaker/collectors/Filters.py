@@ -21,7 +21,6 @@ import logging
 import os
 
 
-
 class BaseFilter(object):
     """Base class to filter out specific FileInfo objects and make them not
     collected when Collector.collect() runs.
@@ -60,7 +59,6 @@ class BaseFilter(object):
         return self.pred(fileinfo, *args, **kwargs)
 
 
-
 class UnsupportedTypesFilter(BaseFilter):
     """A filter class to filter out fileinfo objects of which type is not
     supported.
@@ -74,7 +72,6 @@ class UnsupportedTypesFilter(BaseFilter):
         return fileinfo.type() not in TYPES_SUPPORTED
 
 
-
 class ReadAccessFilter(BaseFilter):
     """A filter class to filter out fileinfo objects of which type is not
     supported.
@@ -86,4 +83,4 @@ class ReadAccessFilter(BaseFilter):
         return not fileinfo.create and not os.access(fileinfo.path, os.R_OK)
 
 
-# vim: set sw=4 ts=4 expandtab:
+# vim:sw=4 ts=4 et:

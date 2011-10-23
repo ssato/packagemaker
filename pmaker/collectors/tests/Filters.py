@@ -24,7 +24,6 @@ import random
 import unittest
 
 
-
 class TestUnsupportedTypesFilter(unittest.TestCase):
 
     def setUp(self):
@@ -39,13 +38,13 @@ class TestUnsupportedTypesFilter(unittest.TestCase):
         self.assertTrue(self.filter.pred(fi))
 
 
-
 class TestReadAccessFilter(unittest.TestCase):
 
     def setUp(self):
         self.filter = ReadAccessFilter()
         path = random.choice(
-            [p for p in ("/etc/at.deny", "/etc/securetty", "/etc/sudoer", "/etc/shadow", "/etc/grub.conf") \
+            [p for p in ("/etc/at.deny", "/etc/securetty", "/etc/sudoer", \
+                    "/etc/shadow", "/etc/grub.conf") \
                 if os.path.exists(p) and not os.access(p, os.R_OK)]
         )
         self.fi = FileInfoFactory().create(path)
@@ -57,24 +56,24 @@ class TestReadAccessFilter(unittest.TestCase):
 
         self.assertTrue(self.filter.pred(self.fi))
 
-
     def test_pred__dont_have_read_access_but_to_be_created(self):
         if os.getuid() == 0:
             print >> sys.stderr, "You look root and cannot test this. Skipped"
             return
 
-        fi = self.fi; fi.create = True
+        fi = self.fi
+        fi.create = True
         self.assertFalse(self.filter.pred(fi))
 
     def test_pred__have_read_access(self):
         path = random.choice(
-            [p for p in ("/etc/hosts", "/etc/resolv.conf", "/etc/sysctl.conf") \
-                if os.path.exists(p) and os.access(p, os.R_OK)]
+            [p for p in \
+                ("/etc/hosts", "/etc/resolv.conf", "/etc/sysctl.conf") \
+                    if os.path.exists(p) and os.access(p, os.R_OK)]
         )
 
         fi = FileInfoFactory().create(path)
         self.assertFalse(self.filter.pred(fi))
 
 
-
-# vim: set sw=4 ts=4 expandtab:
+# vim:sw=4 ts=4 et:
