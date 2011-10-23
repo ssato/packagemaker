@@ -46,7 +46,6 @@ class TestFileObject(unittest.TestCase):
 
         self.assertTrue(isinstance(fo, FO.FileObject))
         self.assertEquals(fo.path, self.path)
-        self.assertEquals(fo.mode, fo.defaults.mode)
 
     def test__init__w_path_and_mode(self):
         for mode in ("0644", "0755", "1600"):
@@ -81,8 +80,6 @@ class TestDirObject(unittest.TestCase):
 
         self.assertTrue(isinstance(fo, FO.DirObject))
         self.assertEquals(fo.path, self.path)
-        self.assertEquals(fo.mode, fo.defaults.mode)
-
 
 
 class TestSymlinkInfo(unittest.TestCase):
@@ -111,7 +108,6 @@ class TestSymlinkInfo(unittest.TestCase):
 
         self.assertTrue(isinstance(fo, FO.SymlinkObject))
         self.assertEquals(fo.path, self.path)
-        self.assertEquals(fo.mode, fo.defaults.mode)
         self.assertEquals(fo.linkto, self.linkto)
 
     def test__init__w_path_and_linkto(self):
