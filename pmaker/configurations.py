@@ -15,7 +15,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 from pmaker.models.Bunch import Bunch
-from pmaker.globals import PMAKER_NAME
+from pmaker.globals import PMAKER_NAME, PKG_FORMAT_RPM
 
 import pmaker.anycfg as Anycfg
 import pmaker.collectors.Collectors as Collectors
@@ -39,6 +39,7 @@ def _defaults(env):
     defaults.stepto = env.upto
     defaults.input_type = Collectors.default()  # e.g. "filelist.json"
     defaults.driver = Backends.default()  # e.g. "autotools.single.rpm"
+    defaults.format = env.format
     defaults.destdir = ""
     defaults.template_paths = env.template_paths
 
@@ -60,7 +61,7 @@ def _defaults(env):
 
     # rpm options:
     defaults.dist = env.dist.label
-    defaults.no_rpmdb = False
+    defaults.no_rpmdb = env.format == PKG_FORMAT_RPM
     defaults.no_mock = False
 
     return defaults
