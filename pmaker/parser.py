@@ -14,6 +14,10 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
+from pmaker.models.Bunch import Bunch
+from pmaker.models.FileObjects import XObject
+
+import glob
 import itertools
 import logging
 import re
@@ -106,6 +110,37 @@ def parse(s):
         return parse_list(s)
     else:
         return parse_single(s)
+
+
+def parse_line_of_filelist(line):
+    """
+    Parse a line of filelist (plain) and returns an object holding metadata of
+    files.
+
+    >>> ref = XObject("/etc/resolv.conf",
+    ...             install_path="/var/lib/network/resolv.conf",
+    ...             uid=0,
+    ...             gid=0,
+    ...             )
+    >>> line = "/etc/resolv.conf"
+    >>> line += ",install_path=/var/lib/network/resolv.conf,uid=0,gid=0"
+    >>> fos = parse_line_of_filelist(line)
+    >>> assert fos[0].path == ref.path
+    >>> assert fos[0].install_path == ref.install_path
+    >>> assert fos[0].uid == ref.uid
+    >>> assert fos[0].gid == ref.gid
+    """
+    ss = parse_list(line.rstrip().strip(), ",")
+    pp = ss[0]
+
+    avs = [
+        av for av in (parse_list(a, "=") for a in ss[1:]) if av
+    ]
+    attrs = Bunch((a, parse_single(str(v))) for a, v in avs)
+    if "*" in pp:
+        attrs.create = False
+
+    return [XObject(p, **attrs) for p in ("*" in pp and glob.glob(pp) or [pp])]
 
 
 # vim:sw=4 ts=4 et:
