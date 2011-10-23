@@ -255,8 +255,10 @@ class Options(Bunch):
         """
         Check if filelist is given already through config files or as
         rest of arguments.
+
+        :param args: [listfile, ...] or []
         """
-        return self.config.missing_files() and len(args) < 1
+        return self.config.missing_files() and not args
 
     def parse_args(self, argv=sys.argv[1:]):
         (options, args) = self.oparser.parse_args(argv)
