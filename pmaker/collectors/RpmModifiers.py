@@ -14,26 +14,25 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
-from pmaker.globals import *  # CONFLICTS_SAVEDIR, CONFLICTS_NEWDIR
-from pmaker.collectors.Modifiers import FileInfoModifier
-from pmaker.rpmutils import rpm_search_provides_by_path, rpm_attr
+from pmaker.globals import CONFLICTS_NEWDIR, CONFLICTS_SAVEDIR
+
+import pmaker.collectors.Modifiers as Mod
+import pmaker.rpmutils as RU
 
 import logging
 import os.path
 
 
-
-class RpmAttributeModifier(FileInfoModifier):
+class RpmAttributeModifier(Mod.FileInfoModifier):
     _priority = 9
 
     def update(self, fileinfo, *args, **kwargs):
-        fileinfo.rpm_attr = rpm_attr(fileinfo)
+        fileinfo.rpm_attr = RU.rpm_attr(fileinfo)
 
         return fileinfo
 
 
-
-class RpmConflictsModifier(FileInfoModifier):
+class RpmConflictsModifier(Mod.FileInfoModifier):
 
     _priority = 6
 
@@ -51,7 +50,7 @@ class RpmConflictsModifier(FileInfoModifier):
 
         @path  str  File/dir/symlink path
         """
-        owner_nvrae = rpm_search_provides_by_path(path)
+        owner_nvrae = RU.rpm_search_provides_by_path(path)
 
         if owner_nvrae and owner_nvrae["name"] != self.package:
             logging.warn("%s is owned by %s" % (path, owner_nvrae["name"]))
@@ -66,10 +65,11 @@ class RpmConflictsModifier(FileInfoModifier):
             fileinfo.original_path = fileinfo.install_path
 
             path = fileinfo.install_path[1:]  # strip "/" at the head.
-            fileinfo.target = fileinfo.install_path = os.path.join(self.newdir, path)
+            fileinfo.target = fileinfo.install_path = \
+                os.path.join(self.newdir, path)
             fileinfo.save_path = os.path.join(self.savedir, path)
 
         return fileinfo
 
 
-# vim: set sw=4 ts=4 expandtab:
+# vim:sw=4 ts=4 et:

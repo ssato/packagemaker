@@ -14,13 +14,13 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
-from pmaker.globals import *
 from pmaker.collectors.RpmModifiers import *
-from pmaker.models.FileInfoFactory import *
+
+from pmaker.globals import CONFLICTS_NEWDIR, CONFLICTS_SAVEDIR
+from pmaker.models.FileInfoFactory import FileInfoFactory
 
 import unittest
 import os.path
-
 
 
 FACTORY = FileInfoFactory()
@@ -36,7 +36,6 @@ class TestRpmAttributeModifier(unittest.TestCase):
         new_fi = self.modifier.update(fi)
 
         self.assertTrue(getattr(new_fi, "rpm_attr", False))
-
 
 
 class TestRpmConflictsModifier(unittest.TestCase):
@@ -65,4 +64,4 @@ class TestRpmConflictsModifier(unittest.TestCase):
         #fileinfo.save_path = os.path.join(self.savedir, path)
 
 
-# vim: set sw=4 ts=4 expandtab:
+# vim:sw=4 ts=4 et:
