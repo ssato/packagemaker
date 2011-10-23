@@ -36,11 +36,11 @@ import sys
 
 class Collector(object):
 
-    _type = None
+    _types = []
 
     @classmethod
-    def type(cls):
-        return cls._type
+    def types(cls):
+        return cls._types
 
     def get_modifiers(self):
         """
@@ -71,9 +71,9 @@ class FilelistCollector(Collector):
     line starts with "#", or glob pattern to list multiple files or dirs.
     """
 
-    _type = "filelist.plain"
+    _types = ["filelist", "filelist.plain"]
 
-    def __init__(self, listfile, config):
+    def __init__(self, listfile, config, **kwargs):
         """
         :param listfile: File path to list path of objects or "-" (these will
                          be read from stdin. :: str
@@ -162,42 +162,55 @@ class AnyFilelistCollector(FilelistCollector):
     Formats of input files are detected automatically.
     """
 
-    _type = "filelist.any"
+    _types = ["filelist.any"] + ["filelist." + ct for ct in C.TYPES]
+
+    def __init__(self, listfile, config, itype=None, **kwargs):
+        """
+        :param itype:  Input file type, e.g. "json", "yaml".
+        """
+        super(AnyFilelistCollector, self).__init__(listfile, config, **kwargs)
+
+        self.itype = None
+
+        if itype is not None:
+            if itype in C.TYPES:
+                self.itype = itype
+            else:
+                logging.warn("Invalid type passed: " + itype)
 
     def _parse(self, bobj):
         """
         :param bobj: A Bunch object holds path and attrs (metadata) of files.
         """
-        path = params.get("path", False)
+        path = bobj.get("path", False)
 
         if not path or path.startswith("#"):
             return []
         else:
             paths = "*" in path and glob.glob(path) or [path]
-            attrs = params.get("attrs", dict())
+            attrs = bobj.get("attrs", dict())
 
             return [Factory.create(p, self.use_rpmdb, **attrs) for p in paths]
 
     def list(self, listfile):
-        loader = C.Config()
-        data = loader.load(listfile)
+        cfg = C.Config()
+        data = cfg.load(listfile, self.itype)
 
         if not getattr(data, "files", False):
             raise RuntimeError(
-                "Missing 'files' in given filelist: " + listfile
+                "'files' not defined in given filelist: " + listfile
             )
 
-        return unique(concat(self._parse(o) for o in objs.files))
+        return unique(concat(self._parse(o) for o in data.files))
 
 
 def map():
-    return dict(
-        (c.type(), c) for c in (FilelistCollector, AnyFilelistCollector)
-    )
+    collectors = (FilelistCollector, AnyFilelistCollector)
+    return dict(U.concat([(t, c) for t in c.types()] for c in collectors))
 
 
 def default():
-    return FilelistCollector.type()
+    return FilelistCollector.types()[0]
 
 
 # vim:sw=4 ts=4 et:
