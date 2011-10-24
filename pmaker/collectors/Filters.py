@@ -16,6 +16,7 @@
 #
 from pmaker.globals import TYPES_SUPPORTED
 from pmaker.models.FileInfo import FileInfo
+from pmaker.models.FileObjects import FileObject
 
 import logging
 import os
@@ -30,12 +31,12 @@ class BaseFilter(object):
     def __init__(self, *args, **kwargs):
         pass
 
-    def pre(self, fileinfo):
-        assert isinstance(fileinfo, FileInfo)
+    def pre(self, f):
+        assert isinstance(f, (FileInfo, FileObject))
 
-    def post(self, fileinfo):
+    def post(self, f):
         msg = "Filtered out as %s: path=%s, type=%s" % \
-            (self._reason, fileinfo.path, fileinfo.type())
+            (self._reason, f.path, f.type())
 
         logging.warn(msg)
 
@@ -43,44 +44,44 @@ class BaseFilter(object):
         #return False  # NOTE: It will not be filtered out if False.
         raise NotImplementedError("Child classes must override this method!")
 
-    def pred(self, fileinfo, *args, **kwargs):
+    def pred(self, f, *args, **kwargs):
         """
-        @fileinfo  FileInfo object
+        :param f: FileInfo or FileObject instance
         """
-        self.pre(fileinfo)
-        ret = self._pred(fileinfo)
+        self.pre(f)
+        ret = self._pred(f)
 
         if ret:
-            self.post(fileinfo)
+            self.post(f)
 
         return ret
 
-    def __call__(self, fileinfo, *args, **kwargs):
-        return self.pred(fileinfo, *args, **kwargs)
+    def __call__(self, f, *args, **kwargs):
+        return self.pred(f, *args, **kwargs)
 
 
 class UnsupportedTypesFilter(BaseFilter):
-    """A filter class to filter out fileinfo objects of which type is not
-    supported.
+    """
+    A filter class to filter out files of which type is not supported.
     """
 
     _reason = "not supported type"
 
-    def _pred(self, fileinfo):
-        """Rule to filter out fileinfo objects if its type is not supported.
+    def _pred(self, f):
+        """Rule to filter out files if its type is not supported.
         """
-        return fileinfo.type() not in TYPES_SUPPORTED
+        return f.type() not in TYPES_SUPPORTED
 
 
 class ReadAccessFilter(BaseFilter):
-    """A filter class to filter out fileinfo objects of which type is not
-    supported.
+    """
+    A filter class to filter out files of which type is not supported.
     """
 
     _reason = "You don't have read access"
 
-    def _pred(self, fileinfo):
-        return not fileinfo.create and not os.access(fileinfo.path, os.R_OK)
+    def _pred(self, f):
+        return not f.create and not os.access(f.path, os.R_OK)
 
 
 # vim:sw=4 ts=4 et:
