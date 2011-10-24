@@ -158,7 +158,9 @@ def create(path, use_rpmdb=False, **attrs):
         if os.path.exists(fo.path):
             return create_from_real_object(fo, use_rpmdb)
         else:
-            fo.create = True
+            if fo.content or fo.src != fo.path or "linkto" in fo or \
+                    "filetype" in fo:
+                fo.create = True
 
     if "filetype" in fo:
         filetype = FO.typestr_to_type(fo.filetype)

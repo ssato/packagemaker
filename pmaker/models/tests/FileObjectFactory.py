@@ -30,7 +30,7 @@ def modestr_to_mode(mode):
     """
     >>> modestr_to_mode("0644")
     420
-    >>> oct(modestr_to_mode("0644")) 
+    >>> oct(modestr_to_mode("0644"))
     '0644'
     """
     return int(mode, 8)
