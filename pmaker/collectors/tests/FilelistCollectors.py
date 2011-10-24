@@ -192,6 +192,7 @@ class Test_01_FilelistCollector(unittest.TestCase):
             f for f in fos_ref if not any(filter(f) for filter in filters)
         ]
 
+        #self.assertEquals(sorted(f.path for f in fos), paths_ref)
         self.assertEquals(sorted(fos), fos_ref)
 
 
