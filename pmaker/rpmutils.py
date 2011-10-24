@@ -209,9 +209,10 @@ except ImportError:
         return database.get(path, dict())
 
 
-def __rpm_attr(fileinfo):
-    """Returns "%attr(...)" to specify the file/dir attribute for given
-    fileinfo object, which will be used in the %files section in rpm spec.
+def __rpm_attr(fo):
+    """
+    Returns "%attr(...)" to specify the file/dir attribute for given fo object,
+    which will be used in the %files section in rpm spec.
 
     >>> from pmaker.models.FileInfo import FileInfo
     >>> fi = FileInfo("/dummy/path", "0664")
@@ -221,24 +222,24 @@ def __rpm_attr(fileinfo):
     >>> fi = FileInfo("/bin/bar", "0755", "root", "bin")
     >>> assert __rpm_attr(fi) == "%attr(0755, -, bin)"
     """
-    m = fileinfo.permission()  # ex. "0755"
+    m = fo.permission()  # ex. "0755"
 
     try:
-        u = fileinfo.uid in (0, "root") and "-" or \
-            pwd.getpwuid(fileinfo.uid).pw_name
+        u = fo.uid in (0, "root") and "-" or \
+            pwd.getpwuid(fo.uid).pw_name
 
     except TypeError:  # It's not an integer such like 'bin'.
-        u = fileinfo.uid
+        u = fo.uid
 
-    except KeyError:  # maybe fileinfo.uid not in pwd database.
+    except KeyError:  # maybe fo.uid not in pwd database.
         u = "-"
 
     try:
-        g = fileinfo.gid in (0, "root") and "-" or \
-            grp.getgrgid(fileinfo.gid).gr_name
+        g = fo.gid in (0, "root") and "-" or \
+            grp.getgrgid(fo.gid).gr_name
 
     except (TypeError, ValueError):  # It's not an integer.
-        g = fileinfo.gid
+        g = fo.gid
 
     except KeyError:  # likewise
         g = "-"
@@ -246,17 +247,20 @@ def __rpm_attr(fileinfo):
     return "%%attr(%(m)s, %(u)s, %(g)s)" % {"m": m, "u": u, "g": g}
 
 
-def rpm_attr(fileinfo):
+def rpm_attr(fo):
     """
-    Returns rpm_attr for given fileinfo object.
+    Returns rpm_attr for given file objects.
     """
-    rattr = getattr(fileinfo, "rpm_attr", "")
+    try:
+        rattr = getattr(fo, "rpm_attr", "")
+    except KeyError:
+        rattr = fo.get("rpm_attr", "")
 
     if not rattr:
-        if fileinfo.need_to_chmod() or fileinfo.need_to_chown():
-            rattr = __rpm_attr(fileinfo) + " "
+        if fo.need_to_chmod() or fo.need_to_chown():
+            rattr = __rpm_attr(fo) + " "
 
-        if fileinfo.type() == TYPE_DIR:
+        if fo.type() == TYPE_DIR:
             rattr += "%dir "
 
     return rattr
