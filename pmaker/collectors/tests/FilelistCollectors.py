@@ -20,7 +20,9 @@ from pmaker.tests.common import setup_workdir, cleanup_workdir
 
 import pmaker.options as O
 import pmaker.models.FileObjectFactory as Factory
+import pmaker.utils as U
 
+import glob
 import os.path
 import unittest
 
@@ -80,6 +82,75 @@ class Test_01_FilelistCollector(unittest.TestCase):
 
     def tearDown(self):
         cleanup_workdir(self.workdir)
+
+    def test_01__parse__multi_real_file(self):
+        listfile = os.path.join(self.workdir, "file.list")
+        listfile2 = os.path.join(self.workdir, "file2.list")
+        config = init_config(listfile)
+
+        line = "%s/file*.list,mode=0644\n" % self.workdir
+        open(listfile, "w").write(line)
+        open(listfile2, "w").write(line)
+
+        collector = FilelistCollector(listfile, config)
+        fos = collector._parse(line)
+        fos_ref = [
+            Factory.create(listfile, False, mode="0644"),
+            Factory.create(listfile2, False, mode="0644"),
+        ]
+
+        self.assertEquals(sorted(fos), sorted(fos_ref))
+
+    def test_02_list__multi_generated_file(self):
+        listfile = os.path.join(self.workdir, "file.list")
+        listfile2 = os.path.join(self.workdir, "file2.list")
+        config = init_config(listfile)
+
+        line = "%s/file*.list,mode=0644\n" % self.workdir
+        open(listfile, "w").write(line)
+        open(listfile2, "w").write(line)
+
+        collector = FilelistCollector(listfile, config)
+        fos = collector.list(listfile)
+        fos_ref = [
+            Factory.create(listfile, False, mode="0644"),
+            Factory.create(listfile2, False, mode="0644"),
+        ]
+
+        self.assertEquals(sorted(fos), sorted(fos_ref))
+
+    def test_03_list__multi_real_files(self):
+        paths = [
+            "/etc/auto.*",
+            "#/etc/aliases.db",
+            "/etc/httpd/conf.d",
+            "/etc/httpd/conf.d/*",
+            "/etc/modprobe.d/*",
+            "/etc/rc.d/init.d",
+            "/etc/rc.d/rc",
+            "/etc/resolv.conf",
+            #"/etc/reslv.conf",
+            "/etc/grub.conf",
+            "/usr/share/automake-*/am/*.am",
+        ]
+
+        paths_ref = U.unique(
+            U.concat(glob.glob(p) for p in paths if not p.startswith("#"))
+        )
+
+        listfile = os.path.join(self.workdir, "file.list")
+        config = init_config(listfile)
+
+        open(listfile, "w").write("\n".join(paths))
+
+        collector = FilelistCollector(listfile, config)
+
+        fos = collector.list(listfile)
+        fos_ref = sorted(
+            Factory.create(p, False, checksum=U.checksum(p)) for p in paths_ref
+        )
+
+        self.assertEquals(sorted(fos), fos_ref)
 
 
 # vim:sw=4 ts=4 et:
