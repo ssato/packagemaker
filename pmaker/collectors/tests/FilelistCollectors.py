@@ -167,6 +167,7 @@ class Test_01_FilelistCollector(unittest.TestCase):
             "/etc/grub.conf",
             "/usr/share/automake-*/am/*.am",
             "/var/run/*",
+            "/root/*",
         ]
 
         paths_ref = U.unique(

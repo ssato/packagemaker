@@ -58,6 +58,16 @@ def driver_to_format(driver):
     return P.parse_list(driver, ".")[-1]
 
 
+def driver_is_rpm(driver):
+    """
+    >>> driver_is_rpm("autotools.single.rpm")
+    True
+    >>> driver_is_rpm("autotools.single.deb")
+    False
+    """
+    return driver_to_format(driver) == PKG_FORMAT_RPM
+
+
 def lopen(path):
     return path == "-" and sys.stdin or open(path)
 
@@ -95,7 +105,7 @@ class FilelistCollector(Collector):
         if config.ignore_owner:
             self.modifiers.append(M.OwnerModifier())  # uid = gid = 0
 
-        if driver_to_format(config.driver) == PKG_FORMAT_RPM:
+        if driver_is_rpm(config.driver):
             self.modifiers.append(RM.RpmAttributeModifier())
 
             self.use_rpmdb = not config.no_rpmdb
