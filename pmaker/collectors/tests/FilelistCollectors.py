@@ -25,6 +25,7 @@ import pmaker.utils as U
 
 import glob
 import os.path
+import random
 import unittest
 
 
@@ -153,7 +154,126 @@ class Test_01_FilelistCollector(unittest.TestCase):
 
         self.assertEquals(sorted(fos), fos_ref)
 
-    def test_04_collect__multi_real_files(self):
+    def test_04_collect__single_real_file(self):
+        path = random.choice(
+            ["/etc/hosts", "/etc/resolv.conf", "/etc/services"]
+        )
+
+        listfile = os.path.join(self.workdir, "file.list")
+        config = init_config(listfile)
+
+        open(listfile, "w").write(path + "\n")
+
+        collector = FilelistCollector(listfile, config)
+
+        fos = collector.collect()
+        fo_ref = Factory.create(path, False)
+
+        self.assertEquals(fos[0].path, path)
+        self.assertEquals(fos, [fo_ref])
+
+    def test_05_collect__single_real_file__no_read_access(self):
+        path = random.choice(
+            ["/etc/shadow", "/etc/securetty", "/etc/gshadow"]
+        )
+
+        listfile = os.path.join(self.workdir, "file.list")
+        config = init_config(listfile)
+
+        open(listfile, "w").write(path + "\n")
+
+        collector = FilelistCollector(listfile, config)
+
+        fos = collector.collect()
+
+        self.assertEquals(fos, [])
+
+    def test_06_collect__single_real_file__not_supported_type(self):
+        path = random.choice(
+            ["/dev/null", "/dev/zero", "/dev/random"]
+        )
+
+        listfile = os.path.join(self.workdir, "file.list")
+        config = init_config(listfile)
+
+        open(listfile, "w").write(path + "\n")
+
+        collector = FilelistCollector(listfile, config)
+
+        fos = collector.collect()
+
+        self.assertEquals(fos, [])
+
+    def test_07_collect__single_real_file__destdir_mod(self):
+        listfile = path = os.path.join(self.workdir, "file.list")
+
+        config = init_config(listfile)
+        config.destdir = self.workdir
+
+        open(listfile, "w").write(path + "\n")
+
+        collector = FilelistCollector(listfile, config)
+
+        fos = collector.collect()
+        fo_ref = Factory.create(path, False)
+
+        self.assertEquals(
+            os.path.join(self.workdir, fos[0].path),
+            fo_ref.path
+        )
+
+    def test_08_collect__single_real_file__ignore_owner_mod(self):
+        listfile = path = os.path.join(self.workdir, "file.list")
+
+        config = init_config(listfile)
+        config.ignore_owner = True
+
+        open(listfile, "w").write(path + "\n")
+
+        collector = FilelistCollector(listfile, config)
+
+        fos = collector.collect()
+        fo_ref = Factory.create(path, False)
+
+        self.assertEquals(fos[0].uid, 0)
+        self.assertEquals(fos[0].gid, 0)
+
+    def test_09_collect__single_real_file__rpmattr(self):
+        path = random.choice(["/etc/hosts", "/etc/services"])
+
+        listfile = os.path.join(self.workdir, "file.list")
+        config = init_config(listfile)
+        config.driver = "autotools.single.rpm"
+
+        open(listfile, "w").write(path + "\n")
+
+        collector = FilelistCollector(listfile, config)
+
+        fos = collector.collect()
+        fo_ref = Factory.create(path, False)
+
+        self.assertEquals(fos, [fo_ref])
+        self.assertTrue("rpm_attr" in fos[0])
+
+    def test_10_collect__single_real_file__rpmconflicts(self):
+        path = random.choice(
+            ["/etc/hosts", "/etc/services"]
+        )
+
+        listfile = os.path.join(self.workdir, "file.list")
+        config = init_config(listfile)
+        config.driver = "autotools.single.rpm"
+        config.no_rpmdb = False
+
+        open(listfile, "w").write(path + "\n")
+
+        collector = FilelistCollector(listfile, config)
+
+        fos = collector.collect()
+
+        self.assertTrue("save_path" in fos[0])
+
+    def test_15_collect__multi_real_files(self):
         paths = [
             "/etc/auto.*",
             "#/etc/aliases.db",
