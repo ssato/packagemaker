@@ -33,12 +33,13 @@ class FileInfoModifier(object):
         return cmp(self._priority, other._priority)
 
     def update(self, fileobj, *args, **kwargs):
-        """This method is just a template and returns given fileobj w/ no
+        """
+        This method is just a template and returns given fileobj w/ no
         modification.
 
         :param fileobj: FileObject object
         """
-        return fileobj  # It's just a template and do nothing. 
+        return fileobj  # It's just a template and do nothing.
 
 
 class DestdirModifier(FileInfoModifier):
