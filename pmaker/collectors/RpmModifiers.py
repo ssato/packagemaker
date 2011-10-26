@@ -26,50 +26,62 @@ import os.path
 class RpmAttributeModifier(Mod.FileInfoModifier):
     _priority = 9
 
-    def update(self, fileinfo, *args, **kwargs):
-        fileinfo.rpm_attr = RU.rpm_attr(fileinfo)
+    def update(self, fo, *args, **kwargs):
+        """
+        :param fo: FileObject or FileInfo instance represents files.
+        """
+        fo.rpm_attr = RU.rpm_attr(fo)
 
-        return fileinfo
+        return fo
+
+
+def conflicts_dirs(name):
+    """
+    Dirs to save or put files owned by this and other packages sametime.
+
+    :param name: The name of this package to be built.
+    """
+    p = dict(name=name)
+
+    return (CONFLICTS_SAVEDIR % p, CONFLICTS_NEWDIR % p)
 
 
 class RpmConflictsModifier(Mod.FileInfoModifier):
 
     _priority = 6
 
-    def __init__(self, package, rpmdb_path=None):
+    def __init__(self, name, rpmdb_path=None):
         """
-        @package  str  Name of the package to be built
+        :param name: The name of this package to be built.
         """
-        self.package = package
-
-        self.savedir = CONFLICTS_SAVEDIR % {"name": package}
-        self.newdir = CONFLICTS_NEWDIR % {"name": package}
+        self.name = name
+        (self.savedir, self.newdir) = conflicts_dirs(name)
 
     def find_owner(self, path):
-        """Find the package owns given path.
+        """Find packages own given path, i.e. will conflict with.
 
-        @path  str  File/dir/symlink path
+        :param path: Path of target file/dir/symlink.
         """
         owner_nvrae = RU.rpm_search_provides_by_path(path)
 
-        if owner_nvrae and owner_nvrae["name"] != self.package:
+        if owner_nvrae and owner_nvrae["name"] != self.name:
             logging.warn("%s is owned by %s" % (path, owner_nvrae["name"]))
             return owner_nvrae
         else:
             return dict()
 
-    def update(self, fileinfo, *args, **kwargs):
-        fileinfo.conflicts = self.find_owner(fileinfo.target)
+    def update(self, fo, *args, **kwargs):
+        fo.conflicts = self.find_owner(fo.target)
 
-        if fileinfo.conflicts:
-            fileinfo.original_path = fileinfo.install_path
+        if fo.conflicts:
+            fo.original_path = fo.install_path
 
-            path = fileinfo.install_path[1:]  # strip "/" at the head.
-            fileinfo.target = fileinfo.install_path = \
-                os.path.join(self.newdir, path)
-            fileinfo.save_path = os.path.join(self.savedir, path)
+            path = fo.install_path[1:]  # strip "/" at the head.
 
-        return fileinfo
+            fo.target = fo.install_path = os.path.join(self.newdir, path)
+            fo.save_path = os.path.join(self.savedir, path)
+
+        return fo
 
 
 # vim:sw=4 ts=4 et:
