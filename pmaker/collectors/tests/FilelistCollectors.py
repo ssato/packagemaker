@@ -18,9 +18,11 @@ from pmaker.collectors.FilelistCollectors import FilelistCollector, \
     AnyFilelistCollector
 from pmaker.tests.common import setup_workdir, cleanup_workdir
 
-import pmaker.options as O
+import pmaker.anycfg as Anycfg
 import pmaker.collectors.Filters as Filters
+import pmaker.environ as E
 import pmaker.models.FileObjectFactory as Factory
+import pmaker.options as O
 import pmaker.utils as U
 
 import glob
@@ -257,7 +259,7 @@ class Test_01_FilelistCollector(unittest.TestCase):
 
     def test_10_collect__single_real_file__rpmconflicts(self):
         path = random.choice(
-            ["/etc/hosts", "/etc/services"]
+            ["/etc/hosts", "/etc/services", "/bin/sh"]
         )
 
         listfile = os.path.join(self.workdir, "file.list")
@@ -314,6 +316,90 @@ class Test_01_FilelistCollector(unittest.TestCase):
         ]
 
         #self.assertEquals(sorted(f.path for f in fos), paths_ref)
+        self.assertEquals(sorted(fos), fos_ref)
+
+
+class Test_02_AnyFilelistCollector__wo_side_effects(unittest.TestCase):
+
+    def test_01__init__wo_itype(self):
+        listfile = "dummy.list"
+        config = init_config(listfile)
+        ac = AnyFilelistCollector(listfile, config)
+
+        self.assertTrue(isinstance(ac, AnyFilelistCollector))
+
+    def test_02__init__w_itype(self):
+        listfile = "dummy.list"
+        config = init_config(listfile)
+
+        ac = AnyFilelistCollector(listfile, config, Anycfg.CTYPE_JSON)
+        self.assertTrue(isinstance(ac, AnyFilelistCollector))
+        self.assertTrue(ac.itype, Anycfg.CTYPE_JSON)
+
+        ac = AnyFilelistCollector(listfile, config, Anycfg.CTYPE_YAML)
+        self.assertTrue(isinstance(ac, AnyFilelistCollector))
+        self.assertTrue(ac.itype, Anycfg.CTYPE_YAML)
+
+
+class Test_03_AnyFilelistCollector__w_side_effects(unittest.TestCase):
+
+    _multiprocess_can_split_ = True
+
+    def setUp(self):
+        self.workdir = setup_workdir()
+
+    def tearDown(self):
+        #cleanup_workdir(self.workdir)
+        pass
+
+    def test_01_list__json_w_tgz_driver(self):
+        if E.json is None:
+            return
+
+        paths = [
+            "/etc/auto.*",
+            "#/etc/aliases.db",
+            "/etc/httpd/conf.d",
+            "/etc/httpd/conf.d/*",
+            "/etc/modprobe.d/*",
+            "/etc/rc.d/init.d",
+            "/etc/rc.d/rc",
+            "/etc/resolv.conf",
+            "/etc/reslv.conf",
+            "/etc/grub.conf",
+            "/usr/share/automake-*/am/*.am",
+            "/var/run/*",
+            "/root/*",
+        ]
+
+        listfile = os.path.join(self.workdir, "filelist.json")
+        data = dict(files=[dict(path=p) for p in paths])
+
+        import json
+        json.dump(data, open(listfile, "w"))
+
+        config = init_config(listfile)
+        config.driver = "autotools.single.tgz"
+
+        ac = AnyFilelistCollector(listfile, config, Anycfg.CTYPE_JSON)
+        fos = ac.list(listfile)
+
+        self.assertTrue(isinstance(ac, AnyFilelistCollector))
+
+        paths_ref = U.unique(
+            U.concat(glob.glob(p) for p in paths if not p.startswith("#"))
+        )
+
+        filters = [
+            Filters.UnsupportedTypesFilter(), Filters.ReadAccessFilter(),
+        ]
+        fos_ref = sorted(
+            Factory.create(p, False, checksum=U.checksum(p)) for p in paths_ref
+        )
+        fos_ref = [
+            f for f in fos_ref if not any(filter(f) for filter in filters)
+        ]
+
         self.assertEquals(sorted(fos), fos_ref)
 
 

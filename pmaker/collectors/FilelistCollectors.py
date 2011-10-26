@@ -22,6 +22,7 @@ import pmaker.collectors.Modifiers as M
 import pmaker.collectors.RpmModifiers as RM
 import pmaker.models.FileObjectFactory as Factory
 
+import pmaker.anycfg as A
 import pmaker.configurations as C
 import pmaker.environ as E
 import pmaker.parser as P
@@ -204,15 +205,15 @@ class AnyFilelistCollector(FilelistCollector):
             return [Factory.create(p, self.use_rpmdb, **attrs) for p in paths]
 
     def list(self, listfile):
-        cfg = C.Config()
-        data = cfg.load(listfile, self.itype)
+        cparser = A.AnyConfigParser(self.itype)
+        data = cparser.load(listfile)
 
-        if not getattr(data, "files", False):
+        if not data.get("files", False) and not data.get("files", False):
             raise RuntimeError(
                 "'files' not defined in given filelist: " + listfile
             )
 
-        return unique(concat(self._parse(o) for o in data.files))
+        return U.unique(U.concat(self._parse(o) for o in data.files))
 
 
 def map():
