@@ -78,7 +78,7 @@ class ReadAccessFilter(BaseFilter):
     A filter class to filter out files of which type is not supported.
     """
 
-    _reason = "You don't have read access"
+    _reason = "not permitted to read"
 
     def _pred(self, f):
         return not f.create and not os.access(f.path, os.R_OK)
