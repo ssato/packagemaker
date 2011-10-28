@@ -43,6 +43,21 @@ except ImportError:
         json = None
 
 
+try:
+    # First, try lxml compatible with elementtree and looks faster a lot.
+    # see also: http://diveintopython3-ja.rdy.jp/xml.html:
+    from lxml import etree
+except ImportError:
+    try:
+        import xml.etree.ElementTree as etree
+    except ImportError:
+        try:
+            import elementtree.ElementTree as etree
+        except ImportError:
+            logging.warn(" ElementTree module is not available. Disabled XML support.")
+            etree = None
+
+
 CONFIG_EXTS = [INI_EXTS, JSON_EXTS, YAML_EXTS, ] = [
     ("ini", ), ("json", "jsn"), ("yaml", "yml"),
 ]
