@@ -165,6 +165,8 @@ def create(path, use_rpmdb=False, **attrs):
     if "filetype" in fo:
         filetype = FO.typestr_to_type(fo.filetype)
     else:
+        filetype = TYPE_UNKNOWN
+
         if fo.content or fo.src != fo.path:
             filetype = TYPE_FILE
 

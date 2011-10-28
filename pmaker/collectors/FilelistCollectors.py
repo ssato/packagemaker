@@ -96,7 +96,11 @@ class FilelistCollector(Collector):
         # TBD:
         self.trace = False
 
-        self.filters = [F.UnsupportedTypesFilter(), F.ReadAccessFilter()]
+        self.filters = [
+            F.UnsupportedTypesFilter(),
+            F.NotExistFilter(),
+            F.ReadAccessFilter(),
+        ]
         self.modifiers = [M.AttributeModifier()]
         self.use_rpmdb = False
 
@@ -208,7 +212,7 @@ class AnyFilelistCollector(FilelistCollector):
         cparser = A.AnyConfigParser(self.itype)
         data = cparser.load(listfile)
 
-        if not data.get("files", False) and not data.get("files", False):
+        if not data.get("files", False):
             raise RuntimeError(
                 "'files' not defined in given filelist: " + listfile
             )

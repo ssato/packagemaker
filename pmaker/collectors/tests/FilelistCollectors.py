@@ -26,9 +26,34 @@ import pmaker.options as O
 import pmaker.utils as U
 
 import glob
+import os
 import os.path
 import random
 import unittest
+
+
+PATHS = [
+    "/etc/auto.*",  # glob; will be expanded to path list.
+    "#/etc/aliases.db",  # comment; will be ignored.
+    "/etc/httpd/conf.d",
+    "/etc/httpd/conf.d/*",  # glob
+    "/etc/modprobe.d/*",  # glob
+    "/etc/rc.d/init.d",  # dir, not file
+    "/etc/rc.d/rc",
+    "/etc/resolv.conf",
+    "/etc/reslv.conf",  # should not exist
+    "/etc/grub.conf",  # should not be able to read
+    "/usr/share/automake-*/am/*.am",  # glob
+    "/var/run/*",  # glob, and some of them should not be able to read
+    "/root/*",  # likewise.
+]
+
+PATHS_EXPANDED = U.unique(
+    U.concat(
+        "*" in p and glob.glob(p) or [p] for p in PATHS \
+            if not p.startswith("#")
+    )
+)
 
 
 def init_config(listfile):
@@ -124,34 +149,16 @@ class Test_01_FilelistCollector(unittest.TestCase):
         self.assertEquals(sorted(fos), sorted(fos_ref))
 
     def test_03_list__multi_real_files(self):
-        paths = [
-            "/etc/auto.*",
-            "#/etc/aliases.db",
-            "/etc/httpd/conf.d",
-            "/etc/httpd/conf.d/*",
-            "/etc/modprobe.d/*",
-            "/etc/rc.d/init.d",
-            "/etc/rc.d/rc",
-            "/etc/resolv.conf",
-            #"/etc/reslv.conf",
-            "/etc/grub.conf",
-            "/usr/share/automake-*/am/*.am",
-        ]
-
-        paths_ref = U.unique(
-            U.concat(glob.glob(p) for p in paths if not p.startswith("#"))
-        )
-
         listfile = os.path.join(self.workdir, "file.list")
         config = init_config(listfile)
 
-        open(listfile, "w").write("\n".join(paths))
+        open(listfile, "w").write("\n".join(PATHS))
 
         collector = FilelistCollector(listfile, config)
 
         fos = collector.list(listfile)
         fos_ref = sorted(
-            Factory.create(p, False, checksum=U.checksum(p)) for p in paths_ref
+            Factory.create(p, False) for p in PATHS_EXPANDED
         )
 
         self.assertEquals(sorted(fos), fos_ref)
@@ -175,6 +182,10 @@ class Test_01_FilelistCollector(unittest.TestCase):
         self.assertEquals(fos, [fo_ref])
 
     def test_05_collect__single_real_file__no_read_access(self):
+        if os.getuid() == 0:
+            print >> sys.stderr, "You look root and cannot test this. Skipped"
+            return
+
         path = random.choice(
             ["/etc/shadow", "/etc/securetty", "/etc/gshadow"]
         )
@@ -276,46 +287,27 @@ class Test_01_FilelistCollector(unittest.TestCase):
         self.assertTrue("save_path" in fos[0])
 
     def test_15_collect__multi_real_files(self):
-        paths = [
-            "/etc/auto.*",
-            "#/etc/aliases.db",
-            "/etc/httpd/conf.d",
-            "/etc/httpd/conf.d/*",
-            "/etc/modprobe.d/*",
-            "/etc/rc.d/init.d",
-            "/etc/rc.d/rc",
-            "/etc/resolv.conf",
-            "/etc/reslv.conf",
-            "/etc/grub.conf",
-            "/usr/share/automake-*/am/*.am",
-            "/var/run/*",
-            "/root/*",
-        ]
-
-        paths_ref = U.unique(
-            U.concat(glob.glob(p) for p in paths if not p.startswith("#"))
-        )
-
         listfile = os.path.join(self.workdir, "file.list")
         config = init_config(listfile)
 
-        open(listfile, "w").write("\n".join(paths))
+        open(listfile, "w").write("\n".join(PATHS))
 
         collector = FilelistCollector(listfile, config)
 
         fos = collector.collect()
 
         filters = [
-            Filters.UnsupportedTypesFilter(), Filters.ReadAccessFilter(),
+            Filters.UnsupportedTypesFilter(),
+            Filters.NotExistFilter(),
+            Filters.ReadAccessFilter(),
         ]
         fos_ref = sorted(
-            Factory.create(p, False, checksum=U.checksum(p)) for p in paths_ref
+            Factory.create(p, False) for p in PATHS_EXPANDED
         )
         fos_ref = [
             f for f in fos_ref if not any(filter(f) for filter in filters)
         ]
 
-        #self.assertEquals(sorted(f.path for f in fos), paths_ref)
         self.assertEquals(sorted(fos), fos_ref)
 
 
@@ -352,55 +344,48 @@ class Test_03_AnyFilelistCollector__w_side_effects(unittest.TestCase):
         #cleanup_workdir(self.workdir)
         pass
 
-    def test_01_list__json_w_tgz_driver(self):
+    def test_01_list_and_collect__json(self):
         if E.json is None:
             return
 
-        paths = [
-            "/etc/auto.*",
-            "#/etc/aliases.db",
-            "/etc/httpd/conf.d",
-            "/etc/httpd/conf.d/*",
-            "/etc/modprobe.d/*",
-            "/etc/rc.d/init.d",
-            "/etc/rc.d/rc",
-            "/etc/resolv.conf",
-            "/etc/reslv.conf",
-            "/etc/grub.conf",
-            "/usr/share/automake-*/am/*.am",
-            "/var/run/*",
-            "/root/*",
-        ]
-
         listfile = os.path.join(self.workdir, "filelist.json")
-        data = dict(files=[dict(path=p) for p in paths])
+        data = dict(files=[dict(path=p) for p in PATHS])
 
         import json
         json.dump(data, open(listfile, "w"))
 
         config = init_config(listfile)
-        config.driver = "autotools.single.tgz"
 
-        ac = AnyFilelistCollector(listfile, config, Anycfg.CTYPE_JSON)
-        fos = ac.list(listfile)
-
-        self.assertTrue(isinstance(ac, AnyFilelistCollector))
-
-        paths_ref = U.unique(
-            U.concat(glob.glob(p) for p in paths if not p.startswith("#"))
+        fos_ref = sorted(
+            f for f in (Factory.create(p, False) for p in PATHS_EXPANDED) \
         )
 
         filters = [
-            Filters.UnsupportedTypesFilter(), Filters.ReadAccessFilter(),
+            Filters.UnsupportedTypesFilter(),
+            Filters.NotExistFilter(),
+            Filters.ReadAccessFilter(),
         ]
-        fos_ref = sorted(
-            Factory.create(p, False, checksum=U.checksum(p)) for p in paths_ref
-        )
-        fos_ref = [
+        fos_ref_filtered = [
             f for f in fos_ref if not any(filter(f) for filter in filters)
         ]
 
-        self.assertEquals(sorted(fos), fos_ref)
+        ac = AnyFilelistCollector(listfile, config, Anycfg.CTYPE_JSON)
+        self.assertTrue(isinstance(ac, AnyFilelistCollector))
+        fos = ac.list(listfile)
+
+        ac = AnyFilelistCollector(listfile, config, Anycfg.CTYPE_JSON)
+        self.assertTrue(isinstance(ac, AnyFilelistCollector))
+        fos_filtered = ac.collect()
+
+        paths_in_fos = sorted(f.path for f in fos)
+        paths_in_fos_filtered = sorted(f.path for f in fos_filtered)
+
+        self.assertEquals(paths_in_fos, sorted(f.path for f in fos_ref))
+
+        self.assertEquals(
+            paths_in_fos_filtered,
+            sorted(f.path for f in fos_ref_filtered)
+        )
 
 
 # vim:sw=4 ts=4 et:
