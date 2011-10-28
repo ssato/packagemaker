@@ -341,8 +341,7 @@ class Test_03_AnyFilelistCollector__w_side_effects(unittest.TestCase):
         self.workdir = setup_workdir()
 
     def tearDown(self):
-        #cleanup_workdir(self.workdir)
-        pass
+        cleanup_workdir(self.workdir)
 
     def test_01_list_and_collect__json(self):
         if E.json is None:
