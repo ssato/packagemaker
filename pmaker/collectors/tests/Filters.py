@@ -58,13 +58,38 @@ class TestUnsupportedTypesFilter(unittest.TestCase):
         username = pwd.getpwuid(os.getuid()).pw_name
         paths = [
             "/dev/null", "/dev/zero"  # device files
-        ] + glob.glob("/tmp/orbit-%s/linc-*" % username)[:1]  # socket
+        ] + glob.glob("/tmp/orbit-%s/linc-*" % username)[:3]  # socket
 
         paths = [p for p in paths if os.path.exists(p)]
 
         for p in paths:
             fo = Factory.create(p)
             self.assertTrue(self.filter.pred(fo))
+
+
+class TestNotExistFilter(unittest.TestCase):
+
+    def test_pred__not_exist(self):
+        filter = NotExistFilter()
+        path = "/a/b/c"
+
+        fi = FileInfoFactory().create(path)
+        fo = Factory.create(path)
+
+        self.assertTrue(filter.pred(fi))
+        self.assertTrue(filter.pred(fo))
+
+    def test_pred__not_exist(self):
+        filter = NotExistFilter()
+        path = "/bin/sh"
+
+        assert os.path.exists(path)
+
+        fi = FileInfoFactory().create(path)
+        fo = Factory.create(path)
+
+        self.assertFalse(filter.pred(fi))
+        self.assertFalse(filter.pred(fo))
 
 
 class TestReadAccessFilter(unittest.TestCase):

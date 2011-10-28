@@ -73,6 +73,17 @@ class UnsupportedTypesFilter(BaseFilter):
         return f.type() not in TYPES_SUPPORTED
 
 
+class NotExistFilter(BaseFilter):
+    """
+    A filter to filter out files not exist and not created later.
+    """
+
+    _reason = "not exist"
+
+    def _pred(self, f):
+        return not f.create and not os.path.exists(f.path)
+
+
 class ReadAccessFilter(BaseFilter):
     """
     A filter class to filter out files of which type is not supported.
