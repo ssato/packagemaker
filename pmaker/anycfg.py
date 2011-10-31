@@ -54,17 +54,19 @@ except ImportError:
         try:
             import elementtree.ElementTree as etree
         except ImportError:
-            logging.warn(" ElementTree module is not available. Disabled XML support.")
+            logging.warn(
+                " ElementTree module is not available. Disabled XML support."
+            )
             etree = None
 
 
-CONFIG_EXTS = [INI_EXTS, JSON_EXTS, YAML_EXTS, ] = [
-    ("ini", ), ("json", "jsn"), ("yaml", "yml"),
+CONFIG_EXTS = [INI_EXTS, JSON_EXTS, YAML_EXTS, XML_EXTS, ] = [
+    ("ini", ), ("json", "jsn"), ("yaml", "yml"), ("xml", ),
 ]
 EXT2CLASS_MAP = dict()
 
-CTYPES = [CTYPE_INI, CTYPE_JSON, CTYPE_YAML, ] = [
-    "ini", "json", "yaml",
+CTYPES = [CTYPE_INI, CTYPE_JSON, CTYPE_YAML, CTYPE_XML] = [
+    "ini", "json", "yaml", "xml",
 ]
 CTYPE2CLASS_MAP = dict()
 
@@ -221,6 +223,40 @@ class YamlConfigPaser(IniConfigParser):
 
 EXT2CLASS_MAP[YAML_EXTS] = YamlConfigPaser
 CTYPE2CLASS_MAP[CTYPE_YAML] = YamlConfigPaser
+
+
+def etree_to_Bunch(root):
+    """
+    Convert XML ElementTree to a collection of Bunch objects.
+    """
+    tree = Bunch()
+
+    if len(root):  # It has children.
+        # FIXME: Configuration item cannot have both attributes and
+        # values (list) at the same time in current implementation:
+        tree[root.tag] = [etree_to_Bunch(c) for c in root]
+    else:
+        tree[root.tag] = Bunch(**root.attrib)
+
+    return tree
+
+
+class XmlConfigParser(IniConfigParser):
+
+    def load(self, path_, *args, **kwargs):
+        if etree is None:
+            logging.warn("XML is not a supported configuration format.")
+            return Bunch()
+        else:
+            tree = etree.parse(path_)
+            root = tree.getroot()
+
+            return etree_to_Bunch(root)
+
+
+# TODO: It's experimental yet.
+#EXT2CLASS_MAP[XML_EXTS] = XmlConfigPaser
+#CTYPE2CLASS_MAP[CTYPE_XML] = XmlConfigPaser
 
 
 class AnyConfigParser(object):
