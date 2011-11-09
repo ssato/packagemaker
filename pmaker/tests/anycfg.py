@@ -15,7 +15,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 from pmaker.models.Bunch import Bunch
-from pmaker.tests.common import setup_workdir, cleanup_workdir
+from pmaker.tests.common import setup_workdir, cleanup_workdir, selfdir
 
 import pmaker.anycfg as PA
 
@@ -91,10 +91,10 @@ array0: [1, 2, 3]
 
 
 def dump_conf(workdir, content, ext=""):
-        path = os.path.join(workdir, "config" + ext)
-        print >> open(path, "w"), content
+    path = os.path.join(workdir, "config" + ext)
+    print >> open(path, "w"), content
 
-        return path
+    return path
 
 
 class Test_01_IniConfigParser(unittest.TestCase):
@@ -119,9 +119,24 @@ class Test_01_IniConfigParser(unittest.TestCase):
         self.assertEquals(config, self.config)
 
 
+class Test_02_IniConfigParser(unittest.TestCase):
+
+    def test_00_load(self):
+        cfgpath = os.path.join(selfdir(), "config_example_00.ini")
+
+        parser = PA.IniConfigParser()
+        config = parser.load(cfgpath)
+
+    def test_01_load(self):
+        cfgpath = os.path.join(selfdir(), "config_example_01.ini")
+
+        parser = PA.IniConfigParser()
+        config = parser.load(cfgpath)
+
+
 if PA.json is not None:
 
-    class Test_02_JsonConfigParser(unittest.TestCase):
+    class Test_03_JsonConfigParser(unittest.TestCase):
 
         def setUp(self):
             self.workdir = setup_workdir()
@@ -142,10 +157,18 @@ if PA.json is not None:
 
             self.assertEquals(config, self.config)
 
+    class Test_04_JsonConfigParser(unittest.TestCase):
+
+        def test_00_load(self):
+            cfgpath = os.path.join(selfdir(), "config_example_00.json")
+
+            parser = PA.JsonConfigPaser()
+            config = parser.load(cfgpath)
+
 
 if PA.yaml is not None:
 
-    class Test_03_YamlConfigParser(unittest.TestCase):
+    class Test_05_YamlConfigParser(unittest.TestCase):
 
         def setUp(self):
             self.workdir = setup_workdir()
@@ -166,8 +189,16 @@ if PA.yaml is not None:
 
             self.assertEquals(config, self.config)
 
+    class Test_06_YamlConfigParser(unittest.TestCase):
 
-class Test_04_AnyConfigParser(unittest.TestCase):
+        def test_00_load(self):
+            cfgpath = os.path.join(selfdir(), "config_example_00.yaml")
+
+            parser = PA.YamlConfigPaser()
+            config = parser.load(cfgpath)
+
+
+class Test_07_AnyConfigParser(unittest.TestCase):
 
     def setUp(self):
         self.workdir = setup_workdir()

@@ -16,6 +16,7 @@
 #
 #
 import pmaker.utils as U
+import os.path
 import tempfile
 
 
@@ -25,6 +26,10 @@ def setup_workdir():
 
 def cleanup_workdir(workdir):
     U.rm_rf(workdir)
+
+
+def selfdir():
+    return os.path.dirname(__file__)
 
 
 # vim:sw=4 ts=4 et:
