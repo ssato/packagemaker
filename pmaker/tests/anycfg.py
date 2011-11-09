@@ -165,6 +165,26 @@ if PA.json is not None:
             parser = PA.JsonConfigPaser()
             config = parser.load(cfgpath)
 
+            self.assertEquals(config.config, None)
+            self.assertEquals(config.norc, False)
+            self.assertEquals(config.force, False)
+            self.assertEquals(config.verbosity, 0)
+            self.assertEquals(config.name, "example-00-app")
+            self.assertEquals(config.group, "System Environment/Base")
+            self.assertEquals(config.license, "GPLv3+")
+            self.assertEquals(config.url, "http://example.com")
+            self.assertEquals(config.summary, "Example 00 app")
+            self.assertEquals(config.arch, False)
+            self.assertEquals(config.relations, "requires:/bin/sh")
+            self.assertEquals(config.pversion, "0.0.1")
+            self.assertEquals(config.release, 1)
+            self.assertEquals(config.no_mock, True)
+
+            self.assertNotEquals(config.files, [])
+            self.assertEquals(config.files[0].path, "/a/b/c")
+            self.assertEquals(config.files[0].attrs.create, 0)
+            self.assertEquals(config.files[1].path, "/d/e")
+
 
 if PA.yaml is not None:
 
@@ -196,6 +216,26 @@ if PA.yaml is not None:
 
             parser = PA.YamlConfigPaser()
             config = parser.load(cfgpath)
+
+            self.assertEquals(config.config, None)
+            self.assertEquals(config.norc, False)
+            self.assertEquals(config.force, False)
+            self.assertEquals(config.verbosity, 0)
+            self.assertEquals(config.name, "example-00-app")
+            self.assertEquals(config.group, "System Environment/Base")
+            self.assertEquals(config.license, "GPLv3+")
+            self.assertEquals(config.url, "http://example.com")
+            self.assertEquals(config.summary, "Example 00 app")
+            self.assertEquals(config.arch, False)
+            self.assertEquals(config.relations, "requires:/bin/sh")
+            self.assertEquals(config.pversion, "0.0.1")
+            self.assertEquals(config.release, 1)
+            self.assertEquals(config.no_mock, True)
+
+            self.assertNotEquals(config.files, [])
+            self.assertEquals(config.files[0].path, "/a/b/c")
+            self.assertEquals(config.files[0].attrs.create, 0)
+            self.assertEquals(config.files[1].path, "/d/e")
 
 
 class Test_07_AnyConfigParser(unittest.TestCase):
