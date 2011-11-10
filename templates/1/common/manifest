@@ -1,0 +1,3 @@
+<?py for f in not_conflicts.files: ?>
+#{f.install_path}
+<?py #endfor ?>

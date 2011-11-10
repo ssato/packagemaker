@@ -52,6 +52,42 @@ class Test_templates_1_common(unittest.TestCase):
         #c_ref = open(tmpl).read()
         #self.assertEquals(c, c_ref)
 
+    def test__manifest(self):
+        tmpl = tmplpath("manifest")
+
+        context = dict(
+            not_conflicts=Bunch(
+                files=[
+                    Bunch(install_path=p) for p in ["/a/b/c", "/w/x/y/z"]
+                ]
+            ),
+        )
+        c_ref = """\
+/a/b/c
+/w/x/y/z
+"""
+
+        c = TW.template_compile(tmpl, context)
+        self.assertEquals(c, c_ref)
+
+    def test__manifest_overrides(self):
+        tmpl = tmplpath("manifest.overrides")
+
+        context = dict(
+            conflicts=Bunch(
+                files=[
+                    Bunch(install_path=p) for p in ["/a/b/c", "/w/x/y/z"]
+                ]
+            ),
+        )
+        c_ref = """\
+/a/b/c
+/w/x/y/z
+"""
+
+        c = TW.template_compile(tmpl, context)
+        self.assertEquals(c, c_ref)
+
     def test__apply_overrides(self):
         tmpl = tmplpath("apply-overrides")
 
