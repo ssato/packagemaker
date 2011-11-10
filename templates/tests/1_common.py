@@ -100,5 +100,49 @@ exit 0
         #with open("/tmp/test.out", "w") as f:
         #    f.write(c)
 
+    def test__revert_overrides(self):
+        tmpl = tmplpath("revert-overrides")
+
+        paths = ["/a/b/c", "/a/b/d", "/a/e/f", "/a/g/h/i/j", "/x/y/z"]
+
+        def g(f, paths=paths):
+            f.original_path = random.choice(paths)
+            return f
+
+        files = [g(FO.FileObject(p)) for p in random.sample(paths, 4)]
+
+        context = dict(
+            conflicts=Bunch(
+                files=files,
+                savedir=CONFLICTS_SAVEDIR % {"name": "foo"},
+                newdir=CONFLICTS_NEWDIR % {"name": "foo"},
+            )
+        )
+
+        # TBD:
+        c = TW.template_compile(tmpl, context)
+        self.assertTrue(c != "")
+
+    def test__revert_overrides__wo_conflicts(self):
+        tmpl = tmplpath("revert-overrides")
+
+        context = dict(
+            conflicts=Bunch(
+                files=[],
+                savedir=CONFLICTS_SAVEDIR % {"name": "foo"},
+                newdir=CONFLICTS_NEWDIR % {"name": "foo"},
+            )
+        )
+
+        c = TW.template_compile(tmpl, context)
+        c_ref = """\
+#! /bin/bash
+set -e
+
+# No conflicts and nothing to do:
+exit 0
+"""
+        self.assertEquals(c, c_ref)
+
 
 # vim:sw=4 ts=4 et:
