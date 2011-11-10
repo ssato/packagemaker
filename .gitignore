@@ -1,4 +1,0 @@
-pmaker/*.pyc
-pmaker/*/*.pyc
-pmaker/*/*/*.pyc
-tests/*.pyc
