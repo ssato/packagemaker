@@ -14,6 +14,7 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
+import pmaker.options as Opt
 import pmaker.collectors.FilelistCollectors as Collectors
 import pmaker.backend.registry as Backends
 
@@ -21,7 +22,7 @@ import sys
 
 
 def main(argv=sys.argv):
-    o = Options()
+    o = Opt.Options()
     (opts, args) = o.parse_args(argv[1:])
 
     collector = Collectors.AnyFilelistCollector(args[0], opts)
