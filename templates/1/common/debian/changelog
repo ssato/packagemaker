@@ -1,0 +1,10 @@
+<?py
+if _context.get("changelog", False):
+    echo(changelog)
+else: ?>
+#{name} (#{version}) unstable; urgency=low
+
+  * New upstream release
+
+ -- #{packager} <#{email}>  #{date.date}
+<?py #endif ?>

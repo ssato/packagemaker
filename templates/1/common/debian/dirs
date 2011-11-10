@@ -1,0 +1,5 @@
+<?py for f in files: ?>
+<?py    if f.type() == "dir": ?>
+#{f.install_path[1:]}
+<?py    #endif ?>
+<?py #endfor ?>

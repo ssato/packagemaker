@@ -14,8 +14,10 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
+from pmaker.models.Bunch import Bunch
 from pmaker.tests.common import selfdir
 
+import pmaker.models.FileObjects as FO
 import pmaker.tenjinwrapper as TW
 import os.path
 import unittest
@@ -37,6 +39,68 @@ class Test_templates_1_common_debian(unittest.TestCase):
         c_ref = open(tmpl).read()
 
         self.assertEquals(c, c_ref)
+
+    def test__rules(self):
+        tmpl = tmplpath("rules")
+
+        c = TW.template_compile(tmpl, {})
+        c_ref = open(tmpl).read()
+
+        self.assertEquals(c, c_ref)
+
+    def test__changelog__wo_content(self):
+        tmpl = tmplpath("changelog")
+        context = dict(
+            name="foobar",
+            version="0.0.2",
+            packager="John Doe",
+            email="jdoe@example.com",
+            date=Bunch(date="2011-11-10 20:03"),
+        )
+
+        c = TW.template_compile(tmpl, context)
+        self.assertNotEquals(c, "")
+
+    def test__changelog__w_content(self):
+        tmpl = tmplpath("changelog")
+
+        c_ref = open(
+            os.path.join(
+                os.path.dirname(__file__), "debian_changelog_example_00"
+            )
+        ).read()
+
+        c = TW.template_compile(tmpl, {"changelog": c_ref})
+        self.assertEquals(c, c_ref)
+
+    def test__copyright(self):
+        tmpl = tmplpath("copyright")
+        context = dict(
+            packager="John Doe",
+            email="jdoe@example.com",
+            date=Bunch(date="2011-11-10 20:03"),
+            license="MIT",
+        )
+
+        c = TW.template_compile(tmpl, context)
+        self.assertNotEquals(c, "")
+
+    def test__dirs(self):
+        tmpl = tmplpath("dirs")
+        files = [
+            FO.DirObject("/a/b/c"),
+            FO.FileObject("/a/b/c/x"),
+            FO.DirObject("/d/e"),
+            FO.FileObject("/d/e/y"),
+            FO.DirObject("/f/g/h/i"),
+            FO.SymlinkObject("/f/g/h/i/j", "/a/b/c/x"),
+        ]
+
+        c = TW.template_compile(tmpl, {"files": files})
+        self.assertNotEquals(c, "")
+
+        #with open("/tmp/test.out", "w") as f:
+        #    f.write(c)
 
 
 # vim:sw=4 ts=4 et:
