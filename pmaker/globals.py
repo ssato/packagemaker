@@ -35,6 +35,8 @@ PMAKER_WEBSITE = "https://github.com/ssato/packagemaker"
 PMAKER_VERSION = "0.3.1" + "." + datetime.datetime.now().strftime("%Y%m%d")
 #PMAKER_VERSION = "0.3.1"
 
+PMAKER_TEMPLATE_VERSION = "1"
+
 
 FILEINFOS = dict()
 PACKAGE_MAKERS = dict()
