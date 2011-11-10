@@ -46,7 +46,8 @@ class Base(object):
     # file relative to template search paths, and out is the path of output
     # file relative to workdir.
     _templates = [
-        # e.g. ("autotools.single/configure.ac": "configure.ac"),
+        # (<template_path>, <template instance path relative to src topdir>)
+        # e.g. ("1/autotools.single/configure.ac": "configure.ac"),
     ]
 
     @classmethod

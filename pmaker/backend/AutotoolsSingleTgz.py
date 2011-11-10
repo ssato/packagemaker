@@ -14,6 +14,8 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
+from pmaker.globals import PMAKER_TEMPLATE_VERSION as TVER
+
 import pmaker.backend.base as B
 import pmaker.utils as U
 
@@ -30,13 +32,13 @@ class AutotoolsSingleTgz(B.Base):
     _strategy = "autotools.single"
 
     _templates = [
-        ("autotools.single/configure.ac", "configure.ac"),
-        ("autotools.single/Makefile.am", "Makefile.am"),
-        ("common/README", "README"),
-        ("common/manifest", "MANIFEST"),
-        ("common/manifest.overrides", "MANIFEST.overrides"),
-        ("common/apply-overrides", "apply-overrides"),
-        ("common/revert-overrides", "revert-overrides"),
+        (TVER + "/autotools.single/configure.ac", "configure.ac"),
+        (TVER + "/autotools.single/Makefile.am", "Makefile.am"),
+        (TVER + "/common/README", "README"),
+        (TVER + "/common/manifest", "MANIFEST"),
+        (TVER + "/common/manifest.overrides", "MANIFEST.overrides"),
+        (TVER + "/common/apply-overrides", "apply-overrides"),
+        (TVER + "/common/revert-overrides", "revert-overrides"),
     ]
 
     def preconfigure(self):
@@ -67,7 +69,9 @@ class AutotoolsSingleTgz(B.Base):
             self.shell("make")
             self.shell("make dist")
         else:
-            self.shell("./configure --quiet --enable-silent-rules", timeout=180)
+            self.shell(
+                "./configure --quiet --enable-silent-rules", timeout=180
+            )
             self.shell("make V=0 > /dev/null")
             self.shell("make dist V=0 > /dev/null")
 

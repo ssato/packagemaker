@@ -14,6 +14,8 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
+from pmaker.globals import PMAKER_TEMPLATE_VERSION as TVER
+
 import pmaker.backend.AutotoolsSingleTgz as A
 import pmaker.rpmutils as R
 import pmaker.utils as U
@@ -48,8 +50,9 @@ class AutotoolsSingleRpm(A.AutotoolsSingleTgz):
         super(AutotoolsSingleRpm, self).__init__(package, **kwargs)
 
         self._templates += [
-            ("autotools/rpm.mk", "rpm.mk"),
-            ("autotools.single/package.spec", self.package.name + ".spec"),
+            (TVER + "/autotools/rpm.mk", "rpm.mk"),
+            (TVER + "/autotools.single/package.spec",
+                self.package.name + ".spec"),
         ]
 
         self.on_debug_mode = U.on_debug_mode()

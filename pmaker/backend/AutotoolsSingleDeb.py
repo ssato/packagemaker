@@ -14,6 +14,8 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
+from pmaker.globals import PMAKER_TEMPLATE_VERSION as TVER
+
 import pmaker.backend.AutotoolsSingleTgz as A
 import pmaker.rpmutils as R
 import pmaker.utils as U
@@ -26,7 +28,7 @@ class AutotoolsSingleDeb(A.AutotoolsSingleTgz):
     """Deb support
     """
 
-    _format = "deb"    
+    _format = "deb"
 
     # TODO: Add almost relation tag set:
     _relations = {
@@ -37,14 +39,14 @@ class AutotoolsSingleDeb(A.AutotoolsSingleTgz):
         super(AutotoolsSingleDeb, self).__init__(package, **kwargs)
 
         self._templates += [
-            ("common/debian/rules", "debian/rules"),
-            ("autotools/debian/control", "debian/control"),
-            ("common/debian/copyright", "debian/copyright"),
-            ("common/debian/changelog", "debian/changelog"),
-            ("common/debian/dirs", "debian/dirs"),
-            ("common/debian/compat", "debian/compat"),
-            ("common/debian/source/format", "debian/source/format"),
-            ("common/debian/source/options", "debian/source/options"),
+            (TVER + "/common/debian/rules", "debian/rules"),
+            (TVER + "/autotools/debian/control", "debian/control"),
+            (TVER + "/common/debian/copyright", "debian/copyright"),
+            (TVER + "/common/debian/changelog", "debian/changelog"),
+            (TVER + "/common/debian/dirs", "debian/dirs"),
+            (TVER + "/common/debian/compat", "debian/compat"),
+            (TVER + "/common/debian/source/format", "debian/source/format"),
+            (TVER + "/common/debian/source/options", "debian/source/options"),
         ]
 
     def preconfigure(self):
