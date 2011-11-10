@@ -1,0 +1,15 @@
+# pyTenjin test:
+
+<?py title = _context.get("title", "pyTenjin Tests") ?>
+${title}
+
+# nested for loops & if statement:
+
+<?py for i in range(10): ?>
+#{i}
+<?py     if i % 2 == 0: ?>
+<?py         for c in "abcde": ?>
+#{c}
+<?py         #endfor ?>
+<?py     #endif ?>
+<?py #endfor ?>
