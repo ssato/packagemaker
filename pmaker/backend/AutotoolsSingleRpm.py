@@ -51,8 +51,7 @@ class AutotoolsSingleRpm(A.AutotoolsSingleTgz):
 
         self._templates += [
             (TVER + "/autotools/rpm.mk", "rpm.mk"),
-            (TVER + "/autotools.single/package.spec",
-                self.package.name + ".spec"),
+            (TVER + "/autotools/package.spec", self.package.name + ".spec"),
         ]
 
         self.on_debug_mode = U.on_debug_mode()
