@@ -29,33 +29,23 @@ import os.path
 import sys
 
 
-HELP_HEADER = """%prog [OPTION ...] INPUT
+HELP_HEADER = """%prog [OPTION ...] [INPUT]
 
 Arguments:
 
   INPUT   A file path or "-" (read data from stdin) to gather file paths.
 
-          Various format such as JSON is supported but most basic and simplest
-          format is like the followings:
+          You can also specify "files" section in configuration files with
+          -C/--config option.
 
-          - Lines are consist of aboslute path of target file/dir/symlink
-          - The lines starting with "#" in the list file are ignored
-          - "*" in paths are intepreted as glob matching pattern;
+          see pmaker(8) for more details.
 
-          ex. if there were files 'c', 'd' and 'e' in the dir and the path
-              '/a/b/*' was given, it's just same as '/a/b/c', '/a/b/d' and
-              '/a/b/e' were given.
-
-Configuration files:
-
-  Pmaker loads parameter configurations from multiple configuration files if
-  there are in order of /etc/pmaker.conf, /etc/pmaker.d/*.conf,
-  ~/.config/pmaker, any path set in the environment variable PMAKERRC and
-  ~/.pmakerrc.
+Options:  see %prog --help
 
 Examples:
   %prog -n foo files.list
   cat files.list | %prog -n foo -  # same as above.
+  %prog -n foo -C config.json  # Specify files in JSON config also.
 
   %prog -n foo --pversion 0.2 --license MIT files.list
   %prog -n foo --relations "requires:httpd,/bin/tar;obsoletes:bar" files.list
@@ -275,12 +265,6 @@ class Options(Bunch):
             # Likewise:
             (options, args) = self.oparser.parse_args(argv)
 
-        if options.name is None:
-            options.name = raw_input("Package name: ")
-
-        if options.summary is None:
-            options.summary = self.make_default_summary(options.name)
-
         try:
             loglevel = [
                 logging.WARN, logging.INFO, logging.DEBUG
@@ -291,8 +275,16 @@ class Options(Bunch):
         logging.getLogger().setLevel(loglevel)
 
         if self.missing_files(args):
+            logging.error(" Filelist was not given.\n")
             self.oparser.print_usage()
-            raise RuntimeError("Filelist was not given.")
+
+            sys.exit(-1)
+
+        if options.name is None:
+            options.name = raw_input("Package name: ")
+
+        if options.summary is None:
+            options.summary = self.make_default_summary(options.name)
 
         return (options, args)
 
