@@ -52,7 +52,7 @@ def date_params():
 
 def compressor_params(extopt, ctools=COMPRESSING_TOOLS):
     ct = [ct for ct in ctools if ct.extension == extopt][0]
-    return dict(ext=extopt, am_opt=ct.am_option)
+    return Bunch(ext=extopt, am_opt=ct.am_option)
 
 
 def load_txt_content(txtpath):
