@@ -98,8 +98,9 @@ class Package(object):
         self.conflicts = Bunch(
             savedir=self.conflicts_savedir,
             newdir=self.conflicts_newdir,
+            files=[],
         )
-        self.not_conflicts = Bunch()
+        self.not_conflicts = Bunch(files=[])
 
     def add_fileinfos(self, files):
         self.fileinfos = self.files = \

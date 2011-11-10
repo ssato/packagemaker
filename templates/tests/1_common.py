@@ -14,11 +14,15 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
-from pmaker.tests.common import selfdir
+from pmaker.globals import CONFLICTS_NEWDIR, CONFLICTS_SAVEDIR
 from pmaker.models.Bunch import Bunch
+from pmaker.tests.common import selfdir
 
+import pmaker.models.FileObjects as FO
 import pmaker.tenjinwrapper as TW
+
 import os.path
+import random
 import unittest
 
 
@@ -30,7 +34,7 @@ def tmplpath(fname):
 
 class Test_templates_1_common(unittest.TestCase):
 
-    def test_README(self):
+    def test__README(self):
         tmpl = tmplpath("README")
 
         d = Bunch(date="2011.11.10")
@@ -43,10 +47,58 @@ class Test_templates_1_common(unittest.TestCase):
 
         # TBD:
         c = TW.template_compile(tmpl, context)
-        #c_ref = open(tmpl).read()
-
         self.assertTrue(c != "")
+
+        #c_ref = open(tmpl).read()
         #self.assertEquals(c, c_ref)
+
+    def test__apply_overrides(self):
+        tmpl = tmplpath("apply-overrides")
+
+        paths = ["/a/b/c", "/a/b/d", "/a/e/f", "/a/g/h/i/j", "/x/y/z"]
+
+        def g(f, paths=paths):
+            f.original_path = random.choice(paths)
+            return f
+
+        files = [g(FO.FileObject(p)) for p in random.sample(paths, 4)]
+
+        context = dict(
+            conflicts=Bunch(
+                files=files,
+                savedir=CONFLICTS_SAVEDIR % {"name": "foo"},
+                newdir=CONFLICTS_NEWDIR % {"name": "foo"},
+            )
+        )
+
+        # TBD:
+        c = TW.template_compile(tmpl, context)
+        self.assertTrue(c != "")
+
+    def test__apply_overrides__wo_conflicts(self):
+        tmpl = tmplpath("apply-overrides")
+
+        context = dict(
+            conflicts=Bunch(
+                files=[],
+                savedir=CONFLICTS_SAVEDIR % {"name": "foo"},
+                newdir=CONFLICTS_NEWDIR % {"name": "foo"},
+            )
+        )
+
+        c = TW.template_compile(tmpl, context)
+        c_ref = """\
+#! /bin/bash
+set -e
+
+# No conflicts and nothing to do:
+exit 0
+"""
+        self.assertEquals(c, c_ref)
+
+        ## for debug:
+        #with open("/tmp/test.out", "w") as f:
+        #    f.write(c)
 
 
 # vim:sw=4 ts=4 et:
