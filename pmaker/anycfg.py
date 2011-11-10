@@ -105,7 +105,7 @@ class IniConfigParser(object):
 
     def load(self, path_, sep=",", **kwargs):
         if not os.path.exists(path_):
-            logging.warn("%s does not exist. Do nothing." % path_)
+            logging.info("%s does not exist." % path_)
             return
 
         logging.info("Loading config: " + path_)
