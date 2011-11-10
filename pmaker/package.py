@@ -18,6 +18,7 @@
 from pmaker.globals import CONFLICTS_NEWDIR, CONFLICTS_SAVEDIR, \
     COMPRESSING_TOOLS, DATE_FMT_RFC2822, DATE_FMT_SIMPLE
 from pmaker.environ import hostname
+from pmaker.models.Bunch import Bunch
 from pmaker.utils import sort_out_paths_by_dir
 
 import datetime
@@ -71,7 +72,7 @@ class Package(object):
         @param  package    Dict holding package's metadata
         @param  options    Command line options :: optparse.Option  (FIXME)
         """
-        self.fileinfos = []
+        self.fileinfos = self.files = []
 
         keys = ("workdir", "destdir", "upto", "name", "release", "group",
             "license", "url", "packager", "email", "relations", "dist")
@@ -94,19 +95,28 @@ class Package(object):
         self.conflicts_savedir = CONFLICTS_SAVEDIR % self.as_dict()
         self.conflicts_newdir = CONFLICTS_NEWDIR % self.as_dict()
 
-    def add_fileinfos(self, fileinfos):
-        self.fileinfos = self.fileinfos + \
-            [fi for fi in fileinfos if fi not in self.fileinfos]
+        self.conflicts = Bunch(
+            savedir=self.conflicts_savedir,
+            newdir=self.conflicts_newdir,
+        )
+        self.not_conflicts = Bunch()
+
+    def add_fileinfos(self, files):
+        self.fileinfos = self.files = \
+            self.fileinfos + [f for f in files if f not in self.fileinfos]
 
         self.distdata = sort_out_paths_by_dir(
-            fi.target for fi in self.fileinfos if fi.isfile()
+            f.install_path for f in self.files if f.isfile()
         )
         self.conflicted_fileinfos = [
-            fi for fi in self.fileinfos if getattr(fi, "conflicts", False)
+            f for f in self.files if getattr(f, "conflicts", False)
         ]
         self.not_conflicted_fileinfos = [
-            fi for fi in self.fileinfos if not getattr(fi, "conflicts", False)
+            f for f in self.files if not getattr(f, "conflicts", False)
         ]
+
+        self.conflicts.files = self.conflicted_fileinfos
+        self.not_conflicts.files = self.not_conflicted_fileinfos
 
     def update(self, update_dict):
         self.__dict__.update(update_dict)
