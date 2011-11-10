@@ -14,6 +14,7 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
+from pmaker.models.Bunch import Bunch
 from pmaker.tests.common import selfdir
 
 import pmaker.tenjinwrapper as TW
@@ -29,14 +30,32 @@ def tmplpath(fname):
 
 class Test_templates_1_autotools(unittest.TestCase):
 
-    def test_rpm_mk(self):
+    def test__00_rpm_mk(self):
         tmpl = tmplpath("rpm.mk")
 
-        # Template and generated output from it should equals.
         c = TW.template_compile(tmpl, {})
         c_ref = open(tmpl).read()
 
         self.assertEquals(c, c_ref)
+
+    def test__01_package_spec(self):
+        """TBD: test cases for 1/autotools/package.spec"""
+        return
+
+        tmpl = tmplpath("package.spec")
+
+        context = dict(
+            name="foobarbaz",
+            version="2.1.0",
+            summary="pmaker RPM package example",
+            group="Application/Text",
+            license="GPLv3+",
+            url="http://www.example.com/git/foobarbaz",
+            compressor=Bunch(ext="xz", ),
+            noarch=True,
+        )
+
+        c = TW.template_compile(tmpl, context)
 
 
 # vim:sw=4 ts=4 et:
