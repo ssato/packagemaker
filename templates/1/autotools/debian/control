@@ -1,0 +1,33 @@
+Source: #{name}
+Priority: optional
+Maintainer: #{packager} <#{email}>
+Build-Depends: debhelper (>= 7.3.8), autotools-dev
+Standards-Version: 3.9.0
+Homepage: #{url}
+
+Package: #{name}
+Section: database
+<?py if noarch: ?>
+Architecture: all
+<?py else: ?>
+Architecture: any
+<?py #endif ?>
+<?py 
+requires_list = "${shlibs:Depends}, ${misc:Depends}"
+
+for rel in relations:
+    if rel.targets:
+        rel_targets = ", ".join(rel.targets)
+
+    #endif
+
+    if rel.type == "Depends":
+        requires_list += rel_targets
+
+    #endif
+
+#endfor
+?>
+Depends: #{requires_list}
+Description: #{summary}
+  #{summary}

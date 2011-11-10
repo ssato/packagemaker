@@ -32,7 +32,7 @@ def tmplpath(fname):
 
 class Test_templates_1_autotools_single(unittest.TestCase):
 
-    def test_Makefile_am(self):
+    def test__Makefile_am(self):
         tmpl = tmplpath("Makefile.am")
 
         paths = ["/a/b/c", "/a/b/d", "/a/e/f", "/a/g/h/i/j", "/x/y/z"]
@@ -55,11 +55,22 @@ class Test_templates_1_autotools_single(unittest.TestCase):
         )
 
         c = TW.template_compile(tmpl, context)
-
-        with open("/tmp/test.out", "w") as f:
-            f.write(c)
-
         self.assertNotEquals(c, "")
+
+    def test__configure_ac(self):
+        tmpl = tmplpath("configure.ac")
+
+        context = dict(
+            name="foobar",
+            version="0.0.1",
+            compressor=Bunch(am_opt="dist-xz", ),
+        )
+
+        c = TW.template_compile(tmpl, context)
+        self.assertNotEquals(c, "")
+
+        #with open("/tmp/test.out", "w") as f:
+        #    f.write(c)
 
 
 # vim:sw=4 ts=4 et:
