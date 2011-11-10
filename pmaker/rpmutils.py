@@ -16,6 +16,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 from pmaker.globals import TYPE_DIR
+from pmaker.models.Bunch import Bunch
 from pmaker.utils import memoize, cache_needs_updates_p
 
 import cPickle as pickle
@@ -78,7 +79,7 @@ def rpmh2nvrae(h):
     )
     d["epoch"] = str(normalize_epoch(d["epoch"]))
 
-    return d
+    return Bunch(**d)
 
 
 def ts(rpmdb_path=None):
@@ -200,13 +201,13 @@ try:
     @memoize
     def rpm_search_provides_by_path(path):
         rs = rpmdb.searchProvides(path)
-        return rs and rpmh2nvrae(rs[0]) or dict()
+        return rs and rpmh2nvrae(rs[0]) or Bunch()
 
 except ImportError:
     @memoize
     def rpm_search_provides_by_path(path, rpmdb_path=None):
         database = filelist(rpmdb_path=rpmdb_path)
-        return database.get(path, dict())
+        return Bunch(**database.get(path, dict()))
 
 
 def __rpm_attr(fo):
