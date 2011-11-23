@@ -84,7 +84,12 @@ class Package(object):
 
         self.version = options.pversion
         self.noarch = not options.arch
-        self.changelog = load_txt_content(options.changelog)
+
+        if options.changelog:
+            self.changelog = load_txt_content(options.changelog)
+        else:
+            self.changelog = ""
+
         self.host = hostname()
         self.date = date_params()
         self.compressor = compressor_params(options.compressor)
