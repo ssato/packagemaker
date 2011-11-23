@@ -19,7 +19,8 @@
 import pmaker.contrib.tenjin as tenjin
 
 
-# dirty hack for highly customized (and broken IMHO) module system in pyTenjin:
+# dirty hack for highly customized and looks a bit overkill (IMHO) module
+# system in pyTenjin:
 cache_as = tenjin.helpers.cache_as
 capture_as = tenjin.helpers.capture_as
 captured_as = tenjin.helpers.captured_as
