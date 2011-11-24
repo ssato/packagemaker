@@ -7,7 +7,7 @@ Homepage: #{url}
 
 Package: #{name}
 Section: database
-<?py if noarch: ?>
+<?py if not arch: ?>
 Architecture: all
 <?py else: ?>
 Architecture: any
