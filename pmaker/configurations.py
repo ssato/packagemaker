@@ -60,7 +60,7 @@ def _defaults(env):
     defaults.pversion = "0.0.1"
     defaults.release = "1"
     defaults.ignore_owner = False
-    defaults.changelog = None
+    defaults.changelog = ""
 
     # rpm options:
     defaults.dist = env.dist.label
