@@ -56,13 +56,21 @@ def compressor_params(extopt, ctools=COMPRESSING_TOOLS):
 
 class PkgData(object):
 
-    def __init__(self, data):
+    def __init__(self, data, files):
         """
-        :param data:   Command line options :: optparse.Option  (FIXME)
+        :param data: Package data (parameters) came from command line options
+                     and parameter settings in configuration files, to
+                     instantiate templates.
+
+                     see also: pmaker/configurations.py, pmaker/options.py
+        :param files: List of files (FileObject instances) :: [FileObject]
         """
-        keys = ("workdir", "destdir", "upto", "name", "release", "group",
-            "license", "url", "packager", "email", "relations", "dist",
-            "changelog", "summary", "hostname", "version")
+        keys = (
+            "force", "verbosity", "workdir", "stepto", "driver",
+            "format", "destdir", "name", "group", "license", "url",
+            "summary", "arch", "relations", "packager", "email",
+            "pversion", "release", "changelog", "dist",
+        )
 
         for key in keys:
             val = getattr(data, key, None)
@@ -72,7 +80,8 @@ class PkgData(object):
         self.date = date_params()
         self.compressor = compressor_params(data.compressor)
         self.srcdir = os.path.join(self.workdir, "src")
-        self.setup_files(data.files)
+
+        self.setup_files(files)
 
     def setup_files(self, files):
         self.files = files

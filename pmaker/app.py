@@ -14,7 +14,8 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
-import pmaker.options as Opt
+import pmaker.options as O
+import pmaker.pkgdata as P
 import pmaker.collectors.FilelistCollectors as Collectors
 import pmaker.backend.registry as Backends
 
@@ -22,19 +23,23 @@ import sys
 
 
 def main(argv=sys.argv):
-    o = Opt.Options()
+    o = O.Options()
     (opts, args) = o.parse_args(argv[1:])
 
-    collector = Collectors.AnyFilelistCollector(args[0], opts)
-    pkg = Package(opts)
+    listfile = args[0] if args else opts.config
 
-    fis = collector.collect()
+    collector_cls = Collectors.map().get(opts.input_type)
+    collector = collector_cls(listfile, opts)
 
-    if len(fis) == 0:
-        raise RuntimeError("Failed to collect fileinfo list from " + listfile)
+    fs = collector.collect()
+
+    if not fs:
+        raise RuntimeError("Failed to collect files from " + listfile)
+
+    pkgdata = P.PkgData(opts, fs)
 
     backend_cls = Backends.map.get(opts.driver)
-    backend = backend_cls(pkg)
+    backend = backend_cls(pkgdata)
     backend.run()
 
 
