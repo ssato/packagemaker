@@ -92,6 +92,19 @@ def setup_template_path_option():
                 dest="template_paths", )
 
 
+def get_content(path):
+    content = ""
+    try:
+        content = open(path).read()
+
+    except IOError:
+        logging.warn(
+            " Could not open %s to read content." % value
+        )
+
+    return content
+
+
 def set_workdir(workdir, name, pversion):
     return os.path.join(os.path.abspath(workdir), "%s-%s" % (name, pversion))
 
@@ -217,7 +230,7 @@ class Options(Bunch):
             help="Force set owner and group of targets to root"
         )
         add_option("", "--changelog",
-            help="Specify text file contains changelog"
+            help="Specify text file contains changelog",
         )
 
         self.oparser.add_option_group(pog)
@@ -285,6 +298,9 @@ class Options(Bunch):
 
         if options.summary is None:
             options.summary = self.make_default_summary(options.name)
+
+        if options.changelog:
+            options.changelog = get_content(options.changelog)
 
         return (options, args)
 

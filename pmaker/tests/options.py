@@ -178,4 +178,31 @@ class Test_01_Options(unittest.TestCase):
         self.assertTrue(opts.no_mock)
 
 
+class Test_01_Options_w_side_effects(unittest.TestCase):
+
+    def setUp(self):
+        self.workdir = setup_workdir()
+
+    def tearDown(self):
+        cleanup_workdir(self.workdir)
+
+    def test_01_parse_args_w_name_and_changelog_option(self):
+        name = "foo"
+        changelog_file = os.path.join(self.workdir, "dummy_changelog.txt")
+        changelog_content = "This is a dummy changelog file."
+
+        o = Options()
+        (opts, args) = o.parse_args(["-n", name, "dummy_filelist.txt"])
+        self.assertEquals(opts.changelog, "")
+
+        with open(changelog_file, "w") as f:
+            f.write(changelog_content)
+
+        o = Options()
+        (opts, args) = o.parse_args(
+            ["-n", name, "--changelog", changelog_file, "dummy_filelist.txt"]
+        )
+        self.assertEquals(opts.changelog, changelog_content)
+
+
 # vim:sw=4 ts=4 et:
