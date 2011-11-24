@@ -2,7 +2,7 @@
 %define  newdir  /var/lib/pmaker/installed
 
 Name:           #{name}
-Version:        #{version}
+Version:        #{pversion}
 Release:        1%{?dist}
 Summary:        #{summary}
 Group:          #{group}
@@ -30,7 +30,7 @@ for rel in relations:
 
 %description
 This package provides some backup data collected on
-#{host} by #{packager} at #{date.date}.
+#{hostname} by #{packager} at #{date.date}.
 
 
 #if $conflicted_fileinfos
@@ -124,6 +124,6 @@ fi
 <?py if _context.get("changelog", False): ?>
 #{changelog}
 <?py else: ?>
-* #{date.timestamp} #{packager} <#{email}> - #{version}-#{release}
+* #{date.timestamp} #{packager} <#{email}> - #{pversion}-#{release}
 - Initial packaging.
 <?py #endif ?>

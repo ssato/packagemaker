@@ -1,2 +1,2 @@
 This package provides some backup data collected on
-#{host} by #{packager} at #{date.date}.
+#{hostname} by #{packager} at #{date.date}.

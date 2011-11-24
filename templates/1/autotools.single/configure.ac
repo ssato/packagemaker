@@ -1,4 +1,4 @@
-AC_INIT([#{name}],[#{version}])
+AC_INIT([#{name}],[#{pversion}])
 AM_INIT_AUTOMAKE([#{compressor.am_opt} foreign subdir-objects tar-pax])
 
 dnl http://www.flameeyes.eu/autotools-mythbuster/automake/silent.html

@@ -2,7 +2,7 @@
 if _context.get("changelog", False):
     echo(changelog)
 else: ?>
-#{name} (#{version}) unstable; urgency=low
+#{name} (#{pversion}) unstable; urgency=low
 
   * New upstream release
 
