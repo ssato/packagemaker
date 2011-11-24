@@ -52,7 +52,7 @@ class Test_templates_1_autotools(unittest.TestCase):
             license="GPLv3+",
             url="http://www.example.com/git/foobarbaz",
             compressor=Bunch(ext="xz", ),
-            noarch=True,
+            arch=False,
         )
 
         c = TW.template_compile(tmpl, context)

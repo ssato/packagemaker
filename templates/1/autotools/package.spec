@@ -10,7 +10,7 @@ License:        #{license}
 URL:            #{url}
 Source0:        %{name}-%{version}.tar.#{compressor.ext}
 BuildRoot:      %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
-<?py if noarch: ?>
+<?py if not arch: ?>
 BuildArch:      noarch
 <?py #endif ?>
 <?py
