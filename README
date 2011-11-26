@@ -255,7 +255,7 @@ TODO
   systems (w/o rpm-python)
 * find causes of warnings during deb build and fix them all
 * keep permissions of targets in tar archives
-* Run w/o python-cheetah: I'm considering to switch to PyTenjin
+* Run w/o python-cheetah: New templates (templates/1/**/*) make use of PyTenjin
 
 
 References
@@ -311,7 +311,7 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
 Exceptions
 -----------------------
 
-Files under pmaker/contrib/ imported from external projects and the above
+Files under pmaker/imported/ were imported from external projects and the above
 license is not applied. 
 
 

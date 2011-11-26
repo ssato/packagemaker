@@ -16,7 +16,7 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
-import pmaker.contrib.tenjin as tenjin
+import pmaker.imported.tenjin as tenjin
 
 
 # dirty hack for highly customized and looks a bit overkill (IMHO) module
