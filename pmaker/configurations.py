@@ -79,7 +79,6 @@ class Config(Bunch):
         """
         self._env = E.Env()
         self._cparser = Anycfg.AnyConfigParser(forced_type)
-
         self.files = []
 
         self.update(_defaults(self._env))
