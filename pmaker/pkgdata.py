@@ -86,15 +86,13 @@ class PkgData(object):
     def setup_files(self, files):
         self.files = files
         self.conflicts = Bunch(
-            savedir=CONFLICTS_SAVEDIR % self,
-            newdir=CONFLICTS_NEWDIR % self,
-            files=[
-                f for f in files if getattr(f, "conflicts", False)
-            ],
+            savedir=CONFLICTS_SAVEDIR % {"name": self.name},
+            newdir=CONFLICTS_NEWDIR % {"name": self.name},
+            files=[f for f in files if "conflicts" in f],
         )
 
         self.not_conflicts = Bunch(
-            files=[f for f in files if f in self.conflicts.files],
+            files=[f for f in files if f not in self.conflicts.files],
         )
 
         self.distdata = U.sort_out_paths_by_dir(
