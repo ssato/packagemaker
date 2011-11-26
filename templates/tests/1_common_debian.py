@@ -52,7 +52,7 @@ class Test_templates_1_common_debian(unittest.TestCase):
         tmpl = tmplpath("changelog")
         context = dict(
             name="foobar",
-            version="0.0.2",
+            pversion="0.0.2",
             packager="John Doe",
             email="jdoe@example.com",
             date=Bunch(date="2011-11-10 20:03"),

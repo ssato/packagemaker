@@ -40,7 +40,7 @@ class Test_templates_1_autotools_debian(unittest.TestCase):
             packager="John Doe",
             email="jdoe@example.com",
             url="http://www.example.com/git/foobar.git",
-            noarch=True,
+            arch=False,
             relations=[
                 Bunch(targets=["abc", "defg"], type="Depends"),
                 Bunch(targets=["hi", "jklmn"], type="Depends"),

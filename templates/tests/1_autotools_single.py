@@ -62,7 +62,7 @@ class Test_templates_1_autotools_single(unittest.TestCase):
 
         context = dict(
             name="foobar",
-            version="0.0.1",
+            pversion="0.0.1",
             compressor=Bunch(am_opt="dist-xz", ),
         )
 

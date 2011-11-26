@@ -40,7 +40,7 @@ class Test_templates_1_common(unittest.TestCase):
         d = Bunch(date="2011.11.10")
 
         context = dict(
-            host="foobar.example.com",
+            hostname="foobar.example.com",
             packager="John Doe",
             date=d,
         )
