@@ -28,8 +28,8 @@ def main(argv=sys.argv):
 
     listfile = args[0] if args else opts.config
 
-    collector_cls = Collectors.map().get(opts.input_type)
-    collector = collector_cls(listfile, opts)
+    ccls = Collectors.map().get(opts.input_type)
+    collector = ccls(listfile, opts)
 
     fs = collector.collect()
 
@@ -38,8 +38,8 @@ def main(argv=sys.argv):
 
     pkgdata = P.PkgData(opts, fs)
 
-    backend_cls = Backends.map.get(opts.driver)
-    backend = backend_cls(pkgdata)
+    bcls = Backends.map().get(opts.driver)
+    backend = bcls(pkgdata)
     backend.run()
 
 
