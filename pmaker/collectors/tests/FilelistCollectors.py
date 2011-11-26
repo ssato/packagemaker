@@ -359,30 +359,34 @@ class Test_03_AnyFilelistCollector__w_side_effects(unittest.TestCase):
             f for f in (Factory.create(p, False) for p in PATHS_EXPANDED) \
         )
 
+        ac = AnyFilelistCollector(listfile, config, Anycfg.CTYPE_JSON)
+        fos = ac.list(listfile)
+        paths_in_fos = sorted(f.path for f in fos)
+
+        self.assertEquals(paths_in_fos, sorted(f.path for f in fos_ref))
+
+        class UserDirFilter(Filters.BaseFilter):
+            _reason = "file is under \"/usr\""
+
+            def _pred(self, f):
+                return f.path.startswith("/usr")
+
         filters = [
             Filters.UnsupportedTypesFilter(),
             Filters.NotExistFilter(),
             Filters.ReadAccessFilter(),
+            UserDirFilter(),
         ]
         fos_ref_filtered = [
             f for f in fos_ref if not any(filter(f) for filter in filters)
         ]
 
-        ac = AnyFilelistCollector(listfile, config, Anycfg.CTYPE_JSON)
-        self.assertTrue(isinstance(ac, AnyFilelistCollector))
-        fos = ac.list(listfile)
-
-        ac = AnyFilelistCollector(listfile, config, Anycfg.CTYPE_JSON)
-        self.assertTrue(isinstance(ac, AnyFilelistCollector))
-        fos_filtered = ac.collect()
-
-        paths_in_fos = sorted(f.path for f in fos)
-        paths_in_fos_filtered = sorted(f.path for f in fos_filtered)
-
-        self.assertEquals(paths_in_fos, sorted(f.path for f in fos_ref))
+        ac2 = AnyFilelistCollector(listfile, config, Anycfg.CTYPE_JSON)
+        ac2.filters += filters
+        fos_filtered = ac2.collect()
 
         self.assertEquals(
-            paths_in_fos_filtered,
+            sorted(f.path for f in fos_filtered),
             sorted(f.path for f in fos_ref_filtered)
         )
 
