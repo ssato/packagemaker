@@ -33,9 +33,7 @@ class Bunch(dict):
     __getattr__ = dict.__getitem__
     __setattr__ = dict.__setitem__
     __delattr__ = dict.__delitem__
-
-    def __getstate__(self):
-        return self.copy()
+    __getstate__ = dict.copy
 
     def __setstate__(self, dic):
         self.__dict__ = dic
