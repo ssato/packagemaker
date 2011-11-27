@@ -35,8 +35,8 @@ class AutotoolsSingleDeb(A.AutotoolsSingleTgz):
         "requires": "Depends",
     }
 
-    def __init__(self, package, **kwargs):
-        super(AutotoolsSingleDeb, self).__init__(package, **kwargs)
+    def __init__(self, pkgdata, **kwargs):
+        super(AutotoolsSingleDeb, self).__init__(pkgdata, **kwargs)
 
         self._templates += [
             (TVER + "/common/debian/rules", "debian/rules"),

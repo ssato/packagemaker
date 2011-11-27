@@ -46,12 +46,12 @@ class AutotoolsSingleRpm(A.AutotoolsSingleTgz):
     # Initialize this in __init__ method:
     #_templates = ...
 
-    def __init__(self, package, **kwargs):
-        super(AutotoolsSingleRpm, self).__init__(package, **kwargs)
+    def __init__(self, pkgdata, **kwargs):
+        super(AutotoolsSingleRpm, self).__init__(pkgdata, **kwargs)
 
         self._templates += [
             (TVER + "/autotools/rpm.mk", "rpm.mk"),
-            (TVER + "/autotools/package.spec", self.package.name + ".spec"),
+            (TVER + "/autotools/package.spec", self.pkgdata.name + ".spec"),
         ]
 
         self.on_debug_mode = U.on_debug_mode()
@@ -65,7 +65,7 @@ class AutotoolsSingleRpm(A.AutotoolsSingleTgz):
         return self.shell(cmd)
 
     def __build_rpm(self):
-        use_mock = not self.package.no_mock
+        use_mock = not self.pkgdata.no_mock
 
         if use_mock:
             try:
@@ -78,9 +78,9 @@ class AutotoolsSingleRpm(A.AutotoolsSingleTgz):
                 use_mock = False
 
         if use_mock:
-            dist = self.package.dist.label
+            dist = self.pkgdata.dist
             srpm = R.srcrpm_name_by_rpmspec(
-                os.path.join(self.workdir, self.package.name + ".spec")
+                os.path.join(self.workdir, self.pkgdata.name + ".spec")
             )
             cmd = "mock -r %s %s" % (dist, srpm)
 
