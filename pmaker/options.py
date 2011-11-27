@@ -148,18 +148,22 @@ class Options(Bunch):
         """
         add_option = self.oparser.add_option
 
-        add_option("-C", "--config", help="Configuration file path")
-        add_option("", "--norc", action="store_true",
-            help="Make default configurations not loaded"
+        add_option("-C", "--config",
+            help="Specify your custom configuration file which will be" + \
+                " loaded *after* some default configuration files are loaded."
         )
-
+        add_option("", "--norc", action="store_true",
+            help="Do not load default configuration files"
+        )
         add_option("", "--force", action="store_true",
-            help="Force going steps even if the steps looks done")
+            help="Force going steps even if the steps looks done already"
+        )
         add_option("-v", "--verbose", action="count", dest="verbosity",
             help="Verbose mode")
         add_option("", "--debug", action="store_const", dest="verbosity",
             const=2, help="Debug mode (same as -vv)")
-        add_option("", "--trace", action="store_true", help="Trace mode")
+        # TODO: Implement this
+        #add_option("", "--trace", action="store_true", help="Trace mode")
 
     def __setup_build_options(self):
         global PACKAGING_STEPS, DESTDIR_OPTION_HELP
@@ -183,11 +187,6 @@ class Options(Bunch):
         help = "Input type: %s [%%default]" % ", ".join(choices)
         add_option("-I", "--input-type", choices=choices, help=help)
 
-        ## Deprecated (substituted with --driver/--backend option):
-        #choices = self.env.formats
-        #help = "Package format: %s [%%default]" % ", ".join(choices)
-        #add_option("", "--format", choices=choices, help=help)
-
         drivers = Backends.map()  # {backend_type: backend_class}
         choices = drivers.keys()
         help = "Packaging driver: %s [%%default]" % ", ".join(choices)
@@ -205,8 +204,12 @@ class Options(Bunch):
         pog = optparse.OptionGroup(self.oparser, "Package metadata options")
         add_option = pog.add_option
 
-        add_option("-n", "--name", help="Package name")  # Must not be None
-        add_option("", "--group", help="The group of the package [%default]")
+        add_option("-n", "--name", help="Package name")  # Must be set
+        add_option("", "--group",
+            help="The group of the package [%default]. If your target" + \
+                " format is RPM, take a look at" + \
+                " /usr/share/doc/rpm-x.y.z/GROUPS."
+        )
         add_option("", "--license",
             help="The license of the package [%default]"
         )
@@ -219,17 +222,15 @@ class Options(Bunch):
         add_option("-z", "--compressor", choices=choices, help=help)
 
         add_option("", "--arch", action="store_true",
-            help="Make package arch-dependent [false = noarch]"
+            help="Set if this package is arch-dependent [false = noarch]"
         )
-
         add_option("", "--relations", **setup_relations_option())
-
         add_option("", "--packager", help="Packager's fullname [%default]")
         add_option("", "--email", help="Packager's email address [%default]")
         add_option("", "--pversion", help="Package's version [%default]")
         add_option("", "--release", help="Package's release [%default]")
         add_option("", "--ignore-owner", action="store_true",
-            help="Force set owner and group of targets to root"
+            help="Force set owner and group of files to root"
         )
         add_option("", "--changelog",
             help="Specify text file contains changelog",
@@ -245,10 +246,11 @@ class Options(Bunch):
             help="Build target distribution for mock [%default]"
         )
         add_option("", "--no-rpmdb", action="store_true",
-            help="Do not refer rpm database to get metadata of objects"
+            help="Do not refer rpm database to get metadata of files"
         )
         add_option("", "--no-mock", action="store_true",
-            help="Build RPM with only using rpmbuild (not recommended)"
+            help="Build RPM with only using rpmbuild w/o mock" + \
+                " (not recommended)"
         )
 
         self.oparser.add_option_group(rog)
@@ -271,7 +273,7 @@ class Options(Bunch):
         if not options.norc:
             self.set_defaults(norc=False)
 
-            # retry option parsing with this configuration:
+            # retry parsing args with this configuration:
             (options, args) = self.oparser.parse_args(argv)
 
         if options.config is not None:
@@ -284,6 +286,7 @@ class Options(Bunch):
             loglevel = [
                 logging.WARN, logging.INFO, logging.DEBUG
             ][options.verbosity]
+
         except IndexError:
             logging.warn("Bad Log level")
             loglevel = logging.WARN
