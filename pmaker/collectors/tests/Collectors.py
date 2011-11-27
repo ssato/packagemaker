@@ -26,7 +26,6 @@ import os.path
 import unittest
 
 
-
 class Test_00_FilelistCollector(unittest.TestCase):
 
     _multiprocess_can_split_ = True
@@ -110,7 +109,7 @@ class Test_00_FilelistCollector(unittest.TestCase):
 
     def test_02_collect(self):
         paths = [
-            "/etc/at.deny",  # users cannot read 
+            "/etc/at.deny",  # users cannot read
             "/etc/auto.*",
             "#/etc/aliases.db",
             "/etc/httpd/conf.d",
@@ -120,7 +119,7 @@ class Test_00_FilelistCollector(unittest.TestCase):
             "/etc/rc.d/rc",
             "/etc/resolv.conf",
             "/etc/reslv.conf",  # should not be exist.
-            "/etc/securetty",  # users cannot read 
+            "/etc/securetty",  # users cannot read
         ]
         listfile = os.path.join(self.workdir, "files.list")
 
@@ -142,7 +141,8 @@ class Test_00_FilelistCollector(unittest.TestCase):
         fs = fc.collect()
 
         self.assertFalse(len(fs) == 0)
-        self.assertTrue(len(fs) >= len_fs_min, "len: expected >= %d, result = %d" % (len_fs_min, len(fs)))
+        self.assertTrue(len(fs) >= len_fs_min, \
+            "len: expected >= %d, result = %d" % (len_fs_min, len(fs)))
 
         option_values["format"] = "deb"
         options = optparse.Values(option_values)
@@ -156,7 +156,8 @@ class Test_00_FilelistCollector(unittest.TestCase):
         fs = fc.collect()
 
         self.assertFalse(len(fs) == 0)
-        self.assertTrue(len(fs) >= len_fs_min, "len: expected >= %d, result = %d" % (len_fs_min, len(fs)))
+        self.assertTrue(len(fs) >= len_fs_min, \
+            "len: expected >= %d, result = %d" % (len_fs_min, len(fs)))
 
         option_values["destdir"] = ""
 
@@ -166,7 +167,8 @@ class Test_00_FilelistCollector(unittest.TestCase):
         fs = fc.collect()
 
         self.assertFalse(len(fs) == 0)
-        self.assertTrue(len(fs) >= len_fs_min, "len: expected >= %d, result = %d" % (len_fs_min, len(fs)))
+        self.assertTrue(len(fs) >= len_fs_min, \
+            "len: expected >= %d, result = %d" % (len_fs_min, len(fs)))
 
         option_values["ignore_owner"] = False
 
@@ -176,17 +178,23 @@ class Test_00_FilelistCollector(unittest.TestCase):
         fs = fc.collect()
 
         self.assertFalse(len(fs) == 0)
-        self.assertTrue(len(fs) >= len_fs_min, "len: expected >= %d, result = %d" % (len_fs_min, len(fs)))
+        self.assertTrue(len(fs) >= len_fs_min, \
+            "len: expected >= %d, result = %d" % (len_fs_min, len(fs)))
 
         option_values["no_rpmdb"] = False
 
     def test_03_parse_line__ext(self):
-        line = "/etc/resolv.conf,install_path=/var/lib/network/resolv.conf,uid=0,rpmattr='%config',create=1,content='nameserver 192.168.151.1\\n'"
+        line = "/etc/resolv.conf,"
+        line += "install_path=/var/lib/network/resolv.conf,"
+        line += "uid=0,rpmattr='%config',create=1,"
+        line += "content='nameserver 192.168.151.1\\n'"
 
         (paths, attrs) = FilelistCollector.parse_line(line)
 
         self.assertEquals(paths, ["/etc/resolv.conf"])
-        self.assertEquals(attrs["install_path"], "/var/lib/network/resolv.conf")
+        self.assertEquals(
+            attrs["install_path"], "/var/lib/network/resolv.conf"
+        )
         self.assertEquals(attrs["uid"], 0)
         self.assertEquals(attrs["rpmattr"], "%config")
         self.assertEquals(attrs["create"], 1)
@@ -222,8 +230,8 @@ class Test_00_FilelistCollector(unittest.TestCase):
         fs = fc.collect()
 
         self.assertFalse(len(fs) == 0)
-        self.assertTrue(len(fs) >= len_fs_min, "len: expected >= %d, result = %d" % (len_fs_min, len(fs)))
-
+        self.assertTrue(len(fs) >= len_fs_min, \
+            "len: expected >= %d, result = %d" % (len_fs_min, len(fs)))
 
 
 class Test_02_JsonFilelistCollector(unittest.TestCase):
@@ -298,7 +306,8 @@ class Test_02_JsonFilelistCollector(unittest.TestCase):
         len_fis = len(data["files"])
 
         self.assertFalse(len(fis) == 0)
-        self.assertEquals(len(fis), len_fis, "len: expected=%d, result=%d" % (len_fis, len(fis)))
+        self.assertEquals(len(fis), len_fis, \
+            "len: expected=%d, result=%d" % (len_fis, len(fis)))
 
 
-# vim: set sw=4 ts=4 expandtab:
+# vim:sw=4 ts=4 et:
