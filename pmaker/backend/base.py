@@ -17,8 +17,10 @@
 from pmaker.globals import PACKAGING_STEPS, STEP_BUILD
 from pmaker.models.Bunch import Bunch
 
-import pmaker.utils as U
+import pmaker.backend.utils as PU
 import pmaker.shell as S
+import pmaker.tenjinwrapper as T
+import pmaker.utils as U
 
 import cPickle as pickle
 import logging
@@ -69,23 +71,23 @@ class Base(object):
                     if t is not None
         ]
 
-    def __setup_aliases(self, package):
-        self.objects = package.objects
+    def __setup_aliases(self, pkgdata):
+        self.files = pkgdata.files
+        self.workdir = pkgdata.workdir
+        self.destdir = pkgdata.destdir
+        self.srcdir = pkgdata.srcdir
+        self.stepto = pkgdata.stepto
+        self.template_paths = pkgdata.template_paths
+        self.force = pkgdata.force
 
-        self.workdir = package.workdir
-        self.destdir = package.destdir
-        self.srcdir = package.srcdir
-
-        self.upto = package.upto
-
-    def __init__(self, package, **kwargs):
+    def __init__(self, pkgdata, **kwargs):
         """
-        :param package:  Object holding all data and metadata for packaging
+        :param pkgdata:  Object holding all data and metadata for packaging
         """
-        self.package = package
+        self.pkgdata = pkgdata
 
-        self.__setup_aliases(package)
-        #self.package.relations = self.relations_maps(package.relations)
+        self.__setup_aliases(pkgdata)
+        #self.pkgdata.relations = self.relations_maps(pkgdata.relations)
 
         for k, v in kwargs.iteritems():
             if getattr(self, k, None) is None:
@@ -96,7 +98,7 @@ class Base(object):
         Run shell command.
         """
         if workdir is None:
-            workdir = self.package.workdir
+            workdir = self.workdir
 
         return S.run(cmd_s, workdir=workdir, **kwargs)
 
@@ -108,30 +110,30 @@ class Base(object):
         :param output:  Output file path relative to workdir
         """
         out = os.path.join(self.workdir, output)
-        tmpl = U.find_template(template, self.package.template_paths)
+        tmpl = U.find_template(template, self.template_paths)
 
         if tmpl is None:
             raise RuntimeError(
                 "Template not found in your search paths: " + template
             )
 
-        content = U.compile_template(tmpl, self.package)
+        content = T.template_compile(tmpl, self.pkgdata)
         open(out, "w").write(content)  # may throw IOError, OSError.
 
     def copyfiles(self):
-        for o in self.package.objects:
-            dest = to_srcdir(self.srcdir, o.install_path)
-            o.copy(dest, self.package.force)
+        for o in self.files:
+            dest = PU.to_srcdir(self.srcdir, o.install_path)
+            o.copy(dest, self.force)
 
     def dumpfile(self):
-        return os.path.join(self.package.workdir, "pmaker-filelist.pkl")
+        return os.path.join(self.workdir, "pmaker-filelist.pkl")
 
     def save(self, proto=pickle.HIGHEST_PROTOCOL):
         """
-        Save file list (package.objects).
+        Save file list (self.files).
         """
         pickle.dump(
-            self.package.objects,
+            self.files,
             open(self.dumpfile(), "wb"),
             proto
         )
@@ -142,34 +144,38 @@ class Base(object):
 
         It may throw IOError, OSError, etc.
         """
-        objects = pickle.load(open(self.dumpfile(), "rb"))
+        files = pickle.load(open(self.dumpfile(), "rb"))
 
-        if objects:
-            self.package.objects = self.objects = objects
+        if files:
+            self.pkgdata.files = self.files = files
 
     def marker_path(self, step):
-        return os.path.join(self.workdir, "pmaker-%s.stamp" % step)
+        return os.path.join(self.workdir, "pmaker-%(name)s.stamp" % step)
 
     def try_the_step(self, step):
         """
         Try to run given step.
+
+        see also: pmaker.globals.PACKAGING_STEPS
         """
-        if os.path.exists(self.marker_path(step)):
+        marker = self.marker_path(step)
+
+        if os.path.exists(marker):
             msg = "...The step looks already done"
 
-            if self.package.force:
-                logging.info("%s: %s" % (msg, step))
+            if self.force:
+                logging.info("%s: %s" % (msg, step.name))
             else:
-                logging.info("%s: Skip the step: %s" % (msg, step))
+                logging.info("%s: Skip the step: %s" % (msg, step.name))
                 return
 
-        getattr(self, step, U.do_nothing)()
-        self.shell("touch " + self.marker_path(step), timeout=10)
+        getattr(self, step.name, U.do_nothing)()
+        self.shell("touch " + marker, timeout=10)
 
-        if step == self.package.upto:
-            if step == STEP_BUILD:
+        if step.name == self.stepto:
+            if step.name == STEP_BUILD:
                 logging.info(
-                    "Created packages in %(workdir)s: %(name)s" % self.package
+                    "Created packages in %(workdir)s: %(name)s" % self.pkgdata
                 )
             sys.exit()
 
@@ -181,7 +187,7 @@ class Base(object):
         self.save()
 
     def preconfigure(self):
-        if not self.package.objects:
+        if not self.files:
             self.load()
 
         for template, output in self._templates:
@@ -199,10 +205,12 @@ class Base(object):
     def run(self):
         """
         Run all of the processes to make a package: setup, configure, ...
+
+        see also: pmaker.globals.PACKAGING_STEPS
         """
-        for step, msgfmt, _helptxt in self._steps:
-            logging.info(step.message % self.package)
-            self.try_the_step(step.name)
+        for step in self._steps:
+            logging.info(step.message % self.pkgdata)
+            self.try_the_step(step)
 
 
 # vim:sw=4 ts=4 et:
