@@ -15,6 +15,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 from pmaker.globals import *
+from pmaker.models.Bunch import Bunch
 
 import copy
 import datetime
@@ -479,7 +480,7 @@ def sort_out_paths_by_dir(paths):
     """
     cntr = itertools.count()
 
-    return [dict(id=str(cntr.next()), dir=d, files=list(ps)) \
+    return [Bunch(id=str(cntr.next()), dir=d, files=list(ps)) \
             for d, ps in itertools.groupby(paths, os.path.dirname)]
 
 
