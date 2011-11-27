@@ -1,6 +1,5 @@
 # sitelib for noarch packages, sitearch for others (remove the unneeded one)
 %{!?python_sitelib: %global python_sitelib %(%{__python} -c "from distutils.sysconfig import get_python_lib; print(get_python_lib())")}
-%{!?python_sitearch: %global python_sitearch %(%{__python} -c "from distutils.sysconfig import get_python_lib; print(get_python_lib(1))")}
 
 #%if 0%{?fedora} >= 11 || 0%{?rhel} >= 6 
 #%define run_testsuite 1
@@ -21,6 +20,7 @@ BuildArch:      noarch
 BuildRequires:  python
 %if %{run_testsuite}
 BuildRequires:  python-nose
+BuildRequires:  python-pep8
 %endif
 Requires:       python
 #Requires:       python-cheetah
