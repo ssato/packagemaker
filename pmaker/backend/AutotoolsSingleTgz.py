@@ -44,16 +44,6 @@ class AutotoolsSingleTgz(B.Base):
     def preconfigure(self):
         super(AutotoolsSingleTgz, self).preconfigure()
 
-        self.package.distdata = U.sort_out_paths_by_dir(
-            o.install_path for o in self.package.objects if o.isfile()
-        )
-        self.package.conflicted_objects = [
-            o for o in self.package.objects if "conflicts" in o
-        ]
-        self.package.not_conflicted_objects = [
-            o for o in self.package.objects if "conflicts" not in o
-        ]
-
     def configure(self):
         if U.on_debug_mode():
             cmd = "autoreconf -vfi"
