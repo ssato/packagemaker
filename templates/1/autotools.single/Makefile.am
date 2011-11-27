@@ -1,5 +1,5 @@
 EXTRA_DIST = MANIFEST MANIFEST.overrides
-<?py if conflicted_fileinfos: ?>
+<?py if conflicts.files : ?>
 EXTRA_DIST += apply-overrides revert-overrides
 <?py #endif ?>
 <?py if format == "rpm": ?>

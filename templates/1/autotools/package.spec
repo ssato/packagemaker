@@ -33,7 +33,6 @@ This package provides some backup data collected on
 #{hostname} by #{packager} at #{date.date}.
 
 
-#if $conflicted_fileinfos
 <?py if conflicts.files: ?>
 %package        overrides
 Summary:        Some more extra data override files owned by other packages
@@ -74,7 +73,7 @@ make %{?_smp_mflags} V=0
 rm -rf $RPM_BUILD_ROOT
 make install DESTDIR=$RPM_BUILD_ROOT
 
-<?py conflicts.files: ?>
+<?py if conflicts.files: ?>
 mkdir -p $RPM_BUILD_ROOT#{conflicts.savedir}
 mkdir -p $RPM_BUILD_ROOT%{_libexecdir}/%{name}-overrides
 install -m 755 apply-overrides $RPM_BUILD_ROOT%{_libexecdir}/%{name}-overrides
@@ -85,7 +84,7 @@ install -m 755 revert-overrides $RPM_BUILD_ROOT%{_libexecdir}/%{name}-overrides
 %clean
 rm -rf \$RPM_BUILD_ROOT
 
-<?py conflicts.files: ?>
+<?py if conflicts.files: ?>
 %post           overrides
 if [ $1 = 1 -o $1 = 2 ]; then    # install or update
     %{_libexecdir}/%{name}-overrides/apply-overrides
