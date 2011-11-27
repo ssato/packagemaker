@@ -152,17 +152,17 @@ class FileOps(object):
             assert fileobj.path != dest, "Copying src and dst are same!"
 
             if not fileobj.copyable():
-                logging.warn(" Not copyable: %s" % str(fileobj))
+                logging.warn("Not copyable: %s" % str(fileobj))
                 return False
 
         if os.path.exists(dest):
-            logging.warn(" Destination already exists: " + dest)
+            logging.warn("Destination already exists: " + dest)
 
             if force:
-                logging.info(" Removing old one in advance: " + dest)
+                logging.info("Removing old one in advance: " + dest)
                 cls.remove(dest)
             else:
-                logging.warn(" Do not overwrite and skip it: " + dest)
+                logging.warn("Do not overwrite and skip it: " + dest)
                 return False
         else:
             destdir = os.path.dirname(dest)
@@ -178,10 +178,10 @@ class FileOps(object):
                     logging.warn("Could not copy the stat: " + srcdir)
 
         if create_instead_of_copy:
-            logging.debug(" Creating: " + dest)
+            logging.debug("Creating: " + dest)
             cls.create(fileobj, dest)
         else:
-            logging.debug(" Copying: from=%s, to=%s" % (fileobj.path, dest))
+            logging.debug("Copying: from=%s, to=%s" % (fileobj.path, dest))
             cls.copy_impl(fileobj, dest)
 
         return True
@@ -202,11 +202,11 @@ class DirOps(FileOps):
 
         except OSError, e:   # It may be OK, ex. non-root user cannot set perms.
             logging.debug(
-                " Failed (may be ignorable): os.makedirs, dest=%s, mode=%o" % \
+                "Failed (may be ignorable): os.makedirs, dest=%s, mode=%o" % \
                     (dest, mode)
             )
             logging.warn(e)
-            logging.info(" Skipped: " + dest)
+            logging.info("Skipped: " + dest)
 
             if not os.path.exists(dest):
                 run("mkdir -p " + dest)

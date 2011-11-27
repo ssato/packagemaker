@@ -173,9 +173,9 @@ def filelist(cache=True, expires=1, pkl_proto=pickle.HIGHEST_PROTOCOL,
     if cache and not cache_needs_updates_p(cache_file, expires):
         try:
             data = pickle.load(open(cache_file, "rb"))
-            logging.debug(" Could load the cache: %s" % cache_file)
+            logging.debug("Could load the cache: %s" % cache_file)
         except:
-            logging.warn(" Could not load the cache: %s" % cache_file)
+            logging.warn("Could not load the cache: %s" % cache_file)
             date = None
 
     if data is None:
@@ -187,9 +187,9 @@ def filelist(cache=True, expires=1, pkl_proto=pickle.HIGHEST_PROTOCOL,
         try:
             # TODO: How to detect errors during/after pickle.dump.
             pickle.dump(data, open(cache_file, "wb"), pkl_proto)
-            logging.debug(" Could save the cache: %s" % cache_file)
+            logging.debug("Could save the cache: %s" % cache_file)
         except:
-            logging.warn(" Could not save the cache: %s" % cache_file)
+            logging.warn("Could not save the cache: %s" % cache_file)
 
     return data
 

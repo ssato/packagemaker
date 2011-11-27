@@ -36,13 +36,13 @@ except ImportError:
     try:
         import simplejson as json
     except ImportError:
-        logging.warn(" JSON module is not available. Disabled its support.")
+        logging.warn("JSON module is not available. Disabled its support.")
         json = None
 
 try:
     import yaml
 except ImportError:
-    logging.warn(" YAML module is not available. Disabled its support.")
+    logging.warn("YAML module is not available. Disabled its support.")
     yaml = None
 
 
@@ -56,7 +56,7 @@ except ImportError:
     CHEETAH_ENABLED = False
 
     logging.warn(
-        " python-cheetah is not found. It will go up to the step: " + UPTO
+        "python-cheetah is not found. It will go up to the step: " + UPTO
     )
 
 

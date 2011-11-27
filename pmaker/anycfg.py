@@ -30,7 +30,7 @@ import sys
 try:
     import yaml
 except ImportError:
-    logging.warn(" YAML module is not available. Disabled its support.")
+    logging.warn("YAML module is not available. Disabled its support.")
     yaml = None
 
 try:
@@ -39,7 +39,7 @@ except ImportError:
     try:
         import simplejson as json
     except ImportError:
-        logging.warn(" JSON module is not available. Disabled its support.")
+        logging.warn("JSON module is not available. Disabled its support.")
         json = None
 
 
@@ -55,7 +55,7 @@ except ImportError:
             import elementtree.ElementTree as etree
         except ImportError:
             logging.warn(
-                " ElementTree module is not available. Disabled XML support."
+                "ElementTree module is not available. Disabled XML support."
             )
             etree = None
 

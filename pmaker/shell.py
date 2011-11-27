@@ -41,10 +41,10 @@ def shell(cmd, workdir=CURDIR, dryrun=False, stop_on_error=True):
     ...    pass
     >>> rc = shell("echo OK | grep -q NG 2>/dev/null", stop_on_error=False)
     """
-    logging.info(" Run: %s [%s]" % (cmd, workdir))
+    logging.info("Run: %s [%s]" % (cmd, workdir))
 
     if dryrun:
-        logging.info(" exit as we're in dry run mode.")
+        logging.info("Exit as we're in dry run mode.")
         return 0
 
     llevel = logging.getLogger().level
@@ -71,7 +71,7 @@ def shell(cmd, workdir=CURDIR, dryrun=False, stop_on_error=True):
         if stop_on_error:
             raise RuntimeError(" Failed: %s,\n rc=%d" % (cmd, rc))
         else:
-            logging.error(" cmd=%s, rc=%d" % (cmd, rc))
+            logging.error("cmd=%s, rc=%d" % (cmd, rc))
             return rc
 
 
@@ -172,7 +172,7 @@ def run(cmd, workdir=CURDIR, dryrun=False, stop_on_error=True, timeout=None):
 
     if dryrun:
         print cmd
-        logging.debug(" (exit as we're in dry run mode.)")
+        logging.debug("(Exit as we're in dry run mode.)")
         return
 
     tcmd = ThreadedCommand(cmd, workdir, stop_on_error, timeout)

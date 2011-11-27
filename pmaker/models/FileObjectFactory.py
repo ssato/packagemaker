@@ -60,12 +60,12 @@ def lstat(path, use_rpmdb=False):
         if R.is_rpmdb_available():
             st = rpm_lstat(path)
             if st is None:
-                logging.warn(" Failed to get stat from rpm database.")
+                logging.warn("Failed to get stat from rpm database.")
             else:
                 return st
         else:
             logging.warn(
-                " use_rpmdb is set but rpm database looks not available."
+                "use_rpmdb is set but rpm database looks not available."
             )
     try:
         st = os.lstat(path)
@@ -126,7 +126,7 @@ def create_from_real_object(fo, use_rpmdb=False):
         fo.checksum = U.checksum()
 
         if filetype == TYPE_UNKNOWN:
-            logging.warn(" Failed to detect filetype: " + fo.path)
+            logging.warn("Failed to detect filetype: " + fo.path)
 
         elif filetype == TYPE_SYMLINK:
             if not fo.get("linkto", False):

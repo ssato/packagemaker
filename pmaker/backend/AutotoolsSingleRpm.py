@@ -73,7 +73,7 @@ class AutotoolsSingleRpm(A.AutotoolsSingleTgz):
 
             except RuntimeError, e:
                 logging.warn(
-                    " Mock is not found. Fallback to plain rpmbuild..."
+                    "Mock is not found. Fallback to plain rpmbuild..."
                 )
                 use_mock = False
 

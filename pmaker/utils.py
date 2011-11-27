@@ -391,11 +391,11 @@ def compile_template(template, params, is_file=True):
 def createdir(targetdir, mode=0700):
     """Create a dir with specified mode.
     """
-    logging.debug(" Creating a directory: " + targetdir)
+    logging.debug("Creating a directory: " + targetdir)
 
     if os.path.exists(targetdir):
         if os.path.isdir(targetdir):
-            logging.warn(" Directory already exists! Skip it: " + targetdir)
+            logging.warn("Directory already exists! Skip it: " + targetdir)
         else:
             raise RuntimeError(
                 " Already exists but not a directory: " + targetdir

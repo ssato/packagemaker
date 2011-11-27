@@ -157,14 +157,14 @@ class FilelistCollector(Collector):
             filtered = any(filter(fo) for filter in self.filters)
 
             if filtered:
-                logging.debug(" filter out: path=" + fo.path)
+                logging.debug("Filtered out: path=" + fo.path)
             else:
                 for modifier in self.get_modifiers():
                     fo = modifier.update(fo)
 
                 # Too verbose but useful in some cases:
                 if self.trace:
-                    logging.debug(" (result) fo: path=" + fo.path)
+                    logging.debug("(result) fo: path=" + fo.path)
 
                 yield fo
 
