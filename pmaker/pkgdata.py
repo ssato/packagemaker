@@ -54,7 +54,7 @@ def compressor_params(extopt, ctools=COMPRESSING_TOOLS):
     return Bunch(ext=extopt, am_opt=ct.am_option)
 
 
-class PkgData(object):
+class PkgData(Bunch):
 
     def __init__(self, data, files):
         """
@@ -70,6 +70,7 @@ class PkgData(object):
             "format", "destdir", "name", "group", "license", "url",
             "summary", "arch", "relations", "packager", "email",
             "pversion", "release", "changelog", "dist",
+            "template_paths", "hostname", "no_mock",
         )
 
         for key in keys:
