@@ -19,10 +19,15 @@ import pmaker.pkgdata as P
 import pmaker.collectors.FilelistCollectors as Collectors
 import pmaker.backend.registry as Backends
 
+import logging
 import sys
 
 
 def main(argv=sys.argv):
+    logging.basicConfig(format="%(asctime)s %(levelname)-7s %(message)s",
+                        datefmt="%H:%M:%S",  # or "%Y-%m-%d %H:%M:%S",
+                       )
+
     o = O.Options()
     (opts, args) = o.parse_args(argv[1:])
 
