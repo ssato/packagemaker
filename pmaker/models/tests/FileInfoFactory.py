@@ -24,7 +24,6 @@ import os
 import unittest
 
 
-
 class TestFileInfoFactory(unittest.TestCase):
 
     def setUp(self):
@@ -113,4 +112,4 @@ class TestFileInfoFactory(unittest.TestCase):
         self.assertEquals(fi.type(), TYPE_UNKNOWN)
 
 
-# vim: set sw=4 ts=4 expandtab:
+# vim:sw=4 ts=4 et:

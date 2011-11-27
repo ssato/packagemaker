@@ -21,7 +21,6 @@ import sys
 import unittest
 
 
-
 class TestRpmFileInfoFactory(unittest.TestCase):
 
     _multiprocess_can_split_ = True
@@ -32,7 +31,8 @@ class TestRpmFileInfoFactory(unittest.TestCase):
             return False
 
         if not os.path.exists(filepath):
-            print >> sys.stderr, "File %s does not look exists. skip this test." % filepath
+            print >> sys.stderr, \
+                "File %s does not look exists. skip this test." % filepath
             return False
 
         return True
@@ -49,7 +49,9 @@ class TestRpmFileInfoFactory(unittest.TestCase):
         self.assertEquals(gid, 0)
 
     def test__stat_call_parent_method(self):
-        for f in (os.path.expanduser("~/" + p) for p in (".bashrc", ".zshrc", ".tcshrc")):
+        ps = (p for p in (".bashrc", ".zshrc", ".tcshrc"))
+
+        for f in (os.path.expanduser("~/" + p) for p in ps):
             if os.path.exists(f):
                 break
 
@@ -62,4 +64,4 @@ class TestRpmFileInfoFactory(unittest.TestCase):
         self.assertEquals(gid, os.getgid())
 
 
-# vim: set sw=4 ts=4 expandtab:
+# vim:sw=4 ts=4 et:

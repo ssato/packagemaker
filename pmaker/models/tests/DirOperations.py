@@ -26,7 +26,6 @@ import tempfile
 import unittest
 
 
-
 class TestDirOperations(unittest.TestCase):
 
     def setUp(self):
@@ -62,4 +61,4 @@ class TestDirOperations(unittest.TestCase):
         self.assertTrue(os.path.isdir(dest))
 
 
-# vim: set sw=4 ts=4 expandtab:
+# vim:sw=4 ts=4 et:

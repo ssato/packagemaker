@@ -26,7 +26,6 @@ import unittest
 NULL_DICT = dict()
 
 
-
 class TestFileInfo(unittest.TestCase):
 
     def test__init__(self):
@@ -75,5 +74,4 @@ class TestSymlinkInfo(unittest.TestCase):
         self.assertFalse(fi.need_to_chmod())
 
 
-
-# vim: set sw=4 ts=4 expandtab:
+# vim:sw=4 ts=4 et:

@@ -25,7 +25,6 @@ import os.path
 import unittest
 
 
-
 class TestSymlinkOperations(unittest.TestCase):
 
     def setUp(self):
@@ -70,4 +69,4 @@ class TestSymlinkOperations(unittest.TestCase):
         self.assertTrue(os.path.islink(dest))
 
 
-# vim: set sw=4 ts=4 expandtab:
+# vim:sw=4 ts=4 et:

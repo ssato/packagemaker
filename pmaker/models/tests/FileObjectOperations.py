@@ -35,12 +35,11 @@ class Test_00_FileOperations(unittest.TestCase):
         lhs = FileInfo("/etc/resolv.conf", mode="0644")
         rhs = copy.copy(lhs)
         setattr(rhs, "other_attr", "xyz")
-        
+
         self.assertTrue(FileOperations.equals(lhs, rhs))
-        
+
         rhs.mode = "0755"
         self.assertFalse(FileOperations.equals(lhs, rhs))
-
 
 
 class Test_01_FileOperations__with_side_effects(unittest.TestCase):
@@ -66,7 +65,9 @@ class Test_01_FileOperations__with_side_effects(unittest.TestCase):
     def test_copy__src_and_dst_are_same(self):
         fileinfo = FileInfoFactory().create(self.testfile1)
 
-        self.assertRaises(AssertionError, FileOperations.copy, fileinfo, fileinfo.path)
+        self.assertRaises(AssertionError,
+            FileOperations.copy, fileinfo, fileinfo.path
+        )
 
     def test_copy__not_copyable(self):
         class NotCopyableFileInfo(FileInfo):
@@ -106,4 +107,4 @@ class Test_01_FileOperations__with_side_effects(unittest.TestCase):
         self.assertTrue(FileOperations.copy(fileinfo, dest))
 
 
-# vim: set sw=4 ts=4 expandtab:
+# vim:sw=4 ts=4 et:
