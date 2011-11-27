@@ -84,16 +84,25 @@ class Test_01_Options(unittest.TestCase):
         name = "foo"
 
         o = Options()
+        pversion = o.config.pversion
+        workdir = o.config.workdir
+
         (opts, args) = o.parse_args(["-n", name, "dummy_filelist.txt"])
 
         for k, v in o.get_defaults().iteritems():
-            if k not in ("name", "summary"):
+            if k not in ("name", "summary", "workdir"):
                 self.assertEquals(getattr(opts, k), v)
             else:
                 v2 = getattr(opts, k)
 
                 if k == "name":
                     self.assertEquals(v2, name)
+
+                elif k == "workdir":
+                    eworkdir = os.path.join(
+                        workdir, "%s-%s" % (name, pversion)
+                    )
+                    self.assertEquals(v2, eworkdir)
                 else:
                     self.assertEquals(v2, o.make_default_summary(name))
 
