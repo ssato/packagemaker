@@ -99,7 +99,7 @@ def get_content(path):
 
     except IOError:
         logging.warn(
-            " Could not open %s to read content." % value
+            "Could not open %s to read content." % value
         )
 
     return content
@@ -283,6 +283,7 @@ class Options(Bunch):
                 logging.WARN, logging.INFO, logging.DEBUG
             ][options.verbosity]
         except IndexError:
+            logging.warn("Bad Log level")
             loglevel = logging.WARN
 
         logging.getLogger().setLevel(loglevel)
@@ -301,6 +302,10 @@ class Options(Bunch):
 
         if options.changelog:
             options.changelog = get_content(options.changelog)
+
+        options.workdir = set_workdir(
+            options.workdir, options.name, options.pversion
+        )
 
         return (options, args)
 
