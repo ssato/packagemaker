@@ -149,7 +149,9 @@ class Options(Bunch):
         add_option = self.oparser.add_option
 
         add_option("-C", "--config", help="Configuration file path")
-        add_option("", "--norc", help="Make default configurations not loaded")
+        add_option("", "--norc", action="store_true",
+            help="Make default configurations not loaded"
+        )
 
         add_option("", "--force", action="store_true",
             help="Force going steps even if the steps looks done")
