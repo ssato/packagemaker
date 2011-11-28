@@ -1,25 +1,31 @@
 %define  savedir  /var/lib/pmaker/preserved
 %define  newdir  /var/lib/pmaker/installed
 
-
 Name:           #{name}
 Version:        #{pversion}
-Release:        #{release}
+Release:        1%{?dist}
 Summary:        #{summary}
 Group:          #{group}
+License:        #{license}
+URL:            #{url}
+Source0:        %{name}-%{version}.tar.#{compressor.ext}
+BuildRoot:      %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 <?py if not arch: ?>
 BuildArch:      noarch
 <?py #endif ?>
-BuildRoot:      %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
-Source0:        %{name}-%{version}.tar.gz
+<?py
+for f in files:
+    if f.type() == "symlink":
+?>
+#BuildRequires:  #{f.linkto}
+<?py    #endif ?>
+<?py #endfor ?>
 <?py
 for rel in relations:
     rel_targets = ", ".join(rel.targets)
 ?>
 #{rel.type}:       #{rel_targets}
 <?py #endfor ?>
-License:        #{license}
-URL:            #{url}
 
 
 %description
@@ -55,13 +61,13 @@ Some more extra data will override and replace other packages'.
 
 
 %prep
-tar -xvzf %_topdir/SOURCES/%{name}-%{version}.tar.gz
+%setup -q
 
 
 %install
-cd %{name}-%{version}
-mkdir %{buildroot}
-cp -Rp *  %{buildroot}/
+rm -rf $RPM_BUILD_ROOT
+mkdir -p $RPM_BUILD_ROOT
+cp -Rp src/* $RPM_BUILD_ROOT/ 
 
 <?py if conflicts.files: ?>
 mkdir -p $RPM_BUILD_ROOT#{conflicts.savedir}
