@@ -1,4 +1,5 @@
 from distutils.core import setup, Command
+from distutils.sysconfig import get_python_lib
 
 import datetime
 import glob
@@ -13,6 +14,7 @@ except ImportError:
 
 
 curdir = os.getcwd()
+pylibdir = get_python_lib()
 
 
 sys.path.append(curdir)
@@ -27,13 +29,29 @@ def list_paths(path_pattern="*", topdir=curdir, pred=os.path.isfile):
 
 templates_topdir = "share/pmaker/templates"
 
+
+def mk_tmpl_pair(subdir, templates_topdir=templates_topdir):
+    return (
+        os.path.join(templates_topdir, subdir),
+        list_paths("templates/%s/*" % subdir)
+    )
+
+
 data_files = [
     ("share/man/man8", ["doc/pmaker.8", ]),
+    (os.path.join(pylibdir, "pmaker/tests"), list_paths("pmaker/tests/*_example_*")),
     (os.path.join(templates_topdir, "common"), list_paths("templates/common/*")),
     (os.path.join(templates_topdir, "common/debian"), list_paths("templates/common/debian/*")),
     (os.path.join(templates_topdir, "common/debian/source"), list_paths("templates/common/debian/source/*")),
     (os.path.join(templates_topdir, "autotools"), list_paths("templates/autotools/*")),
     (os.path.join(templates_topdir, "autotools/debian"), list_paths("templates/autotools/debian/*")),
+] + \
+[mk_tmpl_pair(d) for d in ("templates/1",
+                           "templates/1/common", "templates/1/common/debian", "templates/1/common/debian/source",
+                           "templates/1/buildrpm",
+                           "templates/1/autotools", "templates/1/autotools/debian",
+                           "templates/1/autotools.single",
+                           )
 ]
 
 

@@ -64,9 +64,6 @@ rm -rf $RPM_BUILD_ROOT
 %doc tests
 %{python_sitelib}/*.egg-info
 %{python_sitelib}/pmaker
-%{python_sitelib}/pmaker/*.py*
-%{python_sitelib}/pmaker/*/*.py*
-#%{python_sitelib}/pmaker/*/tests/*.py*
 %{_bindir}/*
 %{_datadir}/pmaker/templates/*
 %{_datadir}/man/man8/*

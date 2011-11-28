@@ -6,6 +6,7 @@ include runtest.sh nose.cfg
 include examples/*
 include examples/*/*
 include doc/*
+include pmaker/tests/*_example_*
 recursive-include pmaker *.py
 recursive-include templates *
 recursive-include tests *
