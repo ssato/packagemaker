@@ -80,11 +80,15 @@ class Base(object):
         self.template_paths = pkgdata.template_paths
         self.force = pkgdata.force
 
+    def logfile(self, name):
+        return os.path.join(self.workdir, "pmaker.%s.log" % name)
+
     def __init__(self, pkgdata, **kwargs):
         """
         :param pkgdata:  Object holding all data and metadata for packaging
         """
         self.pkgdata = pkgdata
+        self.pkgdata.format = self.format()  # override it.
 
         self.__setup_aliases(pkgdata)
         #self.pkgdata.relations = self.relations_maps(pkgdata.relations)
