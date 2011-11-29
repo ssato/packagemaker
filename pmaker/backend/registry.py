@@ -14,21 +14,23 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
-from pmaker.backend.AutotoolsSingleTgz import AutotoolsSingleTgz
-from pmaker.backend.AutotoolsSingleRpm import AutotoolsSingleRpm
-from pmaker.backend.AutotoolsSingleDeb import AutotoolsSingleDeb
+import pmaker.backend.autotools.single.tgz
+import pmaker.backend.autotools.single.rpm
+import pmaker.backend.autotools.single.deb
 
 
 def map():
     backends = [
-        AutotoolsSingleTgz, AutotoolsSingleRpm, AutotoolsSingleDeb,
+        pmaker.backend.autotools.single.tgz.Backend,
+        pmaker.backend.autotools.single.rpm.Backend,
+        pmaker.backend.autotools.single.deb.Backend,
     ]
 
     return dict((b.type(), b) for b in backends)
 
 
 def default():
-    return AutotoolsSingleRpm.type()
+    return pmaker.backend.autotools.single.rpm.Backend.type()
 
 
 # vim:sw=4 ts=4 et:
