@@ -156,11 +156,6 @@ class Test_01_Options(unittest.TestCase):
         )
         self.assertEquals(opts.driver, driver)
 
-        (opts, args) = o.parse_args(
-            ["-n", name, "--backend", driver, "dummy_filelist.txt"]
-        )
-        self.assertEquals(opts.driver, driver)
-
     def test_06_parse_args_w_name_and_filelist_and_compressor(self):
         name = "foo"
         env = E.Env()
