@@ -31,8 +31,7 @@ class Test_00_Backend(unittest.TestCase):
         (self.workdir, self.listfile) = C.setup()
 
     def tearDown(self):
-        #cleanup_workdir(self.workdir)
-        pass
+        cleanup_workdir(self.workdir)
 
     def try_run(self, step):
         return C.try_run(self, step, "rpm")
