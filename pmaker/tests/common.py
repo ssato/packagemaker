@@ -16,8 +16,34 @@
 #
 #
 import pmaker.utils as U
+
+import glob
 import os.path
 import tempfile
+
+
+PATHS = [
+    "/etc/auto.*",  # glob; will be expanded to path list.
+    "#/etc/aliases.db",  # comment; will be ignored.
+    "/etc/httpd/conf.d",
+    "/etc/httpd/conf.d/*",  # glob
+    "/etc/modprobe.d/*",  # glob
+    "/etc/rc.d/init.d",  # dir, not file
+    "/etc/rc.d/rc",
+    "/etc/resolv.conf",
+    "/etc/reslv.conf",  # should not exist
+    "/etc/grub.conf",  # should not be able to read
+    "/usr/share/automake-*/am/*.am",  # glob
+    "/var/run/*",  # glob, and some of them should not be able to read
+    "/root/*",  # likewise.
+]
+
+PATHS_EXPANDED = U.unique(
+    U.concat(
+        "*" in p and glob.glob(p) or [p] for p in PATHS \
+            if not p.startswith("#")
+    )
+)
 
 
 def setup_workdir():
