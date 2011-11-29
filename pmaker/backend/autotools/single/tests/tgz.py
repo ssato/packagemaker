@@ -16,13 +16,10 @@
 #
 from pmaker.globals import STEP_SETUP, STEP_PRECONFIGURE, STEP_CONFIGURE, \
     STEP_SBUILD, STEP_BUILD
-from pmaker.tests.common import setup_workdir, cleanup_workdir, selfdir
+from pmaker.tests.common import cleanup_workdir
 
-import pmaker.backend.autotools.single.tgz as T
-import pmaker.backend.tests.common as TC
+import pmaker.backend.autotools.single.tests.common as C
 
-import logging
-import os
 import os.path
 import unittest
 
@@ -30,33 +27,13 @@ import unittest
 class Test_00_Backend(unittest.TestCase):
 
     def setUp(self):
-        logging.getLogger().setLevel(logging.WARN)  # suppress log messages
-
-        self.workdir = setup_workdir()
-        self.listfile = TC.dump_filelist(self.workdir)
+        (self.workdir, self.listfile) = C.setup()
 
     def tearDown(self):
         cleanup_workdir(self.workdir)
 
-    def mk_backend(self, step="build"):
-        tmplpath = os.path.abspath(
-            os.path.join(selfdir(), "../../", "templates")
-        )
-        #logging.warn("tmplpath = " + tmplpath)
-
-        args = "-n foo -w %s --template-path %s -v" % (self.workdir, tmplpath)
-        args += " --driver autotools.single.tgz --stepto %s %s" % \
-            (step, self.listfile)
-
-        return TC.init_pkgdata(args)
-
     def try_run(self, step):
-        backend = T.Backend(self.mk_backend(step))
-        TC.try_run(backend)
-
-        self.assertTrue(os.path.exists(backend.marker_path({"name": step})))
-
-        return backend
+        return C.try_run(self, step, "tgz")
 
     def test_00_setup(self):
         self.try_run(STEP_SETUP)
