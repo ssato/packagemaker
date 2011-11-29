@@ -34,7 +34,7 @@ class Backend(T.Backend):
     }
 
     def __init__(self, pkgdata, **kwargs):
-        super(AutotoolsSingleDeb, self).__init__(pkgdata, **kwargs)
+        super(Backend, self).__init__(pkgdata, **kwargs)
 
         self._templates += [
             (TVER + "/common/debian/rules", "debian/rules"),
