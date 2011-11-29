@@ -19,14 +19,8 @@ from pmaker.globals import PMAKER_TEMPLATE_VERSION as TVER
 import pmaker.backend.base as B
 import pmaker.utils as U
 
-import itertools
-import logging
-import os
-import os.path
-import sys
 
-
-class AutotoolsSingleTgz(B.Base):
+class Backend(B.Base):
 
     _format = "tgz"
     _strategy = "autotools.single"
@@ -42,14 +36,13 @@ class AutotoolsSingleTgz(B.Base):
     ]
 
     def preconfigure(self):
-        super(AutotoolsSingleTgz, self).preconfigure()
+        super(Backend, self).preconfigure()
 
     def configure(self):
         if U.on_debug_mode():
             cmd = "autoreconf -vfi"
         else:
-            logfile = os.path.join(self.workdir, "pmaker.configure.log")
-            cmd = "autoreconf -fi > " + logfile
+            cmd = "autoreconf -fi > " + self.logfile("configure")
 
         self.shell(cmd, timeout=180)
 
@@ -62,8 +55,8 @@ class AutotoolsSingleTgz(B.Base):
             self.shell(
                 "./configure --quiet --enable-silent-rules", timeout=180
             )
-            self.shell("make V=0 > /dev/null")
-            self.shell("make dist V=0 > /dev/null")
+            self.shell("make V=0 > " + self.logfile("make"))
+            self.shell("make dist V=0 > " + self.logfile("make_dist"))
 
 
 # vim:sw=4 ts=4 et:

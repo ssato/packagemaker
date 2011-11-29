@@ -16,7 +16,7 @@
 #
 from pmaker.globals import PMAKER_TEMPLATE_VERSION as TVER
 
-import pmaker.backend.AutotoolsSingleTgz as A
+import pmaker.backend.autotools.single.tgz as T
 import pmaker.rpmutils as R
 import pmaker.utils as U
 
@@ -24,9 +24,7 @@ import logging
 import os.path
 
 
-class AutotoolsSingleRpm(A.AutotoolsSingleTgz):
-    """Rpm support.
-    """
+class Backend(T.Backend):
 
     _format = "rpm"
 
@@ -47,7 +45,7 @@ class AutotoolsSingleRpm(A.AutotoolsSingleTgz):
     #_templates = ...
 
     def __init__(self, pkgdata, **kwargs):
-        super(AutotoolsSingleRpm, self).__init__(pkgdata, **kwargs)
+        super(Backend, self).__init__(pkgdata, **kwargs)
 
         self._templates += [
             (TVER + "/autotools/rpm.mk", "rpm.mk"),
@@ -60,7 +58,7 @@ class AutotoolsSingleRpm(A.AutotoolsSingleTgz):
         cmd = "make srpm"
 
         if not self.on_debug_mode:
-            cmd += " V=0 > /dev/null"
+            cmd += " V=0 > " + self.logfile("make_srpm")
 
         return self.shell(cmd)
 
@@ -97,16 +95,16 @@ class AutotoolsSingleRpm(A.AutotoolsSingleTgz):
             cmd = "make rpm"
 
             if not self.on_debug_mode:
-                cmd += " rpm V=0 > /dev/null"
+                cmd += " rpm V=0 > " + self.logfile("make_rpm")
 
             return self.shell(cmd)
 
     def sbuild(self):
-        super(AutotoolsSingleRpm, self).sbuild()
+        super(Backend, self).sbuild()
         self.__build_srpm()
 
     def build(self):
-        super(AutotoolsSingleRpm, self).build()
+        super(Backend, self).build()
         self.__build_rpm()
 
 

@@ -16,7 +16,7 @@
 #
 from pmaker.globals import PMAKER_TEMPLATE_VERSION as TVER
 
-import pmaker.backend.AutotoolsSingleTgz as A
+import pmaker.backend.autotools.single.tgz as T
 import pmaker.rpmutils as R
 import pmaker.utils as U
 
@@ -24,9 +24,7 @@ import os
 import os.path
 
 
-class AutotoolsSingleDeb(A.AutotoolsSingleTgz):
-    """Deb support
-    """
+class Backend(T.Backend):
 
     _format = "deb"
 
@@ -55,14 +53,14 @@ class AutotoolsSingleDeb(A.AutotoolsSingleTgz):
         os.makedirs(debiandir, 0755)
         os.makedirs(os.path.join(debiandir, "source"), 0755)
 
-        super(AutotoolsSingleDeb, self).preconfigure()
+        super(Backend, self).preconfigure()
 
         os.chmod(os.path.join(self.workdir, "debian/rules"), 0755)
 
     def sbuild(self):
         """FIXME: What should be done for building source packages?
         """
-        super(AutotoolsSingleDeb, self).sbuild()
+        super(Backend, self).sbuild()
         self.shell("dpkg-buildpackage -S")
 
     def build(self):
@@ -71,7 +69,7 @@ class AutotoolsSingleDeb(A.AutotoolsSingleTgz):
         * debuild -us -uc
         * fakeroot debian/rules binary
         """
-        super(AutotoolsSingleDeb, self).build()
+        super(Backend, self).build()
         self.shell("fakeroot debian/rules binary")
 
 
