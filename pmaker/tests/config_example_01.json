@@ -1,0 +1,68 @@
+{
+    "config": null,
+    "norc": false,
+    "force": false,
+    "verbosity": 0,
+
+    "__comments": [
+        "# build options:",
+        "#workdir = ",
+        "#stepto = ",
+        "#input_type =   # e.g. filelist.json",
+        "#driver =   # e.g. autotools.single.rpm",
+        "#format =  # e.g. rpm, deb",
+        "#destdir = ",
+        "#template_paths = ",
+        "# package metadata options:",
+        "#compressor =  # extension",
+        "#packager =",
+        "#email =",
+        "#ignore_owner: false",
+        "#changelog: nill",
+        "# rpm options:",
+        "#dist = ",
+        "#no_rpmdb = "
+    ],
+    "name": "example-00-app",
+    "group": "System Environment/Base",
+    "license": "GPLv3+",
+    "url": "http://example.com",
+    "summary": "Example 00 app",
+    "arch": false,
+    "relations": "requires:/bin/sh",
+    "pversion": "0.0.1",
+    "release": 1,
+    "no_mock": true,
+
+    "files": [
+        {
+            "path": "/etc/resolv.conf",
+            "attrs" : {
+                "create": 0,
+                "uid": 0,
+                "gid": 0
+            }
+        },
+        {
+            "path": "/etc/hosts",
+            "attrs" : {
+                "create": 0,
+                "uid": 0,
+                "gid": 0,
+                "rpmattr": "%config(noreplace)"
+            }
+        },
+       {
+            "path": "/sbin/ip",
+            "attrs" : {
+                "mode": 755
+            }
+        },
+       {
+            "path": "/usr/share/automake-*/am/*.am"
+        },
+       {
+            "path": "/root/*"
+        }
+    ]
+}
