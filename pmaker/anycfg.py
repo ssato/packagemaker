@@ -259,6 +259,23 @@ class XmlConfigParser(IniConfigParser):
 #CTYPE2CLASS_MAP[CTYPE_XML] = XmlConfigPaser
 
 
+def guess_class(conf, default=IniConfigParser):
+    """
+    :param conf: Configuration file path
+    """
+    cls = default
+    fn_ext = os.path.splitext(conf)
+
+    if len(fn_ext) > 1:
+        ext = fn_ext[1].lower()[1:]  # strip '.' at the head.
+
+        for exts in EXT2CLASS_MAP.keys():
+            if ext in exts:
+                cls = EXT2CLASS_MAP[exts]
+
+    return cls
+
+
 class AnyConfigParser(object):
 
     def __init__(self, forced_type=None):
@@ -266,22 +283,6 @@ class AnyConfigParser(object):
         :param forced_type: Force set configuration parser class' type.
         """
         self.forced_class = CTYPE2CLASS_MAP.get(forced_type, None)
-
-    def guess_class(self, conf, default=IniConfigParser):
-        """
-        :param conf: Configuration file path
-        """
-        cls = default
-        fn_ext = os.path.splitext(conf)
-
-        if len(fn_ext) > 1:
-            ext = fn_ext[1].lower()[1:]  # strip '.' at the head.
-
-            for exts in EXT2CLASS_MAP.keys():
-                if ext in exts:
-                    cls = EXT2CLASS_MAP[exts]
-
-        return cls
 
     def load(self, conf, forced_type=None, **kwargs):
         """
@@ -292,8 +293,9 @@ class AnyConfigParser(object):
         elif self.forced_class is not None:
             cls = self.forced_class
         else:
-            cls = self.guess_class(conf)
+            cls = guess_class(conf)
 
+        logging.info("Using config parser: " + str(cls))
         parser = cls()
 
         return parser.load(conf, **kwargs)
