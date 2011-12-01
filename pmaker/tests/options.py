@@ -46,6 +46,9 @@ class Test_00_functions(unittest.TestCase):
         expected = P.parse(relations_s)
         self.assertEquals(options.relations, expected)
 
+        self.assertEquals(options.relations[0], ('obsoletes', ['mydata']))
+        self.assertEquals(options.relations[1], ('conflicts', ['mydata-old']))
+
     def test_02_set_workdir__absolute_workdir(self):
         workdir, name, version = ("/tmp/w", "foo", "0.0.1")
         self.assertEquals(
