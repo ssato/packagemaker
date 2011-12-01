@@ -23,6 +23,9 @@ import pmaker.backend.registry as Backends
 import pmaker.environ as E
 
 
+TYPES = Anycfg.CTYPES
+
+
 def _defaults(env):
     """
     Make a Bunch object holding default values and returns it.
