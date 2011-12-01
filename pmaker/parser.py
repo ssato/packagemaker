@@ -15,7 +15,6 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 from pmaker.models.Bunch import Bunch
-from pmaker.models.FileObjects import XObject
 
 import glob
 import itertools
@@ -117,18 +116,15 @@ def parse_line_of_filelist(line):
     Parse a line of filelist (plain) and returns an object holding metadata of
     files.
 
-    >>> ref = XObject("/etc/resolv.conf",
-    ...             install_path="/var/lib/network/resolv.conf",
-    ...             uid=0,
-    ...             gid=0,
-    ...             )
     >>> line = "/etc/resolv.conf"
+    >>> parse_line_of_filelist(line + "\\n")
+    (['/etc/resolv.conf'], {})
     >>> line += ",install_path=/var/lib/network/resolv.conf,uid=0,gid=0"
     >>> (paths, attrs) = parse_line_of_filelist(line)
-    >>> assert paths[0] == ref.path
-    >>> assert attrs.install_path == ref.install_path
-    >>> assert attrs.uid == ref.uid
-    >>> assert attrs.gid == ref.gid
+    >>> assert paths[0] == "/etc/resolv.conf"
+    >>> assert attrs.install_path == "/var/lib/network/resolv.conf"
+    >>> assert attrs.uid == 0
+    >>> assert attrs.gid == 0
     """
     ss = parse_list(line.rstrip().strip(), ",")
     pp = ss[0]
