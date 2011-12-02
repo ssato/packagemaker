@@ -39,24 +39,32 @@ class Test_00_main(unittest.TestCase):
         tmpldir = os.path.join(curdir, "../../templates")
         logfile = os.path.join(self.workdir, "run.log")
 
-        if args is None:
-            args = [
-                "dummy_argv0",
-                "-n", "foo",
-                "-w", self.workdir,
-                "-C", conf,
-                "-P", tmpldir,
-                "-L", logfile,
-            ]
+        base_args = [
+            "dummy_argv0",
+            "-n", "foo",
+            "-w", self.workdir,
+            "-C", conf,
+            "-P", tmpldir,
+            "-L", logfile,
+        ]
+        args = base_args if args is None else base_args + args
 
         rc = A.main(args)
 
         self.assertEquals(rc, 0)
 
-    def test_00_run_w_json_conf(self):
+    def test_00_run_w_ini_conf_and_filelist(self):
+        """FIXME: broken"""
+        return
+
+        filelist = os.path.join(selfdir(), "config_example_00_filelist")
+
+        self.helper("config_example_01.ini", [filelist])
+
+    def test_01_run_w_json_conf(self):
         self.helper("config_example_01.json")
 
-    def test_01_run_w_yaml_conf(self):
+    def test_02_run_w_yaml_conf(self):
         self.helper("config_example_01.yaml")
 
 
