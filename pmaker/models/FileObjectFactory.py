@@ -60,7 +60,7 @@ def lstat(path, use_rpmdb=False):
         if R.is_rpmdb_available():
             st = rpm_lstat(path)
             if st is None:
-                logging.warn("Failed to get stat from rpm database.")
+                logging.warn("Failed to get stat from rpm db: " + path)
             else:
                 return st
         else:
