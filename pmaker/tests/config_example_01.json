@@ -2,7 +2,7 @@
     "config": null,
     "norc": true,
     "force": false,
-    "verbosity": 0,
+    "verbosity": 1,
     "name": "example-01-app",
     "group": "System Environment/Base",
     "license": "MIT",

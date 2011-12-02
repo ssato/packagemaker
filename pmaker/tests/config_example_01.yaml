@@ -11,7 +11,7 @@ relations: requires:bash,zsh;obsoletes:sysdata;conflicts:sysdata-old
 norc: true
 config: null
 no_mock: true
-verbosity: 0
+verbosity: 1
 
 files:
 - {path: /etc/auto.*}
