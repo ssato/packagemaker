@@ -186,7 +186,9 @@ class Base(object):
                 logging.info(
                     "Created packages in %(workdir)s: %(name)s" % self.pkgdata
                 )
-            sys.exit()
+            return 1
+
+        return 0
 
     def setup(self):
         U.createdir(self.workdir)
@@ -219,7 +221,12 @@ class Base(object):
         """
         for step in self._steps:
             logging.info(step.message % self.pkgdata)
-            self.try_the_step(step)
+            rc = self.try_the_step(step)
+
+            if rc == 1:
+                break
+
+        return 0
 
 
 # vim:sw=4 ts=4 et:

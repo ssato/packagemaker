@@ -45,11 +45,13 @@ def main(argv=sys.argv):
 
     bcls = Backends.map().get(opts.driver)
     backend = bcls(pkgdata)
-    backend.run()
+    rc = backend.run()
+
+    return rc
 
 
 if __name__ == '__main__':
-    main()
+    sys.exit(main())
 
 
 # vim:sw=4 ts=4 et:
