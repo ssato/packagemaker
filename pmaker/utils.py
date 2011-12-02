@@ -532,4 +532,15 @@ def parse_list_str(optstr, sep=","):
     return [p for p in optstr.split(sep) if p]
 
 
+def conflicts_dirs(pname):
+    """
+    Dirs to save or put files owned by this and other packages sametime.
+
+    :param name: The name of the package to be built.
+    """
+    p = dict(name=pname)
+
+    return (CONFLICTS_SAVEDIR % p, CONFLICTS_NEWDIR % p)
+
+
 # vim:sw=4 ts=4 et:

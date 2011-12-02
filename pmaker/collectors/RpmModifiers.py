@@ -14,10 +14,9 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
-from pmaker.globals import CONFLICTS_NEWDIR, CONFLICTS_SAVEDIR
-
 import pmaker.collectors.Modifiers as M
 import pmaker.rpmutils as R
+import pmaker.utils as U
 
 import logging
 import os.path
@@ -35,17 +34,6 @@ class RpmAttributeModifier(M.FileInfoModifier):
         return fo
 
 
-def conflicts_dirs(name):
-    """
-    Dirs to save or put files owned by this and other packages sametime.
-
-    :param name: The name of this package to be built.
-    """
-    p = dict(name=name)
-
-    return (CONFLICTS_SAVEDIR % p, CONFLICTS_NEWDIR % p)
-
-
 class RpmConflictsModifier(M.FileInfoModifier):
 
     _priority = 6
@@ -55,7 +43,7 @@ class RpmConflictsModifier(M.FileInfoModifier):
         :param name: The name of this package to be built.
         """
         self.name = name
-        (self.savedir, self.newdir) = conflicts_dirs(name)
+        (self.savedir, self.newdir) = U.conflicts_dirs(name)
 
     def find_owner(self, path):
         """Find packages own given path, i.e. will conflict with.

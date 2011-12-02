@@ -87,9 +87,11 @@ class PkgData(Bunch):
 
     def setup_files(self, files):
         self.files = files
+
+        (savedir, newdir) = U.conflicts_dirs(self.name)
+
         self.conflicts = Bunch(
-            savedir=CONFLICTS_SAVEDIR % {"name": self.name},
-            newdir=CONFLICTS_NEWDIR % {"name": self.name},
+            savedir=savedir, newdir=newdir,
             files=[f for f in files if "conflicts" in f],
         )
 

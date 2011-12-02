@@ -16,13 +16,13 @@
 #
 from pmaker.collectors.RpmModifiers import *
 
-from pmaker.globals import CONFLICTS_NEWDIR, CONFLICTS_SAVEDIR
 from pmaker.models.FileInfoFactory import FileInfoFactory
 
 import pmaker.models.FileObjectFactory as F
+import pmaker.utils as U
 
-import unittest
 import os.path
+import unittest
 
 
 #F = FileInfoFactory()
@@ -44,7 +44,7 @@ class Test_01_RpmConflictsModifier(unittest.TestCase):
     def setUp(self):
         pname = "foo"
         self.modifier = RpmConflictsModifier(pname)
-        (self.savedir, self.newdir) = conflicts_dirs(pname)
+        (self.savedir, self.newdir) = U.conflicts_dirs(pname)
 
     def test_01__init__conflicts(self):
         self.assertEquals(self.modifier.savedir, self.savedir)
