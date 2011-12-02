@@ -19,45 +19,45 @@ from pmaker.collectors.RpmModifiers import *
 from pmaker.globals import CONFLICTS_NEWDIR, CONFLICTS_SAVEDIR
 from pmaker.models.FileInfoFactory import FileInfoFactory
 
+import pmaker.models.FileObjectFactory as F
+
 import unittest
 import os.path
 
 
-FACTORY = FileInfoFactory()
+#F = FileInfoFactory()
 
 
-class TestRpmAttributeModifier(unittest.TestCase):
-
-    def setUp(self):
-        self.modifier = RpmAttributeModifier()
+class Test_00_RpmAttributeModifier(unittest.TestCase):
 
     def test_update(self):
-        fi = FACTORY.create("/bin/bash")
-        new_fi = self.modifier.update(fi)
+        modifier = RpmAttributeModifier()
 
-        self.assertTrue(getattr(new_fi, "rpm_attr", False))
+        f = F.create("/bin/bash")
+        new_f = modifier.update(f)
+
+        self.assertTrue(getattr(new_f, "rpm_attr", False))
 
 
-class TestRpmConflictsModifier(unittest.TestCase):
+class Test_01_RpmConflictsModifier(unittest.TestCase):
 
     def setUp(self):
         pname = "foo"
         self.modifier = RpmConflictsModifier(pname)
-        self.savedir = CONFLICTS_SAVEDIR % {"name": pname}
-        self.newdir = CONFLICTS_NEWDIR % {"name": pname}
+        (self.savedir, self.newdir) = conflicts_dirs(pname)
 
-    def test__init__conflicts(self):
+    def test_01__init__conflicts(self):
         self.assertEquals(self.modifier.savedir, self.savedir)
         self.assertEquals(self.modifier.newdir, self.newdir)
 
         owner = self.modifier.find_owner("/bin/bash")
         self.assertEquals(owner["name"], "bash")
 
-    def test_update(self):
-        fi = FACTORY.create("/bin/bash")
-        new_fi = self.modifier.update(fi)
+    def test_02_update(self):
+        f = F.create("/bin/bash")
+        new_f = self.modifier.update(f)
 
-        self.assertNotEquals(new_fi.original_path, fi.install_path)
+        self.assertNotEquals(new_f.original_path, f.install_path)
 
         #path = fileinfo.target[1:]  # strip "/" at the head.
         #fileinfo.target = os.path.join(self.newdir, path)
