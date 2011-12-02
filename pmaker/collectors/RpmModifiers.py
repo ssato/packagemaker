@@ -16,21 +16,21 @@
 #
 from pmaker.globals import CONFLICTS_NEWDIR, CONFLICTS_SAVEDIR
 
-import pmaker.collectors.Modifiers as Mod
-import pmaker.rpmutils as RU
+import pmaker.collectors.Modifiers as M
+import pmaker.rpmutils as R
 
 import logging
 import os.path
 
 
-class RpmAttributeModifier(Mod.FileInfoModifier):
+class RpmAttributeModifier(M.FileInfoModifier):
     _priority = 9
 
     def update(self, fo, *args, **kwargs):
         """
         :param fo: FileObject or FileInfo instance represents files.
         """
-        fo.rpm_attr = RU.rpm_attr(fo)
+        fo.rpm_attr = R.rpm_attr(fo)
 
         return fo
 
@@ -46,7 +46,7 @@ def conflicts_dirs(name):
     return (CONFLICTS_SAVEDIR % p, CONFLICTS_NEWDIR % p)
 
 
-class RpmConflictsModifier(Mod.FileInfoModifier):
+class RpmConflictsModifier(M.FileInfoModifier):
 
     _priority = 6
 
@@ -62,7 +62,7 @@ class RpmConflictsModifier(Mod.FileInfoModifier):
 
         :param path: Path of target file/dir/symlink.
         """
-        owner_nvrae = RU.rpm_search_provides_by_path(path)
+        owner_nvrae = R.rpm_search_provides_by_path(path)
 
         if owner_nvrae and owner_nvrae["name"] != self.name:
             logging.warn("%s is owned by %s" % (path, owner_nvrae["name"]))
@@ -71,14 +71,14 @@ class RpmConflictsModifier(Mod.FileInfoModifier):
             return dict()
 
     def update(self, fo, *args, **kwargs):
-        fo.conflicts = self.find_owner(fo.target)
+        fo.conflicts = self.find_owner(fo.install_path)
 
         if fo.conflicts:
             fo.original_path = fo.install_path
 
             path = fo.install_path[1:]  # strip "/" at the head.
 
-            fo.target = fo.install_path = os.path.join(self.newdir, path)
+            fo.install_path = os.path.join(self.newdir, path)
             fo.save_path = os.path.join(self.savedir, path)
 
         return fo
