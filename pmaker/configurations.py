@@ -24,7 +24,9 @@ import pmaker.environ as E
 import pmaker.parser as P
 
 
+# aliases:
 TYPES = Anycfg.CTYPES
+guess_type = Anycfg.guess_type
 
 
 def _defaults(env):

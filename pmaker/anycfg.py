@@ -99,9 +99,14 @@ def list_paths(basename, paths=None, ext="conf"):
 
 
 class IniConfigParser(object):
+    _type = CTYPE_INI
 
     def __init__(self):
         self._parser = configparser.SafeConfigParser()
+
+    @classmethod
+    def type(cls):
+        return cls._type
 
     def load(self, path_, sep=",", **kwargs):
         if not os.path.exists(path_):
@@ -150,6 +155,8 @@ def dict_to_bunch(json_obj_dict):
 
 
 class JsonConfigPaser(IniConfigParser):
+
+    _type = CTYPE_JSON
 
     def load(self, path_, *args, **kwargs):
         if json is None:
@@ -213,6 +220,8 @@ if yaml is not None:
 
 class YamlConfigPaser(IniConfigParser):
 
+    _type = CTYPE_YAML
+
     def load(self, path_, *args, **kwargs):
         if yaml is None:
             logging.warn("YAML is not a supported configuration format.")
@@ -242,6 +251,8 @@ def etree_to_Bunch(root):
 
 
 class XmlConfigParser(IniConfigParser):
+
+    _type = CTYPE_XML
 
     def load(self, path_, *args, **kwargs):
         if etree is None:
@@ -274,6 +285,11 @@ def guess_class(conf, default=IniConfigParser):
                 cls = EXT2CLASS_MAP[exts]
 
     return cls
+
+
+def guess_type(conf):
+    cls = guess_class(conf)
+    return cls.type()
 
 
 class AnyConfigParser(object):
