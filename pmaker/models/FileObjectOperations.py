@@ -177,6 +177,12 @@ class FileOps(object):
                 except OSError:
                     logging.warn("Could not copy the stat: " + srcdir)
 
+            # ensure user can write in this dir.
+            try:
+                os.chmod(destdir, os.lstat(destdir).st_mode | int(0700))
+            except OSError:
+                logging.warn("Could not set write permission on " + destdir)
+
         if create_instead_of_copy:
             logging.debug("Creating: " + dest)
             cls.create(fileobj, dest)
