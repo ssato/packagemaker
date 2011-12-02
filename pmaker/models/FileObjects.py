@@ -23,6 +23,7 @@ from pmaker.utils import checksum
 from pmaker.models.Bunch import Bunch
 from pmaker.models.FileObjectOperations import FileOps, DirOps, SymlinkOps
 
+import copy
 import os.path
 
 
@@ -147,7 +148,7 @@ class DirObject(FileObject):
     ops = DirOps
     filetype = TYPE_DIR
 
-    defaults = XObject.defaults
+    defaults = copy.copy(XObject.defaults)
     defaults.mode = "0755"
 
 
