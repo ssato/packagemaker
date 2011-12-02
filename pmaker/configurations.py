@@ -68,7 +68,7 @@ def _defaults(env):
 
     # rpm options:
     defaults.dist = env.dist.label
-    defaults.no_rpmdb = env.format == PKG_FORMAT_RPM
+    defaults.no_rpmdb = env.format != PKG_FORMAT_RPM
     defaults.no_mock = False
 
     # others:
