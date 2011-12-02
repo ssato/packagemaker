@@ -92,7 +92,7 @@ class PkgData(Bunch):
 
         self.conflicts = Bunch(
             savedir=savedir, newdir=newdir,
-            files=[f for f in files if "conflicts" in f],
+            files=[f for f in files if "conflicts" in f and f.conflicts],
         )
 
         self.not_conflicts = Bunch(
