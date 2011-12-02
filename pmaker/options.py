@@ -287,6 +287,10 @@ class Options(Bunch):
             # Likewise:
             (options, args) = self.oparser.parse_args(argv)
 
+            if not args:  # it means this config provides files also.
+                options.input_type = "filelist.%s" % \
+                    C.guess_type(options.config)
+
         try:
             loglevel = [
                 logging.WARN, logging.INFO, logging.DEBUG
