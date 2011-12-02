@@ -64,7 +64,7 @@ class Base(object):
     def type(cls):
         return "%s.%s" % (cls.strategy(), cls.format())
 
-    def relations_maps(self, rels):
+    def relations_map(self, rels):
         return [
             Bunch(type=t, targets=ts) for t, ts in \
                 [(self._relations.get(x, None), xs) for x, xs in rels] \
@@ -91,7 +91,12 @@ class Base(object):
         self.pkgdata.format = self.format()  # override it.
 
         self.__setup_aliases(pkgdata)
-        #self.pkgdata.relations = self.relations_maps(pkgdata.relations)
+
+        try:
+            self.pkgdata.relations = self.relations_map(pkgdata.relations)
+        except Exception, e:
+            print "relations=" + pkgdata.relations
+            raise
 
         for k, v in kwargs.iteritems():
             if getattr(self, k, None) is None:
