@@ -40,6 +40,7 @@ def _defaults(env):
     defaults.force = False
     defaults.verbosity = 0  # verbose and debug option.
     defaults.trace = False
+    defaults.log = None  # logging output file
 
     # build options:
     defaults.workdir = env.workdir

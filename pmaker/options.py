@@ -168,6 +168,7 @@ class Options(Bunch):
         add_option("", "--debug", action="store_const", dest="verbosity",
             const=2, help="Debug mode (same as -vv)")
         add_option("", "--trace", action="store_true", help="Trace mode")
+        add_option("-L", "--log", help="Log file [stdout]")
 
     def __setup_build_options(self):
         global PACKAGING_STEPS, DESTDIR_OPTION_HELP
@@ -274,6 +275,20 @@ class Options(Bunch):
     def parse_args(self, argv=sys.argv[1:]):
         (options, args) = self.oparser.parse_args(argv)
 
+        try:
+            loglevel = [
+                logging.WARN, logging.INFO, logging.DEBUG
+            ][options.verbosity]
+
+        except IndexError:
+            logging.warn("Bad Log level")
+            loglevel = logging.WARN
+
+        logging.getLogger().setLevel(loglevel)
+
+        if options.log:
+            logging.getLogger().addHandler(logging.FileHandler(options.log))
+
         if not options.norc:
             self.set_defaults(norc=False)
 
@@ -289,17 +304,6 @@ class Options(Bunch):
             if not args:  # it means this config provides files also.
                 options.input_type = "filelist.%s" % \
                     C.guess_type(options.config)
-
-        try:
-            loglevel = [
-                logging.WARN, logging.INFO, logging.DEBUG
-            ][options.verbosity]
-
-        except IndexError:
-            logging.warn("Bad Log level")
-            loglevel = logging.WARN
-
-        logging.getLogger().setLevel(loglevel)
 
         if self.missing_files(args):
             logging.error(" Filelist was not given.\n")
