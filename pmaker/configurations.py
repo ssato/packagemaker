@@ -99,7 +99,11 @@ class Config(Bunch):
 
         # special cases:
         if "relations" in config:
-            config.relations = P.parse(config.relations)
+            try:
+                config.relations = P.parse(config.relations)
+            except:
+                print "config.relations=" + str(config.relations)
+                raise
 
         if "template_paths" in config:
             config.template_paths = self.template_paths + \
