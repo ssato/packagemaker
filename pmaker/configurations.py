@@ -21,6 +21,7 @@ import pmaker.anycfg as Anycfg
 import pmaker.collectors.Collectors as Collectors
 import pmaker.backend.registry as Backends
 import pmaker.environ as E
+import pmaker.parser as P
 
 
 TYPES = Anycfg.CTYPES
@@ -54,7 +55,7 @@ def _defaults(env):
     defaults.summary = None
     defaults.compressor = env.compressor.extension  # extension
     defaults.arch = False
-    defaults.relations = ""
+    defaults.relations = []
     defaults.packager = env.fullname
     defaults.email = env.email
     defaults.pversion = "0.0.1"
@@ -91,6 +92,15 @@ class Config(Bunch):
 
     def load(self, config, forced_type=None):
         config = self._cparser.load(config, forced_type)
+
+        # special cases:
+        if "relations" in config:
+            config.relations = P.parse(config.relations)
+
+        if "template_paths" in config:
+            config.template_paths = self.template_paths + \
+                P.parse_list(config.template_paths)
+
         self.update(config)
 
     def load_default_configs(self):

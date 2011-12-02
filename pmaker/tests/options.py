@@ -37,7 +37,16 @@ class Test_00_functions(unittest.TestCase):
         p.add_option("", "--relations", **setup_relations_option())
 
         options, args = p.parse_args([])
-        self.assertEquals(options.relations, "")
+        self.assertEquals(options.relations, [])
+
+        return
+
+        # TBD:
+        relations_s = "obsoletes:mydata"
+        options, args = p.parse_args(
+            ["--relations", relations_s]
+        )
+        self.assertEquals(options.relations[0], ('obsoletes', ['mydata']))
 
         relations_s = "obsoletes:mydata;conflicts:mydata-old"
         options, args = p.parse_args(
@@ -183,6 +192,25 @@ class Test_01_Options(unittest.TestCase):
             ["-n", name, "--no-mock", "dummy_filelist.txt"]
         )
         self.assertTrue(opts.no_mock)
+
+    def test_08_parse_args_w_name_and_filelist_and_relations(self):
+        name = "foo"
+
+        o = Options()
+        (opts, args) = o.parse_args(
+            ["-n", name, "--relations", "requires:/bin/sh",
+                "dummy_filelist.txt"]
+        )
+        self.assertEquals(opts.relations[0], ('requires', ['/bin/sh']))
+
+        (opts, args) = o.parse_args(
+            ["-n", name,
+             "--relations", "obsoletes:mydata;conflicts:mydata-old",
+             "dummy_filelist.txt"
+            ]
+        )
+        self.assertEquals(opts.relations[0], ('obsoletes', ['mydata']))
+        self.assertEquals(opts.relations[1], ('conflicts', ['mydata-old']))
 
 
 class Test_01_Options_w_side_effects(unittest.TestCase):

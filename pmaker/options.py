@@ -64,11 +64,15 @@ this by this option: \"--destdir=/builddir/destdir\".
 """
 
 
+def parse_relations(relations):
+    return P.parse(relations)
+
+
 def setup_relations_option():
     """Relation option parameters.
     """
-    def cb(option, opt_str, value, parser):
-        parser.values.relations = P.parse(value)
+    def _cb(option, opt_str, value, parser):
+        parser.values.relations = parse_relations(value)
 
     _help = """\
 Semicolon (;) separated list of a pair of relation type and
@@ -79,8 +83,9 @@ Expressions of relation types and targets are varied depends
 on package format to use.
 """
 
-    return dict(action="callback", callback=cb, type="string",
-                default="", help=_help)
+    # TODO: callback interacts badly with configurations.
+    return dict(action="callback", callback=_cb, type="string",
+                default=[], help=_help)
 
 
 def setup_template_path_option():
