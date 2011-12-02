@@ -39,6 +39,7 @@ def _defaults(env):
     defaults.norc = False
     defaults.force = False
     defaults.verbosity = 0  # verbose and debug option.
+    defaults.trace = False
 
     # build options:
     defaults.workdir = env.workdir

@@ -92,9 +92,7 @@ class FilelistCollector(Collector):
         """
         self.listfile = listfile
         self.config = config
-
-        # TBD:
-        self.trace = False
+        self.trace = config.trace
 
         self.filters = [
             F.UnsupportedTypesFilter(),
@@ -111,11 +109,13 @@ class FilelistCollector(Collector):
             self.modifiers.append(M.OwnerModifier())  # uid = gid = 0
 
         if driver_is_rpm(config.driver):
+            logging.debug("Adding RpmAttributeModifier")
             self.modifiers.append(RM.RpmAttributeModifier())
 
             self.use_rpmdb = not config.no_rpmdb
 
             if self.use_rpmdb:
+                logging.debug("Adding RpmConflictsModifier")
                 self.modifiers.append(RM.RpmConflictsModifier(config.name))
 
     def _parse(self, line):
@@ -164,7 +164,7 @@ class FilelistCollector(Collector):
 
                 # Too verbose but useful in some cases:
                 if self.trace:
-                    logging.debug("(result) fo: path=" + fo.path)
+                    logging.debug("(result) fo: " + str(fo)[:60] + "...")
 
                 yield fo
 

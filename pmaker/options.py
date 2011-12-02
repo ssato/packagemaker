@@ -17,7 +17,7 @@
 from pmaker.globals import PMAKER_VERSION
 from pmaker.models.Bunch import Bunch
 
-import pmaker.configurations as Cfg
+import pmaker.configurations as C
 import pmaker.collectors.Collectors as Collectors
 import pmaker.backend.registry as Backends
 import pmaker.environ as E
@@ -120,7 +120,7 @@ class Options(Bunch):
         """
         """
         self.env = E.Env()
-        self.config = Cfg.Config()
+        self.config = C.Config()
         self.oparser = optparse.OptionParser(HELP_HEADER,
                                              version=VERSION_STRING,
                                              )
@@ -167,8 +167,7 @@ class Options(Bunch):
             help="Verbose mode")
         add_option("", "--debug", action="store_const", dest="verbosity",
             const=2, help="Debug mode (same as -vv)")
-        # TODO: Implement this
-        #add_option("", "--trace", action="store_true", help="Trace mode")
+        add_option("", "--trace", action="store_true", help="Trace mode")
 
     def __setup_build_options(self):
         global PACKAGING_STEPS, DESTDIR_OPTION_HELP

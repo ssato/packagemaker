@@ -71,6 +71,7 @@ class PkgData(Bunch):
             "summary", "arch", "relations", "packager", "email",
             "pversion", "release", "changelog", "dist",
             "template_paths", "hostname", "no_mock",
+            "trace",
         )
 
         for key in keys:
