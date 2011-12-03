@@ -95,7 +95,7 @@ class Base(object):
         try:
             self.pkgdata.relations = self.relations_map(pkgdata.relations)
         except Exception, e:
-            print "relations=" + pkgdata.relations
+            print "relations=" + str(pkgdata.relations)
             raise
 
         for k, v in kwargs.iteritems():

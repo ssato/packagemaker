@@ -127,7 +127,11 @@ class FilelistCollector(Collector):
         if not line or line.startswith("#"):
             return []
         else:
-            (paths, attrs) = P.parse_line_of_filelist(line)
+            try:
+                (paths, attrs) = P.parse_line_of_filelist(line)
+            except ValueError:
+                print "line=" + line
+                raise
 
             return [Factory.create(p, self.use_rpmdb, **attrs) for p in paths]
 
