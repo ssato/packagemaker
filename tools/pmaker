@@ -1,5 +1,5 @@
 #! /usr/bin/python
-from pmaker.cui import main
+import pmaker.app as A
 import sys
 
-main(sys.argv)
+sys.exit(A.main(sys.argv))

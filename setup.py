@@ -161,6 +161,7 @@ setup(name=PACKAGE,
         "pmaker.tests",
     ],
     scripts=[
+        "tools/pmaker",
         "tools/pmaker"
     ],
     data_files=data_files,

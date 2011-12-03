@@ -10,4 +10,4 @@ include pmaker/tests/*_example_*
 recursive-include pmaker *.py
 recursive-include templates *
 recursive-include tests *
-include tools/pmaker
+include tools/*

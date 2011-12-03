@@ -1,0 +1,5 @@
+#! /usr/bin/python
+from pmaker.cui import main
+import sys
+
+main(sys.argv)
