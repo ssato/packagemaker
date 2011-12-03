@@ -116,29 +116,28 @@ class IniConfigParser(object):
         logging.info("Loading config: " + path_)
         config = Bunch()
 
+
+        def __parse(v):
+            if v.startswith('"') and v.endswith('"'):
+                return v[1:-1]
+            elif sep in v:
+                return [P.parse(x) for x in U.parse_list_str(v)]
+            else:
+                return P.parse(v)
+
         try:
             self._parser.read(path_)
 
             # Treat key and value pairs in [DEFAULTS] as special.
             for k, v in self._parser.defaults().iteritems():
-                if sep in v:
-                    config[k] = [
-                        P.parse(x) for x in U.parse_list_str(v)
-                    ]
-                else:
-                    config[k] = P.parse(v)
+                config[k] = __parse(v)
 
             for s in self._parser.sections():
                 config[s] = Bunch()
 
                 for k in self._parser.options(s):
                     v = self._parser.get(s, k)
-                    if sep in v:
-                        config[s][k] = [
-                            P.parse(x) for x in U.parse_list_str(v)
-                        ]
-                    else:
-                        config[s][k] = P.parse(v)
+                    config[s][k] = __parse(v)
 
         except Exception, e:
             logging.warn(e)
