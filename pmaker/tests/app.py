@@ -33,30 +33,26 @@ class Test_00_main(unittest.TestCase):
         #cleanup_workdir(self.workdir)
         pass
 
-    def helper(self, config, args=None):
+    def helper(self, config, extra_args=[]):
         curdir = selfdir()
         conf = os.path.join(curdir, config)
         tmpldir = os.path.join(curdir, "../../templates")
         logfile = os.path.join(self.workdir, "run.log")
 
-        base_args = [
+        args = [
             "dummy_argv0",
             "-n", "foo",
             "-w", self.workdir,
             "-C", conf,
             "-P", tmpldir,
             "-L", logfile,
-        ]
-        args = base_args if args is None else base_args + args
+        ] + extra_args
 
         rc = A.main(args)
 
         self.assertEquals(rc, 0)
 
     def test_00_run_w_ini_conf_and_filelist(self):
-        """FIXME: broken"""
-        return
-
         filelist = os.path.join(selfdir(), "config_example_00_filelist")
 
         self.helper("config_example_01.ini", [filelist])
