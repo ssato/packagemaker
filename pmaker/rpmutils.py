@@ -36,7 +36,7 @@ except ImportError:
 
 
 RPM_FILELIST_CACHE = os.path.join(
-    os.environ["HOME"], ".cache", "pmaker.rpm.filelist.pkl"
+    os.environ.get("HOME", "."), ".cache", "pmaker.rpm.filelist.pkl"
 )
 
 # RpmFi (FileInfo) keys:
