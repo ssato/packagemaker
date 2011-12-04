@@ -14,37 +14,49 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
-from pmaker.utils import rm_rf
-from pmaker.tests.common import setup_workdir, TOPDIR
-from tests.utils import *
+import pmaker.tests.common as C
 
+import glob
 import logging
 import os.path
+import random
 import subprocess
 
 
 def setup(extra_args=[]):
-    workdir = setup_workdir()
-    tmpldir = os.path.join(TOPDIR, "templates")
+    workdir = C.setup_workdir()
+    tmpldir = os.path.join(C.TOPDIR, "templates")
 
     args = [
-        "-n", "foo",
         "-w", workdir,
         "-P", tmpldir,
     ] + extra_args
 
-    logging.getLogger().setLevel(logging.WARN) # suppress log messages
+    #logging.getLogger().setLevel(logging.WARN) # suppress log messages
 
     return (workdir, args)
 
 
 def run_w_args(args, workdir):
-    c = ["python ", os.path.join(TOPDIR, "tools/pmaker"), ] + args
+    #c = ["python", os.path.join(C.TOPDIR, "tools/pmaker")] + args
+    c = [os.path.join(C.TOPDIR, "tools/pmaker")] + args
+    e = {"PYTHONPATH": C.TOPDIR, }
 
     with open(os.path.join(workdir, "test.log"), "w") as f:
-        rc = subprocess.call(c, shell=True, stdout=f, stderr=f)
+        rc = subprocess.call(c, shell=True, stdout=f, stderr=f, env=e)
 
     return rc
+
+
+def get_random_system_files(n=1, pattern="/etc/*"):
+    if n == 1:
+        return random.choice(
+            [f for f in glob.glob(pattern) if os.path.isfile(f)]
+        )
+    else:
+        return random.sample(
+            [f for f in glob.glob(pattern) if os.path.isfile(f)], n
+        )
 
 
 # vim:sw=4 ts=4 et:
