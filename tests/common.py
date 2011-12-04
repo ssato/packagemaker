@@ -43,6 +43,7 @@ def run_w_args(args, workdir):
     e = {"PYTHONPATH": C.TOPDIR, }
 
     with open(os.path.join(workdir, "test.log"), "w") as f:
+        print "run command: " + str(c)
         rc = subprocess.call(c, shell=True, stdout=f, stderr=f, env=e)
 
     return rc
