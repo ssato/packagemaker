@@ -44,7 +44,7 @@ class Test_00_Backend(unittest.TestCase):
     def test_02_configure(self):
         self.try_run(STEP_CONFIGURE)
 
-    def test_03_run__sbuild(self):
+    def test_03_sbuild(self):
         backend = self.try_run(STEP_SBUILD)
         p = backend.pkgdata
 
@@ -55,7 +55,7 @@ class Test_00_Backend(unittest.TestCase):
         )
         self.assertTrue(os.path.exists(stgz))
 
-    def test_04_run__build(self):
+    def test_04_build(self):
         self.try_run(STEP_BUILD)  # same as sbuild in actual.
 
 
