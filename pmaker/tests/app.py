@@ -31,8 +31,7 @@ class Test_00_main(unittest.TestCase):
         self.workdir = setup_workdir()
 
     def tearDown(self):
-        #cleanup_workdir(self.workdir)
-        pass
+        cleanup_workdir(self.workdir)
 
     def helper(self, config, extra_args=[]):
         curdir = selfdir()
