@@ -14,7 +14,8 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
-from pmaker.tests.common import setup_workdir, cleanup_workdir, selfdir
+from pmaker.tests.common import setup_workdir, cleanup_workdir, \
+    selfdir, TOPDIR
 
 import pmaker.app as A
 
@@ -36,7 +37,7 @@ class Test_00_main(unittest.TestCase):
     def helper(self, config, extra_args=[]):
         curdir = selfdir()
         conf = os.path.join(curdir, config)
-        tmpldir = os.path.join(curdir, "../../templates")
+        tmpldir = os.path.join(TOPDIR, "templates")
         logfile = os.path.join(self.workdir, "run.log")
 
         args = [

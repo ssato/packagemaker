@@ -16,7 +16,7 @@
 #
 from pmaker.globals import STEP_SETUP, STEP_PRECONFIGURE, STEP_CONFIGURE, \
     STEP_SBUILD, STEP_BUILD
-from pmaker.tests.common import setup_workdir, cleanup_workdir, selfdir
+from pmaker.tests.common import setup_workdir, cleanup_workdir, TOPDIR
 
 import pmaker.backend.tests.common as TC
 import pmaker.backend.registry as Registry
@@ -37,9 +37,7 @@ def setup():
 
 
 def get_backend_obj(workdir, listfile, step="build", format="tgz"):
-    tmplpath = os.path.abspath(
-        os.path.join(selfdir(), "../../", "templates")
-    )
+    tmplpath = os.path.join(TOPDIR, "templates")
     #logging.warn("tmplpath = " + tmplpath)
 
     btype = "autotools.single.%s" % format
