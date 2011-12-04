@@ -23,8 +23,6 @@ BuildRequires:  python-nose
 BuildRequires:  python-pep8
 %endif
 Requires:       python
-#Requires:       python-cheetah
-#Requires:       pyxattr
 
 
 %description
