@@ -38,13 +38,15 @@ def setup(extra_args=[]):
 
 
 def run_w_args(args, workdir):
-    #c = ["python", os.path.join(C.TOPDIR, "tools/pmaker")] + args
     c = [os.path.join(C.TOPDIR, "tools/pmaker")] + args
-    e = {"PYTHONPATH": C.TOPDIR, }
+    cs = " ".join(c)
+
+    e = os.environ
+    e["PYTHONPATH"] = C.TOPDIR
 
     with open(os.path.join(workdir, "test.log"), "w") as f:
-        print "run command: " + str(c)
-        rc = subprocess.call(c, shell=True, stdout=f, stderr=f, env=e)
+        #print "run command: " + cs
+        rc = subprocess.call(cs, shell=True, stdout=f, stderr=f, env=e)
 
     return rc
 

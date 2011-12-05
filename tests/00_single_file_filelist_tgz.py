@@ -19,6 +19,7 @@ import pmaker.environ as E
 import pmaker.tests.common as C
 
 import os.path
+import shutil
 import unittest
 
 
@@ -33,14 +34,15 @@ class Test_00_autotools_single(unittest.TestCase):
         self.listfile = os.path.join(self.workdir, "files.list")
         comp_ext = E.Env().compressor.extension
 
-        self.args = args + ["--backend", "autotools.single.tgz", self.listfile]
+        self.args = args + [
+            "--backend", "autotools.single.tgz", "-vv", self.listfile
+        ]
 
         pn = "%s-%s" % (name, pversion)
         self.tgz = os.path.join(self.workdir, pn, pn + ".tar." + comp_ext)
 
     def tearDown(self):
-        #C.cleanup_workdir(self.workdir)
-        pass
+        C.cleanup_workdir(self.workdir)
 
     def test_00_generated_file(self):
         target = os.path.join(self.workdir, "aaa.txt")
@@ -50,7 +52,11 @@ class Test_00_autotools_single(unittest.TestCase):
 
         TC.run_w_args(self.args, self.workdir)
 
-        self.assertTrue(os.path.exists(self.tgz))
+        try:
+            self.assertTrue(os.path.exists(self.tgz))
+        except:
+            shutils.copy2(os.path.join(self.workdir, "test.log"), "./")
+            raise
 
     def test_01_system_file(self):
         target = TC.get_random_system_files(1, "/etc/*")
@@ -59,7 +65,11 @@ class Test_00_autotools_single(unittest.TestCase):
 
         TC.run_w_args(self.args, self.workdir)
 
-        self.assertTrue(os.path.exists(self.tgz))
+        try:
+            self.assertTrue(os.path.exists(self.tgz))
+        except:
+            shutils.copy2(os.path.join(self.workdir, "test.log"), "./")
+            raise
 
 
 # vim:sw=4 ts=4 et:
