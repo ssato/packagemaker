@@ -57,9 +57,11 @@ def get_random_system_files(n=1, pattern="/etc/*"):
             [f for f in glob.glob(pattern) if os.path.isfile(f)]
         )
     else:
-        return random.sample(
-            [f for f in glob.glob(pattern) if os.path.isfile(f)], n
-        )
+        candidates = [f for f in glob.glob(pattern) if os.path.isfile(f)]
+        if len(candidates) < n:
+            n = len(candidates)
+
+        return random.sample(candidates, n)
 
 
 # vim:sw=4 ts=4 et:
