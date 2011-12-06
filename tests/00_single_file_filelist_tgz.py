@@ -52,24 +52,44 @@ class Test_00_autotools_single(unittest.TestCase):
 
         TC.run_w_args(self.args, self.workdir)
 
-        try:
-            self.assertTrue(os.path.exists(self.tgz))
-        except:
-            shutils.copy2(os.path.join(self.workdir, "test.log"), "./")
-            raise
+        self.assertTrue(os.path.exists(self.tgz))
 
-    def test_01_system_file(self):
+    def test_01_generated_files(self):
+        os.makedirs(os.path.join(self.workdir, "b"))
+        os.makedirs(os.path.join(self.workdir, "b", "c"))
+
+        targets = [
+            os.path.join(self.workdir, "aaa.txt"),
+            os.path.join(self.workdir, "b", "d.x"),
+            os.path.join(self.workdir, "b", "c", "e"),
+        ]
+
+        for t in targets:
+            open(t, "w").write("\n")
+
+        open(self.listfile, "w").write("%s\n" % "\n".join(targets))
+
+        TC.run_w_args(self.args, self.workdir)
+
+        self.assertTrue(os.path.exists(self.tgz))
+
+    def test_02_system_file(self):
         target = TC.get_random_system_files(1, "/etc/*")
 
         open(self.listfile, "w").write("%s\n" % target)
 
         TC.run_w_args(self.args, self.workdir)
 
-        try:
-            self.assertTrue(os.path.exists(self.tgz))
-        except:
-            shutils.copy2(os.path.join(self.workdir, "test.log"), "./")
-            raise
+        self.assertTrue(os.path.exists(self.tgz))
+
+    def test_03_system_files(self):
+        targets = TC.get_random_system_files(50, "/etc/*")
+
+        open(self.listfile, "w").write("%s\n" % "\n".join(targets))
+
+        TC.run_w_args(self.args, self.workdir)
+
+        self.assertTrue(os.path.exists(self.tgz))
 
 
 # vim:sw=4 ts=4 et:
