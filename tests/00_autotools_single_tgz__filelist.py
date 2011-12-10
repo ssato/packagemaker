@@ -23,26 +23,33 @@ import shutil
 import unittest
 
 
-class Test_00_autotools_single(unittest.TestCase):
+def bootstrap(fileslist="files.list"):
+    (name, pversion) = ("foo", "0.0.3")
+
+    (workdir, args) = TC.setup(
+        ["--name", name, "--pversion", pversion]
+    )
+    listfile = os.path.join(workdir, fileslist)
+
+    args = args + [
+        "--backend", "autotools.single.tgz", "-vv", listfile
+    ]
+    pn = "%s-%s" % (name, pversion)
+
+    comp_ext = E.Env().compressor.extension
+    tgz = os.path.join(workdir, pn, pn + ".tar." + comp_ext)
+
+    return (workdir, args, listfile, tgz)
+
+
+class Test_00_filelist(unittest.TestCase):
 
     def setUp(self):
-        (name, pversion) = ("foo", "0.0.3")
-
-        (self.workdir, args) = TC.setup(
-            ["--name", name, "--pversion", pversion]
-        )
-        self.listfile = os.path.join(self.workdir, "files.list")
-        comp_ext = E.Env().compressor.extension
-
-        self.args = args + [
-            "--backend", "autotools.single.tgz", "-vv", self.listfile
-        ]
-
-        pn = "%s-%s" % (name, pversion)
-        self.tgz = os.path.join(self.workdir, pn, pn + ".tar." + comp_ext)
+        (self.workdir, self.args, self.listfile, self.pkgfile) = bootstrap()
 
     def tearDown(self):
-        C.cleanup_workdir(self.workdir)
+        #C.cleanup_workdir(self.workdir)
+        pass
 
     def test_00_generated_file(self):
         target = os.path.join(self.workdir, "aaa.txt")
@@ -52,7 +59,7 @@ class Test_00_autotools_single(unittest.TestCase):
 
         TC.run_w_args(self.args, self.workdir)
 
-        self.assertTrue(os.path.exists(self.tgz))
+        self.assertTrue(os.path.exists(self.pkgfile))
 
     def test_01_generated_files(self):
         os.makedirs(os.path.join(self.workdir, "b"))
@@ -71,7 +78,7 @@ class Test_00_autotools_single(unittest.TestCase):
 
         TC.run_w_args(self.args, self.workdir)
 
-        self.assertTrue(os.path.exists(self.tgz))
+        self.assertTrue(os.path.exists(self.pkgfile))
 
     def test_02_system_file(self):
         target = TC.get_random_system_files(1, "/etc/*")
@@ -80,7 +87,7 @@ class Test_00_autotools_single(unittest.TestCase):
 
         TC.run_w_args(self.args, self.workdir)
 
-        self.assertTrue(os.path.exists(self.tgz))
+        self.assertTrue(os.path.exists(self.pkgfile))
 
     def test_03_system_files(self):
         targets = TC.get_random_system_files(50, "/etc/*")
@@ -89,7 +96,33 @@ class Test_00_autotools_single(unittest.TestCase):
 
         TC.run_w_args(self.args, self.workdir)
 
-        self.assertTrue(os.path.exists(self.tgz))
+        self.assertTrue(os.path.exists(self.pkgfile))
+
+
+class Test_01_json(unittest.TestCase):
+
+    def setUp(self):
+        (self.workdir, self.args, self.listfile, self.pkgfile) = \
+            bootstrap("files.json")
+
+    def tearDown(self):
+        #C.cleanup_workdir(self.workdir)
+        pass
+
+    def test_00_generated_file(self):
+        if E.json is None:
+            return
+
+        target = os.path.join(self.workdir, "aaa.txt")
+        open(target, "w").write("\n")
+
+        data = {"files": [{"path": target}]}
+        E.json.dump(data, open(self.listfile, "w"))
+
+        self.args += ["--input-type", "filelist.json"]
+        TC.run_w_args(self.args, self.workdir)
+
+        self.assertTrue(os.path.exists(self.pkgfile))
 
 
 # vim:sw=4 ts=4 et:
