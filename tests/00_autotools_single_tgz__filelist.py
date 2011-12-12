@@ -48,8 +48,7 @@ class Test_00_filelist(unittest.TestCase):
         (self.workdir, self.args, self.listfile, self.pkgfile) = bootstrap()
 
     def tearDown(self):
-        #C.cleanup_workdir(self.workdir)
-        pass
+        C.cleanup_workdir(self.workdir)
 
     def test_00_generated_file(self):
         target = os.path.join(self.workdir, "aaa.txt")
@@ -106,8 +105,7 @@ class Test_01_json(unittest.TestCase):
             bootstrap("files.json")
 
     def tearDown(self):
-        #C.cleanup_workdir(self.workdir)
-        pass
+        C.cleanup_workdir(self.workdir)
 
     def test_00_generated_file(self):
         if E.json is None:
