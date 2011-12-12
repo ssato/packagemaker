@@ -32,11 +32,20 @@ class Test_00_Backend(unittest.TestCase):
     def tearDown(self):
         cleanup_workdir(self.workdir)
 
+    def __assertExists(self, path):
+        self.assertTrue(os.path.exists(path))
+
     def try_run(self, step):
         return C.try_run(self, step, "tgz")
 
     def test_00_setup(self):
-        self.try_run(STEP_SETUP)
+        backend = self.try_run(STEP_SETUP)
+        p = backend.pkgdata
+
+        dumped_conf = os.path.join(
+            backend.workdir, "pmaker-config.json"
+        )
+        self.__assertExists(dumped_conf)
 
     def test_01_preconfigure(self):
         self.try_run(STEP_PRECONFIGURE)
@@ -49,14 +58,21 @@ class Test_00_Backend(unittest.TestCase):
         p = backend.pkgdata
 
         # e.g. /tmp/pmaker-testsOePcyh/foo-0.0.1/foo-0.0.1.tar.xz
-        stgz = os.path.join(
+        tgz = os.path.join(
             backend.workdir,
             "%s-%s.tar.%s" % (p.name, p.pversion, p.compressor.ext)
         )
-        self.assertTrue(os.path.exists(stgz))
+        self.__assertExists(tgz)
 
     def test_04_build(self):
-        self.try_run(STEP_BUILD)  # same as sbuild in actual.
+        backend = self.try_run(STEP_BUILD)  # same as sbuild in actual.
+        p = backend.pkgdata
+
+        tgz = os.path.join(
+            backend.workdir,
+            "%s-%s.tar.%s" % (p.name, p.pversion, p.compressor.ext)
+        )
+        self.__assertExists(tgz)
 
 
 # vim:sw=4 ts=4 et:

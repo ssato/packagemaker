@@ -17,6 +17,7 @@
 from pmaker.globals import PACKAGING_STEPS, STEP_BUILD
 from pmaker.models.Bunch import Bunch
 
+import pmaker.anycfg as A
 import pmaker.backend.utils as PU
 import pmaker.shell as S
 import pmaker.tenjinwrapper as T
@@ -137,6 +138,9 @@ class Base(object):
     def dumpfile(self):
         return os.path.join(self.workdir, "pmaker-filelist.pkl")
 
+    def conffile(self):
+        return os.path.join(self.workdir, "pmaker-config.json")
+
     def save(self, proto=pickle.HIGHEST_PROTOCOL):
         """
         Save file list (self.files).
@@ -146,6 +150,8 @@ class Base(object):
             open(self.dumpfile(), "wb"),
             proto
         )
+
+        A.AnyConfigParser.dump(self.pkgdata, self.conffile())
 
     def load(self):
         """
