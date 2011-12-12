@@ -18,6 +18,7 @@ import tests.common as TC
 import pmaker.environ as E
 import pmaker.tests.common as C
 
+import os
 import os.path
 import shutil
 import unittest
@@ -50,6 +51,16 @@ class Test_00_filelist(unittest.TestCase):
     def tearDown(self):
         C.cleanup_workdir(self.workdir)
 
+    def __assertExists(self, path):
+        try:
+            self.assertTrue(os.path.exists(path))
+        except:
+            shutil.copy2(
+                os.path.join(self.workdir, "test.log"),
+                self.workdir.rstrip(os.path.sep) + ".test.log"
+            )
+            raise
+
     def test_00_generated_file(self):
         target = os.path.join(self.workdir, "aaa.txt")
 
@@ -58,7 +69,7 @@ class Test_00_filelist(unittest.TestCase):
 
         TC.run_w_args(self.args, self.workdir)
 
-        self.assertTrue(os.path.exists(self.pkgfile))
+        self.__assertExists(self.pkgfile)
 
     def test_01_generated_files(self):
         os.makedirs(os.path.join(self.workdir, "b"))
@@ -77,25 +88,31 @@ class Test_00_filelist(unittest.TestCase):
 
         TC.run_w_args(self.args, self.workdir)
 
-        self.assertTrue(os.path.exists(self.pkgfile))
+        self.__assertExists(self.pkgfile)
 
     def test_02_system_file(self):
-        target = TC.get_random_system_files(1, "/etc/*")
+        while True:
+            target = TC.get_random_system_files(1, "/etc/*")
+            if os.access(target, os.R_OK):
+                break
 
         open(self.listfile, "w").write("%s\n" % target)
 
         TC.run_w_args(self.args, self.workdir)
 
-        self.assertTrue(os.path.exists(self.pkgfile))
+        self.__assertExists(self.pkgfile)
 
     def test_03_system_files(self):
         targets = TC.get_random_system_files(50, "/etc/*")
+        targets += TC.get_random_system_files(20, "/usr/share/*/*")
+        targets += TC.get_random_system_files(10, "/var/run/*")
+        targets += TC.get_random_system_files(10, "/var/tmp/*")
 
         open(self.listfile, "w").write("%s\n" % "\n".join(targets))
 
         TC.run_w_args(self.args, self.workdir)
 
-        self.assertTrue(os.path.exists(self.pkgfile))
+        self.__assertExists(self.pkgfile)
 
 
 class Test_01_json(unittest.TestCase):
@@ -107,12 +124,22 @@ class Test_01_json(unittest.TestCase):
     def tearDown(self):
         C.cleanup_workdir(self.workdir)
 
+    def __assertExists(self, path):
+        try:
+            self.assertTrue(os.path.exists(path))
+        except:
+            shutil.copy2(
+                os.path.join(self.workdir, "test.log"),
+                self.workdir.rstrip(os.path.sep) + ".test.log"
+            )
+            raise
+
     def test_00_generated_file(self):
         if E.json is None:
             return
 
         target = os.path.join(self.workdir, "aaa.txt")
-        open(target, "w").write("\n")
+        open(target, "w").write("test\n")
 
         data = {"files": [{"path": target}]}
         E.json.dump(data, open(self.listfile, "w"))
@@ -120,7 +147,26 @@ class Test_01_json(unittest.TestCase):
         self.args += ["--input-type", "filelist.json"]
         TC.run_w_args(self.args, self.workdir)
 
-        self.assertTrue(os.path.exists(self.pkgfile))
+        self.__assertExists(self.pkgfile)
+
+    def test_01_system_file(self):
+        if E.json is None:
+            return
+
+        targets = TC.get_random_system_files(50, "/etc/*")
+        targets += TC.get_random_system_files(20, "/usr/share/*/*")
+        targets += TC.get_random_system_files(10, "/var/run/*")
+        targets += TC.get_random_system_files(10, "/var/tmp/*")
+
+        files = [{"path": p} for p in targets]
+        data = {"files": files}
+
+        E.json.dump(data, open(self.listfile, "w"))
+
+        self.args += ["--input-type", "filelist.json"]
+        TC.run_w_args(self.args, self.workdir)
+
+        self.__assertExists(self.pkgfile)
 
 
 # vim:sw=4 ts=4 et:

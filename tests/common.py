@@ -55,8 +55,7 @@ def run_w_args(args, workdir):
 def get_random_system_files(n=1, pattern="/etc/*"):
     if n == 1:
         return random.choice(
-            [f for f in glob.glob(pattern) \
-                if os.path.isfile(f) and os.access(f, os.R_OK)]
+            [f for f in glob.glob(pattern) if os.path.isfile(f)]
         )
     else:
         candidates = [f for f in glob.glob(pattern) if os.path.isfile(f)]
