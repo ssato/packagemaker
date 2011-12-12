@@ -164,6 +164,13 @@ class JsonConfigPaser(IniConfigParser):
         else:
             return json.load(open(path_), object_hook=dict_to_bunch)
 
+    @classmethod
+    def dump(cls, data, path_, *args, **kwargs):
+        if json is None:
+            logging.warn("JSON is not a supported configuration format.")
+        else:
+            json.dump(data, open(path_, "w"), indent=2)
+
 
 EXT2CLASS_MAP[JSON_EXTS] = JsonConfigPaser
 CTYPE2CLASS_MAP[CTYPE_JSON] = JsonConfigPaser
@@ -227,6 +234,13 @@ class YamlConfigPaser(IniConfigParser):
             return Bunch()
         else:
             return yaml.load(open(path_), Loader=YamlBunchLoader)
+
+    @classmethod
+    def dump(cls, data, path_, *args, **kwargs):
+        if yaml is None:
+            logging.warn("YAML is not a supported configuration format.")
+        else:
+            yaml.dump(data, open(path_, "w"))
 
 
 EXT2CLASS_MAP[YAML_EXTS] = YamlConfigPaser
@@ -326,6 +340,21 @@ class AnyConfigParser(object):
             config.update(c)
 
         return config
+
+    @classmethod
+    def dump(cls, data, conf):
+        ccls = guess_class(conf)
+
+        logging.info("Using config parser: " + str(ccls))
+        parser = ccls()
+
+        if not getattr(parser, "dump", False):
+            logging.warn("Dump method not implemented. Fallback to JsonConfigPaser")
+            parser = JsonConfigPaser()
+            conf = os.path.splitext(conf)[0] + ".json"
+
+        logging.debug("Save to: " + conf)
+        parser.dump(data, conf)
 
 
 # vim:sw=4 ts=4 et:
