@@ -51,7 +51,7 @@ def date_params():
 
 def compressor_params(extopt, ctools=COMPRESSING_TOOLS):
     ct = [ct for ct in ctools if ct.extension == extopt][0]
-    return Bunch(ext=extopt, am_opt=ct.am_option)
+    return Bunch(cmd=ct.command, ext=extopt, am_opt=ct.am_option)
 
 
 class PkgData(Bunch):
