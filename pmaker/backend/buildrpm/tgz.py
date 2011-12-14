@@ -34,10 +34,11 @@ class Backend(B.Base):
     ]
 
     def sbuild(self):
-        c = "make dist"
+        log = self.logfile("sbuild")
+        c = "make dist" + " > " + log
+
         if not U.on_debug_mode():
-            c += " > %s 2> %s" % \
-                (self.logfile("sbuild"), self.logfile("sbuild.errors"))
+            c += " 2> " + log
 
         self.shell(c, timeout=180)
 
