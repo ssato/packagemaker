@@ -14,27 +14,32 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
-import pmaker.backend.autotools.single.tgz
-import pmaker.backend.autotools.single.rpm
-import pmaker.backend.autotools.single.deb
-import pmaker.backend.buildrpm.tgz
-import pmaker.backend.buildrpm.rpm
+from pmaker.globals import PMAKER_TEMPLATE_VERSION as TVER
+
+import pmaker.backend.base as B
+import pmaker.utils as U
+import os.path
 
 
-def map():
-    backends = [
-        pmaker.backend.autotools.single.tgz.Backend,
-        pmaker.backend.autotools.single.rpm.Backend,
-        pmaker.backend.autotools.single.deb.Backend,
-        pmaker.backend.buildrpm.tgz.Backend,
-        pmaker.backend.buildrpm.rpm.Backend,
+class Backend(B.Base):
+
+    _format = "tgz"
+    _strategy = "buildrpm"
+
+    _templates = [
+        (TVER + "/common/README", "README"),
+        (TVER + "/buildrpm/Makefile", "Makefile"),
+        (TVER + "/common/apply-overrides", "apply-overrides"),
+        (TVER + "/common/revert-overrides", "revert-overrides"),
     ]
 
-    return dict((b.type(), b) for b in backends)
+    def sbuild(self):
+        c = "make dist"
+        if not U.on_debug_mode():
+            c += " > %s 2> %s" % \
+                (self.logfile("sbuild"), self.logfile("sbuild.errors"))
 
-
-def default():
-    return pmaker.backend.autotools.single.rpm.Backend.type()
+        self.shell(c, timeout=180)
 
 
 # vim:sw=4 ts=4 et:
