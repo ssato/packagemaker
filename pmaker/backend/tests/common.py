@@ -14,13 +14,15 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
-from pmaker.tests.common import PATHS
+from pmaker.globals import STEP_BUILD
+from pmaker.tests.common import PATHS, setup_workdir, TOPDIR
 
-import pmaker.backend.autotools.single.tgz as T
+import pmaker.backend.registry as Registry
 import pmaker.options as O
 import pmaker.pkgdata as P
 import pmaker.collectors.FilelistCollectors as Collectors
 
+import logging
 import os.path
 import shlex
 
@@ -59,6 +61,47 @@ def try_run(backend):
         backend.run()
     except SystemExit:
         pass
+
+
+def setup_workdir_and_listfile():
+    logging.getLogger().setLevel(logging.WARN)  # suppress log messages
+
+    workdir = setup_workdir()
+    listfile = dump_filelist(workdir)
+
+    return (workdir, listfile)
+
+
+class BackendTester(object):
+
+    def __init__(self, workdir, listfile, step=STEP_BUILD,
+            btype="autotools.single.tgz"):
+        """
+        Initialize backend object.
+        """
+        self.workdir = workdir
+        self.listfile = listfile
+        self.step = step
+
+        tmplpath = os.path.join(TOPDIR, "templates")
+
+        args = "-n foo -w %s --template-path %s -v" % (workdir, tmplpath)
+        args += " --driver %s --stepto %s %s" % (btype, step, listfile)
+
+        pkgdata = init_pkgdata(args)
+
+        bcls = Registry.map().get(btype)
+        self.backend = bcls(pkgdata)
+
+    def try_run(self):
+        try:
+            self.backend.run()
+        except SystemExit:
+            pass
+
+        return os.path.exists(
+            self.backend.marker_path({"name": self.step})
+        )
 
 
 # vim:sw=4 ts=4 et:
