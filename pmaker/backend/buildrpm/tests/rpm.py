@@ -20,6 +20,7 @@ from pmaker.tests.common import cleanup_workdir
 
 import pmaker.backend.tests.common as C
 
+import glob
 import os.path
 import unittest
 
@@ -30,50 +31,51 @@ class Test_00_Backend(unittest.TestCase):
         (self.workdir, self.listfile) = C.setup_workdir_and_listfile()
 
     def tearDown(self):
-        cleanup_workdir(self.workdir)
+        #cleanup_workdir(self.workdir)
+        pass
 
-    def get_backend_tester(self, step=STEP_SETUP):
+    def get_backend_t(self, step=STEP_SETUP):
         return C.BackendTester(
             self.workdir, self.listfile, step, "buildrpm.rpm"
         )
 
     def test_00_setup(self):
-        bt = self.get_backend_tester(STEP_SETUP)
+        bt = self.get_backend_t(STEP_SETUP)
         self.assertTrue(bt.try_run())
 
         dumped_conf = os.path.join(bt.backend.workdir, "pmaker-config.json")
         self.assertTrue(os.path.exists(dumped_conf))
 
     def test_01_preconfigure(self):
-        bt = self.get_backend_tester(STEP_PRECONFIGURE)
+        bt = self.get_backend_t(STEP_PRECONFIGURE)
         self.assertTrue(bt.try_run())
 
     def test_02_configure(self):
-        bt = self.get_backend_tester(STEP_CONFIGURE)
+        bt = self.get_backend_t(STEP_CONFIGURE)
         self.assertTrue(bt.try_run())
 
     def test_03_sbuild(self):
-        bt = self.get_backend_tester(STEP_SBUILD)
+        bt = self.get_backend_t(STEP_SBUILD)
         self.assertTrue(bt.try_run())
 
         p = bt.backend.pkgdata
 
         # e.g. /tmp/pmaker-testsXMk36n/foo-0.0.1/foo-0.0.1-1.fc14.src.rpm
         srpm_pattern = os.path.join(
-            backend.workdir,
+            bt.backend.workdir,
             "%s-%s-%s.*.src.rpm" % (p.name, p.pversion, p.release)
         )
         self.assertNotEquals(glob.glob(srpm_pattern), [])
 
     def test_04_build(self):
-        bt = self.get_backend_tester(STEP_BUILD)  # same as sbuild in actual.
+        bt = self.get_backend_t(STEP_BUILD)  # same as sbuild in actual.
         self.assertTrue(bt.try_run())
 
         p = bt.backend.pkgdata
 
         # e.g. /tmp/pmaker-testsXMk36n/foo-0.0.1/foo-0.0.1-1.fc14.noarch.rpm
         rpm_pattern = os.path.join(
-            backend.workdir,
+            bt.backend.workdir,
             "%s-%s-%s.*.noarch.rpm" % (p.name, p.pversion, p.release)
         )
         self.assertNotEquals(glob.glob(rpm_pattern), [])

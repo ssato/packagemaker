@@ -1,4 +1,5 @@
-EXTRA_DIST = MANIFEST MANIFEST.overrides
+PACKAGE = #{name}
+EXTRA_DIST = README pmaker-config.json
 <?py if conflicts.files : ?>
 EXTRA_DIST += apply-overrides revert-overrides
 <?py #endif ?>

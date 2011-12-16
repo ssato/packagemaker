@@ -39,6 +39,7 @@ class Backend(T.Backend):
         super(Backend, self).__init__(pkgdata, **kwargs)
 
         self._templates += [
+            (TVER + "/buildrpm/rpm.mk", "rpm.mk"),
             (TVER + "/buildrpm/package.spec", self.pkgdata.name + ".spec"),
         ]
 
