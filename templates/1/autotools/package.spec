@@ -100,8 +100,7 @@ fi
 
 %files
 %defattr(-,root,root,-)
-%doc README
-%doc MANIFEST
+%doc README pmaker-config.json
 <?py for f in not_conflicts.files: ?>
 #{f.rpm_attr}#{f.install_path}
 <?py #endfor ?>
@@ -109,8 +108,8 @@ fi
 
 <?py if conflicts.files: ?>
 %files          overrides
+%doc README pmaker-config.json
 %defattr(-,root,root,-)
-%doc MANIFEST.overrides
 %dir #{conflicts.savedir}
 %{_libexecdir}/%{name}-overrides/*-overrides
 <?py for f in conflicts.files: ?>
