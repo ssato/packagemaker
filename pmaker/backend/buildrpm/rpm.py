@@ -1,5 +1,5 @@
 #
-# Copyright (C) 2011 Satoru SATOH <satoru.satoh @ gmail.com>
+# Copyright (C) 2011 Satoru SATOH <ssato @ redhat.com>
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -16,6 +16,7 @@
 #
 from pmaker.globals import PMAKER_TEMPLATE_VERSION as TVER
 
+import pmaker.backend.autotools.single.rpm as AR
 import pmaker.backend.buildrpm.tgz as T
 import pmaker.rpmutils as R
 import pmaker.utils as U
@@ -32,21 +33,7 @@ class Backend(T.Backend):
 
     _format = "rpm"
 
-    # FIXME: Fix naming convention of relation keys.
-    _relations = {
-        "requires": "Requires",
-        "requires.pre": "Requires(pre)",
-        "requires.preun": "Requires(preun)",
-        "requires.post": "Requires(post)",
-        "requires.postun": "Requires(postun)",
-        "requires.verify": "Requires(verify)",
-        "conflicts": "Conflicts",
-        "provides": "Provides",
-        "obsoletes": "Obsoletes",
-    }
-
-    # Initialize this in __init__ method:
-    #_templates = ...
+    _relations = AR.Backend._relations
 
     def __init__(self, pkgdata, **kwargs):
         super(Backend, self).__init__(pkgdata, **kwargs)
@@ -55,60 +42,19 @@ class Backend(T.Backend):
             (TVER + "/buildrpm/package.spec", self.pkgdata.name + ".spec"),
         ]
 
-        self.on_debug_mode = U.on_debug_mode()
+        # Override some members (mimics mixin):
+        self.asr = AR.Backend(pkgdata, **kwargs)
 
-    def __build_srpm(self):
-        cmd = "make srpm"
-
-        if not self.on_debug_mode:
-            cmd += " V=0 > " + self.logfile("make_srpm")
-
-        return self.shell(cmd)
-
-    def __build_rpm(self):
-        use_mock = not self.pkgdata.no_mock
-
-        if use_mock:
-            try:
-                self.shell("mock --version > /dev/null")
-
-            except RuntimeError, e:
-                logging.warn(
-                    "Mock is not found. Fallback to plain rpmbuild..."
-                )
-                use_mock = False
-
-        if use_mock:
-            dist = self.pkgdata.dist
-            srpm = R.srcrpm_name_by_rpmspec(
-                os.path.join(self.workdir, self.pkgdata.name + ".spec")
-            )
-            cmd = "mock -r %s %s" % (dist, srpm)
-
-            if not self.on_debug_mode:
-                cmd += " --quiet"
-
-            self.shell(cmd)
-            print "  GEN    rpm"  # mimics the message of "make rpm"
-
-            return self.shell(
-                "mv /var/lib/mock/%s/result/*.rpm %s" % (dist, self.workdir)
-            )
-        else:
-            cmd = "make rpm"
-
-            if not self.on_debug_mode:
-                cmd += " rpm V=0 > " + self.logfile("make_rpm")
-
-            return self.shell(cmd)
+        self.on_debug_mode = self.asr.on_debug_mode
+        self.pkgdata.relations = self.asr.pkgdata.relations
 
     def sbuild(self):
         super(Backend, self).sbuild()
-        self.__build_srpm()
+        self.asr.build_srpm()
 
     def build(self):
         super(Backend, self).build()
-        self.__build_rpm()
+        self.asr.build_rpm()
 
 
 # vim:sw=4 ts=4 et:

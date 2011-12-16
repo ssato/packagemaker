@@ -54,7 +54,7 @@ class Backend(T.Backend):
 
         self.on_debug_mode = U.on_debug_mode()
 
-    def __build_srpm(self):
+    def build_srpm(self):
         cmd = "make srpm"
 
         if not self.on_debug_mode:
@@ -62,7 +62,7 @@ class Backend(T.Backend):
 
         return self.shell(cmd)
 
-    def __build_rpm(self):
+    def build_rpm(self):
         use_mock = not self.pkgdata.no_mock
 
         if use_mock:
@@ -101,11 +101,11 @@ class Backend(T.Backend):
 
     def sbuild(self):
         super(Backend, self).sbuild()
-        self.__build_srpm()
+        self.build_srpm()
 
     def build(self):
         super(Backend, self).build()
-        self.__build_rpm()
+        self.build_rpm()
 
 
 # vim:sw=4 ts=4 et:
