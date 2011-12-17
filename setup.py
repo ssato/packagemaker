@@ -26,13 +26,13 @@ def list_paths(path_pattern="*", topdir=curdir, pred=os.path.isfile):
     return [p for p in glob.glob(os.path.join(topdir, path_pattern)) if pred(p)]
 
 
-templates_topdir = "share/pmaker/templates"
+top_datadir = "share/pmaker"
 
 
-def mk_tmpl_pair(subdir, templates_topdir=templates_topdir):
+def mk_tmpl_pair(tmpldir, top_datadir=top_datadir):
     return (
-        os.path.join(templates_topdir, subdir),
-        list_paths("templates/%s/*" % subdir)
+        os.path.join(top_datadir, tmpldir),
+        list_paths("%s/*" % tmpldir)
     )
 
 
@@ -44,10 +44,10 @@ data_files = [
                               "templates/1/common",
                               "templates/1/common/debian",
                               "templates/1/common/debian/source",
-                              "templates/1/buildrpm",
                               "templates/1/autotools",
                               "templates/1/autotools/debian",
                               "templates/1/autotools.single",
+                              "templates/1/buildrpm",
                               "templates/common",
                               "templates/common/debian",
                               "templates/common/debian/source",

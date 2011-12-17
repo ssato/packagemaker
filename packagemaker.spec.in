@@ -63,7 +63,19 @@ rm -rf $RPM_BUILD_ROOT
 %{python_sitelib}/*.egg-info
 %{python_sitelib}/pmaker
 %{_bindir}/*
-%{_datadir}/pmaker/templates/*
+%{_datadir}/pmaker/templates/1/*
+%{_datadir}/pmaker/templates/1/common/*
+%{_datadir}/pmaker/templates/1/common/debian/*
+%{_datadir}/pmaker/templates/1/common/debian/source/*
+%{_datadir}/pmaker/templates/1/autotools/*
+%{_datadir}/pmaker/templates/1/autotools/debian/*
+%{_datadir}/pmaker/templates/1/autotools.single/*
+%{_datadir}/pmaker/templates/1/buildrpm/*
+%{_datadir}/pmaker/templates/common/*
+%{_datadir}/pmaker/templates/common/debian/*
+%{_datadir}/pmaker/templates/common/debian/source/*
+%{_datadir}/pmaker/templates/autotools/*
+%{_datadir}/pmaker/templates/autotools/debian/*
 %{_datadir}/man/man8/*
 
 
