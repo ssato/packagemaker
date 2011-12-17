@@ -14,6 +14,7 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
+import pmaker.environ as E
 import pmaker.tests.common as C
 
 import glob
@@ -63,6 +64,35 @@ def get_random_system_files(n=1, pattern="/etc/*"):
             n = len(candidates)
 
         return random.sample(candidates, n)
+
+
+def bootstrap(backend="autotools.single.tgz", fileslist="files.list"):
+    (name, pversion) = ("foo", "0.0.3")
+
+    (workdir, args) = setup(
+        ["--name", name, "--pversion", pversion, "--no-mock"]
+    )
+    listfile = os.path.join(workdir, fileslist)
+
+    args = args + [
+        "--backend", backend, "-vv", listfile
+    ]
+    pn = "%s-%s" % (name, pversion)
+
+    if "tgz" in backend:
+        comp_ext = E.Env().compressor.extension
+        pkgfile = os.path.join(workdir, pn, pn + ".tar." + comp_ext)
+    else:
+        pkgfile = os.path.join(workdir, pn, pn + "*.noarch.rpm")
+
+    return (workdir, args, listfile, pkgfile)
+
+
+def check_exists(path):
+    if "*" in path:
+        return (glob.glob(path) != [])
+    else:
+        return os.path.exists(path)
 
 
 # vim:sw=4 ts=4 et:

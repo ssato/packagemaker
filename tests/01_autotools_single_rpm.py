@@ -18,27 +18,13 @@ import tests.common as TC
 import pmaker.environ as E
 import pmaker.tests.common as C
 
-import glob
 import os.path
+import shutil
 import unittest
 
 
 def bootstrap(fileslist="files.list"):
-    (name, pversion) = ("foo", "0.0.3")
-
-    (workdir, args) = TC.setup(
-        ["--name", name, "--pversion", pversion]
-    )
-    listfile = os.path.join(workdir, fileslist)
-
-    args = args + [
-        "--backend", "autotools.single.tgz", "-vv", listfile
-    ]
-    pn = "%s-%s" % (name, pversion)
-
-    pkgfile_pattern = os.path.join(workdir, pn, pn + "*.noarch.rpm")
-
-    return (workdir, args, listfile, pkgfile_pattern)
+    return TC.bootstrap(backend="autotools.single.rpm", fileslist=fileslist)
 
 
 class Test_00_filelist(unittest.TestCase):
@@ -47,13 +33,18 @@ class Test_00_filelist(unittest.TestCase):
         (self.workdir, self.args, self.listfile, self.pkgfile) = bootstrap()
 
     def tearDown(self):
-        C.cleanup_workdir(self.workdir)
+        #C.cleanup_workdir(self.workdir)
+        pass
 
     def __assertExists(self, path):
-        if "*" in path:
-            self.assertFalse(glob.glob(path) != [])
-        else:
-            self.assertTrue(os.path.exists(path))
+        try:
+            self.assertTrue(TC.check_exists(path))
+        except:
+            shutil.copy2(
+                os.path.join(self.workdir, "test.log"),
+                self.workdir.rstrip(os.path.sep) + ".test.log"
+            )
+            raise
 
     def test_00_generated_file(self):
         target = os.path.join(self.workdir, "aaa.txt")
@@ -117,10 +108,14 @@ class Test_01_json(unittest.TestCase):
         C.cleanup_workdir(self.workdir)
 
     def __assertExists(self, path):
-        if "*" in path:
-            self.assertFalse(glob.glob(path) != [])
-        else:
-            self.assertTrue(os.path.exists(path))
+        try:
+            self.assertTrue(TC.check_exists(path))
+        except:
+            shutil.copy2(
+                os.path.join(self.workdir, "test.log"),
+                self.workdir.rstrip(os.path.sep) + ".test.log"
+            )
+            raise
 
     def test_00_generated_file(self):
         if E.json is None:

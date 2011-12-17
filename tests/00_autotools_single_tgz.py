@@ -25,22 +25,7 @@ import unittest
 
 
 def bootstrap(fileslist="files.list"):
-    (name, pversion) = ("foo", "0.0.3")
-
-    (workdir, args) = TC.setup(
-        ["--name", name, "--pversion", pversion]
-    )
-    listfile = os.path.join(workdir, fileslist)
-
-    args = args + [
-        "--backend", "autotools.single.tgz", "-vv", listfile
-    ]
-    pn = "%s-%s" % (name, pversion)
-
-    comp_ext = E.Env().compressor.extension
-    tgz = os.path.join(workdir, pn, pn + ".tar." + comp_ext)
-
-    return (workdir, args, listfile, tgz)
+    return TC.bootstrap(backend="autotools.single.tgz", fileslist=fileslist)
 
 
 class Test_00_filelist(unittest.TestCase):
@@ -53,7 +38,7 @@ class Test_00_filelist(unittest.TestCase):
 
     def __assertExists(self, path):
         try:
-            self.assertTrue(os.path.exists(path))
+            self.assertTrue(TC.check_exists(path))
         except:
             shutil.copy2(
                 os.path.join(self.workdir, "test.log"),
@@ -126,7 +111,7 @@ class Test_01_json(unittest.TestCase):
 
     def __assertExists(self, path):
         try:
-            self.assertTrue(os.path.exists(path))
+            self.assertTrue(TC.check_exists(path))
         except:
             shutil.copy2(
                 os.path.join(self.workdir, "test.log"),
@@ -149,7 +134,7 @@ class Test_01_json(unittest.TestCase):
 
         self.__assertExists(self.pkgfile)
 
-    def test_01_system_file(self):
+    def test_01_system_files(self):
         if E.json is None:
             return
 
