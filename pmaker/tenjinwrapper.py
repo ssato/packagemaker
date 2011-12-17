@@ -39,6 +39,13 @@ unquote = tenjin.helpers.unquote
 
 
 def template_compile(template_path, context={}):
+    """
+    Wrapper to compile template w/ pytenjin.
+
+    see also:
+    http://www.kuwata-lab.com/tenjin/pytenjin-users-guide.html#templace-cache
+    """
+    tenjin.Engine.cache = tenjin.MemoryCacheStorage()
     return tenjin.Engine().render(template_path, context)
 
 
