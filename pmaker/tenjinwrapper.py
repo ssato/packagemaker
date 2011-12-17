@@ -38,15 +38,12 @@ to_str = tenjin.helpers.to_str
 unquote = tenjin.helpers.unquote
 
 
-def template_compile(template_path, context={}):
-    """
-    Wrapper to compile template w/ pytenjin.
+# http://www.kuwata-lab.com/tenjin/pytenjin-users-guide.html#templace-cache
+_ENGINE = tenjin.Engine(cache=tenjin.MemoryCacheStorage())
 
-    see also:
-    http://www.kuwata-lab.com/tenjin/pytenjin-users-guide.html#templace-cache
-    """
-    tenjin.Engine.cache = tenjin.MemoryCacheStorage()
-    return tenjin.Engine().render(template_path, context)
+
+def template_compile(template_path, context={}, engine=_ENGINE):
+    return engine.render(template_path, context)
 
 
 # vim:sw=4 ts=4 et:
