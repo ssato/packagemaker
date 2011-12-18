@@ -48,11 +48,6 @@ data_files = [
                               "templates/1/autotools/debian",
                               "templates/1/autotools.single",
                               "templates/1/buildrpm",
-                              "templates/common",
-                              "templates/common/debian",
-                              "templates/common/debian/source",
-                              "templates/autotools",
-                              "templates/autotools/debian",
                              )
 ]
 
@@ -156,13 +151,8 @@ setup(name=PACKAGE,
         "pmaker.collectors",
         "pmaker.collectors.tests",
         "pmaker.imported",
-        "pmaker.makers",
-        "pmaker.makers.tests",
         "pmaker.models",
         "pmaker.models.tests",
-        "pmaker.plugins",
-        "pmaker.plugins.libvirt",
-        "pmaker.plugins.libvirt.tests",
         "pmaker.tests",
     ],
     scripts=[
