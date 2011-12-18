@@ -1,3 +1,0 @@
-#for $fi in $not_conflicted_fileinfos
-$fi.target
-#end for

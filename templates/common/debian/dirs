@@ -1,6 +1,0 @@
-#for $fi in $fileinfos
-#if $fi.type == "dir"
-#set $dir = $fi.target[1:]
-$dir
-#end if
-#end for
