@@ -111,7 +111,18 @@ def get_content(path):
 
 
 def set_workdir(workdir, name, pversion):
-    return os.path.join(os.path.abspath(workdir), "%s-%s" % (name, pversion))
+    """
+    >>> workdir = "/tmp/w"
+    >>> assert set_workdir(workdir, "foo", "0.0.1") == "/tmp/w/foo-0.0.1"
+    >>> workdir = "/tmp/w/foo-0.0.1"
+    >>> assert set_workdir(workdir, "foo", "0.0.1") == workdir
+    """
+    subdir = "%s-%s" % (name, pversion)
+
+    if workdir.endswith(subdir):
+        return os.path.abspath(workdir)
+    else:
+        return os.path.join(os.path.abspath(workdir), subdir)
 
 
 class Options(Bunch):
