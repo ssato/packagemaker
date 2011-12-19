@@ -30,7 +30,7 @@ import tempfile
 import unittest
 
 
-class Test_00_functions(unittest.TestCase):
+class Test_00_setup_relations_option(unittest.TestCase):
 
     def test_01_setup_relations_option(self):
         p = optparse.OptionParser()
@@ -58,14 +58,23 @@ class Test_00_functions(unittest.TestCase):
         self.assertEquals(options.relations[0], ('obsoletes', ['mydata']))
         self.assertEquals(options.relations[1], ('conflicts', ['mydata-old']))
 
-    def test_02_set_workdir__absolute_workdir(self):
+
+class Test_01__set_workdir(unittest.TestCase):
+
+    def test_00_set_workdir__no_changes(self):
+        name, version = ("foo", "0.0.1")
+        workdir = "/tmp/w/%s-%s" % (name, version)
+
+        self.assertEquals(workdir, set_workdir(workdir, name, version))
+
+    def test_01_set_workdir__absolute_workdir(self):
         workdir, name, version = ("/tmp/w", "foo", "0.0.1")
         self.assertEquals(
             "/tmp/w/foo-0.0.1",
             set_workdir(workdir, name, version)
         )
 
-    def test_03_set_workdir__relative_workdir(self):
+    def test_02_set_workdir__relative_workdir(self):
         workdir, name, version = ("../w", "foo", "0.0.1")
         abs_workdir = os.path.abspath(workdir)
         self.assertEquals(
@@ -74,7 +83,7 @@ class Test_00_functions(unittest.TestCase):
         )
 
 
-class Test_01_Options(unittest.TestCase):
+class Test_02_Options(unittest.TestCase):
 
     def test_00__init__(self):
         o = Options()
@@ -213,7 +222,7 @@ class Test_01_Options(unittest.TestCase):
         self.assertEquals(opts.relations[1], ('conflicts', ['mydata-old']))
 
 
-class Test_01_Options_w_side_effects(unittest.TestCase):
+class Test_02_Options_w_side_effects(unittest.TestCase):
 
     def setUp(self):
         self.workdir = setup_workdir()
