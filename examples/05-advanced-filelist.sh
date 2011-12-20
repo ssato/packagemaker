@@ -10,12 +10,11 @@ exec 1> $log 2>&1
 
 set -x
 
-export PYTHONPATH=.
 mkdir -p $workdir
 
 cat $list_sh
 $list_sh $listfile
-python tools/pmaker -n etcdata --pversion 0.1 -v -w $workdir --upto sbuild $listfile
+pmaker -n etcdata --pversion 0.1 -v -w $workdir --stepto sbuild $listfile
 ls $workdir/etcdata-0.1/
 make -C $workdir/etcdata-0.1/ rpm
 rpm -qlp $workdir/etcdata-0.1/etcdata-0.1-1.*.noarch.rpm

@@ -1,21 +1,28 @@
-10:54:42 [WARNING] /etc/auto.iso is owned by miniascape
-10:54:43 [WARNING] /etc/auto.master is owned by autofs
-10:54:43 [WARNING] /etc/auto.misc is owned by autofs
-10:54:43 [WARNING] /etc/auto.net is owned by autofs
-10:54:43 [WARNING] /etc/auto.smb is owned by autofs
-10:54:43 [WARNING] /etc/httpd/conf.d is owned by httpd
-10:54:43 [WARNING] /etc/modprobe.d/blacklist-visor.conf is owned by pilot-link
-10:54:43 [WARNING] /etc/modprobe.d/blacklist.conf is owned by hwdata
-10:54:43 [WARNING] /etc/modprobe.d/dist-alsa.conf is owned by module-init-tools
-10:54:44 [WARNING] /etc/modprobe.d/dist-oss.conf is owned by module-init-tools
-10:54:44 [WARNING] /etc/modprobe.d/dist.conf is owned by module-init-tools
-10:54:44 [WARNING] /etc/modprobe.d/libmlx4.conf is owned by libmlx4
-10:54:44 [WARNING] /etc/modprobe.d/poulsbo.conf is owned by xorg-x11-drv-psb
-10:54:44 [WARNING] /etc/system-release is owned by fedora-release
-10:54:44 [WARNING] /etc/yum.repos.d/fedora.repo is owned by fedora-release
-$ ls /tmp/0
++ pmaker -n sysdata --pversion 0.1 -w /tmp/1 --no-mock -
++ cat examples/simple-files.list
+02:18:47 WARNING Failed to get stat from rpm db: /etc/resolv.conf
+02:18:47 WARNING /etc/auto.iso is owned by miniascape
+02:18:47 WARNING /etc/auto.master is owned by autofs
+02:18:47 WARNING /etc/auto.misc is owned by autofs
+02:18:47 WARNING /etc/auto.net is owned by autofs
+02:18:47 WARNING /etc/auto.smb is owned by autofs
+02:18:47 WARNING /etc/httpd/conf.d is owned by httpd
+02:18:47 WARNING /etc/modprobe.d/blacklist-visor.conf is owned by pilot-link
+02:18:47 WARNING /etc/modprobe.d/blacklist.conf is owned by hwdata
+02:18:47 WARNING /etc/modprobe.d/dist-alsa.conf is owned by module-init-tools
+02:18:47 WARNING /etc/modprobe.d/dist-oss.conf is owned by module-init-tools
+02:18:47 WARNING /etc/modprobe.d/dist.conf is owned by module-init-tools
+02:18:47 WARNING /etc/modprobe.d/libmlx4.conf is owned by libmlx4
+02:18:47 WARNING /etc/modprobe.d/poulsbo.conf is owned by xorg-x11-drv-psb
+02:18:47 WARNING /etc/system-release is owned by fedora-release
+02:18:47 WARNING /etc/yum.repos.d/fedora.repo is owned by fedora-release
+configure.ac:2: installing `./install-sh'
+configure.ac:2: installing `./missing'
+configure: WARNING: unrecognized options: --disable-dependency-tracking
+configure: WARNING: unrecognized options: --disable-dependency-tracking
++ ls /tmp/0
 sysdata-0.1
-$ ls /tmp/1/sysdata-0.1/
++ ls /tmp/1/sysdata-0.1/
 MANIFEST
 MANIFEST.overrides
 Makefile
@@ -32,12 +39,17 @@ configure.ac
 install-sh
 missing
 pmaker-build.stamp
+pmaker-config.json
 pmaker-configure.stamp
-pmaker-package-listfile.pkl
+pmaker-filelist.pkl
 pmaker-preconfigure.stamp
 pmaker-sbuild.stamp
 pmaker-setup.stamp
 pmaker.configure.log
+pmaker.make.log
+pmaker.make_dist.log
+pmaker.make_rpm.log
+pmaker.make_srpm.log
 revert-overrides
 rpm
 rpm.mk
@@ -47,3 +59,30 @@ sysdata-0.1-1.fc14.src.rpm
 sysdata-0.1.tar.xz
 sysdata-overrides-0.1-1.fc14.noarch.rpm
 sysdata.spec
++ rpm -qlp /tmp/1/sysdata-0.1/sysdata-0.1-1.fc14.noarch.rpm
+/etc/resolv.conf
+/usr/share/doc/sysdata-0.1
+/usr/share/doc/sysdata-0.1/README
+/usr/share/doc/sysdata-0.1/pmaker-config.json
++ rpm -qlp /tmp/1/sysdata-0.1/sysdata-overrides-0.1-1.fc14.noarch.rpm
+/usr/libexec/sysdata-overrides/apply-overrides
+/usr/libexec/sysdata-overrides/revert-overrides
+/usr/share/doc/sysdata-overrides-0.1
+/usr/share/doc/sysdata-overrides-0.1/README
+/usr/share/doc/sysdata-overrides-0.1/pmaker-config.json
+/var/lib/sysdata-overrides/new/etc/auto.iso
+/var/lib/sysdata-overrides/new/etc/auto.master
+/var/lib/sysdata-overrides/new/etc/auto.misc
+/var/lib/sysdata-overrides/new/etc/auto.net
+/var/lib/sysdata-overrides/new/etc/auto.smb
+/var/lib/sysdata-overrides/new/etc/httpd/conf.d
+/var/lib/sysdata-overrides/new/etc/modprobe.d/blacklist-visor.conf
+/var/lib/sysdata-overrides/new/etc/modprobe.d/blacklist.conf
+/var/lib/sysdata-overrides/new/etc/modprobe.d/dist-alsa.conf
+/var/lib/sysdata-overrides/new/etc/modprobe.d/dist-oss.conf
+/var/lib/sysdata-overrides/new/etc/modprobe.d/dist.conf
+/var/lib/sysdata-overrides/new/etc/modprobe.d/libmlx4.conf
+/var/lib/sysdata-overrides/new/etc/modprobe.d/poulsbo.conf
+/var/lib/sysdata-overrides/new/etc/system-release
+/var/lib/sysdata-overrides/new/etc/yum.repos.d/fedora.repo
+/var/lib/sysdata-overrides/saved
