@@ -56,6 +56,19 @@ RPM_FI_KEYS = (
     "checksum",
 )
 
+# FIXME: Fix naming convention of relation keys.
+RPM_RELATIONS = {
+    "requires": "Requires",
+    "requires.pre": "Requires(pre)",
+    "requires.preun": "Requires(preun)",
+    "requires.post": "Requires(post)",
+    "requires.postun": "Requires(postun)",
+    "requires.verify": "Requires(verify)",
+    "conflicts": "Conflicts",
+    "provides": "Provides",
+    "obsoletes": "Obsoletes",
+}
+
 
 @memoize
 def is_rpmdb_available():

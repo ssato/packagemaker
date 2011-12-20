@@ -29,20 +29,7 @@ class Backend(T.Backend):
     _format = "rpm"
 
     # FIXME: Fix naming convention of relation keys.
-    _relations = {
-        "requires": "Requires",
-        "requires.pre": "Requires(pre)",
-        "requires.preun": "Requires(preun)",
-        "requires.post": "Requires(post)",
-        "requires.postun": "Requires(postun)",
-        "requires.verify": "Requires(verify)",
-        "conflicts": "Conflicts",
-        "provides": "Provides",
-        "obsoletes": "Obsoletes",
-    }
-
-    # Initialize this in __init__ method:
-    #_templates = ...
+    _relations = R.RPM_RELATIONS
 
     def __init__(self, pkgdata, **kwargs):
         super(Backend, self).__init__(pkgdata, **kwargs)
