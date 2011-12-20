@@ -65,10 +65,13 @@ class Base(object):
     def type(cls):
         return "%s.%s" % (cls.strategy(), cls.format())
 
+    def get_relations(self, rel):
+        return self._relations.get(rel, None)
+
     def relations_map(self, rels):
         return [
             Bunch(type=t, targets=ts) for t, ts in \
-                [(self._relations.get(x, None), xs) for x, xs in rels] \
+                [(self.get_relations(x), xs) for x, xs in rels] \
                     if t is not None
         ]
 

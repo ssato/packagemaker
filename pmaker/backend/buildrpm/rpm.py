@@ -16,24 +16,16 @@
 #
 from pmaker.globals import PMAKER_TEMPLATE_VERSION as TVER
 
-import pmaker.backend.autotools.single.rpm as AR
+import pmaker.backend.rpm as R
 import pmaker.backend.buildrpm.tgz as T
-import pmaker.rpmutils as R
-import pmaker.utils as U
 
 import logging
 import os.path
 
 
-class Backend(T.Backend):
-    """
-    FIXME: Extract common parts in backend classes:
-    (pmaker.backend.{autotools.single,buildrpm}.rpm.Backend
-    """
+class Backend(T.Backend, R.Backend):
 
     _format = "rpm"
-
-    _relations = AR.Backend._relations
 
     def __init__(self, pkgdata, **kwargs):
         super(Backend, self).__init__(pkgdata, **kwargs)
@@ -43,19 +35,7 @@ class Backend(T.Backend):
             (TVER + "/buildrpm/package.spec", self.pkgdata.name + ".spec"),
         ]
 
-        # Override some members (mimics mixin):
-        self.asr = AR.Backend(pkgdata, **kwargs)
-
-        self.on_debug_mode = self.asr.on_debug_mode
-        self.pkgdata.relations = self.asr.pkgdata.relations
-
-    def sbuild(self):
-        super(Backend, self).sbuild()
-        self.asr.build_srpm()
-
-    def build(self):
-        super(Backend, self).build()
-        self.asr.build_rpm()
+        logging.debug("pkgdata.relations=" + str(self.pkgdata.relations))
 
 
 # vim:sw=4 ts=4 et:
