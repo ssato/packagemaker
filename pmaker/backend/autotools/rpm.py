@@ -14,7 +14,7 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
-import pmaker.backend.tgz as T
+import pmaker.backend.autotools.tgz as T
 import pmaker.rpmutils as R
 import pmaker.utils as U
 

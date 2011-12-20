@@ -23,7 +23,6 @@ import pmaker.backend.rpm as R
 class Backend(T.Backend, R.Backend):
 
     _format = "rpm"
-    _relations = R.RPM_RELATIONS  # just make it sure.
 
     def __init__(self, pkgdata, **kwargs):
         super(Backend, self).__init__(pkgdata, **kwargs)

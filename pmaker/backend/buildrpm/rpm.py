@@ -16,7 +16,7 @@
 #
 from pmaker.globals import PMAKER_TEMPLATE_VERSION as TVER
 
-import pmaker.backend.rpm as R
+import pmaker.backend.autotools.rpm as R
 import pmaker.backend.buildrpm.tgz as T
 
 import logging
@@ -36,6 +36,9 @@ class Backend(T.Backend, R.Backend):
         ]
 
         logging.debug("pkgdata.relations=" + str(self.pkgdata.relations))
+
+    def configure(self):
+        pass  # Nothing to do.
 
 
 # vim:sw=4 ts=4 et:
