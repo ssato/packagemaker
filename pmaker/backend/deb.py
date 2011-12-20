@@ -14,24 +14,32 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
-from pmaker.globals import PMAKER_TEMPLATE_VERSION as TVER
-
-import pmaker.backend.autotools.single.tgz as T
-import pmaker.backend.rpm as R
+import pmaker.backend.tgz as T
 
 
-class Backend(T.Backend, R.Backend):
+class Backend(T.Backend):
 
-    _format = "rpm"
-    _relations = R.RPM_RELATIONS  # just make it sure.
+    _format = "deb"
 
-    def __init__(self, pkgdata, **kwargs):
-        super(Backend, self).__init__(pkgdata, **kwargs)
+    # TODO: Add almost relation tag set:
+    _relations = {
+        "requires": "Depends",
+    }
 
-        self._templates += [
-            (TVER + "/autotools/rpm.mk", "rpm.mk"),
-            (TVER + "/autotools/package.spec", self.pkgdata.name + ".spec"),
-        ]
+    def sbuild(self):
+        """FIXME: What should be done for building source packages?
+        """
+        super(Backend, self).sbuild()
+        self.shell("dpkg-buildpackage -S")
+
+    def build(self):
+        """Which is better to build?
+
+        * debuild -us -uc
+        * fakeroot debian/rules binary
+        """
+        super(Backend, self).build()
+        self.shell("fakeroot debian/rules binary")
 
 
 # vim:sw=4 ts=4 et:

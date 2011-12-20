@@ -14,7 +14,7 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
-import pmaker.backend.base as B
+import pmaker.backend.tgz as T
 import pmaker.rpmutils as R
 import pmaker.utils as U
 
@@ -22,11 +22,7 @@ import logging
 import os.path
 
 
-def on_debug_mode():
-    return U.on_debug_mode()
-
-
-class Backend(B.Base):
+class Backend(T.Backend):
 
     _format = "rpm"
     _relations = R.RPM_RELATIONS
@@ -34,7 +30,7 @@ class Backend(B.Base):
     def build_srpm(self):
         cmd = "make srpm"
 
-        if not on_debug_mode:
+        if not U.on_debug_mode():
             cmd += " V=0 > " + self.logfile("make_srpm")
 
         return self.shell(cmd)
@@ -59,7 +55,7 @@ class Backend(B.Base):
             )
             cmd = "mock -r %s %s" % (dist, srpm)
 
-            if not on_debug_mode:
+            if not U.on_debug_mode():
                 cmd += " --quiet"
 
             self.shell(cmd)
@@ -71,7 +67,7 @@ class Backend(B.Base):
         else:
             cmd = "make rpm"
 
-            if not on_debug_mode:
+            if not U.on_debug_mode():
                 cmd += " rpm V=0 > " + self.logfile("make_rpm")
 
             return self.shell(cmd)
