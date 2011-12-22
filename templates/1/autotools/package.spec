@@ -3,7 +3,7 @@
 
 Name:           #{name}
 Version:        #{pversion}
-Release:        1%{?dist}
+Release:        #{release}%{?dist}
 Summary:        #{summary}
 Group:          #{group}
 License:        #{license}
