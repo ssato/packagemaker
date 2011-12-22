@@ -1,0 +1,72 @@
+{
+    "config": null,
+    "norc": true,
+    "force": false,
+    "verbosity": 2,
+    "name": "sysdata",
+    "group": "System Environment/Base",
+    "license": "MIT",
+    "url": "http://localhost.localdomain",
+    "summary": "System configuration and data files",
+    "arch": false,
+    "relations": "requires:bash,zsh;obsoletes:sysdata;conflicts:sysdata-old",
+    "pversion": "0.1",
+    "release": 1,
+    "no_mock": true,
+
+    "files": [
+        {
+            "path": "/etc/auto.*"
+        },
+        {
+            "path": "#/etc/aliases.db"
+        },
+        {
+            "path": "/etc/httpd/conf.d"
+        },
+        {
+            "path": "/etc/httpd/conf.d/*"
+        },
+        {
+            "path": "/etc/modprobe.d/*"
+        },
+        {
+            "path": "/etc/rc.d/init.d"
+        },
+        {
+            "path": "/etc/rc.d/rc"
+        },
+        {
+            "path": "/etc/resolv.conf",
+            "attrs" : {
+                "create": 0,
+                "install_path": "/var/lib/network/resolv.conf",
+                "uid": 0,
+                "gid": 0,
+                "rpmattr": "%config(noreplace)"
+            }
+        },
+        {
+            "path": "/etc/not-existent-file",
+            "attrs" : {
+                "create": 0
+            }
+        },
+        {
+            "path": "/etc/new-file-to-be-generated",
+            "attrs" : {
+                "create": 1,
+                "contents": "hello, world!"
+            }
+        },
+        {
+            "path": "/usr/share/automake-*/am/*.am"
+        },
+        {
+            "path": "/var/run/*"
+        },
+        {
+            "path": "/root/*"
+        }
+    ]
+}

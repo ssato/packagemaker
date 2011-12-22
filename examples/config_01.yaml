@@ -1,0 +1,34 @@
+name: sysdata
+arch: false
+summary: System configurations and data files
+force: false
+group: System Environment/Base
+url: http://localhost.localdomain
+license: MIT
+pversion: 0.0.2
+release: 3
+relations: requires:bash,zsh;obsoletes:sysdata;conflicts:sysdata-old
+norc: true
+config: null
+no_mock: true
+verbosity: 2
+
+files:
+- {path: /etc/auto.*}
+- {path: '#/etc/aliases.db'}
+- {path: /etc/httpd/conf.d}
+- {path: /etc/httpd/conf.d/*}
+- {path: /etc/modprobe.d/*}
+- {path: /etc/rc.d/init.d}
+- {path: /etc/rc.d/rc}
+- attrs: {create: 0, gid: 0, install_path: /var/lib/network/resolv.conf, rpmattr: '%config(noreplace)',
+    uid: 0}
+  path: /etc/resolv.conf
+- attrs: {create: 0}
+  path: /etc/not-existent-file
+- attrs: {contents: 'hello, world!', create: 1}
+  path: /etc/new-file-to-be-generated
+- {path: /usr/share/automake-*/am/*.am}
+- {path: /var/run/*}
+- {path: /root/*}
+
