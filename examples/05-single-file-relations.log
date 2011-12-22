@@ -1,0 +1,125 @@
++ echo /etc/resolv.conf
++ pmaker -n resolvconf --pversion 0.1 -w /tmp/5 -vv --no-mock --relations 'requires:bash,zsh;obsoletes:sysdata;conflicts:foo' -
+10:18:00 INFO    Using config parser: <class 'pmaker.anycfg.IniConfigParser'>
+10:18:00 INFO    /etc/pmaker.conf does not exist.
+10:18:00 INFO    Using config parser: <class 'pmaker.anycfg.IniConfigParser'>
+10:18:00 INFO    /home/ssato/.config/pmaker does not exist.
+10:18:00 INFO    Using config parser: <class 'pmaker.anycfg.IniConfigParser'>
+10:18:00 INFO    /home/ssato/.pmakerrc does not exist.
+10:18:00 DEBUG   Adding RpmAttributeModifier
+10:18:00 DEBUG   Adding RpmConflictsModifier
+10:18:01 WARNING Failed to get stat from rpm db: /etc/resolv.conf
+10:18:01 INFO    Setting up src tree in /tmp/5/resolvconf-0.1: resolvconf
+10:18:01 DEBUG   Creating a directory: /tmp/5/resolvconf-0.1
+10:18:01 DEBUG   Creating a directory: /tmp/5/resolvconf-0.1/src
+10:18:01 DEBUG   Copying: from=/etc/resolv.conf, to=/tmp/5/resolvconf-0.1/src/etc/resolv.conf
+10:18:01 INFO    Run: cp -a /etc/resolv.conf /tmp/5/resolvconf-0.1/src/etc/resolv.conf > /dev/null [/var/lib/repos/ssato/github.com/ssato/packagemaker.git]
+10:18:01 DEBUG   Finished: cp -a /etc/resolv.conf /tmp/5/resolvconf-0.1/src/etc/resolv.conf > /dev/null [/var/lib/repos/ssato/github.com/ssato/packagemaker.git]
+10:18:01 INFO    Using config parser: <class 'pmaker.anycfg.JsonConfigPaser'>
+10:18:01 DEBUG   Save to: /tmp/5/resolvconf-0.1/pmaker-config.json
+10:18:01 INFO    Run: touch /tmp/5/resolvconf-0.1/pmaker-setup.stamp > /dev/null [/tmp/5/resolvconf-0.1]
+10:18:01 DEBUG   Finished: touch /tmp/5/resolvconf-0.1/pmaker-setup.stamp > /dev/null [/tmp/5/resolvconf-0.1]
+10:18:01 INFO    Preparing aux files in /tmp/5/resolvconf-0.1: resolvconf
+10:18:01 DEBUG   template search_paths=/usr/share/pmaker/templates
+10:18:01 INFO    Found template: /usr/share/pmaker/templates/1/autotools.single/configure.ac
+10:18:01 DEBUG   template search_paths=/usr/share/pmaker/templates
+10:18:01 INFO    Found template: /usr/share/pmaker/templates/1/autotools.single/Makefile.am
+10:18:01 DEBUG   template search_paths=/usr/share/pmaker/templates
+10:18:01 INFO    Found template: /usr/share/pmaker/templates/1/common/README
+10:18:01 DEBUG   template search_paths=/usr/share/pmaker/templates
+10:18:01 INFO    Found template: /usr/share/pmaker/templates/1/common/manifest
+10:18:01 DEBUG   template search_paths=/usr/share/pmaker/templates
+10:18:01 INFO    Found template: /usr/share/pmaker/templates/1/common/manifest.overrides
+10:18:01 DEBUG   template search_paths=/usr/share/pmaker/templates
+10:18:01 INFO    Found template: /usr/share/pmaker/templates/1/common/apply-overrides
+10:18:01 DEBUG   template search_paths=/usr/share/pmaker/templates
+10:18:01 INFO    Found template: /usr/share/pmaker/templates/1/common/revert-overrides
+10:18:01 DEBUG   template search_paths=/usr/share/pmaker/templates
+10:18:01 INFO    Found template: /usr/share/pmaker/templates/1/autotools/rpm.mk
+10:18:01 DEBUG   template search_paths=/usr/share/pmaker/templates
+10:18:01 INFO    Found template: /usr/share/pmaker/templates/1/autotools/package.spec
+10:18:01 INFO    Run: touch /tmp/5/resolvconf-0.1/pmaker-preconfigure.stamp > /dev/null [/tmp/5/resolvconf-0.1]
+10:18:01 DEBUG   Finished: touch /tmp/5/resolvconf-0.1/pmaker-preconfigure.stamp > /dev/null [/tmp/5/resolvconf-0.1]
+10:18:01 INFO    Configuring build aux files: resolvconf
+10:18:01 INFO    Run: autoreconf -vfi > /dev/null [/tmp/5/resolvconf-0.1]
+autoreconf: Entering directory `.'
+autoreconf: configure.ac: not using Gettext
+autoreconf: running: aclocal --force 
+autoreconf: configure.ac: tracing
+autoreconf: configure.ac: not using Libtool
+autoreconf: running: /usr/bin/autoconf --force
+autoreconf: configure.ac: not using Autoheader
+autoreconf: running: automake --add-missing --copy --force-missing
+configure.ac:2: installing `./install-sh'
+configure.ac:2: installing `./missing'
+autoreconf: Leaving directory `.'
+10:18:09 DEBUG   Finished: autoreconf -vfi > /dev/null [/tmp/5/resolvconf-0.1]
+10:18:09 INFO    Run: touch /tmp/5/resolvconf-0.1/pmaker-configure.stamp > /dev/null [/tmp/5/resolvconf-0.1]
+10:18:09 DEBUG   Finished: touch /tmp/5/resolvconf-0.1/pmaker-configure.stamp > /dev/null [/tmp/5/resolvconf-0.1]
+10:18:09 INFO    Building source package: resolvconf
+10:18:09 INFO    Run: ./configure --quiet > /dev/null [/tmp/5/resolvconf-0.1]
+10:18:11 DEBUG   Finished: ./configure --quiet > /dev/null [/tmp/5/resolvconf-0.1]
+10:18:11 INFO    Run: make > /dev/null [/tmp/5/resolvconf-0.1]
+10:18:11 DEBUG   Finished: make > /dev/null [/tmp/5/resolvconf-0.1]
+10:18:11 INFO    Run: make dist > /dev/null [/tmp/5/resolvconf-0.1]
+10:18:11 DEBUG   Finished: make dist > /dev/null [/tmp/5/resolvconf-0.1]
+10:18:11 INFO    Run: make srpm > /dev/null [/tmp/5/resolvconf-0.1]
+10:18:12 DEBUG   Finished: make srpm > /dev/null [/tmp/5/resolvconf-0.1]
+10:18:12 INFO    Run: touch /tmp/5/resolvconf-0.1/pmaker-sbuild.stamp > /dev/null [/tmp/5/resolvconf-0.1]
+10:18:12 DEBUG   Finished: touch /tmp/5/resolvconf-0.1/pmaker-sbuild.stamp > /dev/null [/tmp/5/resolvconf-0.1]
+10:18:12 INFO    Building binary package[s]: resolvconf
+10:18:12 INFO    Run: make rpm > /dev/null [/tmp/5/resolvconf-0.1]
+configure: WARNING: unrecognized options: --disable-dependency-tracking
+configure: WARNING: unrecognized options: --disable-dependency-tracking
+10:18:16 DEBUG   Finished: make rpm > /dev/null [/tmp/5/resolvconf-0.1]
+10:18:16 INFO    Run: touch /tmp/5/resolvconf-0.1/pmaker-build.stamp > /dev/null [/tmp/5/resolvconf-0.1]
+10:18:16 DEBUG   Finished: touch /tmp/5/resolvconf-0.1/pmaker-build.stamp > /dev/null [/tmp/5/resolvconf-0.1]
+10:18:16 INFO    Created packages in /tmp/5/resolvconf-0.1: resolvconf
++ ls /tmp/5
+resolvconf-0.1
++ ls /tmp/5/resolvconf-0.1/
+MANIFEST
+MANIFEST.overrides
+Makefile
+Makefile.am
+Makefile.in
+README
+aclocal.m4
+apply-overrides
+autom4te.cache
+config.log
+config.status
+configure
+configure.ac
+install-sh
+missing
+pmaker-build.stamp
+pmaker-config.json
+pmaker-configure.stamp
+pmaker-filelist.pkl
+pmaker-preconfigure.stamp
+pmaker-sbuild.stamp
+pmaker-setup.stamp
+resolvconf-0.1-1.fc14.noarch.rpm
+resolvconf-0.1-1.fc14.src.rpm
+resolvconf-0.1.tar.xz
+resolvconf.spec
+revert-overrides
+rpm
+rpm.mk
+src
++ sed -nr '/^[A-Z][a-z]+:/p' /tmp/5/resolvconf-0.1/resolvconf.spec
+Name:           resolvconf
+Version:        0.1
+Release:        1%{?dist}
+Summary:        Custom package of resolvconf
+Group:          System Environment/Base
+License:        GPLv3+
+Requires:       bash, zsh
+Obsoletes:       sysdata
+Conflicts:       foo
++ rpm -qlp /tmp/5/resolvconf-0.1/resolvconf-0.1-1.fc14.noarch.rpm
+/etc/resolv.conf
+/usr/share/doc/resolvconf-0.1
+/usr/share/doc/resolvconf-0.1/README
+/usr/share/doc/resolvconf-0.1/pmaker-config.json

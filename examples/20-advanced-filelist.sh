@@ -1,9 +1,10 @@
 #! /bin/sh
 
+id=20
 dir=examples
-log=$dir/05-advanced-filelist.log
+log=$dir/$id-advanced-filelist.log
 list_sh=$dir/list_etc_files_not_from_rpms.sh
-listfile=/tmp/5/etc.not_from_package.files
+listfile=/tmp/$id/etc.not_from_package.files
 workdir=$(dirname $listfile)
 
 exec 1> $log 2>&1
