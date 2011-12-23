@@ -1,4 +1,4 @@
-.TH PMAKER "8" "Jul 2011" "packagemaker" "User Commands"
+.TH PMAKER "8" "Dec 2011" "packagemaker" "User Commands"
 .SH NAME
 pmaker \- Package Maker
 .SH SYNOPSIS
@@ -17,14 +17,14 @@ makefiles and rpm specs or debina packaging files, etc.
 
 .SH Packaging Steps
 .B Pmaker
-will try gathering the information of files, dirs and symlinks from input file,
-and then makes a package contains these. By default, it will goes upto the
-final step of packaing process: make a package but it can be controled with 
-.B upto
+will try gathering the information of files from input file, and then makes a
+package contains these. By default, it will goes upto the final step of
+packaing process: make a package but it can be controled with 
+.B stepto
 option. The possible packaing steps are:
 .TP
 .B setup
-Create the src tree and copy files, dirs and symlinks in given path list file.
+Create the src tree and copy files in given path list file.
 .TP
 .B preconfigure
 Generate build-aux and package format specific files: Makefile.am,
@@ -42,7 +42,7 @@ Create binary packages
 .SH Input
 Argument INPUT is a file path or "-" (read data from stdin) to get file paths.
 The option
-.B --itype 
+.B --input-type 
 specifies its format and supported formats are:
 .TP
 .B filelist
@@ -110,7 +110,6 @@ This format simillar to filelist but formated in JSON. File paths must be in
 }
 
 
-
 .SH OPTIONS
 .TP
 .B \-\-version
@@ -120,7 +119,7 @@ Show program's version number and exit
 Show this help message and exit
 .TP
 .B \-C CONFIG, \-\-config=CONFIG
-Specify Configuration file path
+Specify Configuration file path. You can also embedded files in configuration files.
 .TP
 .B \-\-force
 Force going steps even if the steps looks done
@@ -135,23 +134,23 @@ Debug mode (same as -vv)
 .IP \-w WORKDIR, \-\-workdir=WORKDIR
 .IX Item "-w WORKDIR, --workdir=WORKDIR"
 Working dir to dump outputs [current dir]
-.IP "\-\-upto=UPTO"
-.IX Item "--upto=UPTO"
+.IP "\-\-stepto=STEPTO"
+.IX Item "--stepto=STEPTO"
 Packaging step you want to proceed to: setup (setup the package' src dir and
 copy target files in it), preconfigure (arrange build aux files such like
 configure.ac, Makefile.am, rpm specfile, debian/* and so on. python-cheetah
 will be needed.), configure (setup src dir to run './configure'. autotools will
 be needed), sbuild (build src package[s]), build (build binary package[s])
 [build]
-.IP "\-\-format=FORMAT"
-.IX Item "--format=FORMAT"
-Package format: tgz, rpm, deb [automatically detected based on os]
 .IP "\-\-driver=DRIVER"
 .IX Item "--driver=DRIVER"
-Packaging driver: autotools.rpm, autotools.tgz [autotools.FORMAT]
-.IP "\-\-itype"
-.IX Item "--itype=ITYPE"
-Input type: filelist, filelist.json [filelist]
+Packaging driver (backend): autotools.single.rpm, autotools.single.deb,
+autotools.single.tgz, buildrpm.rpm, buildrpm.tgz [autotools.single.rpm]
+.IP \-I INPUT_TYPE, "\-\-input-type=INPUT_TYPE"
+.IX Item "-I INPUT_TYPE, --input-type=INPUT_TYPE"
+Specify (configuration and/or files path list) Input type. Detected
+automatically from its extension by default Available types are filelist,
+filelist.json [filelist].
 .IP "\-\-destdir=DESTDIR"
 .IX Item "--destdir=DESTDIR"
 Destdir (prefix) you want to strip from installed path []. For example, if the
