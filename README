@@ -8,6 +8,13 @@ almost all of the steps needed for packaing: arrange source tree, create
 makefiles and rpm specs or debina packaging files, etc.
 
 
+Basic Usage
+======================
+
+see the output of `pmaker --help`.
+
+
+
 How it works
 =======================
 
