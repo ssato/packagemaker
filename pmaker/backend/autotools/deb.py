@@ -16,20 +16,16 @@
 #
 from pmaker.globals import PMAKER_TEMPLATE_VERSION as TVER
 
-import pmaker.backend.base as B
+import pmaker.backend.autotools.tgz as T
+import pmaker.backend.deb as D
 
 import os
 import os.path
 
 
-class Backend(B.Base):
+class Backend(T.Backend, D.Backend):
 
     _format = "deb"
-
-    # TODO: Add almost relation tag set:
-    _relations = {
-        "requires": "Depends",
-    }
 
     def __init__(self, pkgdata, **kwargs):
         super(Backend, self).__init__(pkgdata, **kwargs)

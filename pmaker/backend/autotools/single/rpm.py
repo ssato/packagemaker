@@ -17,7 +17,7 @@
 from pmaker.globals import PMAKER_TEMPLATE_VERSION as TVER
 
 import pmaker.backend.autotools.single.tgz as T
-import pmaker.backend.rpm as R
+import pmaker.backend.autotools.rpm as R
 
 
 class Backend(T.Backend, R.Backend):
