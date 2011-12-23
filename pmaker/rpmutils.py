@@ -58,6 +58,7 @@ RPM_FI_KEYS = (
 
 # FIXME: Fix naming convention of relation keys.
 RPM_RELATIONS = {
+    "buildrequires": "BuildRequires",
     "requires": "Requires",
     "requires.pre": "Requires(pre)",
     "requires.preun": "Requires(preun)",
