@@ -31,8 +31,7 @@ class Test_00_Backend(unittest.TestCase):
         (self.workdir, self.listfile) = C.setup_workdir_and_listfile()
 
     def tearDown(self):
-        #cleanup_workdir(self.workdir)
-        pass
+        cleanup_workdir(self.workdir)
 
     def get_backend_t(self, step=STEP_SETUP):
         return C.BackendTester(
