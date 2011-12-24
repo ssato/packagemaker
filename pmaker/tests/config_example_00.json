@@ -49,7 +49,7 @@
             "path": "/d/e",
             "attrs" : {
                 "create": 1,
-                "contents": "hello, world!"
+                "content": "hello, world!"
             }
         }
     ]

@@ -56,7 +56,7 @@
             "path": "/etc/new-file-to-be-generated",
             "attrs" : {
                 "create": 1,
-                "contents": "hello, world!"
+                "content": "hello, world!"
             }
         },
         {

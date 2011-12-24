@@ -45,7 +45,7 @@ files:
     - path: /d/e
       attrs: 
         create: 1
-        contents: "hello, world!"
+        content: "hello, world!"
 
 
 # vim: set sw=4 ts=4 et:
