@@ -1,5 +1,4 @@
-+ set -x
-+ mkdir -p /tmp/5
++ mkdir -p /tmp/20
 + cat examples/list_etc_files_not_from_rpms.sh
 #! /bin/sh
 
@@ -21,334 +20,126 @@ do
     is_not_from_rpm $f && echo $f
 done
 ) > $logfile
-+ examples/list_etc_files_not_from_rpms.sh /tmp/5/etc.not_from_package.files
-find: `/etc/pki/CA/private': 許可がありません
-find: `/etc/libvirt': 許可がありません
-find: `/etc/audit': 許可がありません
-find: `/etc/sssd': 許可がありません
-find: `/etc/lvm/cache': 許可がありません
++ examples/list_etc_files_not_from_rpms.sh /tmp/20/etc.not_from_package.files
 find: `/etc/lvm/backup': 許可がありません
 find: `/etc/lvm/archive': 許可がありません
-find: `/etc/selinux/targeted/modules/active': 許可がありません
-find: `/etc/selinux/mls/modules/active': 許可がありません
-find: `/etc/selinux/minimum/modules/active': 許可がありません
-find: `/etc/polkit-1/localauthority': 許可がありません
-find: `/etc/dhcp': 許可がありません
-find: `/etc/ntp/crypto': 許可がありません
+find: `/etc/lvm/cache': 許可がありません
+find: `/etc/pki/rsyslog': 許可がありません
+find: `/etc/pki/CA/private': 許可がありません
 find: `/etc/sudoers.d': 許可がありません
-find: `/etc/audisp': 許可がありません
+find: `/etc/selinux/targeted/modules/active': 許可がありません
+find: `/etc/audit': 許可がありません
+find: `/etc/sssd': 許可がありません
+find: `/etc/libvirt': 許可がありません
 find: `/etc/cups/ssl': 許可がありません
-+ pmaker -n etcdata --pversion 0.1 -v -w /tmp/5 --stepto sbuild /tmp/5/etc.not_from_package.files
-03:31:02 INFO    Using config parser: <class 'pmaker.anycfg.IniConfigParser'>
-03:31:02 INFO    /etc/pmaker.conf does not exist.
-03:31:02 INFO    Using config parser: <class 'pmaker.anycfg.IniConfigParser'>
-03:31:02 INFO    /home/ssato/.config/pmaker does not exist.
-03:31:02 INFO    Using config parser: <class 'pmaker.anycfg.IniConfigParser'>
-03:31:02 INFO    /home/ssato/.pmakerrc does not exist.
-03:31:02 WARNING Failed to get stat from rpm db: /etc/group-
-03:31:02 WARNING Failed to get stat from rpm db: /etc/resolv.conf
-03:31:02 WARNING Failed to get stat from rpm db: /etc/pki/CA/certs/RedHat_IS_CA_Root.cert
-03:31:02 WARNING Failed to get stat from rpm db: /etc/pki/nssdb/pkcs11.txt.rpmnew
-03:31:02 WARNING Failed to get stat from rpm db: /etc/udev/rules.d/70-persistent-net.rules
-03:31:03 WARNING Failed to get stat from rpm db: /etc/udev/rules.d/70-persistent-cd.rules
-03:31:03 WARNING Failed to get stat from rpm db: /etc/gdm/custom.conf.livna-config-backup
-03:31:03 WARNING Failed to get stat from rpm db: /etc/blkid/blkid.tab
-03:31:03 WARNING Failed to get stat from rpm db: /etc/blkid/blkid.tab.old
-03:31:03 WARNING Failed to get stat from rpm db: /etc/rc.d/init.d/livesys
-03:31:03 WARNING Failed to get stat from rpm db: /etc/rc.d/init.d/livesys-late
-03:31:03 WARNING Failed to get stat from rpm db: /etc/ssh/ssh_host_key.pub
-03:31:03 WARNING Failed to get stat from rpm db: /etc/ssh/ssh_host_dsa_key.pub
-03:31:03 WARNING Failed to get stat from rpm db: /etc/ssh/ssh_host_rsa_key.pub
-03:31:03 WARNING Failed to get stat from rpm db: /etc/ssh/ssh_host_rsa_key
-03:31:03 WARNING Failed to get stat from rpm db: /etc/ssh/ssh_host_dsa_key
-03:31:03 WARNING Failed to get stat from rpm db: /etc/ssh/ssh_host_key
-03:31:03 WARNING Failed to get stat from rpm db: /etc/passwd-
-03:31:03 WARNING Failed to get stat from rpm db: /etc/sysconfig/ip6tables.old
-03:31:03 WARNING Failed to get stat from rpm db: /etc/sysconfig/i18n
-03:31:03 WARNING Failed to get stat from rpm db: /etc/sysconfig/system-config-firewall.old
-03:31:03 WARNING Failed to get stat from rpm db: /etc/sysconfig/ip6tables
-03:31:03 WARNING Failed to get stat from rpm db: /etc/sysconfig/networking/profiles/default/resolv.conf
-03:31:04 WARNING Failed to get stat from rpm db: /etc/sysconfig/networking/profiles/default/hosts
-03:31:04 WARNING Failed to get stat from rpm db: /etc/sysconfig/iptables.save
-03:31:04 WARNING Failed to get stat from rpm db: /etc/sysconfig/grub
-03:31:04 WARNING Failed to get stat from rpm db: /etc/sysconfig/clock
-03:31:04 WARNING Failed to get stat from rpm db: /etc/sysconfig/network
-03:31:04 WARNING Failed to get stat from rpm db: /etc/sysconfig/kernel
-03:31:04 WARNING Failed to get stat from rpm db: /etc/sysconfig/iptables.old
-03:31:04 WARNING Failed to get stat from rpm db: /etc/sysconfig/iptables
-03:31:04 WARNING Failed to get stat from rpm db: /etc/sysconfig/firstboot
-03:31:05 WARNING Failed to get stat from rpm db: /etc/sysconfig/keyboard
-03:31:05 WARNING Failed to get stat from rpm db: /etc/gconf/gconf.xml.defaults/%gconf-tree-ast.xml
-03:31:05 WARNING Failed to get stat from rpm db: /etc/gconf/gconf.xml.defaults/%gconf-tree-xh.xml
-03:31:05 WARNING Failed to get stat from rpm db: /etc/gconf/gconf.xml.defaults/%gconf-tree-bn_IN.xml
-03:31:05 WARNING Failed to get stat from rpm db: /etc/gconf/gconf.xml.defaults/%gconf-tree-sq.xml
-03:31:05 WARNING Failed to get stat from rpm db: /etc/gconf/gconf.xml.defaults/%gconf-tree-sr@ije.xml
-03:31:05 WARNING Failed to get stat from rpm db: /etc/gconf/gconf.xml.defaults/%gconf-tree-he.xml
-03:31:05 WARNING Failed to get stat from rpm db: /etc/gconf/gconf.xml.defaults/%gconf-tree-ja.xml
-03:31:05 WARNING Failed to get stat from rpm db: /etc/gconf/gconf.xml.defaults/%gconf-tree-pa.xml
-03:31:05 WARNING Failed to get stat from rpm db: /etc/gconf/gconf.xml.defaults/%gconf-tree-ta.xml
-03:31:05 WARNING Failed to get stat from rpm db: /etc/gconf/gconf.xml.defaults/%gconf-tree-ne.xml
-03:31:05 WARNING Failed to get stat from rpm db: /etc/gconf/gconf.xml.defaults/%gconf-tree-th.xml
-03:31:05 WARNING Failed to get stat from rpm db: /etc/gconf/gconf.xml.defaults/%gconf-tree-ru.xml
-03:31:05 WARNING Failed to get stat from rpm db: /etc/gconf/gconf.xml.defaults/%gconf-tree-zu.xml
-03:31:06 WARNING Failed to get stat from rpm db: /etc/gconf/gconf.xml.defaults/%gconf-tree-pt.xml
-03:31:06 WARNING Failed to get stat from rpm db: /etc/gconf/gconf.xml.defaults/%gconf-tree-bs.xml
-03:31:06 WARNING Failed to get stat from rpm db: /etc/gconf/gconf.xml.defaults/%gconf-tree-da.xml
-03:31:06 WARNING Failed to get stat from rpm db: /etc/gconf/gconf.xml.defaults/%gconf-tree-ka.xml
-03:31:06 WARNING Failed to get stat from rpm db: /etc/gconf/gconf.xml.defaults/%gconf-tree-tr.xml
-03:31:06 WARNING Failed to get stat from rpm db: /etc/gconf/gconf.xml.defaults/%gconf-tree-ko.xml
-03:31:06 WARNING Failed to get stat from rpm db: /etc/gconf/gconf.xml.defaults/%gconf-tree-pt_BR.xml
-03:31:06 WARNING Failed to get stat from rpm db: /etc/gconf/gconf.xml.defaults/%gconf-tree-en_CA.xml
-03:31:06 WARNING Failed to get stat from rpm db: /etc/gconf/gconf.xml.defaults/%gconf-tree-kn.xml
-03:31:06 WARNING Failed to get stat from rpm db: /etc/gconf/gconf.xml.defaults/%gconf-tree-ca@valencia.xml
-03:31:06 WARNING Failed to get stat from rpm db: /etc/gconf/gconf.xml.defaults/%gconf-tree-fi.xml
-03:31:06 WARNING Failed to get stat from rpm db: /etc/gconf/gconf.xml.defaults/%gconf-tree-nb.xml
-03:31:06 WARNING Failed to get stat from rpm db: /etc/gconf/gconf.xml.defaults/%gconf-tree-sr.xml
-03:31:06 WARNING Failed to get stat from rpm db: /etc/gconf/gconf.xml.defaults/%gconf-tree-mr.xml
-03:31:06 WARNING Failed to get stat from rpm db: /etc/gconf/gconf.xml.defaults/%gconf-tree-mg.xml
-03:31:06 WARNING Failed to get stat from rpm db: /etc/gconf/gconf.xml.defaults/%gconf-tree.xml
-03:31:06 WARNING Failed to get stat from rpm db: /etc/gconf/gconf.xml.defaults/%gconf-tree-sr@latin.xml
-03:31:07 WARNING Failed to get stat from rpm db: /etc/gconf/gconf.xml.defaults/%gconf-tree-fr.xml
-03:31:07 WARNING Failed to get stat from rpm db: /etc/gconf/gconf.xml.defaults/%gconf-tree-hu.xml
-03:31:07 WARNING Failed to get stat from rpm db: /etc/gconf/gconf.xml.defaults/%gconf-tree-vi.xml
-03:31:07 WARNING Failed to get stat from rpm db: /etc/gconf/gconf.xml.defaults/%gconf-tree-et.xml
-03:31:07 WARNING Failed to get stat from rpm db: /etc/gconf/gconf.xml.defaults/%gconf-tree-id.xml
-03:31:07 WARNING Failed to get stat from rpm db: /etc/gconf/gconf.xml.defaults/%gconf-tree-gl.xml
-03:31:07 WARNING Failed to get stat from rpm db: /etc/gconf/gconf.xml.defaults/%gconf-tree-ca.xml
-03:31:07 WARNING Failed to get stat from rpm db: /etc/gconf/gconf.xml.defaults/%gconf-tree-ar.xml
-03:31:07 WARNING Failed to get stat from rpm db: /etc/gconf/gconf.xml.defaults/%gconf-tree-zh_TW.xml
-03:31:07 WARNING Failed to get stat from rpm db: /etc/gconf/gconf.xml.defaults/%gconf-tree-it.xml
-03:31:07 WARNING Failed to get stat from rpm db: /etc/gconf/gconf.xml.defaults/%gconf-tree-as.xml
-03:31:07 WARNING Failed to get stat from rpm db: /etc/gconf/gconf.xml.defaults/%gconf-tree-fo.xml
-03:31:07 WARNING Failed to get stat from rpm db: /etc/gconf/gconf.xml.defaults/%gconf-tree-or.xml
-03:31:07 WARNING Failed to get stat from rpm db: /etc/gconf/gconf.xml.defaults/%gconf-tree-mk.xml
-03:31:07 WARNING Failed to get stat from rpm db: /etc/gconf/gconf.xml.defaults/%gconf-tree-af.xml
-03:31:07 WARNING Failed to get stat from rpm db: /etc/gconf/gconf.xml.defaults/%gconf-tree-sk.xml
-03:31:07 WARNING Failed to get stat from rpm db: /etc/gconf/gconf.xml.defaults/%gconf-tree-ml.xml
-03:31:08 WARNING Failed to get stat from rpm db: /etc/gconf/gconf.xml.defaults/%gconf-tree-lv.xml
-03:31:08 WARNING Failed to get stat from rpm db: /etc/gconf/gconf.xml.defaults/%gconf-tree-nl.xml
-03:31:08 WARNING Failed to get stat from rpm db: /etc/gconf/gconf.xml.defaults/%gconf-tree-zh_HK.xml
-03:31:08 WARNING Failed to get stat from rpm db: /etc/gconf/gconf.xml.defaults/%gconf-tree-mai.xml
-03:31:08 WARNING Failed to get stat from rpm db: /etc/gconf/gconf.xml.defaults/%gconf-tree-en@shaw.xml
-03:31:08 WARNING Failed to get stat from rpm db: /etc/gconf/gconf.xml.defaults/%gconf-tree-hr.xml
-03:31:08 WARNING Failed to get stat from rpm db: /etc/gconf/gconf.xml.defaults/%gconf-tree-es.xml
-03:31:08 WARNING Failed to get stat from rpm db: /etc/gconf/gconf.xml.defaults/%gconf-tree-hi.xml
-03:31:08 WARNING Failed to get stat from rpm db: /etc/gconf/gconf.xml.defaults/%gconf-tree-be.xml
-03:31:08 WARNING Failed to get stat from rpm db: /etc/gconf/gconf.xml.defaults/%gconf-tree-nso.xml
-03:31:08 WARNING Failed to get stat from rpm db: /etc/gconf/gconf.xml.defaults/%gconf-tree-az.xml
-03:31:08 WARNING Failed to get stat from rpm db: /etc/gconf/gconf.xml.defaults/%gconf-tree-de.xml
-03:31:08 WARNING Failed to get stat from rpm db: /etc/gconf/gconf.xml.defaults/%gconf-tree-ro.xml
-03:31:08 WARNING Failed to get stat from rpm db: /etc/gconf/gconf.xml.defaults/%gconf-tree-lt.xml
-03:31:08 WARNING Failed to get stat from rpm db: /etc/gconf/gconf.xml.defaults/%gconf-tree-dz.xml
-03:31:08 WARNING Failed to get stat from rpm db: /etc/gconf/gconf.xml.defaults/%gconf-tree-eu.xml
-03:31:08 WARNING Failed to get stat from rpm db: /etc/gconf/gconf.xml.defaults/%gconf-tree-nn.xml
-03:31:08 WARNING Failed to get stat from rpm db: /etc/gconf/gconf.xml.defaults/%gconf-tree-gu.xml
-03:31:09 WARNING Failed to get stat from rpm db: /etc/gconf/gconf.xml.defaults/%gconf-tree-pl.xml
-03:31:09 WARNING Failed to get stat from rpm db: /etc/gconf/gconf.xml.defaults/%gconf-tree-sv.xml
-03:31:09 WARNING Failed to get stat from rpm db: /etc/gconf/gconf.xml.defaults/%gconf-tree-sl.xml
-03:31:09 WARNING Failed to get stat from rpm db: /etc/gconf/gconf.xml.defaults/%gconf-tree-te.xml
-03:31:09 WARNING Failed to get stat from rpm db: /etc/gconf/gconf.xml.defaults/%gconf-tree-mn.xml
-03:31:09 WARNING Failed to get stat from rpm db: /etc/gconf/gconf.xml.defaults/%gconf-tree-zh_CN.xml
-03:31:09 WARNING Failed to get stat from rpm db: /etc/gconf/gconf.xml.defaults/%gconf-tree-en_GB.xml
-03:31:09 WARNING Failed to get stat from rpm db: /etc/gconf/gconf.xml.defaults/%gconf-tree-en.xml
-03:31:09 WARNING Failed to get stat from rpm db: /etc/gconf/gconf.xml.defaults/%gconf-tree-bg.xml
-03:31:09 WARNING Failed to get stat from rpm db: /etc/gconf/gconf.xml.defaults/%gconf-tree-uk.xml
-03:31:09 WARNING Failed to get stat from rpm db: /etc/gconf/gconf.xml.defaults/%gconf-tree-cy.xml
-03:31:09 WARNING Failed to get stat from rpm db: /etc/gconf/gconf.xml.defaults/%gconf-tree-bn.xml
-03:31:09 WARNING Failed to get stat from rpm db: /etc/gconf/gconf.xml.defaults/%gconf-tree-el.xml
-03:31:09 WARNING Failed to get stat from rpm db: /etc/gconf/gconf.xml.defaults/%gconf-tree-cs.xml
-03:31:09 WARNING Failed to get stat from rpm db: /etc/yum.repos.d/fedora-virt-preview.repo
-03:31:09 WARNING Failed to get stat from rpm db: /etc/yum.repos.d/timesys.repo
-03:31:09 WARNING Failed to get stat from rpm db: /etc/yum.repos.d/fedora-chromium-stable.repo
-03:31:09 WARNING Failed to get stat from rpm db: /etc/yum.repos.d/fedora-firefox4.repo
-03:31:10 WARNING Failed to get stat from rpm db: /etc/yum.repos.d/fedora-chromium.repo
-03:31:10 WARNING Failed to get stat from rpm db: /etc/aliases.db
-03:31:10 WARNING Failed to get stat from rpm db: /etc/prelink.cache
-03:31:10 WARNING Failed to get stat from rpm db: /etc/selinux/targeted/contexts/netfilter_contexts
-03:31:10 WARNING Failed to get stat from rpm db: /etc/selinux/mls/contexts/netfilter_contexts
-03:31:10 WARNING Failed to get stat from rpm db: /etc/selinux/minimum/contexts/netfilter_contexts
-03:31:10 WARNING Failed to get stat from rpm db: /etc/rpm/macros.imgcreate
-03:31:10 WARNING Failed to get stat from rpm db: /etc/sabayon/users.xml
-03:31:10 WARNING Failed to get stat from rpm db: /etc/shadow-
-03:31:10 WARNING Failed to get stat from rpm db: /etc/resolv.conf.ppp
-03:31:10 WARNING Failed to get stat from rpm db: /etc/pm/last_known_working.quirkdb
-03:31:10 WARNING Failed to get stat from rpm db: /etc/iscsi/initiatorname.iscsi
-03:31:10 WARNING Failed to get stat from rpm db: /etc/X11/xorg.conf
-03:31:10 WARNING Failed to get stat from rpm db: /etc/X11/xorg.conf.d/01-poulsbo.conf
-03:31:10 WARNING Failed to get stat from rpm db: /etc/X11/xorg.conf.by-psb-config-display
-03:31:10 WARNING Failed to get stat from rpm db: /etc/X11/xorg.conf.livna-config-backup
-03:31:10 WARNING Failed to get stat from rpm db: /etc/.pwd.lock
-03:31:11 WARNING Failed to get stat from rpm db: /etc/mdadm.conf
-03:31:11 WARNING Failed to get stat from rpm db: /etc/nsswitch.conf.bak
-03:31:11 WARNING Failed to get stat from rpm db: /etc/gshadow-
-03:31:11 WARNING Failed to get stat from rpm db: /etc/vpnc/rh.conf
-03:31:11 WARNING Failed to get stat from rpm db: /etc/mtab.fuselock
-03:31:11 WARNING Failed to get stat from rpm db: /etc/tgt/conf.d/storage0.conf
-03:31:11 WARNING Filtered out as not permitted to read: path=/etc/.pwd.lock, type=file
-03:31:11 WARNING Filtered out as not permitted to read: path=/etc/aliases.db, type=file
-03:31:11 WARNING Filtered out as not permitted to read: path=/etc/gshadow-, type=file
-03:31:11 WARNING Filtered out as not permitted to read: path=/etc/mtab.fuselock, type=file
-03:31:11 WARNING Filtered out as not permitted to read: path=/etc/passwd-, type=file
-03:31:11 WARNING Filtered out as not permitted to read: path=/etc/shadow-, type=file
-03:31:11 WARNING Filtered out as not permitted to read: path=/etc/ssh/ssh_host_dsa_key, type=file
-03:31:11 WARNING Filtered out as not permitted to read: path=/etc/ssh/ssh_host_key, type=file
-03:31:11 WARNING Filtered out as not permitted to read: path=/etc/ssh/ssh_host_rsa_key, type=file
-03:31:11 WARNING Filtered out as not permitted to read: path=/etc/sysconfig/ip6tables, type=file
-03:31:11 WARNING Filtered out as not permitted to read: path=/etc/sysconfig/ip6tables.old, type=file
-03:31:11 WARNING Filtered out as not permitted to read: path=/etc/sysconfig/iptables, type=file
-03:31:11 WARNING Filtered out as not permitted to read: path=/etc/sysconfig/iptables.old, type=file
-03:31:11 WARNING Filtered out as not permitted to read: path=/etc/sysconfig/iptables.save, type=file
-03:31:12 WARNING Filtered out as not permitted to read: path=/etc/sysconfig/system-config-firewall.old, type=file
-03:31:12 WARNING Filtered out as not permitted to read: path=/etc/vpnc/rh.conf, type=file
-03:31:12 INFO    Setting up src tree in /tmp/5/etcdata-0.1: etcdata
-03:31:12 INFO    Run: cp -a /etc/X11/xorg.conf /tmp/5/etcdata-0.1/src/etc/X11/xorg.conf > /dev/null [/var/lib/repos/ssato/github.com/ssato/packagemaker.git]
-03:31:12 INFO    Run: cp -a /etc/X11/xorg.conf.by-psb-config-display /tmp/5/etcdata-0.1/src/etc/X11/xorg.conf.by-psb-config-display > /dev/null [/var/lib/repos/ssato/github.com/ssato/packagemaker.git]
-03:31:12 INFO    Run: cp -a /etc/X11/xorg.conf.d/01-poulsbo.conf /tmp/5/etcdata-0.1/src/etc/X11/xorg.conf.d/01-poulsbo.conf > /dev/null [/var/lib/repos/ssato/github.com/ssato/packagemaker.git]
-03:31:12 INFO    Run: cp -a /etc/X11/xorg.conf.livna-config-backup /tmp/5/etcdata-0.1/src/etc/X11/xorg.conf.livna-config-backup > /dev/null [/var/lib/repos/ssato/github.com/ssato/packagemaker.git]
-03:31:12 INFO    Run: cp -a /etc/blkid/blkid.tab /tmp/5/etcdata-0.1/src/etc/blkid/blkid.tab > /dev/null [/var/lib/repos/ssato/github.com/ssato/packagemaker.git]
-03:31:12 INFO    Run: cp -a /etc/blkid/blkid.tab.old /tmp/5/etcdata-0.1/src/etc/blkid/blkid.tab.old > /dev/null [/var/lib/repos/ssato/github.com/ssato/packagemaker.git]
-03:31:12 INFO    Run: cp -a /etc/gconf/gconf.xml.defaults/%gconf-tree-af.xml /tmp/5/etcdata-0.1/src/etc/gconf/gconf.xml.defaults/%gconf-tree-af.xml > /dev/null [/var/lib/repos/ssato/github.com/ssato/packagemaker.git]
-03:31:12 INFO    Run: cp -a /etc/gconf/gconf.xml.defaults/%gconf-tree-ar.xml /tmp/5/etcdata-0.1/src/etc/gconf/gconf.xml.defaults/%gconf-tree-ar.xml > /dev/null [/var/lib/repos/ssato/github.com/ssato/packagemaker.git]
-03:31:12 INFO    Run: cp -a /etc/gconf/gconf.xml.defaults/%gconf-tree-as.xml /tmp/5/etcdata-0.1/src/etc/gconf/gconf.xml.defaults/%gconf-tree-as.xml > /dev/null [/var/lib/repos/ssato/github.com/ssato/packagemaker.git]
-03:31:12 INFO    Run: cp -a /etc/gconf/gconf.xml.defaults/%gconf-tree-ast.xml /tmp/5/etcdata-0.1/src/etc/gconf/gconf.xml.defaults/%gconf-tree-ast.xml > /dev/null [/var/lib/repos/ssato/github.com/ssato/packagemaker.git]
-03:31:12 INFO    Run: cp -a /etc/gconf/gconf.xml.defaults/%gconf-tree-az.xml /tmp/5/etcdata-0.1/src/etc/gconf/gconf.xml.defaults/%gconf-tree-az.xml > /dev/null [/var/lib/repos/ssato/github.com/ssato/packagemaker.git]
-03:31:12 INFO    Run: cp -a /etc/gconf/gconf.xml.defaults/%gconf-tree-be.xml /tmp/5/etcdata-0.1/src/etc/gconf/gconf.xml.defaults/%gconf-tree-be.xml > /dev/null [/var/lib/repos/ssato/github.com/ssato/packagemaker.git]
-03:31:12 INFO    Run: cp -a /etc/gconf/gconf.xml.defaults/%gconf-tree-bg.xml /tmp/5/etcdata-0.1/src/etc/gconf/gconf.xml.defaults/%gconf-tree-bg.xml > /dev/null [/var/lib/repos/ssato/github.com/ssato/packagemaker.git]
-03:31:12 INFO    Run: cp -a /etc/gconf/gconf.xml.defaults/%gconf-tree-bn.xml /tmp/5/etcdata-0.1/src/etc/gconf/gconf.xml.defaults/%gconf-tree-bn.xml > /dev/null [/var/lib/repos/ssato/github.com/ssato/packagemaker.git]
-03:31:12 INFO    Run: cp -a /etc/gconf/gconf.xml.defaults/%gconf-tree-bn_IN.xml /tmp/5/etcdata-0.1/src/etc/gconf/gconf.xml.defaults/%gconf-tree-bn_IN.xml > /dev/null [/var/lib/repos/ssato/github.com/ssato/packagemaker.git]
-03:31:12 INFO    Run: cp -a /etc/gconf/gconf.xml.defaults/%gconf-tree-bs.xml /tmp/5/etcdata-0.1/src/etc/gconf/gconf.xml.defaults/%gconf-tree-bs.xml > /dev/null [/var/lib/repos/ssato/github.com/ssato/packagemaker.git]
-03:31:12 INFO    Run: cp -a /etc/gconf/gconf.xml.defaults/%gconf-tree-ca.xml /tmp/5/etcdata-0.1/src/etc/gconf/gconf.xml.defaults/%gconf-tree-ca.xml > /dev/null [/var/lib/repos/ssato/github.com/ssato/packagemaker.git]
-03:31:13 INFO    Run: cp -a /etc/gconf/gconf.xml.defaults/%gconf-tree-ca@valencia.xml /tmp/5/etcdata-0.1/src/etc/gconf/gconf.xml.defaults/%gconf-tree-ca@valencia.xml > /dev/null [/var/lib/repos/ssato/github.com/ssato/packagemaker.git]
-03:31:13 INFO    Run: cp -a /etc/gconf/gconf.xml.defaults/%gconf-tree-cs.xml /tmp/5/etcdata-0.1/src/etc/gconf/gconf.xml.defaults/%gconf-tree-cs.xml > /dev/null [/var/lib/repos/ssato/github.com/ssato/packagemaker.git]
-03:31:13 INFO    Run: cp -a /etc/gconf/gconf.xml.defaults/%gconf-tree-cy.xml /tmp/5/etcdata-0.1/src/etc/gconf/gconf.xml.defaults/%gconf-tree-cy.xml > /dev/null [/var/lib/repos/ssato/github.com/ssato/packagemaker.git]
-03:31:13 INFO    Run: cp -a /etc/gconf/gconf.xml.defaults/%gconf-tree-da.xml /tmp/5/etcdata-0.1/src/etc/gconf/gconf.xml.defaults/%gconf-tree-da.xml > /dev/null [/var/lib/repos/ssato/github.com/ssato/packagemaker.git]
-03:31:13 INFO    Run: cp -a /etc/gconf/gconf.xml.defaults/%gconf-tree-de.xml /tmp/5/etcdata-0.1/src/etc/gconf/gconf.xml.defaults/%gconf-tree-de.xml > /dev/null [/var/lib/repos/ssato/github.com/ssato/packagemaker.git]
-03:31:13 INFO    Run: cp -a /etc/gconf/gconf.xml.defaults/%gconf-tree-dz.xml /tmp/5/etcdata-0.1/src/etc/gconf/gconf.xml.defaults/%gconf-tree-dz.xml > /dev/null [/var/lib/repos/ssato/github.com/ssato/packagemaker.git]
-03:31:13 INFO    Run: cp -a /etc/gconf/gconf.xml.defaults/%gconf-tree-el.xml /tmp/5/etcdata-0.1/src/etc/gconf/gconf.xml.defaults/%gconf-tree-el.xml > /dev/null [/var/lib/repos/ssato/github.com/ssato/packagemaker.git]
-03:31:13 INFO    Run: cp -a /etc/gconf/gconf.xml.defaults/%gconf-tree-en.xml /tmp/5/etcdata-0.1/src/etc/gconf/gconf.xml.defaults/%gconf-tree-en.xml > /dev/null [/var/lib/repos/ssato/github.com/ssato/packagemaker.git]
-03:31:13 INFO    Run: cp -a /etc/gconf/gconf.xml.defaults/%gconf-tree-en@shaw.xml /tmp/5/etcdata-0.1/src/etc/gconf/gconf.xml.defaults/%gconf-tree-en@shaw.xml > /dev/null [/var/lib/repos/ssato/github.com/ssato/packagemaker.git]
-03:31:13 INFO    Run: cp -a /etc/gconf/gconf.xml.defaults/%gconf-tree-en_CA.xml /tmp/5/etcdata-0.1/src/etc/gconf/gconf.xml.defaults/%gconf-tree-en_CA.xml > /dev/null [/var/lib/repos/ssato/github.com/ssato/packagemaker.git]
-03:31:13 INFO    Run: cp -a /etc/gconf/gconf.xml.defaults/%gconf-tree-en_GB.xml /tmp/5/etcdata-0.1/src/etc/gconf/gconf.xml.defaults/%gconf-tree-en_GB.xml > /dev/null [/var/lib/repos/ssato/github.com/ssato/packagemaker.git]
-03:31:13 INFO    Run: cp -a /etc/gconf/gconf.xml.defaults/%gconf-tree-es.xml /tmp/5/etcdata-0.1/src/etc/gconf/gconf.xml.defaults/%gconf-tree-es.xml > /dev/null [/var/lib/repos/ssato/github.com/ssato/packagemaker.git]
-03:31:13 INFO    Run: cp -a /etc/gconf/gconf.xml.defaults/%gconf-tree-et.xml /tmp/5/etcdata-0.1/src/etc/gconf/gconf.xml.defaults/%gconf-tree-et.xml > /dev/null [/var/lib/repos/ssato/github.com/ssato/packagemaker.git]
-03:31:13 INFO    Run: cp -a /etc/gconf/gconf.xml.defaults/%gconf-tree-eu.xml /tmp/5/etcdata-0.1/src/etc/gconf/gconf.xml.defaults/%gconf-tree-eu.xml > /dev/null [/var/lib/repos/ssato/github.com/ssato/packagemaker.git]
-03:31:13 INFO    Run: cp -a /etc/gconf/gconf.xml.defaults/%gconf-tree-fi.xml /tmp/5/etcdata-0.1/src/etc/gconf/gconf.xml.defaults/%gconf-tree-fi.xml > /dev/null [/var/lib/repos/ssato/github.com/ssato/packagemaker.git]
-03:31:13 INFO    Run: cp -a /etc/gconf/gconf.xml.defaults/%gconf-tree-fo.xml /tmp/5/etcdata-0.1/src/etc/gconf/gconf.xml.defaults/%gconf-tree-fo.xml > /dev/null [/var/lib/repos/ssato/github.com/ssato/packagemaker.git]
-03:31:13 INFO    Run: cp -a /etc/gconf/gconf.xml.defaults/%gconf-tree-fr.xml /tmp/5/etcdata-0.1/src/etc/gconf/gconf.xml.defaults/%gconf-tree-fr.xml > /dev/null [/var/lib/repos/ssato/github.com/ssato/packagemaker.git]
-03:31:13 INFO    Run: cp -a /etc/gconf/gconf.xml.defaults/%gconf-tree-gl.xml /tmp/5/etcdata-0.1/src/etc/gconf/gconf.xml.defaults/%gconf-tree-gl.xml > /dev/null [/var/lib/repos/ssato/github.com/ssato/packagemaker.git]
-03:31:13 INFO    Run: cp -a /etc/gconf/gconf.xml.defaults/%gconf-tree-gu.xml /tmp/5/etcdata-0.1/src/etc/gconf/gconf.xml.defaults/%gconf-tree-gu.xml > /dev/null [/var/lib/repos/ssato/github.com/ssato/packagemaker.git]
-03:31:13 INFO    Run: cp -a /etc/gconf/gconf.xml.defaults/%gconf-tree-he.xml /tmp/5/etcdata-0.1/src/etc/gconf/gconf.xml.defaults/%gconf-tree-he.xml > /dev/null [/var/lib/repos/ssato/github.com/ssato/packagemaker.git]
-03:31:13 INFO    Run: cp -a /etc/gconf/gconf.xml.defaults/%gconf-tree-hi.xml /tmp/5/etcdata-0.1/src/etc/gconf/gconf.xml.defaults/%gconf-tree-hi.xml > /dev/null [/var/lib/repos/ssato/github.com/ssato/packagemaker.git]
-03:31:13 INFO    Run: cp -a /etc/gconf/gconf.xml.defaults/%gconf-tree-hr.xml /tmp/5/etcdata-0.1/src/etc/gconf/gconf.xml.defaults/%gconf-tree-hr.xml > /dev/null [/var/lib/repos/ssato/github.com/ssato/packagemaker.git]
-03:31:13 INFO    Run: cp -a /etc/gconf/gconf.xml.defaults/%gconf-tree-hu.xml /tmp/5/etcdata-0.1/src/etc/gconf/gconf.xml.defaults/%gconf-tree-hu.xml > /dev/null [/var/lib/repos/ssato/github.com/ssato/packagemaker.git]
-03:31:13 INFO    Run: cp -a /etc/gconf/gconf.xml.defaults/%gconf-tree-id.xml /tmp/5/etcdata-0.1/src/etc/gconf/gconf.xml.defaults/%gconf-tree-id.xml > /dev/null [/var/lib/repos/ssato/github.com/ssato/packagemaker.git]
-03:31:13 INFO    Run: cp -a /etc/gconf/gconf.xml.defaults/%gconf-tree-it.xml /tmp/5/etcdata-0.1/src/etc/gconf/gconf.xml.defaults/%gconf-tree-it.xml > /dev/null [/var/lib/repos/ssato/github.com/ssato/packagemaker.git]
-03:31:14 INFO    Run: cp -a /etc/gconf/gconf.xml.defaults/%gconf-tree-ja.xml /tmp/5/etcdata-0.1/src/etc/gconf/gconf.xml.defaults/%gconf-tree-ja.xml > /dev/null [/var/lib/repos/ssato/github.com/ssato/packagemaker.git]
-03:31:14 INFO    Run: cp -a /etc/gconf/gconf.xml.defaults/%gconf-tree-ka.xml /tmp/5/etcdata-0.1/src/etc/gconf/gconf.xml.defaults/%gconf-tree-ka.xml > /dev/null [/var/lib/repos/ssato/github.com/ssato/packagemaker.git]
-03:31:14 INFO    Run: cp -a /etc/gconf/gconf.xml.defaults/%gconf-tree-kn.xml /tmp/5/etcdata-0.1/src/etc/gconf/gconf.xml.defaults/%gconf-tree-kn.xml > /dev/null [/var/lib/repos/ssato/github.com/ssato/packagemaker.git]
-03:31:14 INFO    Run: cp -a /etc/gconf/gconf.xml.defaults/%gconf-tree-ko.xml /tmp/5/etcdata-0.1/src/etc/gconf/gconf.xml.defaults/%gconf-tree-ko.xml > /dev/null [/var/lib/repos/ssato/github.com/ssato/packagemaker.git]
-03:31:14 INFO    Run: cp -a /etc/gconf/gconf.xml.defaults/%gconf-tree-lt.xml /tmp/5/etcdata-0.1/src/etc/gconf/gconf.xml.defaults/%gconf-tree-lt.xml > /dev/null [/var/lib/repos/ssato/github.com/ssato/packagemaker.git]
-03:31:14 INFO    Run: cp -a /etc/gconf/gconf.xml.defaults/%gconf-tree-lv.xml /tmp/5/etcdata-0.1/src/etc/gconf/gconf.xml.defaults/%gconf-tree-lv.xml > /dev/null [/var/lib/repos/ssato/github.com/ssato/packagemaker.git]
-03:31:14 INFO    Run: cp -a /etc/gconf/gconf.xml.defaults/%gconf-tree-mai.xml /tmp/5/etcdata-0.1/src/etc/gconf/gconf.xml.defaults/%gconf-tree-mai.xml > /dev/null [/var/lib/repos/ssato/github.com/ssato/packagemaker.git]
-03:31:14 INFO    Run: cp -a /etc/gconf/gconf.xml.defaults/%gconf-tree-mg.xml /tmp/5/etcdata-0.1/src/etc/gconf/gconf.xml.defaults/%gconf-tree-mg.xml > /dev/null [/var/lib/repos/ssato/github.com/ssato/packagemaker.git]
-03:31:14 INFO    Run: cp -a /etc/gconf/gconf.xml.defaults/%gconf-tree-mk.xml /tmp/5/etcdata-0.1/src/etc/gconf/gconf.xml.defaults/%gconf-tree-mk.xml > /dev/null [/var/lib/repos/ssato/github.com/ssato/packagemaker.git]
-03:31:14 INFO    Run: cp -a /etc/gconf/gconf.xml.defaults/%gconf-tree-ml.xml /tmp/5/etcdata-0.1/src/etc/gconf/gconf.xml.defaults/%gconf-tree-ml.xml > /dev/null [/var/lib/repos/ssato/github.com/ssato/packagemaker.git]
-03:31:14 INFO    Run: cp -a /etc/gconf/gconf.xml.defaults/%gconf-tree-mn.xml /tmp/5/etcdata-0.1/src/etc/gconf/gconf.xml.defaults/%gconf-tree-mn.xml > /dev/null [/var/lib/repos/ssato/github.com/ssato/packagemaker.git]
-03:31:14 INFO    Run: cp -a /etc/gconf/gconf.xml.defaults/%gconf-tree-mr.xml /tmp/5/etcdata-0.1/src/etc/gconf/gconf.xml.defaults/%gconf-tree-mr.xml > /dev/null [/var/lib/repos/ssato/github.com/ssato/packagemaker.git]
-03:31:14 INFO    Run: cp -a /etc/gconf/gconf.xml.defaults/%gconf-tree-nb.xml /tmp/5/etcdata-0.1/src/etc/gconf/gconf.xml.defaults/%gconf-tree-nb.xml > /dev/null [/var/lib/repos/ssato/github.com/ssato/packagemaker.git]
-03:31:14 INFO    Run: cp -a /etc/gconf/gconf.xml.defaults/%gconf-tree-ne.xml /tmp/5/etcdata-0.1/src/etc/gconf/gconf.xml.defaults/%gconf-tree-ne.xml > /dev/null [/var/lib/repos/ssato/github.com/ssato/packagemaker.git]
-03:31:14 INFO    Run: cp -a /etc/gconf/gconf.xml.defaults/%gconf-tree-nl.xml /tmp/5/etcdata-0.1/src/etc/gconf/gconf.xml.defaults/%gconf-tree-nl.xml > /dev/null [/var/lib/repos/ssato/github.com/ssato/packagemaker.git]
-03:31:14 INFO    Run: cp -a /etc/gconf/gconf.xml.defaults/%gconf-tree-nn.xml /tmp/5/etcdata-0.1/src/etc/gconf/gconf.xml.defaults/%gconf-tree-nn.xml > /dev/null [/var/lib/repos/ssato/github.com/ssato/packagemaker.git]
-03:31:14 INFO    Run: cp -a /etc/gconf/gconf.xml.defaults/%gconf-tree-nso.xml /tmp/5/etcdata-0.1/src/etc/gconf/gconf.xml.defaults/%gconf-tree-nso.xml > /dev/null [/var/lib/repos/ssato/github.com/ssato/packagemaker.git]
-03:31:14 INFO    Run: cp -a /etc/gconf/gconf.xml.defaults/%gconf-tree-or.xml /tmp/5/etcdata-0.1/src/etc/gconf/gconf.xml.defaults/%gconf-tree-or.xml > /dev/null [/var/lib/repos/ssato/github.com/ssato/packagemaker.git]
-03:31:14 INFO    Run: cp -a /etc/gconf/gconf.xml.defaults/%gconf-tree-pa.xml /tmp/5/etcdata-0.1/src/etc/gconf/gconf.xml.defaults/%gconf-tree-pa.xml > /dev/null [/var/lib/repos/ssato/github.com/ssato/packagemaker.git]
-03:31:14 INFO    Run: cp -a /etc/gconf/gconf.xml.defaults/%gconf-tree-pl.xml /tmp/5/etcdata-0.1/src/etc/gconf/gconf.xml.defaults/%gconf-tree-pl.xml > /dev/null [/var/lib/repos/ssato/github.com/ssato/packagemaker.git]
-03:31:14 INFO    Run: cp -a /etc/gconf/gconf.xml.defaults/%gconf-tree-pt.xml /tmp/5/etcdata-0.1/src/etc/gconf/gconf.xml.defaults/%gconf-tree-pt.xml > /dev/null [/var/lib/repos/ssato/github.com/ssato/packagemaker.git]
-03:31:14 INFO    Run: cp -a /etc/gconf/gconf.xml.defaults/%gconf-tree-pt_BR.xml /tmp/5/etcdata-0.1/src/etc/gconf/gconf.xml.defaults/%gconf-tree-pt_BR.xml > /dev/null [/var/lib/repos/ssato/github.com/ssato/packagemaker.git]
-03:31:14 INFO    Run: cp -a /etc/gconf/gconf.xml.defaults/%gconf-tree-ro.xml /tmp/5/etcdata-0.1/src/etc/gconf/gconf.xml.defaults/%gconf-tree-ro.xml > /dev/null [/var/lib/repos/ssato/github.com/ssato/packagemaker.git]
-03:31:14 INFO    Run: cp -a /etc/gconf/gconf.xml.defaults/%gconf-tree-ru.xml /tmp/5/etcdata-0.1/src/etc/gconf/gconf.xml.defaults/%gconf-tree-ru.xml > /dev/null [/var/lib/repos/ssato/github.com/ssato/packagemaker.git]
-03:31:14 INFO    Run: cp -a /etc/gconf/gconf.xml.defaults/%gconf-tree-sk.xml /tmp/5/etcdata-0.1/src/etc/gconf/gconf.xml.defaults/%gconf-tree-sk.xml > /dev/null [/var/lib/repos/ssato/github.com/ssato/packagemaker.git]
-03:31:15 INFO    Run: cp -a /etc/gconf/gconf.xml.defaults/%gconf-tree-sl.xml /tmp/5/etcdata-0.1/src/etc/gconf/gconf.xml.defaults/%gconf-tree-sl.xml > /dev/null [/var/lib/repos/ssato/github.com/ssato/packagemaker.git]
-03:31:15 INFO    Run: cp -a /etc/gconf/gconf.xml.defaults/%gconf-tree-sq.xml /tmp/5/etcdata-0.1/src/etc/gconf/gconf.xml.defaults/%gconf-tree-sq.xml > /dev/null [/var/lib/repos/ssato/github.com/ssato/packagemaker.git]
-03:31:15 INFO    Run: cp -a /etc/gconf/gconf.xml.defaults/%gconf-tree-sr.xml /tmp/5/etcdata-0.1/src/etc/gconf/gconf.xml.defaults/%gconf-tree-sr.xml > /dev/null [/var/lib/repos/ssato/github.com/ssato/packagemaker.git]
-03:31:15 INFO    Run: cp -a /etc/gconf/gconf.xml.defaults/%gconf-tree-sr@ije.xml /tmp/5/etcdata-0.1/src/etc/gconf/gconf.xml.defaults/%gconf-tree-sr@ije.xml > /dev/null [/var/lib/repos/ssato/github.com/ssato/packagemaker.git]
-03:31:15 INFO    Run: cp -a /etc/gconf/gconf.xml.defaults/%gconf-tree-sr@latin.xml /tmp/5/etcdata-0.1/src/etc/gconf/gconf.xml.defaults/%gconf-tree-sr@latin.xml > /dev/null [/var/lib/repos/ssato/github.com/ssato/packagemaker.git]
-03:31:15 INFO    Run: cp -a /etc/gconf/gconf.xml.defaults/%gconf-tree-sv.xml /tmp/5/etcdata-0.1/src/etc/gconf/gconf.xml.defaults/%gconf-tree-sv.xml > /dev/null [/var/lib/repos/ssato/github.com/ssato/packagemaker.git]
-03:31:15 INFO    Run: cp -a /etc/gconf/gconf.xml.defaults/%gconf-tree-ta.xml /tmp/5/etcdata-0.1/src/etc/gconf/gconf.xml.defaults/%gconf-tree-ta.xml > /dev/null [/var/lib/repos/ssato/github.com/ssato/packagemaker.git]
-03:31:15 INFO    Run: cp -a /etc/gconf/gconf.xml.defaults/%gconf-tree-te.xml /tmp/5/etcdata-0.1/src/etc/gconf/gconf.xml.defaults/%gconf-tree-te.xml > /dev/null [/var/lib/repos/ssato/github.com/ssato/packagemaker.git]
-03:31:15 INFO    Run: cp -a /etc/gconf/gconf.xml.defaults/%gconf-tree-th.xml /tmp/5/etcdata-0.1/src/etc/gconf/gconf.xml.defaults/%gconf-tree-th.xml > /dev/null [/var/lib/repos/ssato/github.com/ssato/packagemaker.git]
-03:31:15 INFO    Run: cp -a /etc/gconf/gconf.xml.defaults/%gconf-tree-tr.xml /tmp/5/etcdata-0.1/src/etc/gconf/gconf.xml.defaults/%gconf-tree-tr.xml > /dev/null [/var/lib/repos/ssato/github.com/ssato/packagemaker.git]
-03:31:15 INFO    Run: cp -a /etc/gconf/gconf.xml.defaults/%gconf-tree-uk.xml /tmp/5/etcdata-0.1/src/etc/gconf/gconf.xml.defaults/%gconf-tree-uk.xml > /dev/null [/var/lib/repos/ssato/github.com/ssato/packagemaker.git]
-03:31:15 INFO    Run: cp -a /etc/gconf/gconf.xml.defaults/%gconf-tree-vi.xml /tmp/5/etcdata-0.1/src/etc/gconf/gconf.xml.defaults/%gconf-tree-vi.xml > /dev/null [/var/lib/repos/ssato/github.com/ssato/packagemaker.git]
-03:31:15 INFO    Run: cp -a /etc/gconf/gconf.xml.defaults/%gconf-tree-xh.xml /tmp/5/etcdata-0.1/src/etc/gconf/gconf.xml.defaults/%gconf-tree-xh.xml > /dev/null [/var/lib/repos/ssato/github.com/ssato/packagemaker.git]
-03:31:15 INFO    Run: cp -a /etc/gconf/gconf.xml.defaults/%gconf-tree-zh_CN.xml /tmp/5/etcdata-0.1/src/etc/gconf/gconf.xml.defaults/%gconf-tree-zh_CN.xml > /dev/null [/var/lib/repos/ssato/github.com/ssato/packagemaker.git]
-03:31:15 INFO    Run: cp -a /etc/gconf/gconf.xml.defaults/%gconf-tree-zh_HK.xml /tmp/5/etcdata-0.1/src/etc/gconf/gconf.xml.defaults/%gconf-tree-zh_HK.xml > /dev/null [/var/lib/repos/ssato/github.com/ssato/packagemaker.git]
-03:31:15 INFO    Run: cp -a /etc/gconf/gconf.xml.defaults/%gconf-tree-zh_TW.xml /tmp/5/etcdata-0.1/src/etc/gconf/gconf.xml.defaults/%gconf-tree-zh_TW.xml > /dev/null [/var/lib/repos/ssato/github.com/ssato/packagemaker.git]
-03:31:15 INFO    Run: cp -a /etc/gconf/gconf.xml.defaults/%gconf-tree-zu.xml /tmp/5/etcdata-0.1/src/etc/gconf/gconf.xml.defaults/%gconf-tree-zu.xml > /dev/null [/var/lib/repos/ssato/github.com/ssato/packagemaker.git]
-03:31:15 INFO    Run: cp -a /etc/gconf/gconf.xml.defaults/%gconf-tree.xml /tmp/5/etcdata-0.1/src/etc/gconf/gconf.xml.defaults/%gconf-tree.xml > /dev/null [/var/lib/repos/ssato/github.com/ssato/packagemaker.git]
-03:31:15 INFO    Run: cp -a /etc/gdm/custom.conf.livna-config-backup /tmp/5/etcdata-0.1/src/etc/gdm/custom.conf.livna-config-backup > /dev/null [/var/lib/repos/ssato/github.com/ssato/packagemaker.git]
-03:31:15 INFO    Run: cp -a /etc/group- /tmp/5/etcdata-0.1/src/etc/group- > /dev/null [/var/lib/repos/ssato/github.com/ssato/packagemaker.git]
-03:31:15 INFO    Run: cp -a /etc/iscsi/initiatorname.iscsi /tmp/5/etcdata-0.1/src/etc/iscsi/initiatorname.iscsi > /dev/null [/var/lib/repos/ssato/github.com/ssato/packagemaker.git]
-03:31:15 INFO    Run: cp -a /etc/mdadm.conf /tmp/5/etcdata-0.1/src/etc/mdadm.conf > /dev/null [/var/lib/repos/ssato/github.com/ssato/packagemaker.git]
-03:31:15 INFO    Run: cp -a /etc/nsswitch.conf.bak /tmp/5/etcdata-0.1/src/etc/nsswitch.conf.bak > /dev/null [/var/lib/repos/ssato/github.com/ssato/packagemaker.git]
-03:31:16 INFO    Run: cp -a /etc/pki/CA/certs/RedHat_IS_CA_Root.cert /tmp/5/etcdata-0.1/src/etc/pki/CA/certs/RedHat_IS_CA_Root.cert > /dev/null [/var/lib/repos/ssato/github.com/ssato/packagemaker.git]
-03:31:16 INFO    Run: cp -a /etc/pki/nssdb/pkcs11.txt.rpmnew /tmp/5/etcdata-0.1/src/etc/pki/nssdb/pkcs11.txt.rpmnew > /dev/null [/var/lib/repos/ssato/github.com/ssato/packagemaker.git]
-03:31:16 INFO    Run: cp -a /etc/pm/last_known_working.quirkdb /tmp/5/etcdata-0.1/src/etc/pm/last_known_working.quirkdb > /dev/null [/var/lib/repos/ssato/github.com/ssato/packagemaker.git]
-03:31:16 INFO    Run: cp -a /etc/prelink.cache /tmp/5/etcdata-0.1/src/etc/prelink.cache > /dev/null [/var/lib/repos/ssato/github.com/ssato/packagemaker.git]
-03:31:16 INFO    Run: cp -a /etc/rc.d/init.d/livesys /tmp/5/etcdata-0.1/src/etc/rc.d/init.d/livesys > /dev/null [/var/lib/repos/ssato/github.com/ssato/packagemaker.git]
-03:31:16 INFO    Run: cp -a /etc/rc.d/init.d/livesys-late /tmp/5/etcdata-0.1/src/etc/rc.d/init.d/livesys-late > /dev/null [/var/lib/repos/ssato/github.com/ssato/packagemaker.git]
-03:31:16 INFO    Run: cp -a /etc/resolv.conf /tmp/5/etcdata-0.1/src/etc/resolv.conf > /dev/null [/var/lib/repos/ssato/github.com/ssato/packagemaker.git]
-03:31:16 INFO    Run: cp -a /etc/resolv.conf.ppp /tmp/5/etcdata-0.1/src/etc/resolv.conf.ppp > /dev/null [/var/lib/repos/ssato/github.com/ssato/packagemaker.git]
-03:31:16 INFO    Run: cp -a /etc/rpm/macros.imgcreate /tmp/5/etcdata-0.1/src/etc/rpm/macros.imgcreate > /dev/null [/var/lib/repos/ssato/github.com/ssato/packagemaker.git]
-03:31:16 INFO    Run: cp -a /etc/sabayon/users.xml /tmp/5/etcdata-0.1/src/etc/sabayon/users.xml > /dev/null [/var/lib/repos/ssato/github.com/ssato/packagemaker.git]
-03:31:16 INFO    Run: cp -a /etc/selinux/minimum/contexts/netfilter_contexts /tmp/5/etcdata-0.1/src/etc/selinux/minimum/contexts/netfilter_contexts > /dev/null [/var/lib/repos/ssato/github.com/ssato/packagemaker.git]
-03:31:16 INFO    Run: cp -a /etc/selinux/mls/contexts/netfilter_contexts /tmp/5/etcdata-0.1/src/etc/selinux/mls/contexts/netfilter_contexts > /dev/null [/var/lib/repos/ssato/github.com/ssato/packagemaker.git]
-03:31:16 INFO    Run: cp -a /etc/selinux/targeted/contexts/netfilter_contexts /tmp/5/etcdata-0.1/src/etc/selinux/targeted/contexts/netfilter_contexts > /dev/null [/var/lib/repos/ssato/github.com/ssato/packagemaker.git]
-03:31:16 INFO    Run: cp -a /etc/ssh/ssh_host_dsa_key.pub /tmp/5/etcdata-0.1/src/etc/ssh/ssh_host_dsa_key.pub > /dev/null [/var/lib/repos/ssato/github.com/ssato/packagemaker.git]
-03:31:16 INFO    Run: cp -a /etc/ssh/ssh_host_key.pub /tmp/5/etcdata-0.1/src/etc/ssh/ssh_host_key.pub > /dev/null [/var/lib/repos/ssato/github.com/ssato/packagemaker.git]
-03:31:16 INFO    Run: cp -a /etc/ssh/ssh_host_rsa_key.pub /tmp/5/etcdata-0.1/src/etc/ssh/ssh_host_rsa_key.pub > /dev/null [/var/lib/repos/ssato/github.com/ssato/packagemaker.git]
-03:31:16 INFO    Run: cp -a /etc/sysconfig/clock /tmp/5/etcdata-0.1/src/etc/sysconfig/clock > /dev/null [/var/lib/repos/ssato/github.com/ssato/packagemaker.git]
-03:31:16 INFO    Run: cp -a /etc/sysconfig/firstboot /tmp/5/etcdata-0.1/src/etc/sysconfig/firstboot > /dev/null [/var/lib/repos/ssato/github.com/ssato/packagemaker.git]
-03:31:16 INFO    Run: cp -a /etc/sysconfig/grub /tmp/5/etcdata-0.1/src/etc/sysconfig/grub > /dev/null [/var/lib/repos/ssato/github.com/ssato/packagemaker.git]
-03:31:16 INFO    Run: cp -a /etc/sysconfig/i18n /tmp/5/etcdata-0.1/src/etc/sysconfig/i18n > /dev/null [/var/lib/repos/ssato/github.com/ssato/packagemaker.git]
-03:31:16 INFO    Run: cp -a /etc/sysconfig/kernel /tmp/5/etcdata-0.1/src/etc/sysconfig/kernel > /dev/null [/var/lib/repos/ssato/github.com/ssato/packagemaker.git]
-03:31:16 INFO    Run: cp -a /etc/sysconfig/keyboard /tmp/5/etcdata-0.1/src/etc/sysconfig/keyboard > /dev/null [/var/lib/repos/ssato/github.com/ssato/packagemaker.git]
-03:31:16 INFO    Run: cp -a /etc/sysconfig/network /tmp/5/etcdata-0.1/src/etc/sysconfig/network > /dev/null [/var/lib/repos/ssato/github.com/ssato/packagemaker.git]
-03:31:16 INFO    Run: cp -a /etc/sysconfig/networking/profiles/default/hosts /tmp/5/etcdata-0.1/src/etc/sysconfig/networking/profiles/default/hosts > /dev/null [/var/lib/repos/ssato/github.com/ssato/packagemaker.git]
-03:31:16 INFO    Run: cp -a /etc/sysconfig/networking/profiles/default/resolv.conf /tmp/5/etcdata-0.1/src/etc/sysconfig/networking/profiles/default/resolv.conf > /dev/null [/var/lib/repos/ssato/github.com/ssato/packagemaker.git]
-03:31:17 INFO    Run: cp -a /etc/tgt/conf.d/storage0.conf /tmp/5/etcdata-0.1/src/etc/tgt/conf.d/storage0.conf > /dev/null [/var/lib/repos/ssato/github.com/ssato/packagemaker.git]
-03:31:17 INFO    Run: cp -a /etc/udev/rules.d/70-persistent-cd.rules /tmp/5/etcdata-0.1/src/etc/udev/rules.d/70-persistent-cd.rules > /dev/null [/var/lib/repos/ssato/github.com/ssato/packagemaker.git]
-03:31:17 INFO    Run: cp -a /etc/udev/rules.d/70-persistent-net.rules /tmp/5/etcdata-0.1/src/etc/udev/rules.d/70-persistent-net.rules > /dev/null [/var/lib/repos/ssato/github.com/ssato/packagemaker.git]
-03:31:17 INFO    Run: cp -a /etc/yum.repos.d/fedora-chromium-stable.repo /tmp/5/etcdata-0.1/src/etc/yum.repos.d/fedora-chromium-stable.repo > /dev/null [/var/lib/repos/ssato/github.com/ssato/packagemaker.git]
-03:31:17 INFO    Run: cp -a /etc/yum.repos.d/fedora-chromium.repo /tmp/5/etcdata-0.1/src/etc/yum.repos.d/fedora-chromium.repo > /dev/null [/var/lib/repos/ssato/github.com/ssato/packagemaker.git]
-03:31:17 INFO    Run: cp -a /etc/yum.repos.d/fedora-firefox4.repo /tmp/5/etcdata-0.1/src/etc/yum.repos.d/fedora-firefox4.repo > /dev/null [/var/lib/repos/ssato/github.com/ssato/packagemaker.git]
-03:31:17 INFO    Run: cp -a /etc/yum.repos.d/fedora-virt-preview.repo /tmp/5/etcdata-0.1/src/etc/yum.repos.d/fedora-virt-preview.repo > /dev/null [/var/lib/repos/ssato/github.com/ssato/packagemaker.git]
-03:31:17 INFO    Run: cp -a /etc/yum.repos.d/timesys.repo /tmp/5/etcdata-0.1/src/etc/yum.repos.d/timesys.repo > /dev/null [/var/lib/repos/ssato/github.com/ssato/packagemaker.git]
-03:31:17 INFO    Using config parser: <class 'pmaker.anycfg.JsonConfigPaser'>
-03:31:17 INFO    Run: touch /tmp/5/etcdata-0.1/pmaker-setup.stamp > /dev/null [/tmp/5/etcdata-0.1]
-03:31:17 INFO    Preparing aux files in /tmp/5/etcdata-0.1: etcdata
-03:31:17 INFO    Found template: /usr/share/pmaker/templates/1/autotools.single/configure.ac
-03:31:17 INFO    Found template: /usr/share/pmaker/templates/1/autotools.single/Makefile.am
-03:31:17 INFO    Found template: /usr/share/pmaker/templates/1/common/README
-03:31:17 INFO    Found template: /usr/share/pmaker/templates/1/common/manifest
-03:31:17 INFO    Found template: /usr/share/pmaker/templates/1/common/manifest.overrides
-03:31:17 INFO    Found template: /usr/share/pmaker/templates/1/common/apply-overrides
-03:31:17 INFO    Found template: /usr/share/pmaker/templates/1/common/revert-overrides
-03:31:17 INFO    Found template: /usr/share/pmaker/templates/1/autotools/rpm.mk
-03:31:17 INFO    Found template: /usr/share/pmaker/templates/1/autotools/package.spec
-03:31:17 INFO    Run: touch /tmp/5/etcdata-0.1/pmaker-preconfigure.stamp > /dev/null [/tmp/5/etcdata-0.1]
-03:31:17 INFO    Configuring build aux files: etcdata
-03:31:17 INFO    Run: autoreconf -fi > /tmp/5/etcdata-0.1/pmaker.configure.log > /dev/null [/tmp/5/etcdata-0.1]
+find: `/etc/dhcp': 許可がありません
+find: `/etc/audisp': 許可がありません
+find: `/etc/polkit-1/localauthority': 許可がありません
++ pmaker -n etcdata --pversion 0.1 -v -w /tmp/20 --stepto sbuild /tmp/20/etc.not_from_package.files
+06:28:36 INFO    Using config parser: <class 'pmaker.anycfg.IniConfigParser'>
+06:28:36 INFO    /etc/pmaker.conf does not exist.
+06:28:36 INFO    Using config parser: <class 'pmaker.anycfg.IniConfigParser'>
+06:28:36 INFO    /home/ssato/.config/pmaker does not exist.
+06:28:36 INFO    Using config parser: <class 'pmaker.anycfg.IniConfigParser'>
+06:28:36 INFO    /home/ssato/.pmakerrc does not exist.
+06:28:36 INFO    Not in rpm db. Looks no rpms own /etc/ssh/ssh_host_dsa_key.pub
+06:28:36 INFO    Not in rpm db. Looks no rpms own /etc/ssh/ssh_host_key.pub
+06:28:36 INFO    Not in rpm db. Looks no rpms own /etc/ssh/ssh_host_dsa_key
+06:28:36 INFO    Not in rpm db. Looks no rpms own /etc/ssh/ssh_host_key
+06:28:36 INFO    Not in rpm db. Looks no rpms own /etc/ssh/ssh_host_rsa_key
+06:28:36 INFO    Not in rpm db. Looks no rpms own /etc/ssh/ssh_host_rsa_key.pub
+06:28:36 INFO    Not in rpm db. Looks no rpms own /etc/sysconfig/clock
+06:28:36 INFO    Not in rpm db. Looks no rpms own /etc/sysconfig/kernel
+06:28:36 INFO    Not in rpm db. Looks no rpms own /etc/sysconfig/keyboard
+06:28:36 INFO    Not in rpm db. Looks no rpms own /etc/sysconfig/iptables
+06:28:36 INFO    Not in rpm db. Looks no rpms own /etc/sysconfig/network-scripts/ifcfg-自動_Red_Hat_Guest
+06:28:36 INFO    Not in rpm db. Looks no rpms own /etc/sysconfig/network-scripts/ifcfg-eth0
+06:28:36 INFO    Not in rpm db. Looks no rpms own /etc/sysconfig/network-scripts/keys-自動_Red_Hat_Guest
+06:28:36 INFO    Not in rpm db. Looks no rpms own /etc/sysconfig/network
+06:28:36 INFO    Not in rpm db. Looks no rpms own /etc/sysconfig/i18n
+06:28:36 INFO    Not in rpm db. Looks no rpms own /etc/sysconfig/ip6tables
+06:28:36 INFO    Not in rpm db. Looks no rpms own /etc/dconf/db/gdm
+06:28:36 INFO    Not in rpm db. Looks no rpms own /etc/gconf/gconf.xml.defaults/%gconf-tree-en.xml
+06:28:36 INFO    Not in rpm db. Looks no rpms own /etc/gconf/gconf.xml.defaults/%gconf-tree.xml
+06:28:36 INFO    Not in rpm db. Looks no rpms own /etc/udev/rules.d/70-persistent-net.rules
+06:28:36 INFO    Not in rpm db. Looks no rpms own /etc/gshadow-
+06:28:36 INFO    Not in rpm db. Looks no rpms own /etc/shadow-
+06:28:36 INFO    Not in rpm db. Looks no rpms own /etc/modprobe.d/anaconda.conf
+06:28:36 INFO    Not in rpm db. Looks no rpms own /etc/yum.repos.d/packagekit-media.repo
+06:28:36 INFO    Not in rpm db. Looks no rpms own /etc/yum.repos.d/livecd-extras.repo
+06:28:36 INFO    Not in rpm db. Looks no rpms own /etc/prelink.cache
+06:28:36 INFO    Not in rpm db. Looks no rpms own /etc/aliases.db
+06:28:36 INFO    Not in rpm db. Looks no rpms own /etc/group-
+06:28:36 INFO    Not in rpm db. Looks no rpms own /etc/passwd.OLD
+06:28:36 INFO    Not in rpm db. Looks no rpms own /etc/.pwd.lock
+06:28:36 INFO    Not in rpm db. Looks no rpms own /etc/resolv.conf
+06:28:36 INFO    Not in rpm db. Looks no rpms own /etc/iscsi/initiatorname.iscsi
+06:28:36 INFO    Not in rpm db. Looks no rpms own /etc/blkid/blkid.tab
+06:28:36 INFO    Not in rpm db. Looks no rpms own /etc/blkid/blkid.tab.old
+06:28:36 INFO    Not in rpm db. Looks no rpms own /etc/nsswitch.conf.bak
+06:28:36 INFO    Not in rpm db. Looks no rpms own /etc/passwd-
+06:28:36 WARNING Filtered out as not permitted to read: path=/etc/.pwd.lock, type=file
+06:28:36 WARNING Filtered out as not permitted to read: path=/etc/aliases.db, type=file
+06:28:36 WARNING Filtered out as not permitted to read: path=/etc/gshadow-, type=file
+06:28:36 WARNING Filtered out as not permitted to read: path=/etc/passwd-, type=file
+06:28:36 WARNING Filtered out as not permitted to read: path=/etc/shadow-, type=file
+06:28:36 WARNING Filtered out as not permitted to read: path=/etc/ssh/ssh_host_dsa_key, type=file
+06:28:36 WARNING Filtered out as not permitted to read: path=/etc/ssh/ssh_host_key, type=file
+06:28:36 WARNING Filtered out as not permitted to read: path=/etc/ssh/ssh_host_rsa_key, type=file
+06:28:36 WARNING Filtered out as not permitted to read: path=/etc/sysconfig/ip6tables, type=file
+06:28:36 WARNING Filtered out as not permitted to read: path=/etc/sysconfig/iptables, type=file
+06:28:36 WARNING Filtered out as not permitted to read: path=/etc/sysconfig/network-scripts/keys-自動_Red_Hat_Guest, type=file
+06:28:36 INFO    Setting up src tree in /tmp/20/etcdata-0.1: etcdata
+06:28:36 INFO    Run: cp -a /etc/blkid/blkid.tab /tmp/20/etcdata-0.1/src/etc/blkid/blkid.tab > /dev/null [/home/ssato/repos/public/github.com/ssato/packagemaker.git]
+06:28:36 INFO    Run: cp -a /etc/blkid/blkid.tab.old /tmp/20/etcdata-0.1/src/etc/blkid/blkid.tab.old > /dev/null [/home/ssato/repos/public/github.com/ssato/packagemaker.git]
+06:28:36 INFO    Run: cp -a /etc/dconf/db/gdm /tmp/20/etcdata-0.1/src/etc/dconf/db/gdm > /dev/null [/home/ssato/repos/public/github.com/ssato/packagemaker.git]
+06:28:36 INFO    Run: cp -a /etc/gconf/gconf.xml.defaults/%gconf-tree-en.xml /tmp/20/etcdata-0.1/src/etc/gconf/gconf.xml.defaults/%gconf-tree-en.xml > /dev/null [/home/ssato/repos/public/github.com/ssato/packagemaker.git]
+06:28:36 INFO    Run: cp -a /etc/gconf/gconf.xml.defaults/%gconf-tree.xml /tmp/20/etcdata-0.1/src/etc/gconf/gconf.xml.defaults/%gconf-tree.xml > /dev/null [/home/ssato/repos/public/github.com/ssato/packagemaker.git]
+06:28:36 INFO    Run: cp -a /etc/group- /tmp/20/etcdata-0.1/src/etc/group- > /dev/null [/home/ssato/repos/public/github.com/ssato/packagemaker.git]
+06:28:36 INFO    Run: cp -a /etc/iscsi/initiatorname.iscsi /tmp/20/etcdata-0.1/src/etc/iscsi/initiatorname.iscsi > /dev/null [/home/ssato/repos/public/github.com/ssato/packagemaker.git]
+06:28:36 INFO    Run: cp -a /etc/modprobe.d/anaconda.conf /tmp/20/etcdata-0.1/src/etc/modprobe.d/anaconda.conf > /dev/null [/home/ssato/repos/public/github.com/ssato/packagemaker.git]
+06:28:36 INFO    Run: cp -a /etc/nsswitch.conf.bak /tmp/20/etcdata-0.1/src/etc/nsswitch.conf.bak > /dev/null [/home/ssato/repos/public/github.com/ssato/packagemaker.git]
+06:28:36 INFO    Run: cp -a /etc/passwd.OLD /tmp/20/etcdata-0.1/src/etc/passwd.OLD > /dev/null [/home/ssato/repos/public/github.com/ssato/packagemaker.git]
+06:28:36 INFO    Run: cp -a /etc/prelink.cache /tmp/20/etcdata-0.1/src/etc/prelink.cache > /dev/null [/home/ssato/repos/public/github.com/ssato/packagemaker.git]
+06:28:36 INFO    Run: cp -a /etc/resolv.conf /tmp/20/etcdata-0.1/src/etc/resolv.conf > /dev/null [/home/ssato/repos/public/github.com/ssato/packagemaker.git]
+06:28:36 INFO    Run: cp -a /etc/ssh/ssh_host_dsa_key.pub /tmp/20/etcdata-0.1/src/etc/ssh/ssh_host_dsa_key.pub > /dev/null [/home/ssato/repos/public/github.com/ssato/packagemaker.git]
+06:28:36 INFO    Run: cp -a /etc/ssh/ssh_host_key.pub /tmp/20/etcdata-0.1/src/etc/ssh/ssh_host_key.pub > /dev/null [/home/ssato/repos/public/github.com/ssato/packagemaker.git]
+06:28:36 INFO    Run: cp -a /etc/ssh/ssh_host_rsa_key.pub /tmp/20/etcdata-0.1/src/etc/ssh/ssh_host_rsa_key.pub > /dev/null [/home/ssato/repos/public/github.com/ssato/packagemaker.git]
+06:28:36 INFO    Run: cp -a /etc/sysconfig/clock /tmp/20/etcdata-0.1/src/etc/sysconfig/clock > /dev/null [/home/ssato/repos/public/github.com/ssato/packagemaker.git]
+06:28:36 INFO    Run: cp -a /etc/sysconfig/i18n /tmp/20/etcdata-0.1/src/etc/sysconfig/i18n > /dev/null [/home/ssato/repos/public/github.com/ssato/packagemaker.git]
+06:28:36 INFO    Run: cp -a /etc/sysconfig/kernel /tmp/20/etcdata-0.1/src/etc/sysconfig/kernel > /dev/null [/home/ssato/repos/public/github.com/ssato/packagemaker.git]
+06:28:36 INFO    Run: cp -a /etc/sysconfig/keyboard /tmp/20/etcdata-0.1/src/etc/sysconfig/keyboard > /dev/null [/home/ssato/repos/public/github.com/ssato/packagemaker.git]
+06:28:36 INFO    Run: cp -a /etc/sysconfig/network /tmp/20/etcdata-0.1/src/etc/sysconfig/network > /dev/null [/home/ssato/repos/public/github.com/ssato/packagemaker.git]
+06:28:36 INFO    Run: cp -a /etc/sysconfig/network-scripts/ifcfg-eth0 /tmp/20/etcdata-0.1/src/etc/sysconfig/network-scripts/ifcfg-eth0 > /dev/null [/home/ssato/repos/public/github.com/ssato/packagemaker.git]
+06:28:36 INFO    Run: cp -a /etc/sysconfig/network-scripts/ifcfg-自動_Red_Hat_Guest /tmp/20/etcdata-0.1/src/etc/sysconfig/network-scripts/ifcfg-自動_Red_Hat_Guest > /dev/null [/home/ssato/repos/public/github.com/ssato/packagemaker.git]
+06:28:36 INFO    Run: cp -a /etc/udev/rules.d/70-persistent-net.rules /tmp/20/etcdata-0.1/src/etc/udev/rules.d/70-persistent-net.rules > /dev/null [/home/ssato/repos/public/github.com/ssato/packagemaker.git]
+06:28:36 INFO    Run: cp -a /etc/yum.repos.d/livecd-extras.repo /tmp/20/etcdata-0.1/src/etc/yum.repos.d/livecd-extras.repo > /dev/null [/home/ssato/repos/public/github.com/ssato/packagemaker.git]
+06:28:36 INFO    Run: cp -a /etc/yum.repos.d/packagekit-media.repo /tmp/20/etcdata-0.1/src/etc/yum.repos.d/packagekit-media.repo > /dev/null [/home/ssato/repos/public/github.com/ssato/packagemaker.git]
+06:28:36 INFO    Using config parser: <class 'pmaker.anycfg.JsonConfigPaser'>
+06:28:36 INFO    Run: touch /tmp/20/etcdata-0.1/pmaker-setup.stamp > /dev/null [/tmp/20/etcdata-0.1]
+06:28:36 INFO    Preparing aux files in /tmp/20/etcdata-0.1: etcdata
+06:28:36 INFO    Found template: /usr/share/pmaker/templates/1/autotools.single/configure.ac
+06:28:36 INFO    Found template: /usr/share/pmaker/templates/1/autotools.single/Makefile.am
+06:28:36 INFO    Found template: /usr/share/pmaker/templates/1/common/README
+06:28:36 INFO    Found template: /usr/share/pmaker/templates/1/common/manifest
+06:28:36 INFO    Found template: /usr/share/pmaker/templates/1/common/manifest.overrides
+06:28:36 INFO    Found template: /usr/share/pmaker/templates/1/common/apply-overrides
+06:28:36 INFO    Found template: /usr/share/pmaker/templates/1/common/revert-overrides
+06:28:36 INFO    Found template: /usr/share/pmaker/templates/1/autotools/rpm.mk
+06:28:36 INFO    Found template: /usr/share/pmaker/templates/1/autotools/package.spec
+06:28:36 INFO    Run: touch /tmp/20/etcdata-0.1/pmaker-preconfigure.stamp > /dev/null [/tmp/20/etcdata-0.1]
+06:28:36 INFO    Configuring build aux files: etcdata
+06:28:36 INFO    Run: autoreconf -fi > /tmp/20/etcdata-0.1/pmaker.configure.log > /dev/null [/tmp/20/etcdata-0.1]
 configure.ac:2: installing `./install-sh'
 configure.ac:2: installing `./missing'
-03:31:35 INFO    Run: touch /tmp/5/etcdata-0.1/pmaker-configure.stamp > /dev/null [/tmp/5/etcdata-0.1]
-03:31:35 INFO    Building source package: etcdata
-03:31:35 INFO    Run: ./configure --quiet --enable-silent-rules > /dev/null [/tmp/5/etcdata-0.1]
-03:31:38 INFO    Run: make V=0 > /tmp/5/etcdata-0.1/pmaker.make.log > /dev/null [/tmp/5/etcdata-0.1]
-03:31:38 INFO    Run: make dist V=0 > /tmp/5/etcdata-0.1/pmaker.make_dist.log > /dev/null [/tmp/5/etcdata-0.1]
-03:31:54 INFO    Run: make srpm V=0 > /tmp/5/etcdata-0.1/pmaker.make_srpm.log > /dev/null [/tmp/5/etcdata-0.1]
-03:32:10 INFO    Run: touch /tmp/5/etcdata-0.1/pmaker-sbuild.stamp > /dev/null [/tmp/5/etcdata-0.1]
-+ ls /tmp/5/etcdata-0.1/
+06:28:39 INFO    Run: touch /tmp/20/etcdata-0.1/pmaker-configure.stamp > /dev/null [/tmp/20/etcdata-0.1]
+06:28:39 INFO    Building source package: etcdata
+06:28:39 INFO    Run: ./configure --quiet --enable-silent-rules > /dev/null [/tmp/20/etcdata-0.1]
+06:28:41 INFO    Run: make V=0 > /tmp/20/etcdata-0.1/pmaker.make.log > /dev/null [/tmp/20/etcdata-0.1]
+06:28:41 INFO    Run: make dist V=0 > /tmp/20/etcdata-0.1/pmaker.make_dist.log > /dev/null [/tmp/20/etcdata-0.1]
+06:28:41 INFO    Run: make srpm V=0 > /tmp/20/etcdata-0.1/pmaker.make_srpm.log > /dev/null [/tmp/20/etcdata-0.1]
+06:28:42 INFO    Run: touch /tmp/20/etcdata-0.1/pmaker-sbuild.stamp > /dev/null [/tmp/20/etcdata-0.1]
++ ls /tmp/20/etcdata-0.1/
 MANIFEST
 MANIFEST.overrides
 Makefile
@@ -362,7 +153,7 @@ config.log
 config.status
 configure
 configure.ac
-etcdata-0.1-1.fc14.src.rpm
+etcdata-0.1-1.fc16.src.rpm
 etcdata-0.1.tar.xz
 etcdata.spec
 install-sh
@@ -381,8 +172,8 @@ revert-overrides
 rpm
 rpm.mk
 src
-+ make -C /tmp/5/etcdata-0.1/ rpm
-make: ディレクトリ `/tmp/5/etcdata-0.1' に入ります
++ make -C /tmp/20/etcdata-0.1/ rpm
+make: ディレクトリ `/tmp/20/etcdata-0.1' に入ります
 { test ! -d "etcdata-0.1" || { find "etcdata-0.1" -type d ! -perm -200 -exec chmod u+w {} ';' && rm -fr "etcdata-0.1"; }; }
 test -d "etcdata-0.1" || mkdir "etcdata-0.1"
 test -n "" \
@@ -390,138 +181,40 @@ test -n "" \
 	-exec chmod u+rwx,go+rx {} \; -o \
   ! -type d ! -perm -444 -links 1 -exec chmod a+r {} \; -o \
   ! -type d ! -perm -400 -exec chmod a+r {} \; -o \
-  ! -type d ! -perm -444 -exec /bin/sh /tmp/5/etcdata-0.1/install-sh -c -m a+r {} {} \; \
+  ! -type d ! -perm -444 -exec /bin/sh /tmp/20/etcdata-0.1/install-sh -c -m a+r {} {} \; \
 || chmod -R a+r "etcdata-0.1"
 tardir=etcdata-0.1 && tar --format=posix -chf - "$tardir" | xz -c >etcdata-0.1.tar.xz
 { test ! -d "etcdata-0.1" || { find "etcdata-0.1" -type d ! -perm -200 -exec chmod u+w {} ';' && rm -fr "etcdata-0.1"; }; }
   GEN    rpm
 configure: WARNING: unrecognized options: --disable-dependency-tracking
 configure: WARNING: unrecognized options: --disable-dependency-tracking
-make: ディレクトリ `/tmp/5/etcdata-0.1' から出ます
-+ rpm -qlp /tmp/5/etcdata-0.1/etcdata-0.1-1.fc14.noarch.rpm
-/etc/X11/xorg.conf
-/etc/X11/xorg.conf.by-psb-config-display
-/etc/X11/xorg.conf.d/01-poulsbo.conf
-/etc/X11/xorg.conf.livna-config-backup
+make: ディレクトリ `/tmp/20/etcdata-0.1' から出ます
++ rpm -qlp /tmp/20/etcdata-0.1/etcdata-0.1-1.fc16.noarch.rpm
 /etc/blkid/blkid.tab
 /etc/blkid/blkid.tab.old
-/etc/gconf/gconf.xml.defaults/%gconf-tree-af.xml
-/etc/gconf/gconf.xml.defaults/%gconf-tree-ar.xml
-/etc/gconf/gconf.xml.defaults/%gconf-tree-as.xml
-/etc/gconf/gconf.xml.defaults/%gconf-tree-ast.xml
-/etc/gconf/gconf.xml.defaults/%gconf-tree-az.xml
-/etc/gconf/gconf.xml.defaults/%gconf-tree-be.xml
-/etc/gconf/gconf.xml.defaults/%gconf-tree-bg.xml
-/etc/gconf/gconf.xml.defaults/%gconf-tree-bn.xml
-/etc/gconf/gconf.xml.defaults/%gconf-tree-bn_IN.xml
-/etc/gconf/gconf.xml.defaults/%gconf-tree-bs.xml
-/etc/gconf/gconf.xml.defaults/%gconf-tree-ca.xml
-/etc/gconf/gconf.xml.defaults/%gconf-tree-ca@valencia.xml
-/etc/gconf/gconf.xml.defaults/%gconf-tree-cs.xml
-/etc/gconf/gconf.xml.defaults/%gconf-tree-cy.xml
-/etc/gconf/gconf.xml.defaults/%gconf-tree-da.xml
-/etc/gconf/gconf.xml.defaults/%gconf-tree-de.xml
-/etc/gconf/gconf.xml.defaults/%gconf-tree-dz.xml
-/etc/gconf/gconf.xml.defaults/%gconf-tree-el.xml
+/etc/dconf/db/gdm
 /etc/gconf/gconf.xml.defaults/%gconf-tree-en.xml
-/etc/gconf/gconf.xml.defaults/%gconf-tree-en@shaw.xml
-/etc/gconf/gconf.xml.defaults/%gconf-tree-en_CA.xml
-/etc/gconf/gconf.xml.defaults/%gconf-tree-en_GB.xml
-/etc/gconf/gconf.xml.defaults/%gconf-tree-es.xml
-/etc/gconf/gconf.xml.defaults/%gconf-tree-et.xml
-/etc/gconf/gconf.xml.defaults/%gconf-tree-eu.xml
-/etc/gconf/gconf.xml.defaults/%gconf-tree-fi.xml
-/etc/gconf/gconf.xml.defaults/%gconf-tree-fo.xml
-/etc/gconf/gconf.xml.defaults/%gconf-tree-fr.xml
-/etc/gconf/gconf.xml.defaults/%gconf-tree-gl.xml
-/etc/gconf/gconf.xml.defaults/%gconf-tree-gu.xml
-/etc/gconf/gconf.xml.defaults/%gconf-tree-he.xml
-/etc/gconf/gconf.xml.defaults/%gconf-tree-hi.xml
-/etc/gconf/gconf.xml.defaults/%gconf-tree-hr.xml
-/etc/gconf/gconf.xml.defaults/%gconf-tree-hu.xml
-/etc/gconf/gconf.xml.defaults/%gconf-tree-id.xml
-/etc/gconf/gconf.xml.defaults/%gconf-tree-it.xml
-/etc/gconf/gconf.xml.defaults/%gconf-tree-ja.xml
-/etc/gconf/gconf.xml.defaults/%gconf-tree-ka.xml
-/etc/gconf/gconf.xml.defaults/%gconf-tree-kn.xml
-/etc/gconf/gconf.xml.defaults/%gconf-tree-ko.xml
-/etc/gconf/gconf.xml.defaults/%gconf-tree-lt.xml
-/etc/gconf/gconf.xml.defaults/%gconf-tree-lv.xml
-/etc/gconf/gconf.xml.defaults/%gconf-tree-mai.xml
-/etc/gconf/gconf.xml.defaults/%gconf-tree-mg.xml
-/etc/gconf/gconf.xml.defaults/%gconf-tree-mk.xml
-/etc/gconf/gconf.xml.defaults/%gconf-tree-ml.xml
-/etc/gconf/gconf.xml.defaults/%gconf-tree-mn.xml
-/etc/gconf/gconf.xml.defaults/%gconf-tree-mr.xml
-/etc/gconf/gconf.xml.defaults/%gconf-tree-nb.xml
-/etc/gconf/gconf.xml.defaults/%gconf-tree-ne.xml
-/etc/gconf/gconf.xml.defaults/%gconf-tree-nl.xml
-/etc/gconf/gconf.xml.defaults/%gconf-tree-nn.xml
-/etc/gconf/gconf.xml.defaults/%gconf-tree-nso.xml
-/etc/gconf/gconf.xml.defaults/%gconf-tree-or.xml
-/etc/gconf/gconf.xml.defaults/%gconf-tree-pa.xml
-/etc/gconf/gconf.xml.defaults/%gconf-tree-pl.xml
-/etc/gconf/gconf.xml.defaults/%gconf-tree-pt.xml
-/etc/gconf/gconf.xml.defaults/%gconf-tree-pt_BR.xml
-/etc/gconf/gconf.xml.defaults/%gconf-tree-ro.xml
-/etc/gconf/gconf.xml.defaults/%gconf-tree-ru.xml
-/etc/gconf/gconf.xml.defaults/%gconf-tree-sk.xml
-/etc/gconf/gconf.xml.defaults/%gconf-tree-sl.xml
-/etc/gconf/gconf.xml.defaults/%gconf-tree-sq.xml
-/etc/gconf/gconf.xml.defaults/%gconf-tree-sr.xml
-/etc/gconf/gconf.xml.defaults/%gconf-tree-sr@ije.xml
-/etc/gconf/gconf.xml.defaults/%gconf-tree-sr@latin.xml
-/etc/gconf/gconf.xml.defaults/%gconf-tree-sv.xml
-/etc/gconf/gconf.xml.defaults/%gconf-tree-ta.xml
-/etc/gconf/gconf.xml.defaults/%gconf-tree-te.xml
-/etc/gconf/gconf.xml.defaults/%gconf-tree-th.xml
-/etc/gconf/gconf.xml.defaults/%gconf-tree-tr.xml
-/etc/gconf/gconf.xml.defaults/%gconf-tree-uk.xml
-/etc/gconf/gconf.xml.defaults/%gconf-tree-vi.xml
-/etc/gconf/gconf.xml.defaults/%gconf-tree-xh.xml
-/etc/gconf/gconf.xml.defaults/%gconf-tree-zh_CN.xml
-/etc/gconf/gconf.xml.defaults/%gconf-tree-zh_HK.xml
-/etc/gconf/gconf.xml.defaults/%gconf-tree-zh_TW.xml
-/etc/gconf/gconf.xml.defaults/%gconf-tree-zu.xml
 /etc/gconf/gconf.xml.defaults/%gconf-tree.xml
-/etc/gdm/custom.conf.livna-config-backup
 /etc/group-
 /etc/iscsi/initiatorname.iscsi
-/etc/mdadm.conf
+/etc/modprobe.d/anaconda.conf
 /etc/nsswitch.conf.bak
-/etc/pki/CA/certs/RedHat_IS_CA_Root.cert
-/etc/pki/nssdb/pkcs11.txt.rpmnew
-/etc/pm/last_known_working.quirkdb
+/etc/passwd.OLD
 /etc/prelink.cache
-/etc/rc.d/init.d/livesys
-/etc/rc.d/init.d/livesys-late
 /etc/resolv.conf
-/etc/resolv.conf.ppp
-/etc/rpm/macros.imgcreate
-/etc/sabayon/users.xml
-/etc/selinux/minimum/contexts/netfilter_contexts
-/etc/selinux/mls/contexts/netfilter_contexts
-/etc/selinux/targeted/contexts/netfilter_contexts
 /etc/ssh/ssh_host_dsa_key.pub
 /etc/ssh/ssh_host_key.pub
 /etc/ssh/ssh_host_rsa_key.pub
 /etc/sysconfig/clock
-/etc/sysconfig/firstboot
-/etc/sysconfig/grub
 /etc/sysconfig/i18n
 /etc/sysconfig/kernel
 /etc/sysconfig/keyboard
 /etc/sysconfig/network
-/etc/sysconfig/networking/profiles/default/hosts
-/etc/sysconfig/networking/profiles/default/resolv.conf
-/etc/tgt/conf.d/storage0.conf
-/etc/udev/rules.d/70-persistent-cd.rules
+/etc/sysconfig/network-scripts/ifcfg-eth0
+/etc/sysconfig/network-scripts/ifcfg-自動_Red_Hat_Guest
 /etc/udev/rules.d/70-persistent-net.rules
-/etc/yum.repos.d/fedora-chromium-stable.repo
-/etc/yum.repos.d/fedora-chromium.repo
-/etc/yum.repos.d/fedora-firefox4.repo
-/etc/yum.repos.d/fedora-virt-preview.repo
-/etc/yum.repos.d/timesys.repo
+/etc/yum.repos.d/livecd-extras.repo
+/etc/yum.repos.d/packagekit-media.repo
 /usr/share/doc/etcdata-0.1
 /usr/share/doc/etcdata-0.1/README
 /usr/share/doc/etcdata-0.1/pmaker-config.json

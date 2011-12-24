@@ -1,51 +1,74 @@
 + echo examples/etc/resolv.conf
 + pmaker -n resolvconf --pversion 0.1 -w /tmp/4 -vv --no-mock --destdir examples --backend buildrpm.rpm -
-03:16:15 INFO    Using config parser: <class 'pmaker.anycfg.IniConfigParser'>
-03:16:15 INFO    /etc/pmaker.conf does not exist.
-03:16:15 INFO    Using config parser: <class 'pmaker.anycfg.IniConfigParser'>
-03:16:15 INFO    /home/ssato/.config/pmaker does not exist.
-03:16:15 INFO    Using config parser: <class 'pmaker.anycfg.IniConfigParser'>
-03:16:15 INFO    /home/ssato/.pmakerrc does not exist.
-03:16:15 DEBUG   Adding RpmAttributeModifier
-03:16:15 DEBUG   Adding RpmConflictsModifier
-03:16:16 WARNING Failed to get stat from rpm db: examples/etc/resolv.conf
-03:16:16 DEBUG   Rewrote installation path from examples/etc/resolv.conf to /etc/resolv.conf
-03:16:16 DEBUG   pkgdata.relations=[]
-03:16:16 INFO    Setting up src tree in /tmp/4/resolvconf-0.1: resolvconf
-03:16:16 INFO    ...The step looks already done: Skip the step: setup
-03:16:16 INFO    Preparing aux files in /tmp/4/resolvconf-0.1: resolvconf
-03:16:16 INFO    ...The step looks already done: Skip the step: preconfigure
-03:16:16 INFO    Configuring build aux files: resolvconf
-03:16:16 INFO    Run: touch /tmp/4/resolvconf-0.1/pmaker-configure.stamp > /dev/null [/tmp/4/resolvconf-0.1]
-03:16:17 DEBUG   Finished: touch /tmp/4/resolvconf-0.1/pmaker-configure.stamp > /dev/null [/tmp/4/resolvconf-0.1]
-03:16:17 INFO    Building source package: resolvconf
-03:16:17 INFO    Run: make dist > /tmp/4/resolvconf-0.1/pmaker.sbuild.log > /dev/null [/tmp/4/resolvconf-0.1]
+06:27:36 INFO    Using config parser: <class 'pmaker.anycfg.IniConfigParser'>
+06:27:36 INFO    /etc/pmaker.conf does not exist.
+06:27:36 INFO    Using config parser: <class 'pmaker.anycfg.IniConfigParser'>
+06:27:36 INFO    /home/ssato/.config/pmaker does not exist.
+06:27:36 INFO    Using config parser: <class 'pmaker.anycfg.IniConfigParser'>
+06:27:36 INFO    /home/ssato/.pmakerrc does not exist.
+06:27:36 DEBUG   Adding RpmAttributeModifier
+06:27:36 DEBUG   Adding RpmConflictsModifier
+06:27:36 INFO    Not in rpm db. Looks no rpms own examples/etc/resolv.conf
+06:27:36 DEBUG   Rewrote installation path from examples/etc/resolv.conf to /etc/resolv.conf
+06:27:36 DEBUG   pkgdata.relations=[]
+06:27:36 INFO    Setting up src tree in /tmp/4/resolvconf-0.1: resolvconf
+06:27:36 DEBUG   Creating a directory: /tmp/4/resolvconf-0.1
+06:27:36 DEBUG   Creating a directory: /tmp/4/resolvconf-0.1/src
+06:27:36 DEBUG   Copying: from=examples/etc/resolv.conf, to=/tmp/4/resolvconf-0.1/src/etc/resolv.conf
+06:27:36 INFO    Run: cp -a examples/etc/resolv.conf /tmp/4/resolvconf-0.1/src/etc/resolv.conf > /dev/null [/home/ssato/repos/public/github.com/ssato/packagemaker.git]
+06:27:36 DEBUG   Finished: cp -a examples/etc/resolv.conf /tmp/4/resolvconf-0.1/src/etc/resolv.conf > /dev/null [/home/ssato/repos/public/github.com/ssato/packagemaker.git]
+06:27:36 INFO    Using config parser: <class 'pmaker.anycfg.JsonConfigPaser'>
+06:27:36 DEBUG   Save to: /tmp/4/resolvconf-0.1/pmaker-config.json
+06:27:36 INFO    Run: touch /tmp/4/resolvconf-0.1/pmaker-setup.stamp > /dev/null [/tmp/4/resolvconf-0.1]
+06:27:36 DEBUG   Finished: touch /tmp/4/resolvconf-0.1/pmaker-setup.stamp > /dev/null [/tmp/4/resolvconf-0.1]
+06:27:36 INFO    Preparing aux files in /tmp/4/resolvconf-0.1: resolvconf
+06:27:36 DEBUG   template search_paths=/usr/share/pmaker/templates
+06:27:36 INFO    Found template: /usr/share/pmaker/templates/1/common/README
+06:27:36 DEBUG   template search_paths=/usr/share/pmaker/templates
+06:27:36 INFO    Found template: /usr/share/pmaker/templates/1/buildrpm/Makefile
+06:27:36 DEBUG   template search_paths=/usr/share/pmaker/templates
+06:27:36 INFO    Found template: /usr/share/pmaker/templates/1/common/apply-overrides
+06:27:36 DEBUG   template search_paths=/usr/share/pmaker/templates
+06:27:36 INFO    Found template: /usr/share/pmaker/templates/1/common/revert-overrides
+06:27:36 DEBUG   template search_paths=/usr/share/pmaker/templates
+06:27:36 INFO    Found template: /usr/share/pmaker/templates/1/buildrpm/rpm.mk
+06:27:36 DEBUG   template search_paths=/usr/share/pmaker/templates
+06:27:36 INFO    Found template: /usr/share/pmaker/templates/1/buildrpm/package.spec
+06:27:36 INFO    Run: touch /tmp/4/resolvconf-0.1/pmaker-preconfigure.stamp > /dev/null [/tmp/4/resolvconf-0.1]
+06:27:36 DEBUG   Finished: touch /tmp/4/resolvconf-0.1/pmaker-preconfigure.stamp > /dev/null [/tmp/4/resolvconf-0.1]
+06:27:36 INFO    Configuring build aux files: resolvconf
+06:27:36 INFO    Run: touch /tmp/4/resolvconf-0.1/pmaker-configure.stamp > /dev/null [/tmp/4/resolvconf-0.1]
+06:27:36 DEBUG   Finished: touch /tmp/4/resolvconf-0.1/pmaker-configure.stamp > /dev/null [/tmp/4/resolvconf-0.1]
+06:27:37 INFO    Building source package: resolvconf
+06:27:37 INFO    Run: make dist > /tmp/4/resolvconf-0.1/pmaker.sbuild.log > /dev/null [/tmp/4/resolvconf-0.1]
 resolvconf-0.1/
-resolvconf-0.1/pmaker.sbuild.log
-resolvconf-0.1/pmaker-configure.stamp
-resolvconf-0.1/pmaker-preconfigure.stamp
-resolvconf-0.1/resolvconf.spec
-resolvconf-0.1/rpm.mk
-resolvconf-0.1/revert-overrides
-resolvconf-0.1/apply-overrides
-resolvconf-0.1/Makefile
-resolvconf-0.1/README
-resolvconf-0.1/pmaker-setup.stamp
-resolvconf-0.1/pmaker-config.json
-resolvconf-0.1/pmaker-filelist.pkl
 resolvconf-0.1/src/
 resolvconf-0.1/src/etc/
 resolvconf-0.1/src/etc/resolv.conf
-(stdin): 2,316 B / 20.0 KiB = 0.113
-03:16:18 DEBUG   Finished: make dist > /tmp/4/resolvconf-0.1/pmaker.sbuild.log > /dev/null [/tmp/4/resolvconf-0.1]
-03:16:18 INFO    Run: touch /tmp/4/resolvconf-0.1/pmaker-sbuild.stamp > /dev/null [/tmp/4/resolvconf-0.1]
-03:16:18 DEBUG   Finished: touch /tmp/4/resolvconf-0.1/pmaker-sbuild.stamp > /dev/null [/tmp/4/resolvconf-0.1]
-03:16:18 INFO    Building binary package[s]: resolvconf
-03:16:18 INFO    Run: make rpm > /dev/null [/tmp/4/resolvconf-0.1]
-03:16:21 DEBUG   Finished: make rpm > /dev/null [/tmp/4/resolvconf-0.1]
-03:16:21 INFO    Run: touch /tmp/4/resolvconf-0.1/pmaker-build.stamp > /dev/null [/tmp/4/resolvconf-0.1]
-03:16:21 DEBUG   Finished: touch /tmp/4/resolvconf-0.1/pmaker-build.stamp > /dev/null [/tmp/4/resolvconf-0.1]
-03:16:21 INFO    Created packages in /tmp/4/resolvconf-0.1: resolvconf
+resolvconf-0.1/pmaker-setup.stamp
+resolvconf-0.1/README
+resolvconf-0.1/pmaker-preconfigure.stamp
+resolvconf-0.1/apply-overrides
+resolvconf-0.1/pmaker-filelist.pkl
+resolvconf-0.1/resolvconf.spec
+resolvconf-0.1/pmaker.sbuild.log
+resolvconf-0.1/Makefile
+resolvconf-0.1/rpm.mk
+resolvconf-0.1/revert-overrides
+resolvconf-0.1/pmaker-configure.stamp
+resolvconf-0.1/pmaker-config.json
+(stdin): 2,304 B / 20.0 KiB = 0.113
+06:27:37 DEBUG   Finished: make dist > /tmp/4/resolvconf-0.1/pmaker.sbuild.log > /dev/null [/tmp/4/resolvconf-0.1]
+06:27:37 INFO    Run: make srpm > /dev/null [/tmp/4/resolvconf-0.1]
+06:27:37 DEBUG   Finished: make srpm > /dev/null [/tmp/4/resolvconf-0.1]
+06:27:37 INFO    Run: touch /tmp/4/resolvconf-0.1/pmaker-sbuild.stamp > /dev/null [/tmp/4/resolvconf-0.1]
+06:27:37 DEBUG   Finished: touch /tmp/4/resolvconf-0.1/pmaker-sbuild.stamp > /dev/null [/tmp/4/resolvconf-0.1]
+06:27:37 INFO    Building binary package[s]: resolvconf
+06:27:37 INFO    Run: make rpm > /dev/null [/tmp/4/resolvconf-0.1]
+06:27:37 DEBUG   Finished: make rpm > /dev/null [/tmp/4/resolvconf-0.1]
+06:27:37 INFO    Run: touch /tmp/4/resolvconf-0.1/pmaker-build.stamp > /dev/null [/tmp/4/resolvconf-0.1]
+06:27:37 DEBUG   Finished: touch /tmp/4/resolvconf-0.1/pmaker-build.stamp > /dev/null [/tmp/4/resolvconf-0.1]
+06:27:37 INFO    Created packages in /tmp/4/resolvconf-0.1: resolvconf
 + ls /tmp/4
 resolvconf-0.1
 + ls /tmp/4/resolvconf-0.1/
@@ -60,14 +83,15 @@ pmaker-preconfigure.stamp
 pmaker-sbuild.stamp
 pmaker-setup.stamp
 pmaker.sbuild.log
-resolvconf-0.1-1.fc14.noarch.rpm
+resolvconf-0.1-1.fc16.noarch.rpm
+resolvconf-0.1-1.fc16.src.rpm
 resolvconf-0.1.tar.xz
 resolvconf.spec
 revert-overrides
 rpm
 rpm.mk
 src
-+ rpm -qlp /tmp/4/resolvconf-0.1/resolvconf-0.1-1.fc14.noarch.rpm
++ rpm -qlp /tmp/4/resolvconf-0.1/resolvconf-0.1-1.fc16.noarch.rpm
 /etc/resolv.conf
 /usr/share/doc/resolvconf-0.1
 /usr/share/doc/resolvconf-0.1/README
