@@ -10,5 +10,7 @@ if test $# -gt 0; then
     test $check_with_pep8 = 1 && (for x in $@; do pep8 ${x%%:*}; done) || :
     PYTHONPATH=$topdir nosetests -c $topdir/nose.cfg $@
 else
-    PYTHONPATH=$topdir nosetests -c $topdir/nose.cfg -w $topdir/tests/
+    for f in $(cat $topdir/test.targets); do 
+        PYTHONPATH=$topdir nosetests -c $topdir/nose.cfg $@
+    done
 fi
