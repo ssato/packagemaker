@@ -17,6 +17,7 @@
 from pmaker.globals import TYPE_FILE, TYPE_DIR, TYPE_SYMLINK, \
     TYPE_OTHER, TYPE_UNKNOWN
 from pmaker.tests.common import setup_workdir, cleanup_workdir
+from pmaker.models.Bunch import Bunch
 
 import pmaker.rpmutils as R
 import pmaker.models.FileObjects as FO
@@ -102,7 +103,7 @@ class Test__create_from_real_object(unittest.TestCase):
         cleanup_workdir(self.workdir)
 
     def test__file_wo_metadata(self):
-        fo = FO.XObject(self.file)
+        fo = Bunch(path=self.file)
         fo = Factory.create_from_real_object(fo)
 
         self.assertTrue(isinstance(fo, FO.FileObject))
@@ -111,7 +112,7 @@ class Test__create_from_real_object(unittest.TestCase):
         self.assertEquals(fo.mode, self.file_mode)
 
     def test__dir_wo_metadata(self):
-        fo = FO.XObject(self.dir)
+        fo = Bunch(path=self.dir)
         fo = Factory.create_from_real_object(fo)
 
         self.assertTrue(isinstance(fo, FO.DirObject))
@@ -120,7 +121,7 @@ class Test__create_from_real_object(unittest.TestCase):
         self.assertEquals(fo.mode, self.dir_mode)
 
     def test__symlink_wo_metadata(self):
-        fo = FO.XObject(self.symlink)
+        fo = Bunch(path=self.symlink)
         fo = Factory.create_from_real_object(fo)
 
         self.assertTrue(isinstance(fo, FO.SymlinkObject))
@@ -130,7 +131,7 @@ class Test__create_from_real_object(unittest.TestCase):
     def test__file_w_mode(self):
         mode = "0600"
 
-        fo = FO.XObject(self.file, mode=mode)
+        fo = Bunch(path=self.file, mode=mode)
         fo = Factory.create_from_real_object(fo)
 
         self.assertEquals(fo.mode, mode)
@@ -139,7 +140,7 @@ class Test__create_from_real_object(unittest.TestCase):
         uid = 1
         gid = 1
 
-        fo = FO.XObject(self.file, uid=uid, gid=gid)
+        fo = Bunch(path=self.file, uid=uid, gid=gid)
         fo = Factory.create_from_real_object(fo)
 
         self.assertEquals(fo.uid, uid)
@@ -147,7 +148,8 @@ class Test__create_from_real_object(unittest.TestCase):
 
     def test__dir_w_mode(self):
         mode = "0700"
-        fo = FO.XObject(self.dir, mode)
+
+        fo = Bunch(path=self.dir, mode=mode)
         fo = Factory.create_from_real_object(fo)
 
         self.assertTrue(isinstance(fo, FO.DirObject))

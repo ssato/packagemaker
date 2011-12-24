@@ -76,13 +76,13 @@ class XObject(Bunch):
         assert path is not None, "Path must not be None!"  # MUST
 
         self.path = path
-        self.mode = mode
-        self.uid = uid
-        self.gid = gid
-        self.checksum = checksum
+        self.mode = self.defaults.mode if mode is None else mode
+        self.uid = self.defaults.uid if uid is None else uid
+        self.gid = self.defaults.gid if gid is None else gid
+        self.checksum = self.defaults.checksum if checksum is None else checksum
         self.create = bool(create)
         self.content = content
-        self.src = src is None and path or src
+        self.src = path if src is None else src
 
         self.target = self.install_path = path
 

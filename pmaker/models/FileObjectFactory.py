@@ -129,12 +129,12 @@ def create_from_real_object(fo, use_rpmdb=False):
             logging.warn("Failed to detect filetype: " + fo.path)
 
         elif filetype == TYPE_SYMLINK:
-            if not fo.get("linkto", False):
+            if "linkto" not in fo:
                 fo.linkto = os.path.realpath(fo.path)
 
     # override with real (stat-ed) values if not specified.
     for n in basic_attr_names:
-        if not fo.get(n, False):
+        if n not in fo:
             fo[n] = attrs[n]
 
     cls = FO.FILEOBJECTS.get(filetype, None)
@@ -152,13 +152,15 @@ def create(path, use_rpmdb=False, **attrs):
     :param attrs: A dict holding metadata other than path such as mode, gid,
                   uid, checksum, create, filetype, src, linkto, etc.
     """
-    fo = FO.XObject(path, **attrs)
+    fo = Bunch(path=path, **attrs)
 
-    if not fo.create:
-        if os.path.exists(fo.path):
+    if "create" not in attrs:
+        if os.path.exists(path):
             return create_from_real_object(fo, use_rpmdb)
         else:
-            if fo.content or fo.src != fo.path or "linkto" in fo or \
+            if ("content" in fo and fo.content) or \
+                    "src" in fo and fo.src != fo.path or \
+                    "linkto" in fo or \
                     "filetype" in fo:
                 fo.create = True
 
@@ -167,7 +169,8 @@ def create(path, use_rpmdb=False, **attrs):
     else:
         filetype = TYPE_UNKNOWN
 
-        if fo.content or fo.src != fo.path:
+        if ("content" in fo and fo.content) or \
+                "src" in fo and fo.src != fo.path:
             filetype = TYPE_FILE
 
         elif "linkto" in fo:
@@ -176,10 +179,7 @@ def create(path, use_rpmdb=False, **attrs):
         else:  # TODO: Is there any specific features in dirs?
             filetype = TYPE_DIR
 
-    # set default values to necessary parameters if not set:
-    for attr in ("mode", "uid", "gid", "checksum"):
-        if not fo.get(attr, False):
-            fo[attr] = fo.defaults[attr]
+    logging.debug("xo=" + str(fo))
 
     cls = FO.FILEOBJECTS.get(filetype, None)
     assert cls is not None
