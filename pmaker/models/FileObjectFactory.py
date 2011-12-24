@@ -179,7 +179,7 @@ def create(path, use_rpmdb=False, **attrs):
         else:  # TODO: Is there any specific features in dirs?
             filetype = TYPE_DIR
 
-    logging.debug("xo=" + str(fo))
+    #logging.debug("xo=" + str(fo))
 
     cls = FO.FILEOBJECTS.get(filetype, None)
     assert cls is not None
