@@ -14,8 +14,6 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
-from pmaker.globals import PMAKER_TEMPLATE_VERSION as TVER
-
 import pmaker.backend.base as B
 
 import os
@@ -30,30 +28,6 @@ class Backend(B.Base):
     _relations = {
         "requires": "Depends",
     }
-
-    def __init__(self, pkgdata, **kwargs):
-        super(Backend, self).__init__(pkgdata, **kwargs)
-
-        self._templates += [
-            (TVER + "/common/debian/rules", "debian/rules"),
-            (TVER + "/autotools/debian/control", "debian/control"),
-            (TVER + "/common/debian/copyright", "debian/copyright"),
-            (TVER + "/common/debian/changelog", "debian/changelog"),
-            (TVER + "/common/debian/dirs", "debian/dirs"),
-            (TVER + "/common/debian/compat", "debian/compat"),
-            (TVER + "/common/debian/source/format", "debian/source/format"),
-            (TVER + "/common/debian/source/options", "debian/source/options"),
-        ]
-
-    def preconfigure(self):
-        debiandir = os.path.join(self.workdir, "debian")
-
-        os.makedirs(debiandir, 0755)
-        os.makedirs(os.path.join(debiandir, "source"), 0755)
-
-        super(Backend, self).preconfigure()
-
-        os.chmod(os.path.join(self.workdir, "debian/rules"), 0755)
 
 
 # vim:sw=4 ts=4 et:
