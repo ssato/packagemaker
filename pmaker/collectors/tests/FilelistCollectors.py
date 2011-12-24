@@ -105,6 +105,7 @@ class Test_00_FilelistCollector__wo_side_effects(unittest.TestCase):
 class Test_01_FilelistCollector(unittest.TestCase):
 
     _multiprocess_can_split_ = True
+    maxDiff = None
 
     def setUp(self):
         self.workdir = setup_workdir()
@@ -127,7 +128,6 @@ class Test_01_FilelistCollector(unittest.TestCase):
             Factory.create(listfile, False, mode="0644"),
             Factory.create(listfile2, False, mode="0644"),
         ]
-
         self.assertEquals(sorted(fos), sorted(fos_ref))
 
     def test_02_list__multi_generated_file(self):
@@ -145,7 +145,6 @@ class Test_01_FilelistCollector(unittest.TestCase):
             Factory.create(listfile, False, mode="0644"),
             Factory.create(listfile2, False, mode="0644"),
         ]
-
         self.assertEquals(sorted(fos), sorted(fos_ref))
 
     def test_03_list__multi_real_files(self):
