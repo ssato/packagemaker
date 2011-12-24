@@ -45,7 +45,7 @@ Options:  see %prog --help
 Examples:
   %prog -n foo files.list
   cat files.list | %prog -n foo -  # same as above.
-  %prog -n foo -C config.json  # Specify files in JSON config also.
+  %prog -C config.json  # Specify files in JSON config also.
 
   %prog -n foo --pversion 0.2 --license MIT files.list
   %prog -n foo --relations "requires:httpd,/bin/tar;obsoletes:bar" files.list

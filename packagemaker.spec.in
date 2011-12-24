@@ -75,6 +75,14 @@ rm -rf $RPM_BUILD_ROOT
 
 
 %changelog
+* Sun Dec 25 2011 Satoru SATOH <ssato@redhat.com> - 0.4.0-1
+- new major version release
+- switched module represents file objects from FileInfo to FileObjects
+- switched module implements build process from Makers to Backends
+- switched template engine from python-cheetah to (builtin) pytenjin
+- many refactorings, enhancements and fixes around option and configurations handling
+- new backend: buildrpm.{tgz,rpm}
+
 * Fri Sep 30 2011 Satoru SATOH <ssato@redhat.com> - 0.3.1.20110930-2
 - snapshot release
 - fixed a grave bug introduced in previous commits that attributes user
