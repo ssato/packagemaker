@@ -45,13 +45,14 @@ class Test_templates_1_autotools_single(unittest.TestCase):
             Bunch(id=i, files=random.sample(paths, 3), dir="/a/b") \
                 for i in range(5)
         ]
+        conflicts = Bunch(files=[1, 2, 3])  # dummy
 
         context = dict(
-            conflicted_fileinfos=[1, 2, 3],  # dummy
             name="foobar",
             format="rpm",
             distdata=distdata,
             files=files,
+            conflicts=conflicts,
         )
 
         c = TW.template_compile(tmpl, context)
