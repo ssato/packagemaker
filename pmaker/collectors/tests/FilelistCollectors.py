@@ -56,7 +56,8 @@ PATHS_EXPANDED = U.unique(
 )
 
 SYSTEM_FILES_EXIST_AND_NO_RPMS_OWN = [
-    "/etc/resolv.conf", "/etc/aliases.db", "/usr/share/mime/mime.cache"
+    "/etc/resolv.conf", "/usr/share/mime/mime.cache",
+        "/usr/share/applications/mimeinfo.cache"
 ]
 SYSTEM_FILES_EXIST_AND_NO_RPMS_OWN = [
     f for f in SYSTEM_FILES_EXIST_AND_NO_RPMS_OWN if os.path.exists(f)
