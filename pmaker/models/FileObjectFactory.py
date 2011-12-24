@@ -60,7 +60,7 @@ def lstat(path, use_rpmdb=False):
         if R.is_rpmdb_available():
             st = rpm_lstat(path)
             if st is None:
-                logging.warn("Failed to get stat from rpm db: " + path)
+                logging.info("Not in rpm db. Looks no rpms own " + path)
             else:
                 return st
         else:
@@ -69,6 +69,7 @@ def lstat(path, use_rpmdb=False):
             )
     try:
         st = os.lstat(path)
+
     except OSError, e:
         logging.warn(e)
         return None
@@ -103,9 +104,9 @@ def guess_filetype(st_mode):
 def create_from_real_object(fo, use_rpmdb=False):
     """
     Creates and returns an appropriate type of FileObjects' instance from a
-    FileObject's instance. The entity of FileObject's instance must exists.
+    Bunch object of which path exists actually.
 
-    :param fo:  A FileObjects.XObject's instance
+    :param fo:  A Bunch object
     """
     assert os.path.exists(fo.path)
 
@@ -143,6 +144,11 @@ def create_from_real_object(fo, use_rpmdb=False):
     return cls(**fo)
 
 
+def to_be_created(fo):
+    return ("content" in fo and fo.content) or "linkto" in fo or \
+        ("src" in fo and fo.src != fo.path)
+
+
 def create(path, use_rpmdb=False, **attrs):
     """
     A kind of factory method to create an appropriate type of FileObjects'
@@ -154,15 +160,14 @@ def create(path, use_rpmdb=False, **attrs):
     """
     fo = Bunch(path=path, **attrs)
 
-    if "create" not in attrs:
+    if "create" in fo and fo.create:
+        assert to_be_created(fo), \
+            "Missing info to create: path=%s, attrs=%s" % (path, str(attrs))
+    else:
         if os.path.exists(path):
             return create_from_real_object(fo, use_rpmdb)
         else:
-            if ("content" in fo and fo.content) or \
-                    "src" in fo and fo.src != fo.path or \
-                    "linkto" in fo or \
-                    "filetype" in fo:
-                fo.create = True
+            fo.create = True if to_be_created(fo) else False
 
     if "filetype" in fo:
         filetype = FO.typestr_to_type(fo.filetype)
@@ -170,7 +175,7 @@ def create(path, use_rpmdb=False, **attrs):
         filetype = TYPE_UNKNOWN
 
         if ("content" in fo and fo.content) or \
-                "src" in fo and fo.src != fo.path:
+                ("src" in fo and fo.src != fo.path):
             filetype = TYPE_FILE
 
         elif "linkto" in fo:
