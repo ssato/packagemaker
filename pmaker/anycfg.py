@@ -116,7 +116,6 @@ class IniConfigParser(object):
         logging.info("Loading config: " + path_)
         config = Bunch()
 
-
         def __parse(v):
             if v.startswith('"') and v.endswith('"'):
                 return v[1:-1]
@@ -349,7 +348,9 @@ class AnyConfigParser(object):
         parser = ccls()
 
         if not getattr(parser, "dump", False):
-            logging.warn("Dump method not implemented. Fallback to JsonConfigPaser")
+            logging.warn(
+                "Dump method not implemented. Fallback to JsonConfigPaser"
+            )
             parser = JsonConfigPaser()
             conf = os.path.splitext(conf)[0] + ".json"
 

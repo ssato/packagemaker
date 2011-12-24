@@ -20,7 +20,6 @@ from pmaker.shell import run
 import os
 
 
-
 class SymlinkOperations(FileOperations):
 
     link_instead_of_copy = False
@@ -37,4 +36,4 @@ class SymlinkOperations(FileOperations):
             run("cp -a %s %s" % (fileinfo.path, dest))
 
 
-# vim: set sw=4 ts=4 expandtab:
+# vim:sw=4 ts=4 et:

@@ -23,7 +23,6 @@ import os.path
 import shutil
 
 
-
 class FileOperations(object):
     """Class to implement operations for FileInfo classes.
 
@@ -36,8 +35,9 @@ class FileOperations(object):
 
     @classmethod
     def same(cls, lhs, rhs):
-        """lhs and rhs are identical, that is, these contents and metadata
-        (except for path) are exactly same.
+        """
+        lhs and rhs are identical, that is, these contents and metadata (except
+        for path) are exactly same.
 
         TODO: Compare the part of the path?
           ex. lhs.path: "/path/to/xyz", rhs.path: "/var/lib/save.d/path/to/xyz"
@@ -49,7 +49,8 @@ class FileOperations(object):
 
     @classmethod
     def copy_main(cls, fileinfo, dest):
-        """Two steps needed to keep the content and metadata of the original file:
+        """
+        Two steps needed to keep the content and metadata of the original file:
 
         1. Copy itself and its some metadata (owner, mode, etc.)
         2. Copy extra metadata not copyable with the above.
@@ -72,8 +73,9 @@ class FileOperations(object):
 
     @classmethod
     def copy(cls, fileinfo, dest, force=False):
-        """Copy to $dest.  "Copy" action varys depends on actual filetype so
-        that inherited class must overrride this and related methods.
+        """
+        Copy to $dest.  "Copy" action varys depends on actual filetype so that
+        inherited class must overrride this and related methods.
 
         @fileinfo  FileInfo  FileInfo object
         @dest      string    The destination path to copy to
@@ -107,7 +109,10 @@ class FileOperations(object):
                 try:
                     shutil.copystat(os.path.dirname(fileinfo.path), destdir)
                 except OSError:
-                    logging.warn("Could not copy stat of " + os.path.dirname(fileinfo.path))
+                    logging.warn(
+                        "Could not copy stat of " + \
+                            os.path.dirname(fileinfo.path)
+                    )
 
         if create_instead_of_copy:
             logging.debug(" Creating " + dest)
@@ -118,4 +123,5 @@ class FileOperations(object):
 
         return True
 
-# vim: set sw=4 ts=4 expandtab:
+
+# vim:sw=4 ts=4 et:

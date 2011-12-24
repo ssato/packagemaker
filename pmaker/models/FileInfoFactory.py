@@ -27,9 +27,7 @@ import pwd
 import stat
 
 
-
 pmaker.models.FileInfo.init()  # Initialize FILEINFOS (fileinfos mapping table)
-
 
 
 class FileInfoFactory(object):
@@ -37,7 +35,8 @@ class FileInfoFactory(object):
     def _stat(self, path):
         """
         @path    str     Object's path (relative or absolute)
-        @return  A tuple of (mode, uid, gid) or (None, None, None) if OSError was raised.
+        @return  A tuple of (mode, uid, gid) or (None, None, None) if OSError
+                 was raised.
         """
         try:
             _stat = os.lstat(path)
@@ -68,7 +67,8 @@ class FileInfoFactory(object):
 
         return ft
 
-    def create(self, path, create=False, filetype=TYPE_FILE, fileinfo_map=FILEINFOS, **kwargs):
+    def create(self, path, create=False, filetype=TYPE_FILE,
+            fileinfo_map=FILEINFOS, **kwargs):
         if create:
             _cls = fileinfo_map.get(filetype, False)
             assert _cls, "Could not get a class for filetype=" + filetype
@@ -77,7 +77,8 @@ class FileInfoFactory(object):
         else:
             return self.create_from_path(path, kwargs)
 
-    def create_from_path(self, path, attrs=dict(), fileinfo_map=FILEINFOS, **kwargs):
+    def create_from_path(self, path, attrs=dict(), fileinfo_map=FILEINFOS,
+            **kwargs):
         """
         Factory method. Creates and returns the *Info instance.
 
@@ -117,4 +118,4 @@ class FileInfoFactory(object):
         return fi
 
 
-# vim:sw=4 ts=4 expandtab:
+# vim:sw=4 ts=4 et:

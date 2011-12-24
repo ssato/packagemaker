@@ -100,7 +100,7 @@ class FileOps(object):
     def create(cls, fileobj, dest):
         """
         Substantialize $fileobj on dest dynamically.
-        
+
         The contents of the file to generate, is given in fileojb as
         fileobj.content, and if fileobj.content is encoded, it will be decoded
         with using fileobj.decode.
@@ -108,7 +108,8 @@ class FileOps(object):
         @fileobj    FileObjects instance
         @dest  str  Destination path to copy to
         """
-        assert fileobj.create, "fileobj.create must not be False if you want create it!"
+        assert fileobj.create, \
+            "fileobj.create must not be False if you want create it!"
 
         if not fileobj.get("content", False):
             fileobj.content = fetch(fileobj.src)
@@ -122,7 +123,7 @@ class FileOps(object):
     def copy_impl(cls, fileobj, dest):
         """
         Copy the file of fileobj to dest.
-        
+
         Two steps needed to keep the content and metadata of the original file:
 
         1. Copy itself and its some metadata (owner, mode, etc.)
@@ -139,8 +140,8 @@ class FileOps(object):
     @classmethod
     def copy(cls, fileobj, dest, force=False):
         """
-        Copy fileobj to $dest. "Copy" action varys depends on actual filetype so that
-        inherited class should overrride this and/or related methods.
+        Copy fileobj to $dest. "Copy" action varys depends on actual filetype
+        so that inherited class should overrride this and/or related methods.
 
         @fileobj     FileObjects instance
         @dest  str   The destination path to copy to
@@ -206,7 +207,7 @@ class DirOps(FileOps):
             mode = int(fileobj.permission(), 8)  # in octal, e.g. 0755
             os.makedirs(dest, mode)
 
-        except OSError, e:   # It may be OK, ex. non-root user cannot set perms.
+        except OSError, e:   # It may be OK, ex. !root user cannot set perms.
             logging.debug(
                 "Failed (may be ignorable): os.makedirs, dest=%s, mode=%o" % \
                     (dest, mode)

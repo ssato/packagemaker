@@ -48,13 +48,14 @@ class FileInfo(object):
         @gid   int   Group ID of the object's owner
         @checksum  str  Checksum of this target object
 
-        @create  bool  If true, object of path may not exist and created later on demand.
-        @content str   The string represents the content of path to be created. 
+        @create  bool  If true, object of path may not exist and created later
+                       on demand.
+        @content str   The string represents the content of path to be created.
                        It means nothing if $create is false.
         """
         self.path = path
         self.mode = mode
-        self.uid= uid
+        self.uid = uid
         self.gid = gid
         self.checksum = checksum
 
@@ -105,7 +106,6 @@ class FileInfo(object):
         return self.operations.copy(self, dest, force)
 
 
-
 class DirInfo(FileInfo):
 
     operations = DirOperations
@@ -114,7 +114,6 @@ class DirInfo(FileInfo):
 
     def __init__(self, path, mode="0755", *args, **kwargs):
         super(DirInfo, self).__init__(path, mode, *args, **kwargs)
-
 
 
 class SymlinkInfo(FileInfo):
@@ -130,13 +129,12 @@ class SymlinkInfo(FileInfo):
         return False
 
 
-
 class OtherInfo(FileInfo):
-    """$path may be a socket, FIFO (named pipe), Character Dev or Block Dev, etc.
+    """
+    $path may be a socket, FIFO (named pipe), Character Dev or Block Dev, etc.
     """
     filetype = TYPE_OTHER
     is_copyable = False
-
 
 
 class UnknownInfo(FileInfo):
@@ -149,7 +147,6 @@ class UnknownInfo(FileInfo):
         super(UnknownInfo, self).__init__(path, *args, **kwargs)
 
 
-
 def init(fileinfo_map=FILEINFOS):
     """FIXME: Ugly
     """
@@ -157,4 +154,4 @@ def init(fileinfo_map=FILEINFOS):
         fileinfo_map[cls.type()] = cls
 
 
-# vim: set sw=4 ts=4 expandtab:
+# vim:sw=4 ts=4 et:

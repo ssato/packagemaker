@@ -23,7 +23,6 @@ import os.path
 import shutil
 
 
-
 class DirOperations(FileOperations):
 
     @classmethod
@@ -37,8 +36,10 @@ class DirOperations(FileOperations):
             mode = int(fileinfo.permission(), 8)  # in octal, e.g. 0755
             os.makedirs(dest, mode)
 
-        except OSError, e:   # It may be OK, ex. non-root user cannot set perms.
-            logging.debug(" Failed: os.makedirs, dest=%s, mode=%o" % (dest, mode))
+        except OSError, e:   # It may be OK, ex. !root user cannot set perms.
+            logging.debug(
+                " Failed: os.makedirs, dest=%s, mode=%o" % (dest, mode)
+            )
             logging.warn(e)
             logging.info(" Skipped: " + dest)
 
@@ -66,4 +67,4 @@ class DirOperations(FileOperations):
             logging.warn(str(e))
 
 
-# vim: set sw=4 ts=4 expandtab:
+# vim:sw=4 ts=4 et:

@@ -74,8 +74,8 @@ class Test_parser(unittest.TestCase):
         self.assertEquals(
             attrs.install_path, "/var/lib/network/resolv.conf"
         )
-        self.assertEquals(attrs.uid , 0)
-        self.assertEquals(attrs.gid , 0)
+        self.assertEquals(attrs.uid, 0)
+        self.assertEquals(attrs.gid, 0)
 
 
 # vim:sw=4 ts=4 et:

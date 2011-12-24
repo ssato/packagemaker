@@ -21,7 +21,6 @@ import grp
 import pwd
 
 
-
 class RpmFileInfoFactory(FileInfoFactory):
 
     def _stat(self, path):
@@ -43,4 +42,4 @@ class RpmFileInfoFactory(FileInfoFactory):
         return super(RpmFileInfoFactory, self)._stat(path)
 
 
-# vim: set sw=4 ts=4 expandtab:
+# vim:sw=4 ts=4 et:

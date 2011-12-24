@@ -52,7 +52,7 @@ class XObject(Bunch):
     """
     This class represents regular files, dirs, symlinks and other objects on
     filesystem.
-    
+
     This class is for regular file and the super class for other types at the
     same time.
     """

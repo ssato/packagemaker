@@ -50,7 +50,10 @@ class Collector(object):
 
     def collect(self, *args, **kwargs):
         if not self.enabled():
-            raise RuntimeError("Disabled because required function is not available: " + self.__name__)
+            raise RuntimeError(
+                "Disabled because required function is not available: " + \
+                    self.__name__
+            )
 
     def get_modifiers(self):
         """
@@ -58,7 +61,6 @@ class Collector(object):
         """
         for m in sorted(self.modifiers):
             yield m
-
 
 
 class FilelistCollector(Collector):
@@ -88,8 +90,8 @@ class FilelistCollector(Collector):
         if options.destdir:
             self.modifiers.append(DestdirModifier(options.destdir))
 
-        if options.ignore_owner:
-            self.modifiers.append(OwnerModifier(0, 0))  # 0 == root's uid and gid
+        if options.ignore_owner:  # 0 == root's uid and gid
+            self.modifiers.append(OwnerModifier(0, 0))
 
         if options.format == PKG_FORMAT_RPM:
             self.fi_factory = RpmFileInfoFactory()
@@ -109,12 +111,6 @@ class FilelistCollector(Collector):
     def parse_line(line):
         """
         Parse str and returns a dict to create a FileInfo instance.
-
-        >>> cls = FilelistCollector
-        >>> rref = dict(install_path="/var/lib/network/resolv.conf", uid=0, gid=0)
-        >>> (ps, r) = cls.parse_line("/etc/resolv.conf,install_path=/var/lib/network/resolv.conf,uid=0,gid=0")
-        >>> assert ps == ["/etc/resolv.conf"]
-        >>> assert dicts_comp(r, rref)
         """
         ss = parse_list_str(line, ",")
 
@@ -131,7 +127,8 @@ class FilelistCollector(Collector):
     def _parse(self, line):
         """Parse the line and returns FileInfo list generator.
         """
-        line = line.rstrip().strip() # remove extra white spaces at the top and the end.
+        # remove extra white spaces at the top and the end.
+        line = line.rstrip().strip()
 
         if not line or line.startswith("#"):
             return []
@@ -143,17 +140,22 @@ class FilelistCollector(Collector):
             return [self.fi_factory.create(path, **attrs) for path in paths]
 
     def list_fileinfos(self, listfile):
-        """Read paths from given file line by line and returns path list sorted by
+        """
+        Read paths from given file line by line and returns path list sorted by
         dir names. There some speical parsing rules for the file list:
 
         * Empty lines or lines start with "#" are ignored.
-        * The lines contain "*" (glob match) will be expanded to real dir or file
-          names: ex. "/etc/httpd/conf/*" will be
+        * The lines contain "*" (glob match) will be expanded to real dir or
+          file names: ex. "/etc/httpd/conf/*" will be
           ["/etc/httpd/conf/httpd.conf", "/etc/httpd/conf/magic", ...] .
 
         @listfile  str  Path list file name or "-" (read list from stdin)
         """
-        return unique(concat(self._parse(l) for l in self.open(listfile).readlines() if l))
+        return unique(
+            concat(
+                self._parse(l) for l in self.open(listfile).readlines() if l
+            )
+        )
 
     def _collect(self, listfile):
         """Collect FileInfo objects from given path list.
@@ -162,7 +164,9 @@ class FilelistCollector(Collector):
         """
         for fi in self.list_fileinfos(listfile):
             if self.trace:
-                logging.debug(" fi from Collector.list_fileinfos(): path=" + fi.path)
+                logging.debug(
+                    " fi from Collector.list_fileinfos(): path=" + fi.path
+                )
 
             if not getattr(fi, "create", False):
                 fi = self.fi_factory.create_from_path(fi.path, fi.attrs)
@@ -233,7 +237,6 @@ class JsonFilelistCollector(FilelistCollector):
     def list_fileinfos(self, listfile):
         data = json.load(self.open(listfile))
         return unique(concat(self._parse(d) for d in data["files"]))
-
 
 
 def init(collectors_map=COLLECTORS):

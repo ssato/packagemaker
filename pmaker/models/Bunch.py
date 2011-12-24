@@ -43,7 +43,9 @@ class Bunch(dict):
         Remove special methods and attributes which starts with "__" from
         string representation.
         """
-        return str(dict((k, v) for k, v in self.iteritems() if not k.startswith("__")))
+        return str(
+            dict((k, v) for k, v in self.iteritems() if not k.startswith("__"))
+        )
 
     def update(self, other):
         """
