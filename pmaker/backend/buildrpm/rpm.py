@@ -16,8 +16,8 @@
 #
 from pmaker.globals import PMAKER_TEMPLATE_VERSION as TVER
 
-import pmaker.backend.autotools.rpm as R
 import pmaker.backend.buildrpm.tgz as T
+import pmaker.backend.rpm as R
 
 import logging
 import os.path
@@ -39,6 +39,14 @@ class Backend(T.Backend, R.Backend):
 
     def configure(self):
         pass  # Nothing to do.
+
+    def sbuild(self):
+        super(Backend, self).sbuild()
+        self.build_srpm()
+
+    def build(self):
+        super(Backend, self).build()
+        self.build_rpm()
 
 
 # vim:sw=4 ts=4 et:

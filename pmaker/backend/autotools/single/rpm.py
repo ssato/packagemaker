@@ -17,7 +17,7 @@
 from pmaker.globals import PMAKER_TEMPLATE_VERSION as TVER
 
 import pmaker.backend.autotools.single.tgz as T
-import pmaker.backend.autotools.rpm as R
+import pmaker.backend.rpm as R
 
 
 class Backend(T.Backend, R.Backend):
@@ -31,6 +31,14 @@ class Backend(T.Backend, R.Backend):
             (TVER + "/autotools/rpm.mk", "rpm.mk"),
             (TVER + "/autotools/package.spec", self.pkgdata.name + ".spec"),
         ]
+
+    def sbuild(self):
+        super(Backend, self).sbuild()
+        self.build_srpm()
+
+    def build(self):
+        super(Backend, self).build()
+        self.build_rpm()
 
 
 # vim:sw=4 ts=4 et:
