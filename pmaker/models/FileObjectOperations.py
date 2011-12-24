@@ -47,7 +47,7 @@ def equals(lhs, rhs):
     return lhs.path == rhs.path and same(lhs, rhs)
 
 
-def __id(x):
+def id_(x):
     return x
 
 
@@ -114,7 +114,7 @@ class FileOps(object):
         if not fileobj.get("content", False):
             fileobj.content = fetch(fileobj.src)
 
-        decode = fileobj.get("decode", __id)
+        decode = fileobj.get("decode", id_)
         content = decode(fileobj.content)
 
         open(dest, "w").write(content)
