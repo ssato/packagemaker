@@ -59,8 +59,7 @@ class Test_singleton(unittest.TestCase):
 class TestMemoized(unittest.TestCase):
 
     def test_memoized(self):
-        """TODO: not implemented yet.
-        """
+        """test_memoized: FIXME: implement this"""
         pass
 
 
@@ -401,8 +400,7 @@ class Test_sort_out_paths_by_dir(unittest.TestCase):
 class Test_cache_needs_updates_p(unittest.TestCase):
 
     def test_cache_needs_updates_p(self):
-        """TODO: Implement this.
-        """
+        """test_cache_needs_updates_p: FIXME: implement this"""
         pass
 
 

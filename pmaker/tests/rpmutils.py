@@ -98,15 +98,11 @@ class TestFunctions(unittest.TestCase):
             self.assertNotEquals(d["epoch"], "0")
 
     def test_srcrpm_name_by_rpmspec(self):
-        """
-        FIXME: Implement tests for this function: srcrpm_name_by_rpmspec
-        """
+        """test_srcrpm_name_by_rpmspec: FIXME: Implement this"""
         pass
 
     def test_srcrpm_name_by_rpmspec_2(self):
-        """
-        FIXME: Implement tests for this function: srcrpm_name_by_rpmspec_2
-        """
+        """test_srcrpm_name_by_rpmspec_2: FIXME: Implement this"""
         pass
 
     def test_info_by_path(self):

@@ -46,14 +46,14 @@ class Test_00_Backend(unittest.TestCase):
         self.try_run(STEP_CONFIGURE)
 
     def test_03_sbuild(self):
-        """FIXME: Implement this."""
+        """test_03_sbuild: FIXME: Implement this."""
         return
 
         backend = self.try_run(STEP_SBUILD)
         p = backend.pkgdata
 
     def test_04_build(self):
-        """FIXME: Implement this."""
+        """test_04_build: FIXME: Implement this."""
         return
 
         backend = self.try_run(STEP_BUILD)

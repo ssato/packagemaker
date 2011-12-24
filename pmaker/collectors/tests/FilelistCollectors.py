@@ -184,7 +184,7 @@ class Test_01_FilelistCollector(unittest.TestCase):
         self.assertEquals(fos, [fo_ref])
 
     def test_04_collect__single_real_file_rpm_owns(self):
-        """TBD"""
+        """test_04_collect__single_real_file_rpm_owns: FIXME"""
         return
 
         path = random.choice(
@@ -312,7 +312,7 @@ class Test_01_FilelistCollector(unittest.TestCase):
         self.assertTrue("save_path" in fos[0])
 
     def test_15_collect__multi_real_files(self):
-        """FIXME"""
+        """test_15_collect__multi_real_files: FIXME"""
         return  # modifiers also needed to create reference data.
 
         listfile = os.path.join(self.workdir, "file.list")
