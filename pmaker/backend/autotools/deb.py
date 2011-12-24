@@ -51,5 +51,22 @@ class Backend(T.Backend, D.Backend):
 
         os.chmod(os.path.join(self.workdir, "debian/rules"), 0755)
 
+    def sbuild(self):
+        """
+        FIXME: What should be done for building source packages?
+        """
+        super(Backend, self).sbuild()
+        self.shell("dpkg-buildpackage -S")
+
+    def build(self):
+        """
+        Which is better to build?
+
+        * debuild -us -uc
+        * fakeroot debian/rules binary
+        """
+        super(Backend, self).build()
+        self.shell("fakeroot debian/rules binary")
+
 
 # vim:sw=4 ts=4 et:
