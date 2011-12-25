@@ -14,6 +14,7 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
+from pmaker.globals import UPTO
 from pmaker.configurations import Config, _defaults
 from pmaker.models.Bunch import Bunch
 from pmaker.tests.common import setup_workdir, cleanup_workdir

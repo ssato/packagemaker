@@ -14,32 +14,20 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
-from pmaker.models.FileInfoFactory import FileInfoFactory
-from pmaker.rpmutils import info_by_path
-
-import grp
-import pwd
+import pmaker.collectors.FilelistCollectors as FC
+import pmaker.utils as U
 
 
-class RpmFileInfoFactory(FileInfoFactory):
+def map():
+    collectors = (
+        FC.FilelistCollector,
+        FC.AnyFilelistCollector,
+    )
+    return dict(U.concat([(t, c) for t in c.types()] for c in collectors))
 
-    def _stat(self, path):
-        """Stat with using RPM database instead of lstat().
 
-        There are cases to get no results if the target objects not owned by
-        any packages.
-        """
-        try:
-            fi = info_by_path(path)
-            if fi:
-                uid = pwd.getpwnam(fi["uid"]).pw_uid   # uid: name -> id
-                gid = grp.getgrnam(fi["gid"]).gr_gid   # gid: name -> id
-
-                return (fi["mode"], uid, gid)
-        except:
-            pass
-
-        return super(RpmFileInfoFactory, self)._stat(path)
+def default():
+    return FC.FilelistCollector.types()[0]
 
 
 # vim:sw=4 ts=4 et:

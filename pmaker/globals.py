@@ -98,7 +98,7 @@ BUILD_STEPS = (
 
     (STEP_PRECONFIGURE, "Making up autotool-ized src directory: %(pname)s",
         "arrange build aux files such like configure.ac, Makefile.am, " + \
-        "rpm spec file, debian/* and so on. python-cheetah will be needed."),
+        "rpm spec file, debian/* and so on."),
 
     (STEP_CONFIGURE, "Configuring src distribution: %(pname)s",
         "setup src dir to run './configure'. autotools will be needed"),
@@ -119,8 +119,7 @@ PACKAGING_STEPS = [
         name=STEP_PRECONFIGURE,
         message="Preparing aux files in %(workdir)s: %(name)s",
         help="""\
-Preparing build aux files such like configure.ac, rpm spec, etc.
-Template engine (python-cheetah) is required for this step.""",
+Preparing build aux files such like configure.ac, rpm spec, etc.""",
     ),
     Bunch(
         name=STEP_CONFIGURE,
@@ -142,21 +141,7 @@ Tools like autoconf may be needed depends on drivers""",
 ]
 
 
-CHEETAH_ENABLED = False
 JSON_ENABLED = False
-
-
-try:
-    from Cheetah.Template import Template
-    CHEETAH_ENABLED = True
-    UPTO = STEP_BUILD
-
-except ImportError:
-    UPTO = STEP_SETUP
-    logging.warn(
-        "python-cheetah is not found. It will go up to \"%s\" step." % \
-            STEP_SETUP
-    )
 
 
 try:

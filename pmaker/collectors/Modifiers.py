@@ -18,7 +18,7 @@ import logging
 import os.path
 
 
-class FileInfoModifier(object):
+class FileObjectModifier(object):
     """
     Base class to transform some specific attributes of FileObject instances
     during Collector.run().
@@ -42,7 +42,7 @@ class FileInfoModifier(object):
         return fileobj  # It's just a template and do nothing.
 
 
-class DestdirModifier(FileInfoModifier):
+class DestdirModifier(FileObjectModifier):
 
     _priority = 1
 
@@ -87,7 +87,7 @@ class DestdirModifier(FileInfoModifier):
         return fileobj
 
 
-class OwnerModifier(FileInfoModifier):
+class OwnerModifier(FileObjectModifier):
 
     _priority = 5
 
@@ -102,7 +102,7 @@ class OwnerModifier(FileInfoModifier):
         return fileobj
 
 
-class AttributeModifier(FileInfoModifier):
+class AttributeModifier(FileObjectModifier):
 
     _priority = 9
 

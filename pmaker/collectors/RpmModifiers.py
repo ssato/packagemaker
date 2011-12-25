@@ -22,19 +22,19 @@ import logging
 import os.path
 
 
-class RpmAttributeModifier(M.FileInfoModifier):
+class RpmAttributeModifier(M.FileObjectModifier):
     _priority = 9
 
     def update(self, fo, *args, **kwargs):
         """
-        :param fo: FileObject or FileInfo instance represents files.
+        :param fo: FileObject instance represents files.
         """
         fo.rpm_attr = R.rpm_attr(fo)
 
         return fo
 
 
-class RpmConflictsModifier(M.FileInfoModifier):
+class RpmConflictsModifier(M.FileObjectModifier):
 
     _priority = 6
 

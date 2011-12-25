@@ -16,7 +16,7 @@
 #
 from pmaker.globals import PKG_FORMAT_TGZ, PKG_FORMAT_RPM, PKG_FORMAT_RPM, \
     PACKAGING_STEPS, STEP_PRECONFIGURE, STEP_SETUP, STEP_BUILD, COLLECTORS, \
-    TEMPLATE_SEARCH_PATHS, COMPRESSING_TOOLS
+    TEMPLATE_SEARCH_PATHS, COMPRESSING_TOOLS, UPTO
 from pmaker.utils import memoize, singleton
 from pmaker.models.Bunch import Bunch
 
@@ -44,20 +44,6 @@ try:
 except ImportError:
     logging.warn("YAML module is not available. Disabled its support.")
     yaml = None
-
-
-try:
-    from Cheetah.Template import Template
-    UPTO = STEP_BUILD
-    CHEETAH_ENABLED = True
-
-except ImportError:
-    UPTO = STEP_SETUP
-    CHEETAH_ENABLED = False
-
-    logging.warn(
-        "python-cheetah is not found. It will go up to the step: " + UPTO
-    )
 
 
 DIST_NAMES = (DIST_RHEL, DIST_FEDORA, DIST_DEBIAN) = \
@@ -184,16 +170,13 @@ def get_fullname():
 
 @memoize
 def get_compressor(ctools=COMPRESSING_TOOLS):
-    global UPTO, CHEETAH_ENABLED
+    global UPTO
 
     am_dir_pattern = "/usr/share/automake-*"
     am_files_pattern = am_dir_pattern + "/am/*.am"
 
     if len(glob.glob(am_dir_pattern)) == 0:  # automake is not installed.
-        if CHEETAH_ENABLED:
-            UPTO = STEP_PRECONFIGURE
-        else:
-            UPTO = STEP_SETUP
+        UPTO = STEP_PRECONFIGURE
 
         logging.warn(
             "Automake not found. The process will go up to the step: " + UPTO
@@ -232,14 +215,12 @@ class Env(Bunch):
     """
 
     def __init__(self, **kwargs):
-        global UPTO, PACKAGING_STEPS, CHEETAH_ENABLED, COMPRESSING_TOOLS, \
-            json, yaml
+        global UPTO, PACKAGING_STEPS, COMPRESSING_TOOLS, json, yaml
 
         # from globals
         self.steps = PACKAGING_STEPS
         self.upto = self.stepto = UPTO
 
-        self.cheetah_enabled = CHEETAH_ENABLED
         self.template_paths = TEMPLATE_SEARCH_PATHS
 
         self.hostname = hostname()

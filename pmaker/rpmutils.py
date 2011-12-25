@@ -229,12 +229,12 @@ def __rpm_attr(fo):
     Returns "%attr(...)" to specify the file/dir attribute for given fo object,
     which will be used in the %files section in rpm spec.
 
-    >>> from pmaker.models.FileInfo import FileInfo
-    >>> fi = FileInfo("/dummy/path", "0664")
+    >>> from pmaker.models.FileObjects import FileObject
+    >>> fi = FileObject(path="/dummy/path", mode="0664")
     >>> assert __rpm_attr(fi) == "%attr(0664, -, -)"
-    >>> fi = FileInfo("/bin/foo", "0755", 1, 1)
+    >>> fi = FileObject(path="/bin/foo", mode="0755", uid=1, gid=1)
     >>> assert __rpm_attr(fi) == "%attr(0755, bin, bin)"
-    >>> fi = FileInfo("/bin/bar", "0755", "root", "bin")
+    >>> fi = FileObject(path="/bin/bar", mode="0755", uid="root", gid="bin")
     >>> assert __rpm_attr(fi) == "%attr(0755, -, bin)"
     """
     m = fo.permission()  # ex. "0755"

@@ -16,7 +16,7 @@
 #
 from pmaker.rpmutils import *
 from pmaker.utils import checksum
-from pmaker.models.FileInfo import FileInfo, DirInfo
+from pmaker.models.FileObjects import FileObject, DirObject
 
 import os
 import random
@@ -128,19 +128,19 @@ class TestFunctions(unittest.TestCase):
         self.assertNotEquals(d, NULL_DICT)
 
     def test_rpm_attr(self):
-        fi = FileInfo("/dummy/path", "0664")
+        fi = FileObject("/dummy/path", "0664")
         self.assertEquals(rpm_attr(fi), "%attr(0664, -, -) ")
 
-        fi = FileInfo("/bin/foo", "0755", 1, 1)
+        fi = FileObject("/bin/foo", "0755", 1, 1)
         self.assertEquals(rpm_attr(fi), "%attr(0755, bin, bin) ")
 
-        fi = DirInfo("/bin/bar/", "0664", 1, 1)
+        fi = DirObject("/bin/bar/", "0664", 1, 1)
         self.assertEquals(rpm_attr(fi), "%attr(0664, bin, bin) %dir ")
 
-        fi = FileInfo("/bin/baz", "0700", "root", "bin")
+        fi = FileObject("/bin/baz", "0700", "root", "bin")
         self.assertEquals(rpm_attr(fi), "%attr(0700, -, bin) ")
 
-        fi = DirInfo("/bin")
+        fi = DirObject("/bin")
         self.assertEquals(rpm_attr(fi), "%dir ")
 
 

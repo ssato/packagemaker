@@ -15,21 +15,21 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 from pmaker.collectors.Modifiers import *
-from pmaker.models.FileInfo import FileInfo
+from pmaker.models.FileObjects import FileObject
 
 import logging
 import os.path
 import unittest
 
 
-class Test_00_FileInfoModifier(unittest.TestCase):
+class Test_00_FileObjectModifier(unittest.TestCase):
 
     def setUp(self):
-        self.modifier = FileInfoModifier()
+        self.modifier = FileObjectModifier()
 
     def test_update(self):
-        fi = FileInfo("/dummy/path")
-        self.assertEquals(fi, self.modifier.update(fi))
+        fo = FileObject("/dummy/path")
+        self.assertEquals(fo, self.modifier.update(fo))
 
 
 class Test_01_DestdirModifier(unittest.TestCase):
@@ -51,44 +51,44 @@ class Test_01_DestdirModifier(unittest.TestCase):
             pass
 
     def test_01_update(self):
-        fi = FileInfo("/a/b/c")
+        fo = FileObject("/a/b/c")
         modifier = DestdirModifier("/a/b")
 
-        new_fi = modifier.update(fi)
-        self.assertEquals(new_fi.install_path, "/c")
+        new_fo = modifier.update(fo)
+        self.assertEquals(new_fo.install_path, "/c")
 
 
 class Test_02_OwnerModifier(unittest.TestCase):
 
     def test_00_wo_uid_and_gid(self):
-        fi = FileInfo("/a/b/c", uid=1, gid=1)
+        fo = FileObject("/a/b/c", uid=1, gid=1)
         modifier = OwnerModifier()  # owner_{uid,gid} = 0
 
-        fi = modifier.update(fi)
+        fo = modifier.update(fo)
 
-        self.assertEquals(fi.uid, 0)
-        self.assertEquals(fi.gid, 0)
+        self.assertEquals(fo.uid, 0)
+        self.assertEquals(fo.gid, 0)
 
     def test_01_w_uid_and_gid(self):
-        fi = FileInfo("/a/b/c", uid=1, gid=1)
+        fo = FileObject("/a/b/c", uid=1, gid=1)
         modifier = OwnerModifier(100, 100)
 
-        fi = modifier.update(fi)
+        fo = modifier.update(fo)
 
-        self.assertEquals(fi.uid, 100)
-        self.assertEquals(fi.gid, 100)
+        self.assertEquals(fo.uid, 100)
+        self.assertEquals(fo.gid, 100)
 
 
 class Test_03_AttributeModifier(unittest.TestCase):
 
     def test_00_update(self):
-        fi = FileInfo("/a/b/c", mode="0644", uid=1, gid=1)
+        fo = FileObject("/a/b/c", mode="0644", uid=1, gid=1)
         modifier = AttributeModifier()
 
-        fi = modifier.update(fi, dict(mode="0755", uid=0))
+        fo = modifier.update(fo, dict(mode="0755", uid=0))
 
-        self.assertEquals(fi.mode, "0755")
-        self.assertEquals(fi.uid, 0)
+        self.assertEquals(fo.mode, "0755")
+        self.assertEquals(fo.uid, 0)
 
 
 # vim:sw=4 ts=4 et:

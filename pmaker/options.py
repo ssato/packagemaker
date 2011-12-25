@@ -18,7 +18,7 @@ from pmaker.globals import PMAKER_VERSION
 from pmaker.models.Bunch import Bunch
 
 import pmaker.configurations as C
-import pmaker.collectors.Collectors as Collectors
+import pmaker.collectors.FilelistCollectors as Collectors
 import pmaker.backend.registry as Backends
 import pmaker.environ as E
 import pmaker.parser as P

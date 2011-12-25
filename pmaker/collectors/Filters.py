@@ -15,7 +15,6 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 from pmaker.globals import TYPES_SUPPORTED
-from pmaker.models.FileInfo import FileInfo
 from pmaker.models.FileObjects import FileObject
 
 import logging
@@ -23,7 +22,8 @@ import os
 
 
 class BaseFilter(object):
-    """Base class to filter out specific FileInfo objects and make them not
+    """
+    Base class to filter out specific FileObjects' objects and make them not
     collected when Collector.collect() runs.
     """
     _reason = ""
@@ -32,7 +32,7 @@ class BaseFilter(object):
         pass
 
     def pre(self, f):
-        assert isinstance(f, (FileInfo, FileObject))
+        assert isinstance(f, FileObject)
 
     def post(self, f):
         msg = "Filtered out as %s: path=%s, type=%s" % \
@@ -46,7 +46,7 @@ class BaseFilter(object):
 
     def pred(self, f, *args, **kwargs):
         """
-        :param f: FileInfo or FileObject instance
+        :param f: FileObject instance
         """
         self.pre(f)
         ret = self._pred(f)

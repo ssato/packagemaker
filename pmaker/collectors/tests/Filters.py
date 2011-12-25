@@ -15,8 +15,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 from pmaker.collectors.Filters import *
-from pmaker.models.FileInfo import FileInfo, UnknownInfo
-from pmaker.models.FileInfoFactory import FileInfoFactory
+from pmaker.models.FileObjects import FileObject, UnknownObject
 from pmaker.utils import checksum
 
 import pmaker.models.FileObjectFactory as Factory
@@ -35,12 +34,12 @@ class TestUnsupportedTypesFilter(unittest.TestCase):
         self.filter = UnsupportedTypesFilter()
 
     def test_pred__supported(self):
-        fi = FileInfo("/dummy/path", 33204, 0, 0, checksum(), dict())
-        self.assertFalse(self.filter.pred(fi))
+        fo = FileObject("/dummy/path", 33204, 0, 0, checksum(), dict())
+        self.assertFalse(self.filter.pred(fo))
 
     def test_pred__unsupported(self):
-        fi = UnknownInfo("/dummy/path")
-        self.assertTrue(self.filter.pred(fi))
+        fo = UnknownObject("/dummy/path")
+        self.assertTrue(self.filter.pred(fo))
 
     def test_pred__supported__fileobjects(self):
         paths = [
@@ -73,10 +72,7 @@ class TestNotExistFilter(unittest.TestCase):
         filter = NotExistFilter()
         path = "/a/b/c"
 
-        fi = FileInfoFactory().create(path)
         fo = Factory.create(path)
-
-        self.assertTrue(filter.pred(fi))
         self.assertTrue(filter.pred(fo))
 
     def test_pred__not_exist(self):
@@ -85,10 +81,7 @@ class TestNotExistFilter(unittest.TestCase):
 
         assert os.path.exists(path)
 
-        fi = FileInfoFactory().create(path)
         fo = Factory.create(path)
-
-        self.assertFalse(filter.pred(fi))
         self.assertFalse(filter.pred(fo))
 
 
@@ -109,16 +102,12 @@ class TestReadAccessFilter(unittest.TestCase):
                 if os.path.exists(p) and not os.access(p, os.R_OK)]
         )
 
-        fi = FileInfoFactory().create(path)
         fo = Factory.create(path)
 
-        self.assertTrue(filter.pred(fi))
         self.assertTrue(filter.pred(fo))
 
-        fi.create = True
         fo.create = True
 
-        self.assertFalse(filter.pred(fi))
         self.assertFalse(filter.pred(fo))
 
     def test_pred__permitted_to_read(self):
@@ -130,9 +119,6 @@ class TestReadAccessFilter(unittest.TestCase):
                     ) if os.path.exists(p) and os.access(p, os.R_OK)
             ]
         )
-
-        fi = FileInfoFactory().create(path)
-        self.assertFalse(filter.pred(fi))
 
         fo = Factory.create(path)
         self.assertFalse(filter.pred(fo))

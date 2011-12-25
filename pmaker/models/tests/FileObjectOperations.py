@@ -15,11 +15,12 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 #
-from pmaker.models.FileOperations import *
-from pmaker.models.FileInfoFactory import FileInfoFactory
-from pmaker.models.FileInfo import FileInfo
+from pmaker.models.FileObjectOperations import *
+from pmaker.models.FileObjects import *
 from pmaker.utils import checksum
 from pmaker.tests.common import setup_workdir, cleanup_workdir
+
+import pmaker.models.FileObjectFactory as Factory
 
 import copy
 import os
@@ -29,20 +30,24 @@ import tempfile
 import unittest
 
 
-class Test_00_FileOperations(unittest.TestCase):
+class Test_00_functions(unittest.TestCase):
 
-    def test_equals(self):
-        lhs = FileInfo("/etc/resolv.conf", mode="0644")
+    def test_same_and_equals(self):
+        lhs = FileObject("/etc/resolv.conf", mode="0644")
         rhs = copy.copy(lhs)
         setattr(rhs, "other_attr", "xyz")
 
-        self.assertTrue(FileOperations.equals(lhs, rhs))
+        self.assertTrue(equals(lhs, rhs))
+        self.assertTrue(same(lhs, rhs))
+
+        rhs.path = "/xyz"
+        self.assertFalse(equals(lhs, rhs))
 
         rhs.mode = "0755"
-        self.assertFalse(FileOperations.equals(lhs, rhs))
+        self.assertFalse(same(lhs, rhs))
 
 
-class Test_01_FileOperations__with_side_effects(unittest.TestCase):
+class Test_01_FileOps__with_side_effects(unittest.TestCase):
 
     def setUp(self):
         self.workdir = setup_workdir()
@@ -52,59 +57,56 @@ class Test_01_FileOperations__with_side_effects(unittest.TestCase):
     def tearDown(self):
         cleanup_workdir(self.workdir)
 
-    def test_copy_main__and__remove(self):
-        fileinfo = FileInfoFactory().create(self.testfile1)
+    def test_copy_impl_and_remove(self):
+        fo = Factory.create(self.testfile1)
         dest = self.testfile1 + ".2"
 
-        FileOperations.copy_main(fileinfo, dest)
+        FileOps.copy_impl(fo, dest)
         self.assertTrue(os.path.exists(dest))
 
-        FileOperations.remove(dest)
+        FileOps.remove(dest)
         self.assertFalse(os.path.exists(dest))
 
     def test_copy__src_and_dst_are_same(self):
-        fileinfo = FileInfoFactory().create(self.testfile1)
-
-        self.assertRaises(AssertionError,
-            FileOperations.copy, fileinfo, fileinfo.path
-        )
+        fo = Factory.create(self.testfile1)
+        self.assertRaises(AssertionError, FileOps.copy, fo, fo.path)
 
     def test_copy__not_copyable(self):
-        class NotCopyableFileInfo(FileInfo):
+        class NotCopyableFileObject(FileObject):
             is_copyable = False
 
-        fileinfo = NotCopyableFileInfo(self.testfile1)
+        fo = NotCopyableFileObject(self.testfile1)
         dest = self.testfile1 + ".2"
 
-        self.assertFalse(FileOperations.copy(fileinfo, dest))
+        self.assertFalse(FileOps.copy(fo, dest))
 
     def test_copy__exists(self):
-        fileinfo = FileInfoFactory().create(self.testfile1)
+        fo = Factory.create(self.testfile1)
         dest = self.testfile1 + ".2"
 
-        FileOperations.copy(fileinfo, dest)
+        FileOps.copy(fo, dest)
 
-        self.assertFalse(FileOperations.copy(fileinfo, dest))
+        self.assertFalse(FileOps.copy(fo, dest))
 
     def test_copy__exists__force(self):
-        fileinfo = FileInfoFactory().create(self.testfile1)
+        fo = Factory.create(self.testfile1)
         dest = self.testfile1 + ".2"
 
-        self.assertTrue(FileOperations.copy(fileinfo, dest, force=True))
+        self.assertTrue(FileOps.copy(fo, dest, force=True))
 
     def test_copy__mkdir(self):
-        fileinfo = FileInfoFactory().create(self.testfile1)
+        fo = Factory.create(self.testfile1)
         dest = os.path.join(self.workdir, "t", "test2.txt")
 
-        self.assertTrue(FileOperations.copy(fileinfo, dest))
+        self.assertTrue(FileOps.copy(fo, dest))
 
     def test_copy__create(self):
         path = dest = self.testfile1 + ".3"
 
-        fileinfo = FileInfo(path, create=1, content="xyz\n")
+        fo = FileObject(path, create=1, content="xyz\n")
         dest = os.path.join(self.workdir, "t", "test3.txt")
 
-        self.assertTrue(FileOperations.copy(fileinfo, dest))
+        self.assertTrue(FileOps.copy(fo, dest))
 
 
 # vim:sw=4 ts=4 et:

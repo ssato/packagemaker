@@ -119,7 +119,7 @@ class FilelistCollector(Collector):
                 self.modifiers.append(RM.RpmConflictsModifier(config.name))
 
     def _parse(self, line):
-        """Parse the line and returns FileInfo list generator.
+        """Parse the line and returns FileObjects list generator.
         """
         # remove extra white spaces at the top and the end.
         line = line.rstrip().strip()

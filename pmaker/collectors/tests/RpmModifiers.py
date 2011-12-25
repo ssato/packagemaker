@@ -16,16 +16,11 @@
 #
 from pmaker.collectors.RpmModifiers import *
 
-from pmaker.models.FileInfoFactory import FileInfoFactory
-
 import pmaker.models.FileObjectFactory as F
 import pmaker.utils as U
 
 import os.path
 import unittest
-
-
-#F = FileInfoFactory()
 
 
 class Test_00_RpmAttributeModifier(unittest.TestCase):
@@ -58,10 +53,6 @@ class Test_01_RpmConflictsModifier(unittest.TestCase):
         new_f = self.modifier.update(f)
 
         self.assertNotEquals(new_f.original_path, f.install_path)
-
-        #path = fileinfo.target[1:]  # strip "/" at the head.
-        #fileinfo.target = os.path.join(self.newdir, path)
-        #fileinfo.save_path = os.path.join(self.savedir, path)
 
 
 # vim:sw=4 ts=4 et:

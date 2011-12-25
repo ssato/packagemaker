@@ -49,13 +49,6 @@ except ImportError:
         return newfunc
 
 
-if not CHEETAH_ENABLED:
-    def Template(*args, **kwargs):
-        raise RuntimeError(
-            "python-cheetah is missing and cannot proceed any more."
-        )
-
-
 try:
     from hashlib import sha1  # md5, sha256, sha512
 

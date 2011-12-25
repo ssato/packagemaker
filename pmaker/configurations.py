@@ -15,10 +15,10 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 from pmaker.models.Bunch import Bunch
-from pmaker.globals import PMAKER_NAME, PKG_FORMAT_RPM
+from pmaker.globals import PMAKER_NAME, PKG_FORMAT_RPM, UPTO
 
 import pmaker.anycfg as Anycfg
-import pmaker.collectors.Collectors as Collectors
+#import pmaker.collectors.FilelistCollectors as Collectors
 import pmaker.backend.registry as Backends
 import pmaker.environ as E
 import pmaker.parser as P
@@ -45,7 +45,10 @@ def _defaults(env):
     # build options:
     defaults.workdir = env.workdir
     defaults.stepto = env.upto
-    defaults.input_type = Collectors.default()  # e.g. "filelist.json"
+
+    # see pmaker.collectors.FilelistCollectors
+    defaults.input_type = "filelist.plain"
+
     defaults.driver = Backends.default()  # e.g. "autotools.single.rpm"
     defaults.format = env.format
     defaults.destdir = ""
