@@ -372,15 +372,6 @@ def find_template(template, search_paths=TEMPLATE_SEARCH_PATHS):
     return tmpl
 
 
-def compile_template(template, params, is_file=True):
-    if is_file:
-        tmpl = Template(file=template, searchList=params)
-    else:
-        tmpl = Template(source=template, searchList=params)
-
-    return tmpl.respond()
-
-
 def createdir(targetdir, mode=0700):
     """Create a dir with specified mode.
     """

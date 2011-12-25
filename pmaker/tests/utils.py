@@ -320,31 +320,6 @@ class Test_find_template(unittest.TestCase):
         self.assertTrue(tmpl is not None)
 
 
-class Test_compile_template(unittest.TestCase):
-
-    def setUp(self):
-        self.workdir = setup_workdir()
-
-    def tearDown(self):
-        cleanup_workdir(self.workdir)
-
-    def test_compile_template__str(self):
-        tmpl_s = "a=$a b=$b"
-        params = {"a": 1, "b": "b"}
-
-        self.assertEquals("a=1 b=b",
-            compile_template(tmpl_s, params, False)
-        )
-
-    def test_compile_template__file(self):
-        tmpl = os.path.join(self.workdir, "test.tmpl")
-        open(tmpl, "w").write("a=$a b=$b")
-
-        params = {"a": 1, "b": "b"}
-
-        self.assertEquals("a=1 b=b", compile_template(tmpl, params))
-
-
 class Test_date(unittest.TestCase):
 
     def test_date__default(self):
