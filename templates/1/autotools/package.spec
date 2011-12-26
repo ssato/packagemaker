@@ -1,5 +1,7 @@
+<?py if conflicts.files: ?>
 %define  savedir  /var/lib/pmaker/preserved
 %define  newdir  /var/lib/pmaker/installed
+<?py #endif ?>
 
 Name:           #{name}
 Version:        #{pversion}
