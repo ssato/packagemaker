@@ -17,6 +17,7 @@
 from pmaker.models.Bunch import Bunch
 from pmaker.tests.common import selfdir
 
+import pmaker.environ as E
 import pmaker.tenjinwrapper as TW
 import os.path
 import unittest
@@ -39,20 +40,26 @@ class Test_templates_1_autotools(unittest.TestCase):
         self.assertEquals(c, c_ref)
 
     def test__01_package_spec(self):
-        """TBD: test cases for 1/autotools/package.spec"""
-        return
-
         tmpl = tmplpath("package.spec")
 
         context = dict(
             name="foobarbaz",
-            version="2.1.0",
+            pversion="2.1.0",
+            release="0.0.1",
             summary="pmaker RPM package example",
             group="Application/Text",
             license="GPLv3+",
             url="http://www.example.com/git/foobarbaz",
             compressor=Bunch(ext="xz", ),
             arch=False,
+            hostname=E.hostname(),
+            packager=E.get_fullname(),
+            email=E.get_email(),
+            date=Bunch(date="dummy date", timestamp="dummy timestamp"),
+            files=[],
+            conflicts=Bunch(files=[],),
+            not_conflicts=Bunch(files=[],),
+            relations=[],
         )
 
         c = TW.template_compile(tmpl, context)
