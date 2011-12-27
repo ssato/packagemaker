@@ -72,4 +72,3 @@ tests/00_autotools_single_tgz.py
 tests/01_autotools_single_rpm.py
 tests/04_buildrpm_tgz.py
 tests/05_buildrpm_rpm.py
-tools/tenjinwrapper.py
