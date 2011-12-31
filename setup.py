@@ -6,12 +6,6 @@ import glob
 import os
 import sys
 
-try:
-    import nose
-except ImportError:
-    if len(sys.argv) > 1 and sys.argv[1] == "test":
-        raise ImportError("python-nose is must for testing.")
-
 
 curdir = os.getcwd()
 pylibdir = get_python_lib()
