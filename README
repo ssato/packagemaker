@@ -11,7 +11,7 @@ makefiles and rpm specs or debina packaging files, etc.
 Basic Usage
 ======================
 
-see the output of `pmaker --help`.
+see the output of `pmaker --help` or pmaker(8) or examples/*.log.
 
 
 
@@ -105,13 +105,14 @@ d. Utility modules
 a. Models
 ---------------------------
 
-\*FileInfo classes implement the basic model of target objects: files, dirs and
-symlinks.  Because many instance of these objects should be created as user
-requested, operations (copy, move, etc.) for these models are implemented in
-separated other classes (\*Operations classes).
+Classes in pmaker.models.FileObjects implement the basic model of target
+objects: files, dirs and symlinks.  Because many instance of these objects
+should be created as user requested, operations (copy, move, etc.) for these
+models are implemented in in functions in another module,
+pmaker.models.FileObjectOperations.
 
-Model classes are instantiated from dedicated factory class and never
-instantiated directly.
+Model classes are instantiated from dedicated factory functions in
+pmaker.models.FileObjectFactory and never instantiated directly.
 
 The code of models are placed in pmaker/models directory.
 
@@ -119,8 +120,8 @@ The code of models are placed in pmaker/models directory.
 b. Collectors
 ---------------------------
 
-This component process user input (files list) and to collect FileInfo objects
-to package.
+This component process user input (files list) and to collect FIleObject
+instances to package.
 
 The code of collectors are placed in pmaker/collectors directory.
 
@@ -130,6 +131,10 @@ c. Backends (Drivers)
 
 The modules underr pmaker/backend is the core componenet to manage and drive
 packaging process.
+
+All backend classes are children of pmaker.backend.base.Base class and may
+override methods {setup, preconfigure, configure, sbuild, build} represents
+each build steps.
 
 
 d. Utility modules
@@ -236,24 +241,29 @@ TODO
 ================
 
 * correct wrong English expressions
-* refactor its architecture: Almost done
-
-  * plugin system: posponed
-  * make collector (generator) and packagemaker classes loosely-coupled: Done
-  * separate packaging strategy (PackageMaker._scheme) and packaging format
-    (PackageMaker._format): Done
-
 * define schema for input (JSON, YAML?, XML?, ...)
 
   * perhaps, the contents of files will be gotten from external site pointed by
     URL reference in JSON data
 
 * more complete tests
-* sort out command line options: Done
 * eliminate the strong dependency to rpm and make it runnable on debian based
   systems (w/o rpm-python)
 * find causes of warnings during deb build and fix them all
+* plugin system: posponed
 * keep permissions of targets in tar archives
+
+
+Finished TODO items
+---------------------------
+
+* refactor its architecture: Done
+
+  * make collector (generator) and packagemaker classes loosely-coupled: Done
+  * separate packaging strategy (PackageMaker._scheme) and packaging format
+    (PackageMaker._format): Done
+
+* sort out command line options: Done
 * Run w/o python-cheetah: Done (now it uses pytenjin instead)
 
 
