@@ -20,7 +20,9 @@ from pmaker.models.Bunch import Bunch
 from pmaker.utils import memoize, cache_needs_updates_p
 
 import cPickle as pickle
+import datetime
 import grp
+import locale
 import logging
 import os
 import os.path
@@ -81,6 +83,23 @@ def is_rpmdb_available():
 
     except subprocess.CalledProcessError, e:
         return False
+
+
+def changelog_date(dt=None):
+    """
+    Returns a string represents built (packaging) date in %changelog section in
+    the rpm spec.
+
+    :param dt: datetime object or None.
+
+    >>> dt = datetime.datetime(2012, 1, 3)  # 2010.01.03
+    >>> changelog_date(dt)
+    'Tue Jan  3 2012'
+    """
+    locale.setlocale(locale.LC_TIME, "C")
+    return (
+        datetime.datetime.now() if dt is None else dt
+    ).strftime("%a %b %e %Y")
 
 
 def rpmh2nvrae(h):
