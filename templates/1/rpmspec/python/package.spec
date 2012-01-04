@@ -32,8 +32,14 @@ BuildRequires:  python-devel
 
 
 %build
-# Remove CFLAGS=... for noarch packages (unneeded)
-CFLAGS="$RPM_OPT_FLAGS" %{__python} setup.py build
+<?py
+if _context.get("buildarch") == "noarch":
+    cflags = 'CFLAGS="$RPM_OPT_FLAGS" '
+else:
+    cflags = ""
+#endif
+?>
+#{cflags}%{__python} setup.py build
 
 
 %install
