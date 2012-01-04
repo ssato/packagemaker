@@ -240,6 +240,9 @@ And here is my usual way for bug fixes:
 TODO
 ================
 
+* resolve package name collisions due to overriding packages; there is
+  'man-pages-overrides' package exist. How about using '-overlay' suffix
+  instead of '-overrides' ?
 * correct wrong English expressions
 * define schema for input (JSON, YAML?, XML?, ...)
 
