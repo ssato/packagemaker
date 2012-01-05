@@ -24,6 +24,27 @@ import re
 import sys
 
 
+def get_download_url(name, base_url="pypi.python.org/pypi/"):
+    """
+    """
+    pi_url = base_url + name
+    page = U.urlread(pi_url)
+
+    if page is None:
+        logging.warn("Could not get the www page content: " + name)
+
+    soup = BeautifulSoup.BeautifulSoup(page)
+
+    reg = re.compile(r"(http://pypi.python.org/packages/source/.*)#md5=.*")
+    t = soup.find("a", attrs={"href": reg})
+    if t is None:
+        logging.warn("Could not resolve download url: " + name)
+        return None
+
+    download = reg.match(dict(t.attrs)["href"]).groups()[0]
+    return download
+
+
 def parse_pypi_page(name, base_url="pypi.python.org/pypi/"):
     """
     """

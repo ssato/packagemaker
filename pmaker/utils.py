@@ -27,6 +27,7 @@ import operator
 import os
 import re
 import stat
+import urllib2
 
 
 try:
@@ -525,6 +526,18 @@ def conflicts_dirs(pname):
     p = dict(name=pname)
 
     return (CONFLICTS_SAVEDIR % p, CONFLICTS_NEWDIR % p)
+
+
+def urlread(url, data=None, headers={}):
+    """
+    Open given url and returns its contents or None.
+    """
+    req = urllib2.Request(url=url, data=data, headers=headers)
+
+    try:
+        return urllib2.urlopen(req).read()
+    except:
+        return None
 
 
 # vim:sw=4 ts=4 et:
