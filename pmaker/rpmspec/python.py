@@ -21,12 +21,13 @@ import logging
 import os.path
 import re
 import sys
+import tarfile
 
 
 def get_download_url(name, base_url="http://pypi.python.org/pypi/"):
     """
 
-    pi_url example: http://pypi.python.org/pypi/pyev/
+    PyPI url example: http://pypi.python.org/pypi/pyev/
 
     search pattern: 
         '<a href="<URL>#md5=..."><NAME>-<VERSION>.tar.gz</a>
@@ -59,6 +60,22 @@ def get_download_url(name, base_url="http://pypi.python.org/pypi/"):
 
     download = m.groups()[0]
     return download
+
+
+def get_pkg_info(tgz_path):
+    pkg_info = os.path.join(tgz_path.replace(".tar.gz"), "PKG-INFO")
+
+    tgz = tarfile.open(tgz_path)
+    f = tgz.extractfile(pkg_info)
+    c = f.read()
+
+    kvs = U.concat(
+        [xs for xs in \
+            [l.split(":") for l in c.splitlines() if l and l[0] != ' '] \
+                if len(xs) == 2
+        ]
+    )
+    return B.Bunch(**dict(kvs))
 
 
 # vim:sw=4 ts=4 et:
