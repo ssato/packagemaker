@@ -23,7 +23,7 @@ import re
 import sys
 
 
-def get_download_url(name, base_url="pypi.python.org/pypi/"):
+def get_download_url(name, base_url="http://pypi.python.org/pypi/"):
     """
 
     pi_url example: http://pypi.python.org/pypi/pyev/
