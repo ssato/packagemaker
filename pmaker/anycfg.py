@@ -14,8 +14,7 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
-from pmaker.models.Bunch import Bunch
-
+import pmaker.models.Bunch as B
 import pmaker.parser as P
 import pmaker.utils as U
 
@@ -114,7 +113,7 @@ class IniConfigParser(object):
             return
 
         logging.info("Loading config: " + path_)
-        config = Bunch()
+        config = B.Bunch()
 
         def __parse(v):
             if v.startswith('"') and v.endswith('"'):
@@ -132,7 +131,7 @@ class IniConfigParser(object):
                 config[k] = __parse(v)
 
             for s in self._parser.sections():
-                config[s] = Bunch()
+                config[s] = B.Bunch()
 
                 for k in self._parser.options(s):
                     v = self._parser.get(s, k)
@@ -149,7 +148,7 @@ CTYPE2CLASS_MAP[CTYPE_INI] = IniConfigParser
 
 
 def dict_to_bunch(json_obj_dict):
-    return Bunch(**json_obj_dict)
+    return B.Bunch(**json_obj_dict)
 
 
 class JsonConfigPaser(IniConfigParser):
@@ -159,7 +158,7 @@ class JsonConfigPaser(IniConfigParser):
     def load(self, path_, *args, **kwargs):
         if json is None:
             logging.warn("JSON is not a supported configuration format.")
-            return Bunch()
+            return B.Bunch()
         else:
             return json.load(open(path_), object_hook=dict_to_bunch)
 
@@ -189,7 +188,7 @@ if yaml is not None:
             )
 
         def construct_yaml_map(self, node):
-            data = Bunch()
+            data = B.Bunch()
             yield data
 
             value = self.construct_mapping(node)
@@ -204,7 +203,7 @@ if yaml is not None:
                     node.start_mark
                 )
 
-            mapping = Bunch()
+            mapping = B.Bunch()
 
             for key_node, value_node in node.value:
                 key = self.construct_object(key_node, deep=deep)
@@ -230,7 +229,7 @@ class YamlConfigPaser(IniConfigParser):
     def load(self, path_, *args, **kwargs):
         if yaml is None:
             logging.warn("YAML is not a supported configuration format.")
-            return Bunch()
+            return B.Bunch()
         else:
             return yaml.load(open(path_), Loader=YamlBunchLoader)
 
@@ -250,14 +249,14 @@ def etree_to_Bunch(root):
     """
     Convert XML ElementTree to a collection of Bunch objects.
     """
-    tree = Bunch()
+    tree = B.Bunch()
 
     if len(root):  # It has children.
         # FIXME: Configuration item cannot have both attributes and
         # values (list) at the same time in current implementation:
         tree[root.tag] = [etree_to_Bunch(c) for c in root]
     else:
-        tree[root.tag] = Bunch(**root.attrib)
+        tree[root.tag] = B.Bunch(**root.attrib)
 
     return tree
 
@@ -269,7 +268,7 @@ class XmlConfigParser(IniConfigParser):
     def load(self, path_, *args, **kwargs):
         if etree is None:
             logging.warn("XML is not a supported configuration format.")
-            return Bunch()
+            return B.Bunch()
         else:
             tree = etree.parse(path_)
             root = tree.getroot()
@@ -332,7 +331,7 @@ class AnyConfigParser(object):
         if paths is None:
             paths = list_paths(name)
 
-        config = Bunch()
+        config = B.Bunch()
 
         for p in paths:
             c = self.load(p)

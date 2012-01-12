@@ -14,12 +14,10 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
-from pmaker.globals import PKG_FORMAT_RPM
-from pmaker.models.Bunch import Bunch
-
 import pmaker.collectors.Filters as F
 import pmaker.collectors.Modifiers as M
 import pmaker.collectors.RpmModifiers as RM
+import pmaker.globals as G
 import pmaker.models.FileObjectFactory as Factory
 
 import pmaker.anycfg as A
@@ -66,7 +64,7 @@ def driver_is_rpm(driver):
     >>> driver_is_rpm("autotools.single.deb")
     False
     """
-    return driver_to_format(driver) == PKG_FORMAT_RPM
+    return driver_to_format(driver) == G.PKG_FORMAT_RPM
 
 
 def lopen(path):

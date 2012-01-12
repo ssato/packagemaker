@@ -15,9 +15,9 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 from pmaker.globals import PACKAGING_STEPS, STEP_BUILD
-from pmaker.models.Bunch import Bunch
 
 import pmaker.anycfg as A
+import pmaker.models.Bunch as B
 import pmaker.backend.utils as PU
 import pmaker.shell as S
 import pmaker.tenjinwrapper as T
@@ -70,7 +70,7 @@ class Base(object):
 
     def relations_map(self, rels):
         return [
-            Bunch(type=t, targets=ts) for t, ts in \
+            B.Bunch(type=t, targets=ts) for t, ts in \
                 [(self.get_relations(x), xs) for x, xs in rels] \
                     if t is not None
         ]

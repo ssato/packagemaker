@@ -17,6 +17,7 @@
 from pmaker.environ import *
 from pmaker.globals import PKG_FORMATS, COMPRESSING_TOOLS
 
+import pmaker.models.Bunch as B
 import unittest
 
 
@@ -57,7 +58,7 @@ class TestEnv(unittest.TestCase):
 
     def test__init__(self):
         env = Env()
-        self.assertTrue(isinstance(env, Bunch))
+        self.assertTrue(isinstance(env, B.Bunch))
 
     def test__attrs(self):
         env = Env()

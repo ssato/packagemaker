@@ -14,11 +14,9 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
-from pmaker.models.Bunch import Bunch
-from pmaker.globals import PMAKER_NAME, PKG_FORMAT_RPM, UPTO
-
+import pmaker.globals as G
 import pmaker.anycfg as Anycfg
-#import pmaker.collectors.FilelistCollectors as Collectors
+import pmaker.models.Bunch as B
 import pmaker.backend.registry as Backends
 import pmaker.environ as E
 import pmaker.parser as P
@@ -33,7 +31,7 @@ def _defaults(env):
     """
     Make a Bunch object holding default values and returns it.
     """
-    defaults = Bunch()
+    defaults = B.Bunch()
 
     defaults.config = None
     defaults.norc = False
@@ -72,7 +70,7 @@ def _defaults(env):
 
     # rpm options:
     defaults.dist = env.dist.label
-    defaults.no_rpmdb = env.format != PKG_FORMAT_RPM
+    defaults.no_rpmdb = env.format != G.PKG_FORMAT_RPM
     defaults.no_mock = False
 
     # others:
@@ -81,7 +79,7 @@ def _defaults(env):
     return defaults
 
 
-class Config(Bunch):
+class Config(B.Bunch):
 
     def __init__(self, norc=False, forced_type=None):
         """
@@ -118,7 +116,7 @@ class Config(Bunch):
         """
         Try loading default config files and applying configurations.
         """
-        config = self._cparser.loads(PMAKER_NAME)  # :: Bunch
+        config = self._cparser.loads(G.PMAKER_NAME)  # :: B.Bunch
         self.update(config)
 
     def missing_files(self):

@@ -17,8 +17,9 @@
 from pmaker.globals import PKG_FORMAT_TGZ, PKG_FORMAT_RPM, PKG_FORMAT_RPM, \
     PACKAGING_STEPS, STEP_PRECONFIGURE, STEP_SETUP, STEP_BUILD, COLLECTORS, \
     TEMPLATE_SEARCH_PATHS, COMPRESSING_TOOLS, UPTO
-from pmaker.utils import memoize, singleton
-from pmaker.models.Bunch import Bunch
+
+import pmaker.models.Bunch as B
+import pmaker.utils as U
 
 import glob
 import logging
@@ -50,12 +51,12 @@ DIST_NAMES = (DIST_RHEL, DIST_FEDORA, DIST_DEBIAN) = \
     ("rhel", "fedora", "debian")
 
 
-@memoize
+@U.memoize
 def hostname():
     return socket.gethostname() or os.uname()[1]
 
 
-@memoize
+@U.memoize
 def get_arch():
     """Returns "normalized" architecutre this host can support.
     """
@@ -69,7 +70,7 @@ def get_arch():
         return arch
 
 
-@memoize
+@U.memoize
 def get_distribution():
     """Get name and version of the distribution of the system based on
     heuristics.
@@ -101,7 +102,7 @@ def get_distribution():
     return (name, version, arch)
 
 
-@memoize
+@U.memoize
 def get_package_format():
     (dist, _v, _a) = get_distribution()
 
@@ -113,7 +114,7 @@ def get_package_format():
         return PKG_FORMAT_TGZ
 
 
-@memoize
+@U.memoize
 def get_package_formats():
     (dist, _v, _a) = get_distribution()
 
@@ -125,17 +126,17 @@ def get_package_formats():
         return (PKG_FORMAT_TGZ, )
 
 
-@memoize
+@U.memoize
 def is_git_available():
     return os.system("git --version > /dev/null 2> /dev/null") == 0
 
 
-@memoize
+@U.memoize
 def get_username():
     return os.environ.get("USER", False) or os.getlogin()
 
 
-@memoize
+@U.memoize
 def get_email():
     if is_git_available():
         try:
@@ -151,7 +152,7 @@ def get_email():
         "%s@localhost.localdomain" % get_username()
 
 
-@memoize
+@U.memoize
 def get_fullname():
     """Get full name of the user.
     """
@@ -168,7 +169,7 @@ def get_fullname():
     return os.environ.get("FULLNAME", False) or get_username()
 
 
-@memoize
+@U.memoize
 def get_compressor(ctools=COMPRESSING_TOOLS):
     global UPTO
 
@@ -205,8 +206,8 @@ def get_compressor(ctools=COMPRESSING_TOOLS):
     raise RuntimeError("No compressor found! Aborting...")
 
 
-@singleton
-class Env(Bunch):
+@U.singleton
+class Env(B.Bunch):
     """
 
     >>> env1 = Env()
@@ -233,7 +234,7 @@ class Env(Bunch):
         self.fullname = get_fullname()
 
         n, v, a = get_distribution()
-        self.dist = Bunch()
+        self.dist = B.Bunch()
         self.dist.name = n
         self.dist.version = v
         self.dist.arch = a

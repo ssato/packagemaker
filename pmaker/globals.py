@@ -14,8 +14,7 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
-from pmaker.models.Bunch import Bunch
-
+import pmaker.models.Bunch as B
 import datetime
 import logging
 import os.path
@@ -46,17 +45,17 @@ BACKENDS = dict()
 TEMPLATE_SEARCH_PATHS = ["/usr/share/pmaker/templates", ]
 
 COMPRESSING_TOOLS = [
-    Bunch(
+    B.Bunch(
         command="xz",
         extension="xz",
         am_option="no-dist-gzip dist-xz"
     ),
-    Bunch(
+    B.Bunch(
         command="bzip2",
         extension="bz2",
         am_option="no-dist-gzip dist-bzip2"
     ),
-    Bunch(
+    B.Bunch(
         command="gzip",
         extension="gz",
         am_option=""
@@ -110,30 +109,30 @@ BUILD_STEPS = (
 )
 
 PACKAGING_STEPS = [
-    Bunch(
+    B.Bunch(
         name=STEP_SETUP,
         message="Setting up src tree in %(workdir)s: %(name)s",
         help="Setup a src dir to save objects and make package",
     ),
-    Bunch(
+    B.Bunch(
         name=STEP_PRECONFIGURE,
         message="Preparing aux files in %(workdir)s: %(name)s",
         help="""\
 Preparing build aux files such like configure.ac, rpm spec, etc.""",
     ),
-    Bunch(
+    B.Bunch(
         name=STEP_CONFIGURE,
         message="Configuring build aux files: %(name)s",
         help="""\
 Configure build aux files such as configure and Makefile.
 Tools like autoconf may be needed depends on drivers""",
     ),
-    Bunch(
+    B.Bunch(
         name=STEP_SBUILD,
         message="Building source package: %(name)s",
         help="Build source package[s]",
     ),
-    Bunch(
+    B.Bunch(
         name=STEP_BUILD,
         message="Building binary package[s]: %(name)s",
         help="Build binary package[s]",
