@@ -42,7 +42,6 @@ pmaker/models/tests/FileObjectFactory.py
 pmaker/models/tests/FileObjectOperations.py
 pmaker/models/tests/FileObjects.py
 pmaker/options.py
-pmaker/package.py
 pmaker/parser.py
 pmaker/pkgdata.py
 pmaker/rpmutils.py
