@@ -14,8 +14,8 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
-from pmaker.models.Bunch import Bunch
-from pmaker.tests.common import setup_workdir, cleanup_workdir
+import pmaker.models.Bunch as B
+import pmaker.tests.common as C
 
 import cPickle as pickle
 import os.path
@@ -30,7 +30,7 @@ class TestBunch(unittest.TestCase):
         tags = ["a", "b", "c"]
         newkey = "newkey"
 
-        bunch = Bunch(name=name, category=category, tags=tags)
+        bunch = B.Bunch(name=name, category=category, tags=tags)
 
         self.assertEquals(bunch.name, name)
         self.assertEquals(bunch.category, category)
@@ -49,20 +49,20 @@ class TestBunch(unittest.TestCase):
         #self.assertEquals(bunch.keys(), ("name", "category", "newkey"))
 
     def test_update(self):
-        a = Bunch(name="a", a=1, b=Bunch(b=[1, 2], c="C"))
-        b = Bunch(a=2, b=Bunch(b=[1, 2, 3], d="D"))
+        a = B.Bunch(name="a", a=1, b=B.Bunch(b=[1, 2], c="C"))
+        b = B.Bunch(a=2, b=B.Bunch(b=[1, 2, 3], d="D"))
 
-        ref = Bunch(**a.copy())
+        ref = B.Bunch(**a.copy())
         ref.a = 2
-        ref.b = Bunch(b=[1, 2, 3], c="C", d="D")
+        ref.b = B.Bunch(b=[1, 2, 3], c="C", d="D")
 
         a.update(b)
 
         self.assertEquals(a, ref)
 
     def test_update__w_None(self):
-        a = Bunch(name="a", a=1, b=Bunch(b=[1, 2], c="C"))
-        ref = Bunch(**a.copy())
+        a = B.Bunch(name="a", a=1, b=B.Bunch(b=[1, 2], c="C"))
+        ref = B.Bunch(**a.copy())
 
         a.update(None)
 
@@ -72,16 +72,16 @@ class TestBunch(unittest.TestCase):
 class TestBunch_pickle(unittest.TestCase):
 
     def setUp(self):
-        self.workdir = setup_workdir()
+        self.workdir = C.setup_workdir()
 
     def tearDown(self):
-        cleanup_workdir(self.workdir)
+        C.cleanup_workdir(self.workdir)
 
     def test_pickle(self):
         name = "Bunch"
         tags = ["a", "b", "c"]
 
-        bunch = Bunch(name=name, tags=tags)
+        bunch = B.Bunch(name=name, tags=tags)
 
         bf = os.path.join(self.workdir, "test.pkl")
         pickle.dump(bunch, open(bf, "wb"))

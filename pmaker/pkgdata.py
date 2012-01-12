@@ -14,10 +14,8 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
-from pmaker.globals import CONFLICTS_NEWDIR, CONFLICTS_SAVEDIR, \
-    COMPRESSING_TOOLS, DATE_FMT_RFC2822, DATE_FMT_SIMPLE
-from pmaker.models.Bunch import Bunch
-
+import pmaker.globals as G
+import pmaker.models.Bunch as B
 import pmaker.utils as U
 
 import datetime
@@ -33,10 +31,10 @@ def __date(type=None):
     """
     locale.setlocale(locale.LC_TIME, "C")
 
-    if type == DATE_FMT_RFC2822:
+    if type == G.DATE_FMT_RFC2822:
         fmt = "%a, %d %b %Y %T +0000"
 
-    elif type == DATE_FMT_SIMPLE:
+    elif type == G.DATE_FMT_SIMPLE:
         fmt = "%Y%m%d"
 
     else:
@@ -46,15 +44,15 @@ def __date(type=None):
 
 
 def date_params():
-    return Bunch(date=__date(DATE_FMT_RFC2822), timestamp=__date())
+    return B.Bunch(date=__date(G.DATE_FMT_RFC2822), timestamp=__date())
 
 
-def compressor_params(extopt, ctools=COMPRESSING_TOOLS):
+def compressor_params(extopt, ctools=G.COMPRESSING_TOOLS):
     ct = [ct for ct in ctools if ct.extension == extopt][0]
-    return Bunch(cmd=ct.command, ext=extopt, am_opt=ct.am_option)
+    return B.Bunch(cmd=ct.command, ext=extopt, am_opt=ct.am_option)
 
 
-class PkgData(Bunch):
+class PkgData(B.Bunch):
 
     def __init__(self, data, files):
         """
@@ -90,12 +88,12 @@ class PkgData(Bunch):
 
         (savedir, newdir) = U.conflicts_dirs(self.name)
 
-        self.conflicts = Bunch(
+        self.conflicts = B.Bunch(
             savedir=savedir, newdir=newdir,
             files=[f for f in files if "conflicts" in f and f.conflicts],
         )
 
-        self.not_conflicts = Bunch(
+        self.not_conflicts = B.Bunch(
             files=[f for f in files if f not in self.conflicts.files],
         )
 

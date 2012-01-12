@@ -14,8 +14,8 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
-from pmaker.globals import *
-from pmaker.models.Bunch import Bunch
+import pmaker.globals as G
+import pmaker.models.Bunch as B
 
 import copy
 import datetime
@@ -341,7 +341,7 @@ def on_debug_mode():
     return logging.getLogger().level < logging.INFO
 
 
-def find_template(template, search_paths=TEMPLATE_SEARCH_PATHS):
+def find_template(template, search_paths=G.TEMPLATE_SEARCH_PATHS):
     """Find template file from given path information.
 
     1. Try the path ($template)
@@ -423,9 +423,9 @@ def format_date(type=None):
     """
     locale.setlocale(locale.LC_TIME, "C")
 
-    if type == DATE_FMT_RFC2822:
+    if type == G.DATE_FMT_RFC2822:
         fmt = "%a, %d %b %Y %T +0000"
-    elif type == DATE_FMT_SIMPLE:
+    elif type == G.DATE_FMT_SIMPLE:
         fmt = "%Y%m%d"
     else:
         fmt = "%a %b %_d %Y"
@@ -465,7 +465,7 @@ def sort_out_paths_by_dir(paths):
     """
     cntr = itertools.count()
 
-    return [Bunch(id=str(cntr.next()), dir=d, files=list(ps)) \
+    return [B.Bunch(id=str(cntr.next()), dir=d, files=list(ps)) \
             for d, ps in itertools.groupby(paths, os.path.dirname)]
 
 
@@ -525,7 +525,7 @@ def conflicts_dirs(pname):
     """
     p = dict(name=pname)
 
-    return (CONFLICTS_SAVEDIR % p, CONFLICTS_NEWDIR % p)
+    return (G.CONFLICTS_SAVEDIR % p, G.CONFLICTS_NEWDIR % p)
 
 
 def urlread(url, data=None, headers={}):

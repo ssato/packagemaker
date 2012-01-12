@@ -14,13 +14,12 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
-from pmaker.options import *
-from pmaker.models.Bunch import Bunch
-from pmaker.tests.common import setup_workdir, cleanup_workdir
-
+import pmaker.backend.registry as Backends
 import pmaker.configurations as C
-import pmaker.parser as P
 import pmaker.environ as E
+import pmaker.options as O
+import pmaker.parser as P
+import pmaker.tests.common as T
 
 import optparse
 import os
@@ -34,7 +33,7 @@ class Test_00_setup_relations_option(unittest.TestCase):
 
     def setUp(self):
         self.p = optparse.OptionParser()
-        self.p.add_option("", "--relations", **setup_relations_option())
+        self.p.add_option("", "--relations", **O.setup_relations_option())
 
     def test_00__default(self):
         options, args = self.p.parse_args([])
@@ -61,13 +60,16 @@ class Test_01__set_workdir(unittest.TestCase):
         name, version = ("foo", "0.0.1")
         workdir = "/tmp/w/%s-%s" % (name, version)
 
-        self.assertEquals(workdir, set_workdir(workdir, name, version))
+        self.assertEquals(
+            workdir,
+            O.set_workdir(workdir, name, version)
+        )
 
     def test_01__absolute_workdir(self):
         workdir, name, version = ("/tmp/w", "foo", "0.0.1")
         self.assertEquals(
             "/tmp/w/foo-0.0.1",
-            set_workdir(workdir, name, version)
+            O.set_workdir(workdir, name, version)
         )
 
     def test_02__relative_workdir(self):
@@ -75,14 +77,14 @@ class Test_01__set_workdir(unittest.TestCase):
         abs_workdir = os.path.abspath(workdir)
         self.assertEquals(
             abs_workdir + "/foo-0.0.1",
-            set_workdir(workdir, name, version)
+            O.set_workdir(workdir, name, version)
         )
 
 
 class Test_02_Options(unittest.TestCase):
 
     def test_00__init__(self):
-        o = Options()
+        o = O.Options()
 
         # pmaker.options.Options is not resolvable because it would be hide
         # (decorated) with pmaker.utils.singleton() if it's decorated with
@@ -90,7 +92,7 @@ class Test_02_Options(unittest.TestCase):
         # class) instead in such cases:
         # self.assertTrue(isinstance(o, Bunch))
         ## pmaker.options.Options is now not singleton:
-        self.assertTrue(isinstance(o, Options))
+        self.assertTrue(isinstance(o, O.Options))
 
         dfs = o.get_defaults()
 
@@ -100,7 +102,7 @@ class Test_02_Options(unittest.TestCase):
     def test_01_parse_args_w_name_and_filelist(self):
         name = "foo"
 
-        o = Options()
+        o = O.Options()
         pversion = o.config.pversion
         workdir = o.config.workdir
 
@@ -126,7 +128,7 @@ class Test_02_Options(unittest.TestCase):
     def test_02_parse_args_w_name_and_filelist_and_verbose(self):
         name = "foo"
 
-        o = Options()
+        o = O.Options()
         (opts, args) = o.parse_args(["-n", name, "-v", "dummy_filelist.txt"])
 
         self.assertEquals(opts.name, name)
@@ -145,7 +147,7 @@ class Test_02_Options(unittest.TestCase):
         cwd = os.path.join(os.getcwd(), "templates")
         paths_ref = E.Env().template_paths + [cwd]
 
-        o = Options()
+        o = O.Options()
         (opts, args) = o.parse_args(
             ["-n", name, "--template-path", cwd, "dummy_filelist.txt"]
         )
@@ -155,7 +157,7 @@ class Test_02_Options(unittest.TestCase):
         name = "foo"
         input_type = "filelist.json"
 
-        o = Options()
+        o = O.Options()
         (opts, args) = o.parse_args(
             ["-n", name, "--input-type", input_type, "dummy_filelist.txt"]
         )
@@ -167,7 +169,7 @@ class Test_02_Options(unittest.TestCase):
             [b for b in Backends.map().keys() if b != Backends.default()]
         )
 
-        o = Options()
+        o = O.Options()
         (opts, args) = o.parse_args(
             ["-n", name, "--driver", driver, "dummy_filelist.txt"]
         )
@@ -183,7 +185,7 @@ class Test_02_Options(unittest.TestCase):
             ]
         )
 
-        o = Options()
+        o = O.Options()
         (opts, args) = o.parse_args(
             ["-n", name, "--compressor", compressor, "dummy_filelist.txt"]
         )
@@ -192,7 +194,7 @@ class Test_02_Options(unittest.TestCase):
     def test_07_parse_args_w_name_and_filelist_and_no_mock(self):
         name = "foo"
 
-        o = Options()
+        o = O.Options()
         (opts, args) = o.parse_args(
             ["-n", name, "--no-mock", "dummy_filelist.txt"]
         )
@@ -201,7 +203,7 @@ class Test_02_Options(unittest.TestCase):
     def test_08_parse_args_w_name_and_filelist_and_relations(self):
         name = "foo"
 
-        o = Options()
+        o = O.Options()
         (opts, args) = o.parse_args(
             ["-n", name, "--relations", "requires:/bin/sh",
                 "dummy_filelist.txt"]
@@ -221,24 +223,24 @@ class Test_02_Options(unittest.TestCase):
 class Test_02_Options_w_side_effects(unittest.TestCase):
 
     def setUp(self):
-        self.workdir = setup_workdir()
+        self.workdir = T.setup_workdir()
 
     def tearDown(self):
-        cleanup_workdir(self.workdir)
+        T.cleanup_workdir(self.workdir)
 
     def test_01_parse_args_w_name_and_changelog_option(self):
         name = "foo"
         changelog_file = os.path.join(self.workdir, "dummy_changelog.txt")
         changelog_content = "This is a dummy changelog file."
 
-        o = Options()
+        o = O.Options()
         (opts, args) = o.parse_args(["-n", name, "dummy_filelist.txt"])
         self.assertEquals(opts.changelog, "")
 
         with open(changelog_file, "w") as f:
             f.write(changelog_content)
 
-        o = Options()
+        o = O.Options()
         (opts, args) = o.parse_args(
             ["-n", name, "--changelog", changelog_file, "dummy_filelist.txt"]
         )

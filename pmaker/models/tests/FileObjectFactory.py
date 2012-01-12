@@ -14,10 +14,9 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
-from pmaker.globals import TYPE_FILE, TYPE_DIR, TYPE_SYMLINK, \
-    TYPE_OTHER, TYPE_UNKNOWN
-from pmaker.tests.common import setup_workdir, cleanup_workdir
-from pmaker.models.Bunch import Bunch
+import pmaker.globals as G
+import pmaker.models.Bunch as B
+import pmaker.tests.common as C
 
 import pmaker.rpmutils as R
 import pmaker.models.FileObjects as FO
@@ -46,7 +45,7 @@ class Test__rpm_lstat(unittest.TestCase):
 class Test__guess_filetype(unittest.TestCase):
 
     def setUp(self):
-        self.workdir = setup_workdir()
+        self.workdir = C.setup_workdir()
 
         self.file = os.path.join(self.workdir, "file.txt")
         open(self.file, "w").write("This is a file")
@@ -58,17 +57,17 @@ class Test__guess_filetype(unittest.TestCase):
         os.symlink(self.file, self.symlink)
 
     def tearDown(self):
-        cleanup_workdir(self.workdir)
+        C.cleanup_workdir(self.workdir)
 
     def test__file_dir_and_symlink(self):
         st_mode = Factory.lstat(self.file)[0]
-        self.assertEquals(Factory.guess_filetype(st_mode), TYPE_FILE)
+        self.assertEquals(Factory.guess_filetype(st_mode), G.TYPE_FILE)
 
         st_mode = Factory.lstat(self.dir)[0]
-        self.assertEquals(Factory.guess_filetype(st_mode), TYPE_DIR)
+        self.assertEquals(Factory.guess_filetype(st_mode), G.TYPE_DIR)
 
         st_mode = Factory.lstat(self.symlink)[0]
-        self.assertEquals(Factory.guess_filetype(st_mode), TYPE_SYMLINK)
+        self.assertEquals(Factory.guess_filetype(st_mode), G.TYPE_SYMLINK)
 
     def test__other(self):
         _path = "/dev/null"
@@ -76,13 +75,13 @@ class Test__guess_filetype(unittest.TestCase):
             logging.warn("%s does not exist. Skip this test." % _path)
 
         st_mode = Factory.lstat(_path)[0]
-        self.assertEquals(Factory.guess_filetype(st_mode), TYPE_OTHER)
+        self.assertEquals(Factory.guess_filetype(st_mode), G.TYPE_OTHER)
 
 
 class Test__create_from_real_object(unittest.TestCase):
 
     def setUp(self):
-        self.workdir = setup_workdir()
+        self.workdir = C.setup_workdir()
 
         self.file = os.path.join(self.workdir, "file.txt")
         open(self.file, "w").write("This is a file")
@@ -100,38 +99,38 @@ class Test__create_from_real_object(unittest.TestCase):
         os.symlink(self.file, self.symlink)
 
     def tearDown(self):
-        cleanup_workdir(self.workdir)
+        C.cleanup_workdir(self.workdir)
 
     def test__file_wo_metadata(self):
-        fo = Bunch(path=self.file)
+        fo = B.Bunch(path=self.file)
         fo = Factory.create_from_real_object(fo)
 
         self.assertTrue(isinstance(fo, FO.FileObject))
-        self.assertEquals(fo.type(), TYPE_FILE)
+        self.assertEquals(fo.type(), G.TYPE_FILE)
         self.assertEquals(fo.path, self.file)
         self.assertEquals(fo.mode, self.file_mode)
 
     def test__dir_wo_metadata(self):
-        fo = Bunch(path=self.dir)
+        fo = B.Bunch(path=self.dir)
         fo = Factory.create_from_real_object(fo)
 
         self.assertTrue(isinstance(fo, FO.DirObject))
-        self.assertEquals(fo.type(), TYPE_DIR)
+        self.assertEquals(fo.type(), G.TYPE_DIR)
         self.assertEquals(fo.path, self.dir)
         self.assertEquals(fo.mode, self.dir_mode)
 
     def test__symlink_wo_metadata(self):
-        fo = Bunch(path=self.symlink)
+        fo = B.Bunch(path=self.symlink)
         fo = Factory.create_from_real_object(fo)
 
         self.assertTrue(isinstance(fo, FO.SymlinkObject))
-        self.assertEquals(fo.type(), TYPE_SYMLINK)
+        self.assertEquals(fo.type(), G.TYPE_SYMLINK)
         self.assertEquals(fo.path, self.symlink)
 
     def test__file_w_mode(self):
         mode = "0600"
 
-        fo = Bunch(path=self.file, mode=mode)
+        fo = B.Bunch(path=self.file, mode=mode)
         fo = Factory.create_from_real_object(fo)
 
         self.assertEquals(fo.mode, mode)
@@ -140,7 +139,7 @@ class Test__create_from_real_object(unittest.TestCase):
         uid = 1
         gid = 1
 
-        fo = Bunch(path=self.file, uid=uid, gid=gid)
+        fo = B.Bunch(path=self.file, uid=uid, gid=gid)
         fo = Factory.create_from_real_object(fo)
 
         self.assertEquals(fo.uid, uid)
@@ -149,11 +148,11 @@ class Test__create_from_real_object(unittest.TestCase):
     def test__dir_w_mode(self):
         mode = "0700"
 
-        fo = Bunch(path=self.dir, mode=mode)
+        fo = B.Bunch(path=self.dir, mode=mode)
         fo = Factory.create_from_real_object(fo)
 
         self.assertTrue(isinstance(fo, FO.DirObject))
-        self.assertEquals(fo.type(), TYPE_DIR)
+        self.assertEquals(fo.type(), G.TYPE_DIR)
         self.assertEquals(fo.path, self.dir)
         self.assertEquals(fo.mode, mode)
 
@@ -161,18 +160,18 @@ class Test__create_from_real_object(unittest.TestCase):
 class Test__create(unittest.TestCase):
 
     def setUp(self):
-        self.workdir = setup_workdir()
+        self.workdir = C.setup_workdir()
         self.path = os.path.join(self.workdir, "obj_not_exist")
 
     def tearDown(self):
-        cleanup_workdir(self.workdir)
+        C.cleanup_workdir(self.workdir)
 
     def test__create_w_filetype_file(self):
         filetype = FO.typestr_to_type("file")
         fo = Factory.create(self.path, filetype=filetype)
 
         self.assertTrue(isinstance(fo, FO.FileObject))
-        self.assertEquals(fo.type(), TYPE_FILE)
+        self.assertEquals(fo.type(), G.TYPE_FILE)
         self.assertEquals(fo.path, self.path)
         self.assertEquals(fo.mode, fo.defaults.mode)
         self.assertEquals(fo.uid, fo.defaults.uid)
@@ -184,7 +183,7 @@ class Test__create(unittest.TestCase):
         fo = Factory.create(self.path, filetype=filetype)
 
         self.assertTrue(isinstance(fo, FO.DirObject))
-        self.assertEquals(fo.type(), TYPE_DIR)
+        self.assertEquals(fo.type(), G.TYPE_DIR)
         self.assertEquals(fo.path, self.path)
         self.assertEquals(fo.mode, fo.defaults.mode)
         self.assertEquals(fo.uid, fo.defaults.uid)
@@ -196,7 +195,7 @@ class Test__create(unittest.TestCase):
         fo = Factory.create(self.path, filetype=filetype)
 
         self.assertTrue(isinstance(fo, FO.SymlinkObject))
-        self.assertEquals(fo.type(), TYPE_SYMLINK)
+        self.assertEquals(fo.type(), G.TYPE_SYMLINK)
         self.assertEquals(fo.path, self.path)
         self.assertEquals(fo.mode, fo.defaults.mode)
         self.assertEquals(fo.uid, fo.defaults.uid)

@@ -14,13 +14,11 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
-from pmaker.globals import TYPE_FILE, TYPE_DIR, TYPE_SYMLINK, \
-    TYPE_OTHER, TYPE_UNKNOWN
-from pmaker.models.Bunch import Bunch
-
+import pmaker.globals as G
+import pmaker.models.Bunch as B
+import pmaker.models.FileObjects as FO
 import pmaker.rpmutils as R
 import pmaker.utils as U
-import pmaker.models.FileObjects as FO
 
 import grp
 import logging
@@ -84,19 +82,19 @@ def guess_filetype(st_mode):
     :param st_mode:  stat.st_mode
     """
     if stat.S_ISLNK(st_mode):
-        ft = TYPE_SYMLINK
+        ft = G.TYPE_SYMLINK
 
     elif stat.S_ISREG(st_mode):
-        ft = TYPE_FILE
+        ft = G.TYPE_FILE
 
     elif stat.S_ISDIR(st_mode):
-        ft = TYPE_DIR
+        ft = G.TYPE_DIR
 
     elif stat.S_ISCHR(st_mode) or stat.S_ISBLK(st_mode) \
         or stat.S_ISFIFO(st_mode) or stat.S_ISSOCK(st_mode):
-        ft = TYPE_OTHER
+        ft = G.TYPE_OTHER
     else:
-        ft = TYPE_UNKNOWN  # Should not be reached here.
+        ft = G.TYPE_UNKNOWN  # Should not be reached here.
 
     return ft
 
@@ -121,15 +119,15 @@ def create_from_real_object(fo, use_rpmdb=False):
 
     filetype = guess_filetype(st[0])
 
-    if filetype == TYPE_FILE:
+    if filetype == G.TYPE_FILE:
         fo.checksum = U.checksum(fo.path)
     else:
         fo.checksum = U.checksum()
 
-        if filetype == TYPE_UNKNOWN:
+        if filetype == G.TYPE_UNKNOWN:
             logging.warn("Failed to detect filetype: " + fo.path)
 
-        elif filetype == TYPE_SYMLINK:
+        elif filetype == G.TYPE_SYMLINK:
             if "linkto" not in fo:
                 fo.linkto = os.path.realpath(fo.path)
 
@@ -158,7 +156,7 @@ def create(path, use_rpmdb=False, **attrs):
     :param attrs: A dict holding metadata other than path such as mode, gid,
                   uid, checksum, create, filetype, src, linkto, etc.
     """
-    fo = Bunch(path=path, **attrs)
+    fo = B.Bunch(path=path, **attrs)
 
     if "create" in fo and fo.create:
         assert to_be_created(fo), \
@@ -172,17 +170,17 @@ def create(path, use_rpmdb=False, **attrs):
     if "filetype" in fo:
         filetype = FO.typestr_to_type(fo.filetype)
     else:
-        filetype = TYPE_UNKNOWN
+        filetype = G.TYPE_UNKNOWN
 
         if ("content" in fo and fo.content) or \
                 ("src" in fo and fo.src != fo.path):
-            filetype = TYPE_FILE
+            filetype = G.TYPE_FILE
 
         elif "linkto" in fo:
-            filetype = TYPE_SYMLINK
+            filetype = G.TYPE_SYMLINK
 
         else:  # TODO: Is there any specific features in dirs?
-            filetype = TYPE_DIR
+            filetype = G.TYPE_DIR
 
     #logging.debug("xo=" + str(fo))
 

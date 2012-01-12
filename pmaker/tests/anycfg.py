@@ -14,10 +14,9 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
-from pmaker.models.Bunch import Bunch
-from pmaker.tests.common import setup_workdir, cleanup_workdir, selfdir
-
 import pmaker.anycfg as A
+import pmaker.models.Bunch as B
+import pmaker.tests.common as C
 
 import glob
 import optparse
@@ -100,17 +99,17 @@ def dump_conf(workdir, content, ext=""):
 class Test_01_IniConfigParser(unittest.TestCase):
 
     def setUp(self):
-        self.workdir = setup_workdir()
+        self.workdir = C.setup_workdir()
         path = dump_conf(self.workdir, INI_CONFIG_CONTENT)
         self.paths = [path]
-        self.config = Bunch(
+        self.config = B.Bunch(
             a="aaa",
             b="bbb",
-            profile0=Bunch(a="xxx", b="yyy", c=[1, 2, 3]),
+            profile0=B.Bunch(a="xxx", b="yyy", c=[1, 2, 3]),
         )
 
     def tearDown(self):
-        cleanup_workdir(self.workdir)
+        C.cleanup_workdir(self.workdir)
 
     def test__load(self):
         parser = A.IniConfigParser()
@@ -122,13 +121,13 @@ class Test_01_IniConfigParser(unittest.TestCase):
 class Test_02_IniConfigParser(unittest.TestCase):
 
     def test_00_load(self):
-        cfgpath = os.path.join(selfdir(), "config_example_00.ini")
+        cfgpath = os.path.join(C.selfdir(), "config_example_00.ini")
 
         parser = A.IniConfigParser()
         config = parser.load(cfgpath)
 
     def test_01_load(self):
-        cfgpath = os.path.join(selfdir(), "config_example_01.ini")
+        cfgpath = os.path.join(C.selfdir(), "config_example_01.ini")
 
         parser = A.IniConfigParser()
         config = parser.load(cfgpath)
@@ -139,17 +138,17 @@ if A.json is not None:
     class Test_03_JsonConfigParser(unittest.TestCase):
 
         def setUp(self):
-            self.workdir = setup_workdir()
+            self.workdir = C.setup_workdir()
             path = dump_conf(self.workdir, JSON_CONFIG_CONTENT, ".json")
             self.paths = [path]
-            self.config = Bunch(
-                defaults=Bunch(a="aaa", b="bbb"),
-                profile0=Bunch(a="xxx", b="yyy"),
+            self.config = B.Bunch(
+                defaults=B.Bunch(a="aaa", b="bbb"),
+                profile0=B.Bunch(a="xxx", b="yyy"),
                 array0=[1, 2, 3],
             )
 
         def tearDown(self):
-            cleanup_workdir(self.workdir)
+            C.cleanup_workdir(self.workdir)
 
         def test_00_load(self):
             parser = A.JsonConfigPaser()
@@ -166,7 +165,7 @@ if A.json is not None:
     class Test_04_JsonConfigParser(unittest.TestCase):
 
         def test_00_load(self):
-            cfgpath = os.path.join(selfdir(), "config_example_00.json")
+            cfgpath = os.path.join(C.selfdir(), "config_example_00.json")
 
             parser = A.JsonConfigPaser()
             config = parser.load(cfgpath)
@@ -192,7 +191,7 @@ if A.json is not None:
             self.assertEquals(config.files[1].path, "/d/e")
 
         def test_01_load(self):
-            cfgpath = os.path.join(selfdir(), "config_example_01.json")
+            cfgpath = os.path.join(C.selfdir(), "config_example_01.json")
 
             parser = A.JsonConfigPaser()
             config = parser.load(cfgpath)
@@ -203,17 +202,17 @@ if A.yaml is not None:
     class Test_05_YamlConfigParser(unittest.TestCase):
 
         def setUp(self):
-            self.workdir = setup_workdir()
+            self.workdir = C.setup_workdir()
             path = dump_conf(self.workdir, YAML_CONFIG_CONTENT, ".yml")
             self.paths = [path]
-            self.config = Bunch(
-                defaults=Bunch(a="aaa", b="bbb"),
-                profile0=Bunch(a="xxx", b="yyy"),
+            self.config = B.Bunch(
+                defaults=B.Bunch(a="aaa", b="bbb"),
+                profile0=B.Bunch(a="xxx", b="yyy"),
                 array0=[1, 2, 3],
             )
 
         def tearDown(self):
-            cleanup_workdir(self.workdir)
+            C.cleanup_workdir(self.workdir)
 
         def test_00_load(self):
             parser = A.YamlConfigPaser()
@@ -230,7 +229,7 @@ if A.yaml is not None:
     class Test_06_YamlConfigParser(unittest.TestCase):
 
         def test_00_load(self):
-            cfgpath = os.path.join(selfdir(), "config_example_00.yaml")
+            cfgpath = os.path.join(C.selfdir(), "config_example_00.yaml")
 
             parser = A.YamlConfigPaser()
             config = parser.load(cfgpath)
@@ -259,28 +258,28 @@ if A.yaml is not None:
 class Test_07_AnyConfigParser(unittest.TestCase):
 
     def setUp(self):
-        self.workdir = setup_workdir()
+        self.workdir = C.setup_workdir()
 
     def tearDown(self):
-        cleanup_workdir(self.workdir)
+        C.cleanup_workdir(self.workdir)
 
     def test_01_load(self):
         parser = A.AnyConfigParser()
 
         path = dump_conf(self.workdir, INI_CONFIG_CONTENT)
-        config_ref = Bunch(
+        config_ref = B.Bunch(
             a="aaa",
             b="bbb",
-            profile0=Bunch(a="xxx", b="yyy", c=[1, 2, 3]),
+            profile0=B.Bunch(a="xxx", b="yyy", c=[1, 2, 3]),
         )
         config = parser.load(path)
         self.assertEquals(config, config_ref)
 
         if A.json:
             path = dump_conf(self.workdir, JSON_CONFIG_CONTENT, ".json")
-            config_ref = Bunch(
-                defaults=Bunch(a="aaa", b="bbb"),
-                profile0=Bunch(a="xxx", b="yyy"),
+            config_ref = B.Bunch(
+                defaults=B.Bunch(a="aaa", b="bbb"),
+                profile0=B.Bunch(a="xxx", b="yyy"),
                 array0=[1, 2, 3],
             )
             config = parser.load(path)
@@ -288,9 +287,9 @@ class Test_07_AnyConfigParser(unittest.TestCase):
 
         if A.yaml:
             path = dump_conf(self.workdir, YAML_CONFIG_CONTENT, ".yaml")
-            config_ref = Bunch(
-                defaults=Bunch(a="aaa", b="bbb"),
-                profile0=Bunch(a="xxx", b="yyy"),
+            config_ref = B.Bunch(
+                defaults=B.Bunch(a="aaa", b="bbb"),
+                profile0=B.Bunch(a="xxx", b="yyy"),
                 array0=[1, 2, 3],
             )
             config = parser.load(path)
@@ -300,10 +299,10 @@ class Test_07_AnyConfigParser(unittest.TestCase):
         parser = A.AnyConfigParser()
 
         path = dump_conf(self.workdir, INI_CONFIG_CONTENT)
-        config_ref = Bunch(
+        config_ref = B.Bunch(
             a="aaa",
             b="bbb",
-            profile0=Bunch(a="xxx", b="yyy", c=[1, 2, 3]),
+            profile0=B.Bunch(a="xxx", b="yyy", c=[1, 2, 3]),
         )
         paths = [path]
 
@@ -331,9 +330,9 @@ profile0:
 
         if A.json:
             path = dump_conf(self.workdir, JSON_CONFIG_CONTENT, ".conf")
-            config_ref = Bunch(
-                defaults=Bunch(a="aaa", b="bbb"),
-                profile0=Bunch(a="xxx", b="yyy"),
+            config_ref = B.Bunch(
+                defaults=B.Bunch(a="aaa", b="bbb"),
+                profile0=B.Bunch(a="xxx", b="yyy"),
                 array0=[1, 2, 3],
             )
             config = parser.load(path)
@@ -344,9 +343,9 @@ profile0:
 
         if A.yaml:
             path = dump_conf(self.workdir, YAML_CONFIG_CONTENT, ".conf")
-            config_ref = Bunch(
-                defaults=Bunch(a="aaa", b="bbb"),
-                profile0=Bunch(a="xxx", b="yyy"),
+            config_ref = B.Bunch(
+                defaults=B.Bunch(a="aaa", b="bbb"),
+                profile0=B.Bunch(a="xxx", b="yyy"),
                 array0=[1, 2, 3],
             )
             config = parser.load(path)
@@ -357,9 +356,9 @@ profile0:
 
         if A.json:
             path = dump_conf(self.workdir, JSON_CONFIG_CONTENT, ".conf")
-            config_ref = Bunch(
-                defaults=Bunch(a="aaa", b="bbb"),
-                profile0=Bunch(a="xxx", b="yyy"),
+            config_ref = B.Bunch(
+                defaults=B.Bunch(a="aaa", b="bbb"),
+                profile0=B.Bunch(a="xxx", b="yyy"),
                 array0=[1, 2, 3],
             )
             config = parser.load(path, A.CTYPE_JSON)
@@ -370,16 +369,16 @@ profile0:
 
         if A.yaml:
             path = dump_conf(self.workdir, YAML_CONFIG_CONTENT, ".conf")
-            config_ref = Bunch(
-                defaults=Bunch(a="aaa", b="bbb"),
-                profile0=Bunch(a="xxx", b="yyy"),
+            config_ref = B.Bunch(
+                defaults=B.Bunch(a="aaa", b="bbb"),
+                profile0=B.Bunch(a="xxx", b="yyy"),
                 array0=[1, 2, 3],
             )
             config = parser.load(path, A.CTYPE_YAML)
             self.assertEquals(config, config_ref)
 
     def test_07_dump__json(self):
-        conf0 = os.path.join(selfdir(), "config_example_01.json")
+        conf0 = os.path.join(C.selfdir(), "config_example_01.json")
         conf1 = os.path.join(self.workdir, "dumped_config_example_01.json")
 
         parser = A.AnyConfigParser()
@@ -389,7 +388,7 @@ profile0:
         self.assertTrue(os.path.exists(conf1))
 
     def test_08_dump__yaml(self):
-        conf0 = os.path.join(selfdir(), "config_example_01.yaml")
+        conf0 = os.path.join(C.selfdir(), "config_example_01.yaml")
         conf1 = os.path.join(
             self.workdir, "dumped_config_example_01.yaml"
         )

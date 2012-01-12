@@ -14,12 +14,10 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
-from pmaker.globals import UPTO
-from pmaker.configurations import Config, _defaults
-from pmaker.models.Bunch import Bunch
-from pmaker.tests.common import setup_workdir, cleanup_workdir
-
+import pmaker.configurations as C
 import pmaker.environ as E
+import pmaker.models.Bunch as B
+import pmaker.tests.common as T
 
 import os
 import os.path
@@ -29,17 +27,17 @@ import unittest
 class Test_01_functions(unittest.TestCase):
 
     def test_00__defaults(self):
-        dfs = _defaults(E.Env())
+        dfs = C._defaults(E.Env())
 
-        self.assertTrue(isinstance(dfs, Bunch))
+        self.assertTrue(isinstance(dfs, B.Bunch))
 
     def test_01__defaults_w_modified_env(self):
-        dfs_ref = _defaults(E.Env())
+        dfs_ref = C._defaults(E.Env())
 
         env = E.Env()
         env.workdir = "/a/b/c"  # modified.
 
-        dfs = _defaults(E.Env())
+        dfs = C._defaults(E.Env())
 
         self.assertNotEquals(dfs_ref, dfs)
         self.assertEquals(dfs.workdir, env.workdir)
@@ -48,14 +46,14 @@ class Test_01_functions(unittest.TestCase):
 class Test_02_Config(unittest.TestCase):
 
     def setUp(self):
-        self.workdir = setup_workdir()
+        self.workdir = T.setup_workdir()
 
     def tearDown(self):
-        cleanup_workdir(self.workdir)
+        T.cleanup_workdir(self.workdir)
 
     def test_00__init__w_norc(self):
-        cfg = Config(norc=True)
-        dfs = _defaults(E.Env())  # reference of cfg.
+        cfg = C.Config(norc=True)
+        dfs = C._defaults(E.Env())  # reference of cfg.
 
         for k, v in dfs.iteritems():
             self.assertEquals(getattr(cfg, k), v)
@@ -66,8 +64,8 @@ class Test_02_Config(unittest.TestCase):
         if E.json is None:
             return True
 
-        cfg = Config(norc=True)
-        dfs = _defaults(E.Env())
+        cfg = C.Config(norc=True)
+        dfs = C._defaults(E.Env())
         config = os.path.join(self.workdir, "test_config.json")
 
         content = """
@@ -107,8 +105,8 @@ class Test_02_Config(unittest.TestCase):
         if E.yaml is None:
             return True
 
-        cfg = Config(norc=True)
-        dfs = _defaults(E.Env())
+        cfg = C.Config(norc=True)
+        dfs = C._defaults(E.Env())
         config = os.path.join(self.workdir, "test_config.yaml")
 
         content = """

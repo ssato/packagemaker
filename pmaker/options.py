@@ -14,9 +14,8 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
-from pmaker.globals import PMAKER_VERSION
-from pmaker.models.Bunch import Bunch
-
+import pmaker.globals as G
+import pmaker.models.Bunch as B
 import pmaker.configurations as C
 import pmaker.collectors.FilelistCollectors as Collectors
 import pmaker.backend.registry as Backends
@@ -51,7 +50,7 @@ Examples:
   %prog -n foo --relations "requires:httpd,/bin/tar;obsoletes:bar" files.list
 """
 
-VERSION_STRING = "%prog " + PMAKER_VERSION
+VERSION_STRING = "%prog " + G.PMAKER_VERSION
 
 DESTDIR_OPTION_HELP = """\
 Destdir (prefix) to strip from installation path.
@@ -125,7 +124,7 @@ def set_workdir(workdir, name, pversion):
         return os.path.join(os.path.abspath(workdir), subdir)
 
 
-class Options(Bunch):
+class Options(B.Bunch):
 
     def __init__(self, **kwargs):
         """

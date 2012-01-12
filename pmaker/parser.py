@@ -14,7 +14,7 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
-from pmaker.models.Bunch import Bunch
+import pmaker.models.Bunch as B
 
 import glob
 import itertools
@@ -134,7 +134,7 @@ def parse_line_of_filelist(line):
     avs = [
         av for av in (parse_list(a, "=") for a in ss[1:]) if av
     ]
-    attrs = Bunch((a, parse_single(str(v))) for a, v in avs)
+    attrs = B.Bunch((a, parse_single(str(v))) for a, v in avs)
     if "*" in pp:
         attrs.create = False
 

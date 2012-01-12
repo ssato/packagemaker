@@ -15,9 +15,9 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
-from pmaker.globals import TYPE_DIR
-from pmaker.models.Bunch import Bunch
-from pmaker.utils import memoize, cache_needs_updates_p
+import pmaker.globals as G
+import pmaker.models.Bunch as B
+import pmaker.utils as U
 
 import cPickle as pickle
 import datetime
@@ -73,7 +73,7 @@ RPM_RELATIONS = {
 }
 
 
-@memoize
+@U.memoize
 def is_rpmdb_available():
     try:
         rc = subprocess.check_call(
@@ -112,7 +112,7 @@ def rpmh2nvrae(h):
     )
     d["epoch"] = str(normalize_epoch(d["epoch"]))
 
-    return Bunch(**d)
+    return B.Bunch(**d)
 
 
 def ts(rpmdb_path=None):
@@ -190,7 +190,7 @@ def info_by_path(path, fi_keys=RPM_FI_KEYS, rpmdb_path=None):
     return dict()
 
 
-@memoize
+@U.memoize
 def filelist(cache=True, expires=1, pkl_proto=pickle.HIGHEST_PROTOCOL,
         rpmdb_path=None, cache_file=RPM_FILELIST_CACHE):
     """
@@ -203,7 +203,7 @@ def filelist(cache=True, expires=1, pkl_proto=pickle.HIGHEST_PROTOCOL,
     if not os.path.exists(cachedir):
         os.makedirs(cachedir, 0755)
 
-    if cache and not cache_needs_updates_p(cache_file, expires):
+    if cache and not U.cache_needs_updates_p(cache_file, expires):
         try:
             data = pickle.load(open(cache_file, "rb"))
             logging.debug("Could load the cache: %s" % cache_file)
@@ -231,16 +231,16 @@ try:
     from yum import rpmsack
     rpmdb = rpmsack.RPMDBPackageSack()
 
-    @memoize
+    @U.memoize
     def rpm_search_provides_by_path(path):
         rs = rpmdb.searchProvides(path)
-        return rs and rpmh2nvrae(rs[0]) or Bunch()
+        return rpmh2nvrae(rs[0]) if rs else B.Bunch()
 
 except ImportError:
-    @memoize
+    @U.memoize
     def rpm_search_provides_by_path(path, rpmdb_path=None):
         database = filelist(rpmdb_path=rpmdb_path)
-        return Bunch(**database.get(path, dict()))
+        return B.Bunch(**database.get(path, dict()))
 
 
 def __rpm_attr(fo):
@@ -294,7 +294,7 @@ def rpm_attr(fo):
         if fo.need_to_chmod() or fo.need_to_chown():
             rattr = __rpm_attr(fo) + " "
 
-        if fo.type() == TYPE_DIR:
+        if fo.type() == G.TYPE_DIR:
             rattr += "%dir "
 
     return rattr

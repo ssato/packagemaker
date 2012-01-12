@@ -16,12 +16,10 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 #
-from pmaker.globals import TYPE_FILE, TYPE_DIR, TYPE_SYMLINK, \
-    TYPE_OTHER, TYPE_UNKNOWN
-
-from pmaker.utils import checksum
-from pmaker.models.Bunch import Bunch
-from pmaker.models.FileObjectOperations import FileOps, DirOps, SymlinkOps
+import pmaker.globals as G
+import pmaker.models.Bunch as B
+import pmaker.models.FileObjectOperations as F
+import pmaker.utils as U
 
 import copy
 import os.path
@@ -36,8 +34,11 @@ def typestr_to_type(s):
     Convert string representation of type to TYPE_*.
     """
     typemap = dict(
-        f=TYPE_FILE, d=TYPE_DIR, s=TYPE_SYMLINK,
-        o=TYPE_OTHER, u=TYPE_UNKNOWN
+        f=G.TYPE_FILE,
+        d=G.TYPE_DIR,
+        s=G.TYPE_SYMLINK,
+        o=G.TYPE_OTHER,
+        u=G.TYPE_UNKNOWN
     )
 
     filetype = typemap.get(s[0], None)
@@ -48,7 +49,7 @@ def typestr_to_type(s):
     return filetype
 
 
-class XObject(Bunch):
+class XObject(B.Bunch):
     """
     This class represents regular files, dirs, symlinks and other objects on
     filesystem.
@@ -57,7 +58,7 @@ class XObject(Bunch):
     same time.
     """
 
-    defaults = Bunch(mode="0644", uid=0, gid=0, checksum=checksum())
+    defaults = B.Bunch(mode="0644", uid=0, gid=0, checksum=U.checksum())
 
     def __init__(self, path=None, mode=None, uid=None, gid=None,
             checksum=None, create=False, content="", src=None,
@@ -108,8 +109,8 @@ class FileObject(XObject):
     """File object
     """
 
-    ops = FileOps
-    filetype = TYPE_FILE
+    ops = F.FileOps
+    filetype = G.TYPE_FILE
     is_copyable = True
 
     @classmethod
@@ -122,7 +123,7 @@ class FileObject(XObject):
 
     @classmethod
     def isfile(cls):
-        return cls.type() == TYPE_FILE
+        return cls.type() == G.TYPE_FILE
 
     def __cmp__(self, other):
         return cmp(self.path, other.path)
@@ -145,8 +146,8 @@ class FileObject(XObject):
 
 class DirObject(FileObject):
 
-    ops = DirOps
-    filetype = TYPE_DIR
+    ops = F.DirOps
+    filetype = G.TYPE_DIR
 
     defaults = copy.copy(XObject.defaults)
     defaults.mode = "0755"
@@ -154,8 +155,8 @@ class DirObject(FileObject):
 
 class SymlinkObject(FileObject):
 
-    ops = SymlinkOps
-    filetype = TYPE_SYMLINK
+    ops = F.SymlinkOps
+    filetype = G.TYPE_SYMLINK
 
     def __init__(self, path, linkto=None, **kwargs):
         """
@@ -173,7 +174,7 @@ class OtherObject(FileObject):
     May be a socket, FIFO (named pipe), Character Dev or Block Dev, etc.
     """
 
-    filetype = TYPE_OTHER
+    filetype = G.TYPE_OTHER
     is_copyable = False
 
 
@@ -182,7 +183,7 @@ class UnknownObject(FileObject):
     Special case that lstat() failed and cannot stat $path.
     """
 
-    filetype = TYPE_UNKNOWN
+    filetype = G.TYPE_UNKNOWN
     is_copyable = False
 
 
