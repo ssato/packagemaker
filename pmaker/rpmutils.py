@@ -317,7 +317,7 @@ def rpm_header_from_rpmfile(rpmfile):
     return ts().hdrFromFdno(open(rpmfile, "rb"))
 
 
-@memoize
+@U.memoize
 def is_noarch(srpm):
     """Determine if given srpm is noarch (arch-independent).
     """
