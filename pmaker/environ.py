@@ -142,23 +142,23 @@ def is_git_available():
 
 @U.memoize
 def get_username():
-    return os.environ.get("USER", False) or os.getlogin()
+    return os.environ.get("USER", os.getlogin())
 
 
 @U.memoize
 def get_email():
     if is_git_available():
         try:
-            email = subprocess.check_output(
+            return subprocess.check_output(
                 "git config --get user.email 2>/dev/null", shell=True
-            )
-            return email.rstrip()
+            ).rstrip()
         except Exception, e:
             logging.warn("get_email: " + str(e))
-            pass
 
-    return os.environ.get("MAIL_ADDRESS", False) or \
+    return os.environ.get(
+        "MAIL_ADDRESS",
         "%s@localhost.localdomain" % get_username()
+    )
 
 
 @U.memoize
@@ -167,15 +167,13 @@ def get_fullname():
     """
     if is_git_available():
         try:
-            fullname = subprocess.check_output(
+            return subprocess.check_output(
                 "git config --get user.name 2>/dev/null", shell=True
-            )
-            return fullname.rstrip()
+            ).rstrip()
         except Exception, e:
             logging.warn("get_fullname: " + str(e))
-            pass
 
-    return os.environ.get("FULLNAME", False) or get_username()
+    return os.environ.get("FULLNAME", get_username())
 
 
 @U.memoize
