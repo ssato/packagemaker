@@ -300,4 +300,15 @@ def rpm_attr(fo):
     return rattr
 
 
+def mock_dist():
+    """
+    Resolve the distributionn name from /etc/mock/defaults.cfg.
+    """
+    try:
+        mock_cfg = os.path.realpath("/etc/mock/default.cfg")
+        return os.path.splitext(os.path.split(mock_cfg)[-1])[0]
+    except:
+        return None
+
+
 # vim:sw=4 ts=4 et:
