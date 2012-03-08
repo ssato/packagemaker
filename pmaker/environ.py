@@ -60,20 +60,29 @@ def hostname():
 def get_arch():
     """Returns "normalized" architecutre this host can support.
     """
-    ia32_re = re.compile(r"i.86")  # i386, i686, etc.
-
+    ia32_reg = re.compile(r"i.86")  # i386, i686, etc.
     arch = platform.machine() or "i386"
 
-    if ia32_re.match(arch) is not None:
-        return "i386"
-    else:
-        return arch
+    return "i386" if ia32_reg.match(arch) else arch
+
+
+def __get_version_from_distfile(distfile, verreg, verdefault):
+    version = verdefault
+    try:
+        m = re.match(verreg, open(distfile).read())
+        if m:
+            version = m.groups()[0]
+
+    except Exception, e:
+        logging.warn(str(e))
+
+    return version
 
 
 @U.memoize
 def get_distribution():
-    """Get name and version of the distribution of the system based on
-    heuristics.
+    """Get name and version of the distribution running on this system based on
+    some heuristics.
     """
     fedora_f = "/etc/fedora-release"
     rhel_f = "/etc/redhat-release"
@@ -83,19 +92,19 @@ def get_distribution():
 
     if os.path.exists(fedora_f):
         name = DIST_FEDORA
-        m = re.match(r"^Fedora .+ ([0-9]+) .+$", open(fedora_f).read())
-        version = m is None and "14" or m.groups()[0]
-
+        version = __get_version_from_distfile(
+            fedora_f, r"^Fedora .+ ([0-9]+) .+$", "16"
+        )
     elif os.path.exists(rhel_f):
         name = DIST_RHEL
-        m = re.match(r"^Red Hat.* ([0-9]+) .*$", open(fedora_f).read())
-        version = m is None and "6" or m.groups()[0]
-
+        version = __get_version_from_distfile(
+            rhel_f, r"^Red Hat.* ([0-9]+) .*$", "6"
+        )
     elif os.path.exists(debian_f):
         name = DIST_DEBIAN
-        m = re.match(r"^([0-9])\..*", open(debian_f).read())
-        version = m is None and "6" or m.groups()[0]
-
+        version = __get_version_from_distfile(
+            debian_f, r"^([0-9]+)\..*$", "6"
+        )
     else:
         raise RuntimeError("Not supported distribution!")
 
@@ -133,23 +142,23 @@ def is_git_available():
 
 @U.memoize
 def get_username():
-    return os.environ.get("USER", False) or os.getlogin()
+    return os.environ.get("USER", os.getlogin())
 
 
 @U.memoize
 def get_email():
     if is_git_available():
         try:
-            email = subprocess.check_output(
+            return subprocess.check_output(
                 "git config --get user.email 2>/dev/null", shell=True
-            )
-            return email.rstrip()
+            ).rstrip()
         except Exception, e:
             logging.warn("get_email: " + str(e))
-            pass
 
-    return os.environ.get("MAIL_ADDRESS", False) or \
+    return os.environ.get(
+        "MAIL_ADDRESS",
         "%s@localhost.localdomain" % get_username()
+    )
 
 
 @U.memoize
@@ -158,15 +167,13 @@ def get_fullname():
     """
     if is_git_available():
         try:
-            fullname = subprocess.check_output(
+            return subprocess.check_output(
                 "git config --get user.name 2>/dev/null", shell=True
-            )
-            return fullname.rstrip()
+            ).rstrip()
         except Exception, e:
             logging.warn("get_fullname: " + str(e))
-            pass
 
-    return os.environ.get("FULLNAME", False) or get_username()
+    return os.environ.get("FULLNAME", get_username())
 
 
 @U.memoize

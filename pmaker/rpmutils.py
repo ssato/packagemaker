@@ -1,4 +1,4 @@
-#
+
 # Copyright (C) 2011 Satoru SATOH <satoru.satoh @ gmail.com>
 # Copyright (C) 2011 Satoru SATOH <ssato @ redhat.com>
 #
@@ -298,6 +298,30 @@ def rpm_attr(fo):
             rattr += "%dir "
 
     return rattr
+
+
+def mock_dist():
+    """
+    Resolve the distributionn name from /etc/mock/defaults.cfg.
+    """
+    try:
+        mock_cfg = os.path.realpath("/etc/mock/default.cfg")
+        return os.path.splitext(os.path.split(mock_cfg)[-1])[0]
+    except:
+        return None
+
+
+def rpm_header_from_rpmfile(rpmfile):
+    """Read rpm.hdr from rpmfile.
+    """
+    return ts().hdrFromFdno(open(rpmfile, "rb"))
+
+
+@U.memoize
+def is_noarch(srpm):
+    """Determine if given srpm is noarch (arch-independent).
+    """
+    return rpm_header_from_rpmfile(srpm)["arch"] == "noarch"
 
 
 # vim:sw=4 ts=4 et:
