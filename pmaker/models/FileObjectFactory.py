@@ -106,7 +106,8 @@ def create_from_real_object(fo, use_rpmdb=False):
 
     :param fo:  A Bunch object
     """
-    assert os.path.exists(fo.path)
+    if not os.path.islink(fo.path):
+        assert os.path.exists(fo.path)
 
     basic_attr_names = ("mode", "uid", "gid")
     st = lstat(fo.path, use_rpmdb)
@@ -162,7 +163,9 @@ def create(path, use_rpmdb=False, **attrs):
         assert to_be_created(fo), \
             "Missing info to create: path=%s, attrs=%s" % (path, str(attrs))
     else:
-        if os.path.exists(path):
+        # $path exists or not exist but it's a symlink, link to
+        # non-existent-obj to be linked.
+        if os.path.exists(path) or os.path.islink(path):
             return create_from_real_object(fo, use_rpmdb)
         else:
             fo.create = True if to_be_created(fo) else False

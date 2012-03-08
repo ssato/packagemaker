@@ -98,6 +98,9 @@ class Test__create_from_real_object(unittest.TestCase):
         self.symlink = os.path.join(self.workdir, "test.symlink")
         os.symlink(self.file, self.symlink)
 
+        self.missinglink = os.path.join(self.workdir, "test.missinglink")
+        os.symlink("/non-existent-file", self.missinglink)
+
     def tearDown(self):
         C.cleanup_workdir(self.workdir)
 
@@ -126,6 +129,14 @@ class Test__create_from_real_object(unittest.TestCase):
         self.assertTrue(isinstance(fo, FO.SymlinkObject))
         self.assertEquals(fo.type(), G.TYPE_SYMLINK)
         self.assertEquals(fo.path, self.symlink)
+
+    def test__symlink_missing(self):
+        fo = B.Bunch(path=self.missinglink)
+        fo = Factory.create_from_real_object(fo)
+
+        self.assertTrue(isinstance(fo, FO.SymlinkObject))
+        self.assertEquals(fo.type(), G.TYPE_SYMLINK)
+        self.assertEquals(fo.path, self.missinglink)
 
     def test__file_w_mode(self):
         mode = "0600"
