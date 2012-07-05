@@ -23,6 +23,13 @@ BuildRequires:  python-nose
 BuildRequires:  python-pep8
 %endif
 Requires:       python
+%if ! 0%{?fedora} == 0
+Requires:       mock
+%endif
+Requires:       rpm-build
+Requires:       automake
+Requires:       autoconf
+Requires:       make
 
 
 %description
