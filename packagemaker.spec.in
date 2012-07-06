@@ -22,7 +22,6 @@ BuildRequires:  python
 BuildRequires:  python-nose
 BuildRequires:  python-pep8
 %endif
-Requires:       python
 %if ! 0%{?fedora} == 0
 Requires:       mock
 %endif
@@ -30,6 +29,7 @@ Requires:       rpm-build
 Requires:       automake
 Requires:       autoconf
 Requires:       make
+Requires:       %{name}-core = %{version}-%{release}
 
 
 %description
@@ -37,6 +37,18 @@ PackageMaker is a tool can automate process to package files on your system. It
 helps building packages of existing files, dirs and symlinks on your system by
 automating almost all of the steps needed for packaging: arrange source tree,
 create makefiles and rpm specs or debian packaging files, etc.
+
+
+%package        core
+Summary:        PackageMaker core library and tools
+Group:          System Environment/Base
+Requires:       python
+
+
+%description    core
+PackageMaker core library and tools to make source working directories to build
+packages at least even if some dependencies such as autoconf, automake,
+rpm-build not found on target systems, to make packages (SRPMs).
 
 
 %prep
@@ -50,6 +62,8 @@ create makefiles and rpm specs or debian packaging files, etc.
 %install
 rm -rf $RPM_BUILD_ROOT
 %{__python} setup.py install -O1 --skip-build --root $RPM_BUILD_ROOT
+
+rm -f $RPM_BUILD_ROOT%{python_sitelib}/*.egg-info
 
 
 %check
@@ -65,9 +79,13 @@ rm -rf $RPM_BUILD_ROOT
 %files
 %defattr(-,root,root,-)
 %doc README
-%doc examples
 %doc tests
-%{python_sitelib}/*.egg-info
+
+
+%files          core
+%defattr(-,root,root,-)
+%doc README
+%doc examples
 %{python_sitelib}/pmaker
 %{_bindir}/*
 %{_datadir}/pmaker/templates/1/*
@@ -82,6 +100,10 @@ rm -rf $RPM_BUILD_ROOT
 
 
 %changelog
+* Fri Jul  6 2012 Satoru SATOH <ssato@redhat.com> - 0.4.1-1
+- new major version release
+- splitted into two RPMs to bring some runtime deps selectively
+
 * Sun Dec 25 2011 Satoru SATOH <ssato@redhat.com> - 0.4.0-1
 - new major version release
 - switched module represents file objects from FileInfo to FileObjects
