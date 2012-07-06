@@ -151,7 +151,7 @@ Same as --driver option.
 .IP "\-I INPUT_TYPE, \-\-input-type=INPUT_TYPE"
 .IX Item "-I INPUT_TYPE, --input-type=INPUT_TYPE"
 Specify (configuration and/or files path list) Input type. Detected
-automatically from its extension by default Available types are filelist,
+automatically from its extension by default. Available types are filelist,
 filelist.json [filelist].
 .IP "\-\-destdir=DESTDIR"
 .IX Item "--destdir=DESTDIR"
@@ -159,7 +159,7 @@ Destdir (prefix) you want to strip from installed path []. For example, if the
 target path is "/builddir/dest/usr/share/data/foo/a.dat", and you want to strip
 "/builddir/dest" from the path when packaging "a.dat" and make it installed as
 "/usr/share/foo/a.dat" with the package , you can accomplish that by this
-option: "-- destdir=/builddir/destdir"
+option: "--destdir=/builddir/destdir"
 .IP "\-P TEMPLATE_PATHS, \-\-template\-path=TEMPLATE_PATHS"
 .IX Item "-P TEMPLATE_PATHS, --template-path=TEMPLATE_PATHS"
 Specify template search path
