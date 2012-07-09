@@ -81,7 +81,8 @@ class NotExistFilter(BaseFilter):
     _reason = "not exist"
 
     def _pred(self, f):
-        return not f.create and not os.path.exists(f.path)
+        return not (f.create or os.path.exists(f.path) or \
+            os.path.islink(f.path))
 
 
 class ReadAccessFilter(BaseFilter):
@@ -92,7 +93,8 @@ class ReadAccessFilter(BaseFilter):
     _reason = "not permitted to read"
 
     def _pred(self, f):
-        return not f.create and not os.access(f.path, os.R_OK)
+        return not (f.create or os.access(f.path, os.R_OK) or \
+            os.path.islink(f.path))
 
 
 # vim:sw=4 ts=4 et:
