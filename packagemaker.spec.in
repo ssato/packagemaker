@@ -100,7 +100,7 @@ rm -rf $RPM_BUILD_ROOT
 
 
 %changelog
-* Fri Jul  6 2012 Satoru SATOH <ssato@redhat.com> - 0.4.1-1
+* Mon Jul  9 2012 Satoru SATOH <ssato@redhat.com> - 0.4.1-1
 - new major version release
 - splitted into two RPMs to bring some runtime deps selectively
 
