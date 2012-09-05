@@ -52,9 +52,11 @@ reqs = list(
     )
 )
 
+<?py   if not trigger: ?>
 for name, version, release, epoch in reqs: ?>
 Requires:       #{name} = #{epoch}:#{version}-#{release}
 <?py #endfor ?>
+<?py   #endif ?>
 
 
 %description    overrides
@@ -80,6 +82,9 @@ mkdir -p $RPM_BUILD_ROOT#{conflicts.savedir}
 mkdir -p $RPM_BUILD_ROOT%{_libexecdir}/%{name}-overrides
 install -m 755 apply-overrides $RPM_BUILD_ROOT%{_libexecdir}/%{name}-overrides
 install -m 755 revert-overrides $RPM_BUILD_ROOT%{_libexecdir}/%{name}-overrides
+<?py   if trigger: ?>
+install -m 755 trigger-overrides $RPM_BUILD_ROOT%{_libexecdir}/%{name}-overrides
+<?py   #endif ?>
 <?py #endif ?>
 
 
@@ -97,6 +102,13 @@ fi
 if [ $1 = 0 ]; then    # uninstall (! update)
     %{_libexecdir}/%{name}-overrides/revert-overrides
 fi
+<?py #endif ?>
+
+<?py if trigger: ?>
+for name, version, release, epoch in reqs: ?>
+%triggerin -- #{name}
+%{_libexecdir}/%{name}-overrides/trigger-overrides
+<?py #endfor ?>
 <?py #endif ?>
 
 
