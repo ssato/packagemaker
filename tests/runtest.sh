@@ -1,9 +1,8 @@
 #! /bin/bash
 set -e
 
-
-topdir=${0%/*}
-testsdir=$topdir/tests
+testsdir=${0%/*}
+topdir=${testsdir}/..
 
 which pep8 2>&1 > /dev/null && check_with_pep8=1 || check_with_pep8=0
 
