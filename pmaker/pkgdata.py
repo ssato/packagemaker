@@ -68,8 +68,8 @@ class PkgData(B.Bunch):
             "format", "destdir", "name", "group", "license", "url",
             "summary", "arch", "relations", "packager", "email",
             "pversion", "release", "changelog", "dist",
-            "template_paths", "hostname", "no_mock",
-            "trace",
+            "template_paths", "hostname", "no_mock", "trigger",
+            "trace", 
         )
 
         for key in keys:

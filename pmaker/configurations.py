@@ -72,6 +72,7 @@ def _defaults(env):
     defaults.dist = env.dist.label
     defaults.no_rpmdb = env.format != G.PKG_FORMAT_RPM
     defaults.no_mock = False
+    defaults.trigger = False
 
     # others:
     defaults.hostname = env.hostname

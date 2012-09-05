@@ -267,6 +267,9 @@ class Options(B.Bunch):
             help="Build RPM with only using rpmbuild w/o mock" + \
                 " (not recommended)"
         )
+        add_option("", "--trigger", action="store_true",
+            help="Resolve conflicts with RPM trigger"
+        )
 
         self.oparser.add_option_group(rog)
 
