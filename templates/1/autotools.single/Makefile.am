@@ -1,6 +1,6 @@
 EXTRA_DIST = pmaker-config.json
 <?py if conflicts.files : ?>
-EXTRA_DIST += apply-overrides revert-overrides
+EXTRA_DIST += apply-overrides revert-overrides trigger-overrides
 <?py #endif ?>
 <?py if format == "rpm": ?>
 EXTRA_DIST += #{name}.spec rpm.mk

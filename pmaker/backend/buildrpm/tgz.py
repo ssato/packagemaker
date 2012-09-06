@@ -31,6 +31,7 @@ class Backend(B.Base):
         (TVER + "/buildrpm/Makefile", "Makefile"),
         (TVER + "/common/apply-overrides", "apply-overrides"),
         (TVER + "/common/revert-overrides", "revert-overrides"),
+        (TVER + "/common/trigger-overrides", "trigger-overrides"),
     ]
 
     def sbuild(self):

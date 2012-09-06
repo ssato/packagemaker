@@ -2,6 +2,9 @@
 %define  savedir  /var/lib/pmaker/preserved
 %define  newdir  /var/lib/pmaker/installed
 <?py #endif ?>
+<?py if trigger: ?>
+%define use_trigger 1
+<?py #endif ?>
 
 Name:           #{name}
 Version:        #{pversion}
@@ -51,12 +54,13 @@ reqs = list(
         ]
     )
 )
+?>
 
-<?py   if not trigger: ?>
-for name, version, release, epoch in reqs: ?>
+%if 0%{?use_trigger} == 0
+<?py   for name, version, release, epoch in reqs: ?>
 Requires:       #{name} = #{epoch}:#{version}-#{release}
-<?py #endfor ?>
-<?py   #endif ?>
+<?py   #endfor ?>
+%endif
 
 
 %description    overrides
@@ -82,9 +86,9 @@ mkdir -p $RPM_BUILD_ROOT#{conflicts.savedir}
 mkdir -p $RPM_BUILD_ROOT%{_libexecdir}/%{name}-overrides
 install -m 755 apply-overrides $RPM_BUILD_ROOT%{_libexecdir}/%{name}-overrides
 install -m 755 revert-overrides $RPM_BUILD_ROOT%{_libexecdir}/%{name}-overrides
-<?py   if trigger: ?>
+%if 0%{?use_trigger} == 1
 install -m 755 trigger-overrides $RPM_BUILD_ROOT%{_libexecdir}/%{name}-overrides
-<?py   #endif ?>
+%endif
 <?py #endif ?>
 
 
@@ -104,12 +108,12 @@ if [ $1 = 0 ]; then    # uninstall (! update)
 fi
 <?py #endif ?>
 
-<?py if trigger: ?>
-for name, version, release, epoch in reqs: ?>
+%if 0%{?use_trigger} == 1
+<?py for name, version, release, epoch in reqs: ?>
 %triggerin -- #{name}
 %{_libexecdir}/%{name}-overrides/trigger-overrides
 <?py #endfor ?>
-<?py #endif ?>
+%endif
 
 
 %files

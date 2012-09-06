@@ -1,7 +1,7 @@
 PACKAGE = #{name}
 EXTRA_DIST = README pmaker-config.json
 <?py if conflicts.files : ?>
-EXTRA_DIST += apply-overrides revert-overrides
+EXTRA_DIST += apply-overrides revert-overrides trigger-overrides
 <?py #endif ?>
 
 # e.g. (cd ..; tar -cvf - foo-0.0.3 | xz -v9 > foo-0.0.3.tar.xz \
