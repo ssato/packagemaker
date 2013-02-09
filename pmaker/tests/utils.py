@@ -56,13 +56,6 @@ class Test_singleton(unittest.TestCase):
         self.assertTrue(a0 == a1)
 
 
-class TestMemoized(unittest.TestCase):
-
-    def test_memoized(self):
-        """test_memoized: FIXME: implement this"""
-        pass
-
-
 class TestChecksum(unittest.TestCase):
 
     def setUp(self):
