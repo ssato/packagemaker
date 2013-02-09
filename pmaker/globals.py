@@ -162,4 +162,4 @@ PKG_FORMATS = (PKG_FORMAT_TGZ, PKG_FORMAT_RPM, PKG_FORMAT_DEB) = \
     ("tgz", "rpm", "deb")
 
 
-# vim:sw=4 ts=4 et:
+# vim:sw=4:ts=4:et:

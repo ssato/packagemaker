@@ -148,4 +148,4 @@ class TestFunctions(unittest.TestCase):
         self.assertEquals(rpm_attr(fi), "%dir ")
 
 
-# vim:sw=4 ts=4 et:
+# vim:sw=4:ts=4:et:

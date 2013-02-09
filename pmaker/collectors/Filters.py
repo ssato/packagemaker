@@ -97,6 +97,7 @@ class ReadAccessFilter(BaseFilter):
             os.path.islink(f.path))
 
 
+<<<<<<< HEAD
 class WhitespacesInPathFilter(BaseFilter):
     """
     A filter to filter out files of which path contains ' ' (whitespaces).
@@ -107,4 +108,6 @@ class WhitespacesInPathFilter(BaseFilter):
         return  " " in f.path
 
 
+=======
+>>>>>>> 0face44... fixed vim markers
 # vim:sw=4:ts=4:et:

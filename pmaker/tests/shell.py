@@ -61,4 +61,4 @@ class Test_ThreadedCommand(unittest.TestCase):
         self.assertRaises(RuntimeError, tcmd.run)
 
 
-# vim: set sw=4 ts=4 expandtab:
+# vim:sw=4:ts=4:et:

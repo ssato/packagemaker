@@ -28,4 +28,4 @@ class Test_00_to_srcdir(unittest.TestCase):
         self.assertEquals(U.to_srcdir(srcdir, "/"),      "/tmp/w/src/")
 
 
-# vim:sw=4 ts=4 et:
+# vim:sw=4:ts=4:et:

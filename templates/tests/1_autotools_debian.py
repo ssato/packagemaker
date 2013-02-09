@@ -56,4 +56,4 @@ class Test_templates_1_autotools_debian(unittest.TestCase):
             f.write(c)
 
 
-# vim:sw=4 ts=4 et:
+# vim:sw=4:ts=4:et:

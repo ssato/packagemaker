@@ -419,4 +419,4 @@ class Test_03_AnyFilelistCollector__w_side_effects(unittest.TestCase):
         )
 
 
-# vim:sw=4 ts=4 et:
+# vim:sw=4:ts=4:et:

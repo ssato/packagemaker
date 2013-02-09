@@ -46,4 +46,4 @@ def template_compile(template_path, context={}, engine=_ENGINE):
     return engine.render(template_path, context)
 
 
-# vim:sw=4 ts=4 et:
+# vim:sw=4:ts=4:et:

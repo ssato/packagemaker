@@ -49,4 +49,4 @@ class Test_templates_1_buildrpm(unittest.TestCase):
         self.assertNotEquals(c, "")
 
 
-# vim:sw=4 ts=4 et:
+# vim:sw=4:ts=4:et:

@@ -247,4 +247,4 @@ class Test_02_Options_w_side_effects(unittest.TestCase):
         self.assertEquals(opts.changelog, changelog_content)
 
 
-# vim:sw=4 ts=4 et:
+# vim:sw=4:ts=4:et:

@@ -143,4 +143,4 @@ class Test_01_json(unittest.TestCase):
         self.__assertExists(self.pkgfile)
 
 
-# vim:sw=4 ts=4 et:
+# vim:sw=4:ts=4:et:

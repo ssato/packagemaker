@@ -60,4 +60,4 @@ class Bunch(dict):
                     self[k] = v
 
 
-# vim:sw=4 ts=4 et:
+# vim:sw=4:ts=4:et:

@@ -66,4 +66,4 @@ class Test_templates_1_autotools(unittest.TestCase):
         c = TW.template_compile(tmpl, context)
 
 
-# vim:sw=4 ts=4 et:
+# vim:sw=4:ts=4:et:

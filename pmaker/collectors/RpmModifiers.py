@@ -72,4 +72,4 @@ class RpmConflictsModifier(M.FileObjectModifier):
         return fo
 
 
-# vim:sw=4 ts=4 et:
+# vim:sw=4:ts=4:et:

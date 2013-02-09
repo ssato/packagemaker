@@ -97,4 +97,4 @@ class TestBunch_pickle(unittest.TestCase):
         self.assertEquals(str(bunch2), str(bunch))
 
 
-# vim:sw=4 ts=4 et:
+# vim:sw=4:ts=4:et:

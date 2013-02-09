@@ -34,4 +34,4 @@ def to_srcdir(srcdir, path_):
     return os.path.join(srcdir, path_.strip(os.path.sep))
 
 
-# vim:sw=4 ts=4 et:
+# vim:sw=4:ts=4:et:

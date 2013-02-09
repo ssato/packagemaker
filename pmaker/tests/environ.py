@@ -70,4 +70,4 @@ class TestEnv(unittest.TestCase):
             self.assertFalse(env.yaml is None)
 
 
-# vim:sw=4 ts=4 et:
+# vim:sw=4:ts=4:et:

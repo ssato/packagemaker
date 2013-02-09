@@ -252,4 +252,4 @@ class SymlinkOps(FileOps):
             run("cp -a %s %s" % (fileobj.path, dest))
 
 
-# vim:sw=4 ts=4 et:
+# vim:sw=4:ts=4:et:

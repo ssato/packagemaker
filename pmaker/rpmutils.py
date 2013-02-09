@@ -324,4 +324,4 @@ def is_noarch(srpm):
     return rpm_header_from_rpmfile(srpm)["arch"] == "noarch"
 
 
-# vim:sw=4 ts=4 et:
+# vim:sw=4:ts=4:et:

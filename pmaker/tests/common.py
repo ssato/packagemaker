@@ -61,4 +61,4 @@ def selfdir():
 TOPDIR = os.path.abspath(os.path.join(selfdir(), "../.."))
 
 
-# vim:sw=4 ts=4 et:
+# vim:sw=4:ts=4:et:

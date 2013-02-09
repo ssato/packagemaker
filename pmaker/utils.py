@@ -540,4 +540,4 @@ def urlread(url, data=None, headers={}):
         return None
 
 
-# vim:sw=4 ts=4 et:
+# vim:sw=4:ts=4:et:

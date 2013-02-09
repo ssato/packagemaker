@@ -54,4 +54,4 @@ if __name__ == '__main__':
     sys.exit(main())
 
 
-# vim:sw=4 ts=4 et:
+# vim:sw=4:ts=4:et:

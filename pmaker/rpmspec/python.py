@@ -78,4 +78,4 @@ def get_pkg_info(tgz_path):
     return B.Bunch(**dict(kvs))
 
 
-# vim:sw=4 ts=4 et:
+# vim:sw=4:ts=4:et:

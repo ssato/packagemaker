@@ -55,4 +55,4 @@ class Test_01_RpmConflictsModifier(unittest.TestCase):
         self.assertNotEquals(new_f.original_path, f.install_path)
 
 
-# vim:sw=4 ts=4 et:
+# vim:sw=4:ts=4:et:

@@ -181,4 +181,4 @@ exit 0
         self.assertEquals(c, c_ref)
 
 
-# vim:sw=4 ts=4 et:
+# vim:sw=4:ts=4:et:

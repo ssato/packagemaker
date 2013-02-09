@@ -141,4 +141,4 @@ def parse_line_of_filelist(line):
     return (paths, attrs)
 
 
-# vim:sw=4 ts=4 et:
+# vim:sw=4:ts=4:et:
