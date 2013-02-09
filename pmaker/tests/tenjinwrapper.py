@@ -27,7 +27,8 @@ class Test_00(unittest.TestCase):
         template_path = os.path.join(selfdir(), "template_example_00.tmpl")
 
         c0 = TW.template_compile(template_path, {})
-        c1 = TW.template_compile(template_path,
+        c1 = TW.template_compile(
+            template_path,
             {"title": "pyTenjin tests: context", }
         )
 
