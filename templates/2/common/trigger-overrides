@@ -1,0 +1,38 @@
+#! /bin/bash
+set -e
+{% if conflicts.files %}
+files="
+{%    for f in conflicts.files if f.filetype == 'file' %}{{ f.original_path }}
+{%    endfor %}
+"
+oext=".ovrrdsave"
+
+for f in $files
+do
+    saved={{ conflicts.savedir }}$f  # Previously saved original
+    override={{ conflicts.newdir }}$f  # File to override
+
+    rpmnew=$f.rpmsave
+
+    # 1. Check if new file `$f` by confliced and updated rpm matches previously
+    # saved original one `$saved`:
+    csum1=$(sha1sum $f | cut -f 1 -d ' ')
+    csum2=$(sha1sum $saved | cut -f 1 -d ' ')
+
+    # 2. Apply `$override` if possible. 
+    #    OK: Not .rpmsave was created (marked as noreplace) and checksums matched.
+    #    NG: .rpmsave was created or checksums not matched as possible
+    #        incompatible updates are made.
+    if test ! -f $rpmsave -a "x$csum1" = "x$csum2"; then
+        echo "[Info] Looks same. Overwrite it again: $f"
+        cp --no-preserve=all $override $f
+    else
+        test -f $rpmsave && reason=".rpmsave was created" || reason="checksum not matched"
+        echo "[Info] Cannot override as $reason. Check '$f$oext' by yourself, please"
+        cp --no-preserve=all $override $f$oext
+    fi
+done
+{% else %}
+# No conflicts and nothing to do:
+exit 0
+{% endif %}
