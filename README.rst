@@ -1,5 +1,5 @@
 About
-================
+=======
 
 PackageMaker is a tool to automate process to package files, dirs and symlinks.
 
@@ -9,14 +9,14 @@ makefiles and rpm specs or debian packaging files, etc.
 
 
 Basic Usage
-======================
+=============
 
-see the output of `pmaker --help` or pmaker(8) or examples/*.log.
+see the output of `pmaker --help` or pmaker(8) or examples/\*.log.
 
 
 
 How it works
-=======================
+==============
 
 When packaging files, dirs and symlinks which user gave in the path list,
 PackageMaker will try gathering the information of these targets  and then:
@@ -36,10 +36,10 @@ specify these explicitly in Makefile.am or rpm spec, etc.
 
 
 
-"Package-based system construction" - the concept behind packagemaker
-==============================================================================
+"Build systems by packages entirely" - the concept behind packagemaker
+=======================================================================
 
-Usually, systems are constructed through the following steps:
+Usually, build process of systems is like following steps:
 
 1. kitting: setup hardware
 2. install os
@@ -47,17 +47,23 @@ Usually, systems are constructed through the following steps:
 4. install middleware and apps
 5. configure middleware and apps
 
-
 It is possible to automate some of steps 2..4, above but it takes much time and
-hard sometime because most steps consist of procedual steps with side effects.
+hard sometime because most steps consist of procedual steps with side effects,
+and to make things worse, these steps often require human-interactions.
 
-However, if those procedual steps with side effects are wrapped and "lift"-ed
-to a kind of "monad", it should be easy to manage and helps making these
-processes less procedual and more functional a lot. For example, if all of the
-changes (file/dir/symlink additions and modifications) after the step 2 could
-be packaged into some RPMs, we can re-play these steps with a kickstart file
-with basic os installatio and package list which these additional RPMs are
-added.
+Configuration management system and tools such like puppet and chef helps
+automation of the part of the part of these steps, however, that's all.
+Packaging system managing installation steps and config management system /
+tools managing configration steps work separately and looks not co-operated normally.
+
+If these two (installation and configuration) steps , operate to same targets
+and have relations, are encapsulated into a set of RPMs, we can manange these
+procedual build steps like Monad or Arrow in haskell, I think.
+
+For example, if all of the changes (file/dir/symlink additions and
+modifications) after the step 2 could be packaged into some RPMs, we can
+re-play these steps with a kickstart file with basic os installatio and package
+list which these additional RPMs are added.
 
 Along with that, most important point is that all we want are just *what*
 files, dirs and symlinks makes that system and we don't care *how* these were
@@ -68,9 +74,8 @@ based system construction" methodology because it should enable reducing the
 cost of packaging files, dirs and sysmlinks (captureing what objects making
 that system), and may enables re-playing the system construction process.
 
-
 Comparison with configuration management system
--------------------------------------------------------
+-------------------------------------------------
 
 Some configuration management systems such like puppet, chef also can
 accomplish the same goal packagemaker focusing but:
@@ -85,14 +90,12 @@ accomplish the same goal packagemaker focusing but:
 * Custom scripts are required: kickstart does not support puppet natively and
   some kinds of post scripts are needed to make use of puppet, for example.
 
-
 Packages built with packagemaker do not need any runtime system or libraries
 and should be able to work well with os-native package management systems in
 standalone mode.
 
-
 Architecture
-===========================
+===============
 
 Simply put, PackageMaker can be divided into four components:
 
@@ -103,7 +106,7 @@ d. Utility modules
 
 
 a. Models
----------------------------
+------------
 
 Classes in pmaker.models.FileObjects implement the basic model of target
 objects: files, dirs and symlinks.  Because many instance of these objects
@@ -116,18 +119,16 @@ pmaker.models.FileObjectFactory and never instantiated directly.
 
 The code of models are placed in pmaker/models directory.
 
-
 b. Collectors
----------------------------
+---------------
 
 This component process user input (files list) and to collect FIleObject
 instances to package.
 
 The code of collectors are placed in pmaker/collectors directory.
 
-
 c. Backends (Drivers)
----------------------------
+-----------------------
 
 The modules underr pmaker/backend is the core componenet to manage and drive
 packaging process.
@@ -136,19 +137,16 @@ All backend classes are children of pmaker.backend.base.Base class and may
 override methods {setup, preconfigure, configure, sbuild, build} represents
 each build steps.
 
-
 d. Utility modules
----------------------------
+-------------------
 
 Most of python code in module's top directory (pmaker/\*.py) are utility modules.
-
 
 How to build
 ================
 
-
 Build w/ mock
-------------------------
+---------------
 
 It takes some time to make a rpm but should be better, I think.
 
@@ -157,7 +155,7 @@ It takes some time to make a rpm but should be better, I think.
 
 
 Build w/o mock
-------------------------
+----------------
 
 It's easier than the above but only possible to make a rpm for build host.
 
@@ -176,9 +174,7 @@ a. source code: ./runtest.sh <path_to_python_source>
 b. a class in source code: ./runtest.sh <path_to_python_source>:<class_name>
 c. a method of a class in source code:./runtest.sh <path_to_python_source>:<class_name>.<method_name>
 
-
 SEE ALSO: nosetests(1)
-
 
 Here are some examples:
 
@@ -218,7 +214,7 @@ Here are some examples:
 
 
 HACKING
-================
+=========
 
 This is my usual way for enhancements:
 
@@ -238,8 +234,10 @@ And here is my usual way for bug fixes:
 
 
 TODO
-================
+======
 
+* Fixe template realated errors
+* Switched template engine from tenjin to jinja2 
 * resolve package name collisions due to overriding packages; there is
   'man-pages-overrides' package exist. How about using '-overlay' suffix
   instead of '-overrides' ?
@@ -269,7 +267,6 @@ Finished TODO items
 * sort out command line options: Done
 * Run w/o python-cheetah: Done (now it uses pytenjin instead)
 
-
 References
 ================
 
@@ -282,7 +279,6 @@ In random order:
 * http://kitenet.net/~joey/talks/debhelper/debhelper-slides.pdf
 * http://wiki.debian.org/IntroDebianPackaging
 * http://www.debian.org/doc/maint-guide/ch-dother.ja.html
-
 
 Alternatives
 ================
@@ -300,12 +296,11 @@ buildrpm:
 
 * buildrpm: http://magnusg.fedorapeople.org/buildrpm/
 
-
 License
-================
+=========
 
 Copyright (C) 2011 Satoru SATOH <satoru.satoh @ gmail.com>
-Copyright (C) 2011 Satoru SATOH <ssato @ redhat.com>
+Copyright (C) 2011 - 2013 Satoru SATOH <ssato @ redhat.com>
 
 This program is free software: you can redistribute it and/or modify it under
 the terms of the GNU General Public License as published by the Free Software
@@ -321,16 +316,15 @@ this program.  If not, see <http://www.gnu.org/licenses/>.
 
 
 Exceptions
------------------------
+------------
 
 Files under pmaker/imported/ were imported from external projects and the above
 license is not applied. 
 
 
 Author
-================
+========
 
 Satoru SATOH <ssato at redhat.com>
-
 
 .. vim:sw=2 ts=2 et:
