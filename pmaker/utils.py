@@ -503,4 +503,32 @@ def urlread(url, data=None, headers={}):
         return None
 
 
+def chaincalls(callables, x):
+    """
+    :param callables: callable objects to apply to x in this order
+    :param x: Object to apply callables
+    """
+    for c in callables:
+        assert callable(c), "%s is not callable object!" % str(c)
+        x = c(x)
+
+    return x
+
+
+def normpath(path):
+    """Normalize given path.
+
+    >>> normpath("/tmp/../etc/hosts")
+    '/etc/hosts'
+    >>> normpath("~root/t")
+    '/root/t'
+    """
+    if "~" in path:
+        fs = [os.path.expanduser, os.path.normpath, os.path.abspath]
+    else:
+        fs = [os.path.normpath, os.path.abspath]
+
+    return chaincalls(fs, path)
+
+
 # vim:sw=4:ts=4:et:
