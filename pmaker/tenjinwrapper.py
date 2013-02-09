@@ -17,6 +17,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 import pmaker.imported.tenjin as tenjin
+import pmaker.utils as U
 
 
 # dirty hack for highly customized and looks a bit overkill (IMHO) module
@@ -44,6 +45,34 @@ _ENGINE = tenjin.Engine(cache=tenjin.MemoryCacheStorage())
 
 def template_compile(template_path, context={}, engine=_ENGINE):
     return engine.render(template_path, context)
+
+
+def render(filepath, ctx, paths, ask=False):
+    """
+    Compile and render template, and return the result.
+
+    Similar to the above but template is given as a file path `filepath` or
+    sys.stdin if `filepath` is '-'.
+
+    :param filepath: (Base) filepath of template file or '-' (stdin)
+    :param ctx: Context dict needed to instantiate templates
+    :param paths: Template search paths
+    :param ask: Ask user for missing template location if True
+    """
+    try:
+        return template_compile(filepath, ctx)
+
+    except tenjin.TemplateNotFoundError:
+        if not ask:
+            raise RuntimeError("Template Not found: " + str(filepath))
+
+        usr_tmpl = raw_input(
+            "\n*** Missing template '%s'. "
+            "Please enter its location (path): " % filepath
+        )
+        usr_tmpl = U.normpath(usr_tmpl.strip())
+
+        return template_compile(usr_tmpl, ctx)
 
 
 # vim:sw=4:ts=4:et:
