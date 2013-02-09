@@ -75,10 +75,9 @@ class TestChecksum(unittest.TestCase):
             print >> sys.stderr, "You look root and cannot test this. Skipped"
             return
 
+        ps = ("/etc/at.deny", "/etc/securetty", "/etc/sudoer", "/etc/shadow")
         path = random.choice(
-            [p for p in ("/etc/at.deny", "/etc/securetty", "/etc/sudoer", \
-                "/etc/shadow") \
-                    if os.path.exists(p) and not os.access(p, os.R_OK)]
+            [p for p in ps if os.path.exists(p) and not os.access(p, os.R_OK)]
         )
 
         csum_ref = "0" * len(sha1("").hexdigest())
@@ -130,8 +129,7 @@ class TestFlatten(unittest.TestCase):
     def test_flatten_lists(self):
         self.assertListEqual(flatten([[1, 2, 3], [4, 5]]), [1, 2, 3, 4, 5])
         self.assertListEqual(flatten([[1, 2, [3]], [4, [5, 6]]]),
-            [1, 2, 3, 4, 5, 6]
-        )
+                             [1, 2, 3, 4, 5, 6])
         self.assertListEqual(flatten([(1, 2, 3), (4, 5)]), [1, 2, 3, 4, 5])
 
     def test_flatten_generator_expression(self):
@@ -150,14 +148,13 @@ class TestConcat(unittest.TestCase):
     def test_concat_lists(self):
         self.assertListEqual(concat([[1, 2, 3], [4, 5]]), [1, 2, 3, 4, 5])
         self.assertListEqual(concat([[1, 2, [3]], [4, [5, 6]]]),
-            [1, 2, [3], 4, [5, 6]]
-        )
+                             [1, 2, [3], 4, [5, 6]])
         self.assertListEqual(concat([(1, 2, [3]), (4, [5, 6])]),
-            [1, 2, [3], 4, [5, 6]]
-        )
+                             [1, 2, [3], 4, [5, 6]])
 
     def test_concat_generator_expression(self):
-        self.assertListEqual(concat((i, i * 2) for i in range(5)),
+        self.assertListEqual(
+            concat((i, i * 2) for i in range(5)),
             [0, 0, 1, 2, 2, 4, 3, 6, 4, 8]
         )
 
@@ -169,11 +166,11 @@ class TestUnique(unittest.TestCase):
 
     def test_unique_num_lists(self):
         self.assertListEqual(unique([0, 3, 1, 2, 1, 0, 4, 5]),
-            [0, 1, 2, 3, 4, 5]
-        )
+                             [0, 1, 2, 3, 4, 5])
 
     def test_unique_str_list(self):
-        self.assertListEqual(unique(c for c in "dagcbfefagb"),
+        self.assertListEqual(
+            unique(c for c in "dagcbfefagb"),
             ["a", "b", "c", "d", "e", "f", "g"]
         )
 
@@ -214,8 +211,8 @@ class Test_dicts_comp(unittest.TestCase):
 class Test_listplus(unittest.TestCase):
 
     def test_listplus(self):
-        self.assertTrue(isinstance(listplus([0],
-            (i for i in range(10))), list)
+        self.assertTrue(
+            isinstance(listplus([0], (i for i in range(10))), list)
         )
 
 
@@ -346,20 +343,16 @@ class Test_sort_out_paths_by_dir(unittest.TestCase):
         cleanup_workdir(self.workdir)
 
     def test_sort_out_paths_by_dir(self):
-        path_list = [
-           "/etc/resolv.conf",
-           "/etc/sysconfig/iptables",
-           "/etc/sysconfig/networks",
-        ]
+        path_list = ["/etc/resolv.conf",
+                     "/etc/sysconfig/iptables",
+                     "/etc/sysconfig/networks", ]
 
         expected_result = [
             dict(dir="/etc", files=["/etc/resolv.conf"], id="0"),
             dict(dir="/etc/sysconfig",
-                files=[
-                    "/etc/sysconfig/iptables",
-                    "/etc/sysconfig/networks"
-                ],
-                id="1"),
+                 files=["/etc/sysconfig/iptables",
+                        "/etc/sysconfig/networks", ],
+                 id="1"),
         ]
         for i, d in enumerate(sort_out_paths_by_dir(path_list)):
             self.assertTrue(dicts_comp(d, expected_result[i]))
@@ -382,6 +375,19 @@ class Test_parse_conf_value(unittest.TestCase):
         self.assertEquals("a string", parse_conf_value("a string"))
         self.assertEquals("0.1", parse_conf_value("0.1"))
         self.assertEquals("%config", parse_conf_value("'%config'"))
+
+
+class Test_chaincalls(unittest.TestCase):
+
+    def test_03_chaincalls(self):
+        self.assertEquals(chaincalls([lambda x: x + 1, lambda x: x - 1], 1), 1)
+
+
+class Test_normpath(unittest.TestCase):
+
+    def test_04_normpath(self):
+        self.assertEquals(normpath("/tmp/../etc/hosts"), "/etc/hosts")
+        self.assertEquals(normpath("~root/t"), "/root/t")
 
 
 # vim:sw=4:ts=4:et:
