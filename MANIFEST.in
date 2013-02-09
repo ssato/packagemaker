@@ -1,5 +1,5 @@
 include MANIFEST.in
-include README
+include README*
 include packagemaker.spec.in
 include setup.py
 include runtest.sh nose.cfg
