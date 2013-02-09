@@ -1,0 +1,2 @@
+{% for f in conflicts.files %}{{ f.install_path }}
+{% endfor %}

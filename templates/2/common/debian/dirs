@@ -1,0 +1,2 @@
+{% for f in files if f.filetype == "dir" %}{{ f.install_path|replace("/", "", 1) }}
+{% endfor %}

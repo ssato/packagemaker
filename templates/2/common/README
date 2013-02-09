@@ -1,0 +1,2 @@
+This package provides some backup data collected on
+{{ hostname }} by {{ packager }} at {{ date.date }}.

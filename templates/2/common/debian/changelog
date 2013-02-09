@@ -1,0 +1,6 @@
+{% if _context.changelog is defined %}{{ changelog }}{% else %}{{ name }} ({{ pversion }}) unstable; urgency=low
+
+  * New upstream release
+
+ -- {{ packager }} <{{ email }}>  {{ date.date }}
+ {% endif %}
