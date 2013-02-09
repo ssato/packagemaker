@@ -38,4 +38,4 @@ install-data-hook::
 MKDIR_P ?= mkdir -p
 SED ?= sed
 
-# vim:sw=4 ts=4 et:
+# vim:sw=4:ts=4:et:

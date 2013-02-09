@@ -75,4 +75,4 @@ class Config(B.Bunch):
         self.update(config)
 
 
-# vim:sw=4 ts=4 et:
+# vim:sw=4:ts=4:et:

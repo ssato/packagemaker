@@ -95,4 +95,4 @@ def check_exists(path):
         return os.path.exists(path)
 
 
-# vim:sw=4 ts=4 et:
+# vim:sw=4:ts=4:et:

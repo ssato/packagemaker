@@ -75,4 +75,4 @@ class Test_parser(unittest.TestCase):
         self.assertEquals(attrs.gid, 0)
 
 
-# vim:sw=4 ts=4 et:
+# vim:sw=4:ts=4:et:

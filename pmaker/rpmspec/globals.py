@@ -20,4 +20,4 @@ PMAKER_RPMSPEC_VERSION = "0.0.1"
 #PMAKER_RPMSPEC_VERSION += "." + datetime.datetime.now().strftime("%Y%m%d")
 
 
-# vim:sw=4 ts=4 et:
+# vim:sw=4:ts=4:et:

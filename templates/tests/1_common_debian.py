@@ -103,4 +103,4 @@ class Test_templates_1_common_debian(unittest.TestCase):
         #    f.write(c)
 
 
-# vim:sw=4 ts=4 et:
+# vim:sw=4:ts=4:et:

@@ -260,4 +260,4 @@ class Test__create(unittest.TestCase):
         self.assertEquals(fo.path, self.path)
 
 
-# vim:sw=4 ts=4 et:
+# vim:sw=4:ts=4:et:

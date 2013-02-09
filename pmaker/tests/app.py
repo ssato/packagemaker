@@ -64,4 +64,4 @@ class Test_00_main(unittest.TestCase):
         self.helper("config_example_01.yaml")
 
 
-# vim:sw=4 ts=4 et:
+# vim:sw=4:ts=4:et:

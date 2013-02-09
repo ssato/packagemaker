@@ -109,4 +109,4 @@ class Test_01_FileOps__with_side_effects(unittest.TestCase):
         self.assertTrue(FileOps.copy(fo, dest))
 
 
-# vim:sw=4 ts=4 et:
+# vim:sw=4:ts=4:et:

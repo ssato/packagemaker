@@ -50,4 +50,4 @@ class Test_templates_1_common_debian_source(unittest.TestCase):
         self.assertEquals(c, c_ref)
 
 
-# vim:sw=4 ts=4 et:
+# vim:sw=4:ts=4:et:

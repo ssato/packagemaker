@@ -43,4 +43,4 @@ class Backend(B.Base):
             self.shell("make dist V=0 > " + self.logfile("make_dist"))
 
 
-# vim:sw=4 ts=4 et:
+# vim:sw=4:ts=4:et:

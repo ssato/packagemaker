@@ -75,4 +75,4 @@ class Test_00_Backend(unittest.TestCase):
         self.__assertExists(tgz)
 
 
-# vim:sw=4 ts=4 et:
+# vim:sw=4:ts=4:et:

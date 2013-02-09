@@ -91,4 +91,4 @@ class Test_03_AttributeModifier(unittest.TestCase):
         self.assertEquals(fo.uid, 0)
 
 
-# vim:sw=4 ts=4 et:
+# vim:sw=4:ts=4:et:

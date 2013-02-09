@@ -23,4 +23,4 @@ class Backend(T.Backend, D.Backend):
     _format = "deb"
 
 
-# vim:sw=4 ts=4 et:
+# vim:sw=4:ts=4:et:

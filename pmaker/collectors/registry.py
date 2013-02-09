@@ -30,4 +30,4 @@ def default():
     return FC.FilelistCollector.types()[0]
 
 
-# vim:sw=4 ts=4 et:
+# vim:sw=4:ts=4:et:

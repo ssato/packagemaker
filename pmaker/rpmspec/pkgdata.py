@@ -43,4 +43,4 @@ class PkgData(B.Bunch):
                 setattr(self, key, val)
 
 
-# vim:sw=4 ts=4 et:
+# vim:sw=4:ts=4:et:

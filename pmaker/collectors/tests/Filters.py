@@ -124,4 +124,4 @@ class TestReadAccessFilter(unittest.TestCase):
         self.assertFalse(filter.pred(fo))
 
 
-# vim:sw=4 ts=4 et:
+# vim:sw=4:ts=4:et:

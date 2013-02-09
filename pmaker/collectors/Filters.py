@@ -97,4 +97,4 @@ class ReadAccessFilter(BaseFilter):
             os.path.islink(f.path))
 
 
-# vim:sw=4 ts=4 et:
+# vim:sw=4:ts=4:et:

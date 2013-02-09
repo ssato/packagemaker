@@ -391,4 +391,4 @@ class Test_parse_conf_value(unittest.TestCase):
         self.assertEquals("%config", parse_conf_value("'%config'"))
 
 
-# vim:sw=4 ts=4 et:
+# vim:sw=4:ts=4:et:

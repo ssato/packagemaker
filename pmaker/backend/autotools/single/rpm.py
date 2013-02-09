@@ -41,4 +41,4 @@ class Backend(T.Backend, R.Backend):
         self.build_rpm()
 
 
-# vim:sw=4 ts=4 et:
+# vim:sw=4:ts=4:et:

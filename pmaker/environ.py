@@ -266,4 +266,4 @@ class Env(B.Bunch):
                 self[k] = v
 
 
-# vim:sw=4 ts=4 et:
+# vim:sw=4:ts=4:et:

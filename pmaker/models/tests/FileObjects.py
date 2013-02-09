@@ -119,4 +119,4 @@ class TestSymlinkInfo(unittest.TestCase):
         self.assertEquals(fo.linkto, dummy_linkto)
 
 
-# vim:sw=4 ts=4 et:
+# vim:sw=4:ts=4:et:

@@ -127,4 +127,4 @@ class Config(B.Bunch):
         return "files" not in self or not self.files
 
 
-# vim:sw=4 ts=4 et:
+# vim:sw=4:ts=4:et:

@@ -138,4 +138,4 @@ class Options(B.Bunch):
         return (options, args)
 
 
-# vim:sw=4 ts=4 et:
+# vim:sw=4:ts=4:et:

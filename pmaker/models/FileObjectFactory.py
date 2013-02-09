@@ -193,4 +193,4 @@ def create(path, use_rpmdb=False, **attrs):
     return cls(**fo)
 
 
-# vim:sw=4 ts=4 et:
+# vim:sw=4:ts=4:et:

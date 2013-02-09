@@ -34,4 +34,4 @@ class Test_00(unittest.TestCase):
         self.assertTrue(dp.match(u))
 
 
-# vim:sw=4 ts=4 et:
+# vim:sw=4:ts=4:et:

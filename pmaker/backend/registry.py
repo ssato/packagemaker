@@ -37,4 +37,4 @@ def default():
     return pmaker.backend.autotools.single.rpm.Backend.type()
 
 
-# vim:sw=4 ts=4 et:
+# vim:sw=4:ts=4:et:
