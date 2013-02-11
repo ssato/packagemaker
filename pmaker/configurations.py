@@ -15,69 +15,92 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 import pmaker.globals as G
-import pmaker.anycfg as Anycfg
-import pmaker.models.Bunch as B
 import pmaker.backend.registry as Backends
 import pmaker.environ as E
 import pmaker.parser as P
 
+import anyconfig as A
+import bunch as B
+import os
 
-# aliases:
-TYPES = Anycfg.CTYPES
-guess_type = Anycfg.guess_type
 
-
-def _defaults(env):
+def _defaults(env=None):
     """
     Make a Bunch object holding default values and returns it.
     """
-    defaults = B.Bunch()
+    if env is None:
+        env = E.Env()
 
-    defaults.config = None
-    defaults.norc = False
-    defaults.force = False
-    defaults.verbosity = 0  # verbose and debug option.
-    defaults.trace = False
-    defaults.log = None  # logging output file
+    return B.Bunch(
+        config=None,
+        norc=False,
+        force=False,
+        verbosity=0,  # verbose and debug option.
+        trace=False,
+        log=None,  # logging output file
+        #
+        # build options:
+        #
+        workdir=env.workdir,
+        stepto=env.upto,
+        #
+        # see pmaker.collectors.FilelistCollectors
+        input_type="filelist.plain",
+        #
+        driver=Backends.default(),  # e.g. "autotools.single.rpm"
+        format=env.format,
+        destdir="",
+        template_paths=env.template_paths,
+        #
+        # package metadata options:
+        name=None,
+        group="System Environment/Base",
+        license="GPLv3+",
+        url="http://localhost.localdomain",
+        summary=None,
+        compressor=env.compressor.extension,  # extension
+        arch=False,
+        relations=[],
+        packager=env.fullname,
+        email=env.email,
+        pversion="0.0.1",
+        release="1",
+        ignore_owner=False,
+        changelog="",
+        #
+        # rpm options:
+        dist=env.dist.label,
+        no_rpmdb=(env.format != G.PKG_FORMAT_RPM),
+        no_mock=False,
+        trigger=False,
+        #
+        # others:
+        hostname=env.hostname,
+    )
 
-    # build options:
-    defaults.workdir = env.workdir
-    defaults.stepto = env.upto
 
-    # see pmaker.collectors.FilelistCollectors
-    defaults.input_type = "filelist.plain"
+def list_paths(basename=G.PMAKER_NAME, paths=None, ext="conf"):
+    """
+    :param basename: Application's basic name, e.g. pmaker.
+    :param paths: Configuration path list.
+    :param ext: Extension of configuration files.
+    """
+    if paths is None:
+        home = os.environ.get("HOME", os.curdir)
+        paths = []
 
-    defaults.driver = Backends.default()  # e.g. "autotools.single.rpm"
-    defaults.format = env.format
-    defaults.destdir = ""
-    defaults.template_paths = env.template_paths
+        if basename is not None:
+            paths += ["/etc/%s.%s" % (basename, ext)]
+            paths += sorted(glob.glob("/etc/%s.d/*.%s" % (basename, ext)))
+            paths += [
+                os.path.join(home, ".config", basename),
+                os.environ.get("%sRC" % basename.upper(),
+                               os.path.join(home, ".%src" % basename)),
+            ]
+    else:
+        assert isinstance(paths, list)
 
-    # package metadata options:
-    defaults.name = None
-    defaults.group = "System Environment/Base"
-    defaults.license = "GPLv3+"
-    defaults.url = "http://localhost.localdomain"
-    defaults.summary = None
-    defaults.compressor = env.compressor.extension  # extension
-    defaults.arch = False
-    defaults.relations = []
-    defaults.packager = env.fullname
-    defaults.email = env.email
-    defaults.pversion = "0.0.1"
-    defaults.release = "1"
-    defaults.ignore_owner = False
-    defaults.changelog = ""
-
-    # rpm options:
-    defaults.dist = env.dist.label
-    defaults.no_rpmdb = env.format != G.PKG_FORMAT_RPM
-    defaults.no_mock = False
-    defaults.trigger = False
-
-    # others:
-    defaults.hostname = env.hostname
-
-    return defaults
+    return paths
 
 
 class Config(B.Bunch):
@@ -87,17 +110,23 @@ class Config(B.Bunch):
         :param norc: No rc, i.e. do not load any RC (config) files.
         :param forced_type: Force set configuration file type.
         """
-        self._env = E.Env()
-        self._cparser = Anycfg.AnyConfigParser(forced_type)
+        self._type = forced_type
         self.files = []
 
-        self.update(_defaults(self._env))
+        self.update(_defaults())
 
         if not norc:
-            self.load_default_configs()
+            self._load_default_configs(forced_type)
+
+    def _load_default_configs(self, forced_type=None):
+        """
+        Try loading default config files and applying configurations.
+        """
+        self.update(B.Bunch(A.loads(list_paths())))
 
     def load(self, config, forced_type=None):
-        config = self._cparser.load(config, forced_type)
+        _type = self._type if self._type is not None else forced_type
+        config = B.Bunch(A.load(config, _type))
 
         # special cases:
         if "relations" in config:
@@ -111,13 +140,6 @@ class Config(B.Bunch):
             config.template_paths = self.template_paths + \
                 P.parse_list(config.template_paths)
 
-        self.update(config)
-
-    def load_default_configs(self):
-        """
-        Try loading default config files and applying configurations.
-        """
-        config = self._cparser.loads(G.PMAKER_NAME)  # :: B.Bunch
         self.update(config)
 
     def missing_files(self):
