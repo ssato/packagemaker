@@ -16,9 +16,9 @@
 #
 import pmaker.configurations as C
 import pmaker.environ as E
-import pmaker.models.Bunch as B
 import pmaker.tests.common as T
 
+import bunch as B
 import os
 import os.path
 import unittest
