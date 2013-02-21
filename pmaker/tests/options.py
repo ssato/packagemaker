@@ -180,8 +180,8 @@ class Test_02_Options(unittest.TestCase):
         env = E.Env()
         compressor = random.choice(
             [
-                ct.extension for ct in env.compressors \
-                    if ct.extension != env.compressor.extension
+                ct.extension for ct in env.compressors
+                if ct.extension != env.compressor.extension
             ]
         )
 
@@ -204,18 +204,15 @@ class Test_02_Options(unittest.TestCase):
         name = "foo"
 
         o = O.Options()
-        (opts, args) = o.parse_args(
-            ["-n", name, "--relations", "requires:/bin/sh",
-                "dummy_filelist.txt"]
-        )
+        (opts, args) = o.parse_args(["-n", name, "--relations",
+                                    "requires:/bin/sh",
+                                    "dummy_filelist.txt"])
         self.assertEquals(opts.relations[0], ('requires', ['/bin/sh']))
 
-        (opts, args) = o.parse_args(
-            ["-n", name,
-             "--relations", "obsoletes:mydata;conflicts:mydata-old",
-             "dummy_filelist.txt"
-            ]
-        )
+        (opts, args) = o.parse_args(["-n", name,
+                                    "--relations",
+                                    "obsoletes:mydata;conflicts:mydata-old",
+                                    "dummy_filelist.txt"])
         self.assertEquals(opts.relations[0], ('obsoletes', ['mydata']))
         self.assertEquals(opts.relations[1], ('conflicts', ['mydata-old']))
 

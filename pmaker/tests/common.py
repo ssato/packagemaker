@@ -40,8 +40,8 @@ PATHS = [
 
 PATHS_EXPANDED = U.unique(
     U.concat(
-        "*" in p and glob.glob(p) or [p] for p in PATHS \
-            if not p.startswith("#")
+        "*" in p and glob.glob(p) or [p] for p in PATHS
+        if not p.startswith("#")
     )
 )
 
