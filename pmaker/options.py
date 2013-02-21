@@ -164,19 +164,18 @@ class Options(B.Bunch):
         add_option = self.oparser.add_option
 
         add_option("-C", "--config",
-            help="Specify your custom configuration file which will be" + \
-                " loaded *after* some default configuration files are loaded."
-        )
+                   help="Specify your custom configuration file which will"
+                   " be loaded *after* some default configuration files"
+                   " are loaded.")
         add_option("", "--norc", action="store_true",
-            help="Do not load default configuration files"
-        )
+                   help="Do not load default configuration files")
         add_option("", "--force", action="store_true",
-            help="Force going steps even if the steps looks done already"
-        )
+                   help="Force going steps even if the steps looks done"
+                   "already")
         add_option("-v", "--verbose", action="count", dest="verbosity",
-            help="Verbose mode")
+                   help="Verbose mode")
         add_option("", "--debug", action="store_const", dest="verbosity",
-            const=2, help="Debug mode (same as -vv)")
+                   const=2, help="Debug mode (same as -vv)")
         add_option("", "--trace", action="store_true", help="Trace mode")
         add_option("-L", "--log", help="Log file [stdout]")
 
@@ -187,15 +186,14 @@ class Options(B.Bunch):
         add_option = bog.add_option
 
         add_option("-w", "--workdir",
-            help="Specify working dir to output results [%default]"
-        )
+                   help="Specify working dir to output results [%default]")
 
         choices = [step.name for step in self.env.steps]
         help = "Target step you want to go to: %s [%%default]" % choices
         add_option("", "--stepto", choices=choices, help=help)
         add_option("", "--upto", dest="stepto", choices=choices,
-            help="Same as --stepto option (kept for backward compatibility)."
-        )
+                   help="Same as --stepto option (kept for backward"
+                   " compatibility).")
 
         collectors = Collectors.map()  # {collector_type: collector_class}
         choices = collectors.keys()
@@ -207,8 +205,7 @@ class Options(B.Bunch):
         help = "Packaging driver: %s [%%default]" % ", ".join(choices)
         add_option("", "--driver", choices=choices, help=help)
         add_option("", "--backend", dest="driver", choices=choices,
-            help="Same as --driver option"
-        )
+                   help="Same as --driver option")
 
         add_option("", "--destdir", help=DESTDIR_OPTION_HELP)
         add_option("-P", "--template-path", **setup_template_path_option())
@@ -221,13 +218,11 @@ class Options(B.Bunch):
 
         add_option("-n", "--name", help="Package name")  # Must be set
         add_option("", "--group",
-            help="The group of the package [%default]. If your target" + \
-                " format is RPM, take a look at" + \
-                " /usr/share/doc/rpm-x.y.z/GROUPS."
-        )
+                   help="The group of the package [%default]. If your target"
+                   " format is RPM, take a look at"
+                   " /usr/share/doc/rpm-x.y.z/GROUPS.")
         add_option("", "--license",
-            help="The license of the package [%default]"
-        )
+                   help="The license of the package [%default]")
         add_option("", "--url", help="The url of the package [%default]")
         add_option("", "--summary", help="The summary of the package")
 
@@ -237,19 +232,17 @@ class Options(B.Bunch):
         add_option("-z", "--compressor", choices=choices, help=help)
 
         add_option("", "--arch", action="store_true",
-            help="Set if this package is arch-dependent [false = noarch]"
-        )
+                   help="Set if this package is arch-dependent"
+                   " [false = noarch]")
         add_option("", "--relations", **setup_relations_option())
         add_option("", "--packager", help="Packager's fullname [%default]")
         add_option("", "--email", help="Packager's email address [%default]")
         add_option("", "--pversion", help="Package's version [%default]")
         add_option("", "--release", help="Package's release [%default]")
         add_option("", "--ignore-owner", action="store_true",
-            help="Force set owner and group of files to root"
-        )
+                   help="Force set owner and group of files to root")
         add_option("", "--changelog",
-            help="Specify text file contains changelog",
-        )
+                   help="Specify text file contains changelog")
 
         self.oparser.add_option_group(pog)
 
@@ -258,18 +251,14 @@ class Options(B.Bunch):
         add_option = rog.add_option
 
         add_option("", "--dist",
-            help="Build target distribution for mock [%default]"
-        )
+                   help="Build target distribution for mock [%default]")
         add_option("", "--no-rpmdb", action="store_true",
-            help="Do not refer rpm database to get metadata of files"
-        )
+                   help="Do not refer rpm database to get metadata of files")
         add_option("", "--no-mock", action="store_true",
-            help="Build RPM with only using rpmbuild w/o mock" + \
-                " (not recommended)"
-        )
+                   help="Build RPM with only using rpmbuild w/o mock"
+                   " (not recommended)")
         add_option("", "--trigger", action="store_true",
-            help="Resolve conflicts with RPM trigger"
-        )
+                   help="Resolve conflicts with RPM trigger")
 
         self.oparser.add_option_group(rog)
 
@@ -333,9 +322,8 @@ class Options(B.Bunch):
         if options.changelog:
             options.changelog = get_content(options.changelog)
 
-        options.workdir = set_workdir(
-            options.workdir, options.name, options.pversion
-        )
+        options.workdir = set_workdir(options.workdir, options.name,
+                                      options.pversion)
 
         return (options, args)
 

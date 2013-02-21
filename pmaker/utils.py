@@ -14,12 +14,13 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
+from glob import glob
+
 import pmaker.globals as G
 
 import bunch as B
 import copy
 import datetime
-import glob
 import itertools
 import locale
 import logging
@@ -366,8 +367,7 @@ def rm_rf(target):
     assert target != "/", warnmsg
     assert os.path.realpath(target) != "/", warnmsg
 
-    xs = glob.glob(os.path.join(target, "*")) + \
-         glob.glob(os.path.join(target, ".*"))
+    xs = glob(os.path.join(target, "*")) + glob(os.path.join(target, ".*"))
 
     for x in xs:
         if os.path.isdir(x):
@@ -427,9 +427,10 @@ def sort_out_paths_by_dir(paths):
             "id": "1"}]
     """
     cntr = itertools.count()
-
-    return [B.Bunch(id=str(cntr.next()), dir=d, files=list(ps)) \
-            for d, ps in itertools.groupby(paths, os.path.dirname)]
+    return [
+        B.Bunch(id=str(cntr.next()), dir=d, files=list(ps)) for d, ps in
+        itertools.groupby(paths, os.path.dirname)
+    ]
 
 
 def parse_conf_value(s):

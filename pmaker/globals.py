@@ -96,7 +96,7 @@ BUILD_STEPS = (
         "setup the package' src dir and copy target files in it"),
 
     (STEP_PRECONFIGURE, "Making up autotool-ized src directory: %(pname)s",
-        "arrange build aux files such like configure.ac, Makefile.am, " + \
+        "arrange build aux files such like configure.ac, Makefile.am, "
         "rpm spec file, debian/* and so on."),
 
     (STEP_CONFIGURE, "Configuring src distribution: %(pname)s",
