@@ -117,7 +117,7 @@ def parse_line_of_filelist(line):
 
     >>> line = "/etc/resolv.conf"
     >>> parse_line_of_filelist(line + "\\n")
-    (['/etc/resolv.conf'], {})
+    (['/etc/resolv.conf'], Bunch())
     >>> line += ",install_path=/var/lib/network/resolv.conf,uid=0,gid=0"
     >>> (paths, attrs) = parse_line_of_filelist(line)
     >>> assert paths[0] == "/etc/resolv.conf"
