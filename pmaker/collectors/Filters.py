@@ -64,7 +64,6 @@ class UnsupportedTypesFilter(BaseFilter):
     """
     A filter class to filter out files of which type is not supported.
     """
-
     _reason = "not supported type"
 
     def _pred(self, f):
@@ -77,24 +76,26 @@ class NotExistFilter(BaseFilter):
     """
     A filter to filter out files not exist and not created later.
     """
-
     _reason = "not exist"
 
     def _pred(self, f):
-        return not (f.create or os.path.exists(f.path) or \
-            os.path.islink(f.path))
+        found = os.path.exists(f.path)
+        islink = os.path.islink(f.path)
+
+        return not(f.create or found or islink)
 
 
 class ReadAccessFilter(BaseFilter):
     """
     A filter class to filter out files of which type is not supported.
     """
-
     _reason = "not permitted to read"
 
     def _pred(self, f):
-        return not (f.create or os.access(f.path, os.R_OK) or \
-            os.path.islink(f.path))
+        accessible = os.access(f.path, os.R_OK)
+        islink = os.path.islink(f.path)
+
+        return not (f.create or accessible or islink)
 
 
 # vim:sw=4:ts=4:et:
