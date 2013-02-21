@@ -15,12 +15,12 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 from pmaker.globals import CONFLICTS_NEWDIR, CONFLICTS_SAVEDIR
-from pmaker.models.Bunch import Bunch
 from pmaker.tests.common import selfdir
 
 import pmaker.models.FileObjects as FO
 import pmaker.tenjinwrapper as TW
 
+import bunch as B
 import os.path
 import random
 import unittest

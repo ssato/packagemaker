@@ -14,11 +14,11 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
-from pmaker.models.Bunch import Bunch
 from pmaker.tests.common import selfdir
 
 import pmaker.environ as E
 import pmaker.tenjinwrapper as TW
+import bunch as B
 import os.path
 import unittest
 

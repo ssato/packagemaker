@@ -15,13 +15,13 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 import pmaker.globals as G
-import pmaker.models.Bunch as B
 import pmaker.configurations as C
 import pmaker.collectors.FilelistCollectors as Collectors
 import pmaker.backend.registry as Backends
 import pmaker.environ as E
 import pmaker.parser as P
 
+import bunch as B
 import logging
 import optparse
 import os.path

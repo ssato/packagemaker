@@ -16,13 +16,13 @@
 #
 from pmaker.globals import PACKAGING_STEPS, STEP_BUILD
 
-import pmaker.anycfg as A
-import pmaker.models.Bunch as B
 import pmaker.backend.utils as PU
 import pmaker.shell as S
 import pmaker.tenjinwrapper as T
 import pmaker.utils as U
 
+import anyconfig as A
+import bunch as B
 import cPickle as pickle
 import logging
 import os.path

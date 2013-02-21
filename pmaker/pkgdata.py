@@ -15,9 +15,9 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 import pmaker.globals as G
-import pmaker.models.Bunch as B
 import pmaker.utils as U
 
+import bunch as B
 import datetime
 import locale
 import logging
