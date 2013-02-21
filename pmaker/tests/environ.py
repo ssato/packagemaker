@@ -17,7 +17,7 @@
 from pmaker.environ import *
 from pmaker.globals import PKG_FORMATS, COMPRESSING_TOOLS
 
-import pmaker.models.Bunch as B
+import bunch as B
 import unittest
 
 

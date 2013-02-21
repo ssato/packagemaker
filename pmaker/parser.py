@@ -14,8 +14,7 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
-import pmaker.models.Bunch as B
-
+import bunch as B
 import glob
 import itertools
 import logging

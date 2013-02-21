@@ -15,8 +15,8 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 import pmaker.globals as G
-import pmaker.models.Bunch as B
 
+import bunch as B
 import copy
 import datetime
 import glob

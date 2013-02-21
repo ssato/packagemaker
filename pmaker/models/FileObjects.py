@@ -17,10 +17,10 @@
 #
 #
 import pmaker.globals as G
-import pmaker.models.Bunch as B
 import pmaker.models.FileObjectOperations as F
 import pmaker.utils as U
 
+import bunch as B
 import copy
 import os.path
 

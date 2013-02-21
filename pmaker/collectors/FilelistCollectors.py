@@ -20,12 +20,13 @@ import pmaker.collectors.RpmModifiers as RM
 import pmaker.globals as G
 import pmaker.models.FileObjectFactory as Factory
 
-import pmaker.anycfg as A
 import pmaker.configurations as C
 import pmaker.environ as E
 import pmaker.parser as P
 import pmaker.utils as U
 
+import anyconfig as A
+import bunch as B
 import glob
 import logging
 import os
@@ -180,7 +181,7 @@ class AnyFilelistCollector(FilelistCollector):
     Formats of input files are detected automatically.
     """
 
-    _types = ["filelist.any"] + ["filelist." + ct for ct in C.TYPES]
+    _types = ["filelist.any"] + ["filelist." + ct for ct in A.list_types()]
 
     def __init__(self, listfile, config, itype=None, **kwargs):
         """
@@ -211,8 +212,7 @@ class AnyFilelistCollector(FilelistCollector):
             return [Factory.create(p, self.use_rpmdb, **attrs) for p in paths]
 
     def list(self, listfile):
-        cparser = A.AnyConfigParser(self.itype)
-        data = cparser.load(listfile)
+        data = B.Bunch(A.load(listfile, self.itype))
 
         if not data.get("files", False):
             raise RuntimeError(

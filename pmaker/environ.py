@@ -18,9 +18,9 @@ from pmaker.globals import PKG_FORMAT_TGZ, PKG_FORMAT_RPM, PKG_FORMAT_RPM, \
     PACKAGING_STEPS, STEP_PRECONFIGURE, STEP_SETUP, STEP_BUILD, COLLECTORS, \
     TEMPLATE_SEARCH_PATHS, COMPRESSING_TOOLS, UPTO
 
-import pmaker.models.Bunch as B
 import pmaker.utils as U
 
+import bunch as B
 import glob
 import logging
 import os

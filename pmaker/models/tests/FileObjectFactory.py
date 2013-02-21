@@ -15,13 +15,13 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 import pmaker.globals as G
-import pmaker.models.Bunch as B
 import pmaker.tests.common as C
 
 import pmaker.rpmutils as R
 import pmaker.models.FileObjects as FO
 import pmaker.models.FileObjectFactory as Factory
 
+import bunch as B
 import os
 import unittest
 

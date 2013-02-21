@@ -18,13 +18,13 @@ from pmaker.collectors.FilelistCollectors import FilelistCollector, \
     AnyFilelistCollector
 from pmaker.tests.common import setup_workdir, cleanup_workdir
 
-import pmaker.anycfg as Anycfg
 import pmaker.collectors.Filters as Filters
 import pmaker.environ as E
 import pmaker.models.FileObjectFactory as Factory
 import pmaker.options as O
 import pmaker.utils as U
 
+import anyconfig as A
 import glob
 import os
 import os.path
@@ -350,13 +350,13 @@ class Test_02_AnyFilelistCollector__wo_side_effects(unittest.TestCase):
         listfile = "dummy.list"
         config = init_config(listfile)
 
-        ac = AnyFilelistCollector(listfile, config, Anycfg.CTYPE_JSON)
+        ac = AnyFilelistCollector(listfile, config, "json")
         self.assertTrue(isinstance(ac, AnyFilelistCollector))
-        self.assertTrue(ac.itype, Anycfg.CTYPE_JSON)
+        self.assertTrue(ac.itype, "json")
 
-        ac = AnyFilelistCollector(listfile, config, Anycfg.CTYPE_YAML)
+        ac = AnyFilelistCollector(listfile, config, "yaml")
         self.assertTrue(isinstance(ac, AnyFilelistCollector))
-        self.assertTrue(ac.itype, Anycfg.CTYPE_YAML)
+        self.assertTrue(ac.itype, "yaml")
 
 
 class Test_03_AnyFilelistCollector__w_side_effects(unittest.TestCase):
@@ -385,7 +385,7 @@ class Test_03_AnyFilelistCollector__w_side_effects(unittest.TestCase):
             f for f in (Factory.create(p, False) for p in PATHS_EXPANDED) \
         )
 
-        ac = AnyFilelistCollector(listfile, config, Anycfg.CTYPE_JSON)
+        ac = AnyFilelistCollector(listfile, config, "json")
         fos = ac.list(listfile)
         paths_in_fos = sorted(f.path for f in fos)
 
@@ -407,7 +407,7 @@ class Test_03_AnyFilelistCollector__w_side_effects(unittest.TestCase):
             f for f in fos_ref if not any(filter(f) for filter in filters)
         ]
 
-        ac2 = AnyFilelistCollector(listfile, config, Anycfg.CTYPE_JSON)
+        ac2 = AnyFilelistCollector(listfile, config, "json")
         ac2.filters += filters
         fos_filtered = ac2.collect()
 

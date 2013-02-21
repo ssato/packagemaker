@@ -15,10 +15,10 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 from pmaker.tests.common import selfdir
-from pmaker.models.Bunch import Bunch
 
 import pmaker.backend.tests.common as BTC
 import pmaker.tenjinwrapper as TW
+import bunch as B
 import os.path
 import random
 import unittest

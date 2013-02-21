@@ -15,11 +15,11 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 import pmaker.globals as G
-import pmaker.models.Bunch as B
 import pmaker.models.FileObjects as FO
 import pmaker.rpmutils as R
 import pmaker.utils as U
 
+import bunch as B
 import grp
 import logging
 import os

@@ -1,4 +1,3 @@
-pmaker/anycfg.py
 pmaker/app.py
 pmaker/backend/autotools/deb.py
 pmaker/backend/autotools/rpm.py
@@ -33,11 +32,9 @@ pmaker/collectors/tests/RpmModifiers.py
 pmaker/configurations.py
 pmaker/environ.py
 pmaker/globals.py
-pmaker/models/Bunch.py
 pmaker/models/FileObjectFactory.py
 pmaker/models/FileObjectOperations.py
 pmaker/models/FileObjects.py
-pmaker/models/tests/Bunch.py
 pmaker/models/tests/FileObjectFactory.py
 pmaker/models/tests/FileObjectOperations.py
 pmaker/models/tests/FileObjects.py
@@ -47,7 +44,6 @@ pmaker/pkgdata.py
 pmaker/rpmutils.py
 pmaker/shell.py
 pmaker/tenjinwrapper.py
-pmaker/tests/anycfg.py
 pmaker/tests/app.py
 pmaker/tests/common.py
 pmaker/tests/configurations.py
