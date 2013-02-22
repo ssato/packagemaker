@@ -31,7 +31,7 @@ PMAKER_AUTHOR = "Satoru SATOH"
 PMAKER_EMAIL = "satoru.satoh@gmail.com"
 PMAKER_WEBSITE = "https://github.com/ssato/packagemaker"
 
-PMAKER_VERSION = "0.4.1"
+PMAKER_VERSION = "0.4.2"
 #PMAKER_VERSION += "." + datetime.datetime.now().strftime("%Y%m%d")
 
 PMAKER_TEMPLATE_VERSION = "1"

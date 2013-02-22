@@ -100,6 +100,12 @@ rm -rf $RPM_BUILD_ROOT
 
 
 %changelog
+* Fri Feb 22 2013 Satoru SATOH <ssato@redhat.com> - 0.4.2-1
+- Fixed template syntax error such var 'reqs' is undefined
+- Fixed templates having var 'trigger'
+- Added a filter filtering out files having whitespaces in those paths
+- Some other minor bug fixes
+
 * Fri Jul  6 2012 Satoru SATOH <ssato@redhat.com> - 0.4.1-1
 - new major version release
 - splitted into two RPMs to bring some runtime deps selectively
