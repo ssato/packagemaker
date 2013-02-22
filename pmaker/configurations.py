@@ -101,12 +101,12 @@ def list_paths(basename=G.PMAKER_NAME, paths=None, ext="conf"):
     else:
         assert isinstance(paths, list)
 
-    return paths
+    return [p for p in paths if os.path.exists(p)]
 
 
 class Config(B.Bunch):
 
-    def __init__(self, norc=False, forced_type=None):
+    def __init__(self, norc=False, forced_type=G.PMAKER_CONF_TYPE_DEFAULT):
         """
         :param norc: No rc, i.e. do not load any RC (config) files.
         :param forced_type: Force set configuration file type.
@@ -117,13 +117,16 @@ class Config(B.Bunch):
         self.update(_defaults())
 
         if not norc:
-            self._load_default_configs(forced_type)
+            self.load_default_configs(forced_type)
 
-    def _load_default_configs(self, forced_type=None):
+    def type(self):
+        return self._type
+
+    def load_default_configs(self, forced_type=None):
         """
         Try loading default config files and applying configurations.
         """
-        self.update(B.Bunch(A.loads(list_paths())))
+        self.update(B.Bunch(A.load(list_paths(),self.type())))
 
     def load(self, config, forced_type=None):
         _type = self._type if self._type is not None else forced_type
