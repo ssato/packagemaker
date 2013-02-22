@@ -129,7 +129,8 @@ class Config(B.Bunch):
         self.update(B.Bunch(A.load(list_paths(),self.type())))
 
     def load(self, config, forced_type=None):
-        _type = self._type if self._type is not None else forced_type
+        #_type = forced_type if forced_type is not None else self.type()
+        _type = forced_type if forced_type is not None else None
         config = B.Bunch(A.load(config, _type))
 
         # special cases:
