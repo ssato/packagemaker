@@ -33,7 +33,8 @@ class Test_00_filelist(unittest.TestCase):
         (self.workdir, self.args, self.listfile, self.pkgfile) = bootstrap()
 
     def tearDown(self):
-        C.cleanup_workdir(self.workdir)
+        #C.cleanup_workdir(self.workdir)
+        pass
 
     def __assertExists(self, path):
         try:
