@@ -60,7 +60,8 @@ def render(filepath, ctx, paths, ask=False):
     :param ask: Ask user for missing template location if True
     """
     try:
-        return template_compile(filepath, ctx)
+        tmpl = U.find_template(filepath, paths)
+        return template_compile(tmpl, ctx)
 
     except tenjin.TemplateNotFoundError:
         if not ask:
