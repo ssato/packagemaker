@@ -141,13 +141,8 @@ class Base(object):
         """
         Save file list (self.files).
         """
-        pickle.dump(
-            self.files,
-            open(self.dumpfile(), "wb"),
-            proto
-        )
-
-        A.AnyConfigParser.dump(self.pkgdata, self.conffile())
+        pickle.dump(self.files, open(self.dumpfile(), "wb"), proto)
+        A.dump(self.pkgdata, self.conffile())
 
     def load(self):
         """
