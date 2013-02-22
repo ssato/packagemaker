@@ -42,7 +42,9 @@ def rpm_lstat(path):
 
             return (fi["mode"], uid, gid)
     except:
-        return None
+        pass
+
+    return None
 
 
 def lstat(path, use_rpmdb=False):
