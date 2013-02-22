@@ -86,6 +86,7 @@ class XObject(B.Bunch):
         self.src = path if src is None else src
 
         self.target = self.install_path = path
+        self.path_needs_escape = False
 
         for k, v in kwargs.iteritems():
             setattr(self, k, v)
