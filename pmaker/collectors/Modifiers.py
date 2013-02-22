@@ -122,4 +122,15 @@ class AttributeModifier(FileObjectModifier):
         return fileobj
 
 
+class PathModifier(FileObjectModifier):
+
+    _priority = 5
+
+    def update(self, fileobj):
+        if " " in fileobj.path:
+            setattr(fileobj, "path_needs_escape", True)
+
+        return fileobj
+
+
 # vim:sw=4:ts=4:et:
