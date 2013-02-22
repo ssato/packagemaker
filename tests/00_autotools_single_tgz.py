@@ -38,7 +38,8 @@ class Test_00_filelist(unittest.TestCase):
 
     def __assertExists(self, path):
         try:
-            self.assertTrue(TC.check_exists(path))
+            self.assertTrue(TC.check_exists(path),
+                            "path '%s' does not exists!" % path)
         except:
             shutil.copy2(
                 os.path.join(self.workdir, "test.log"),
@@ -95,6 +96,7 @@ class Test_00_filelist(unittest.TestCase):
 
         open(self.listfile, "w").write("%s\n" % "\n".join(targets))
 
+        self.args += ["--stepto", "sbuild"]
         TC.run_w_args(self.args, self.workdir)
 
         self.__assertExists(self.pkgfile)

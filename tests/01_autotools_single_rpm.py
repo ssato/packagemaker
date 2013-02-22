@@ -37,7 +37,8 @@ class Test_00_filelist(unittest.TestCase):
 
     def __assertExists(self, path):
         try:
-            self.assertTrue(TC.check_exists(path))
+            self.assertTrue(TC.check_exists(path),
+                            "Does not exists! : " + path)
         except:
             shutil.copy2(
                 os.path.join(self.workdir, "test.log"),
@@ -75,7 +76,17 @@ class Test_00_filelist(unittest.TestCase):
         self.__assertExists(self.pkgfile)
 
     def test_02_system_file(self):
-        target = TC.get_random_system_files(1, "/etc/*")
+        target = None
+        while True:
+            targets = TC.get_random_system_files(20, "/etc/*")
+            targets = [t for t in targets if os.access(t, os.R_OK)]
+            if targets:
+                target = targets[0]
+                break
+
+        if target is None:
+            logging.warn("Could not find accessible system file!")
+            return
 
         open(self.listfile, "w").write("%s\n" % target)
 

@@ -29,14 +29,10 @@ def setup(extra_args=[]):
     workdir = C.setup_workdir()
     tmpldir = os.path.join(C.TOPDIR, "templates")
 
-    args = [
-        "-w", workdir,
-        "-P", tmpldir,
-    ] + extra_args
-
+    arguments = ["-w", workdir, "-P", tmpldir] + extra_args
     #logging.getLogger().setLevel(logging.WARN) # suppress log messages
 
-    return (workdir, args)
+    return (workdir, arguments)
 
 
 def run_w_args(args, workdir):
