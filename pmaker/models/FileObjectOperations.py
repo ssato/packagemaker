@@ -135,7 +135,7 @@ class FileOps(object):
         @fileobj    FileObjects instance
         @dest  str  Destination path to copy to
         """
-        run("cp -a %s %s" % (fileobj.src, dest))
+        run("cp -a \"%s\" \"%s\"" % (fileobj.src, dest))
 
     @classmethod
     def copy(cls, fileobj, dest, force=False):
