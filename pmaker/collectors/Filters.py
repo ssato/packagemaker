@@ -97,4 +97,14 @@ class ReadAccessFilter(BaseFilter):
             os.path.islink(f.path))
 
 
-# vim:sw=4 ts=4 et:
+class WhitespacesInPathFilter(BaseFilter):
+    """
+    A filter to filter out files of which path contains ' ' (whitespaces).
+    """
+    _reason = "files of which patch contains whitespaces not supported (yet)"
+
+    def _pred(self, f):
+        return  " " in f.path
+
+
+# vim:sw=4:ts=4:et:
