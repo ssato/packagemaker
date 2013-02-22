@@ -60,6 +60,7 @@ class Test_templates_1_autotools(unittest.TestCase):
             conflicts=Bunch(files=[],),
             not_conflicts=Bunch(files=[],),
             relations=[],
+            trigger=False,
         )
 
         c = TW.template_compile(tmpl, context)
