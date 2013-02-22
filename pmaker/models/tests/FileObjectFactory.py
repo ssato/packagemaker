@@ -39,7 +39,8 @@ def modestr_to_mode(mode):
 class Test__rpm_lstat(unittest.TestCase):
 
     def test__bin_sh(self):
-        self.assertFalse(Factory.rpm_lstat("/bin/sh") is None)
+        t = "/usr/bin/sh" if os.path.islink("/bin") else "/bin/sh"
+        self.assertFalse(Factory.rpm_lstat(t) is None)
 
 
 class Test__guess_filetype(unittest.TestCase):
