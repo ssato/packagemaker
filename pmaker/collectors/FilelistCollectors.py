@@ -99,7 +99,7 @@ class FilelistCollector(Collector):
             F.ReadAccessFilter(),
             F.WhitespacesInPathFilter(),
         ]
-        self.modifiers = [M.AttributeModifier()]
+        self.modifiers = [M.AttributeModifier(), M.PathModifier()]
         self.use_rpmdb = False
 
         if config.destdir:
@@ -193,7 +193,7 @@ class AnyFilelistCollector(FilelistCollector):
         self.itype = None
 
         if itype is not None:
-            if itype in C.TYPES:
+            if itype in A.list_types():
                 self.itype = itype
             else:
                 logging.warn("Invalid type passed: " + itype)
