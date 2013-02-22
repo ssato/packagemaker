@@ -4,6 +4,8 @@
 <?py #endif ?>
 <?py if trigger: ?>
 %define use_trigger 1
+<?py else: ?>
+%define use_trigger 0
 <?py #endif ?>
 
 Name:           #{name}
@@ -37,24 +39,14 @@ for rel in relations:
 This package provides some backup data collected on
 #{hostname} by #{packager} at #{date.date}.
 
-
+<?py
+reqs = list(set([(f.conflicts.name, f.conflicts.version, f.conflicts.release, f.conflicts.epoch) for f in conflicts.files]))
+?>
 <?py if conflicts.files: ?>
 %package        overrides
 Summary:        Some more extra data override files owned by other packages
 Group:          #{group}
 Requires:       %{name} = %{version}-%{release}
-<?py
-reqs = list(
-    set(
-        [(f.conflicts.name,
-          f.conflicts.version,
-          f.conflicts.release,
-          f.conflicts.epoch
-         ) for f in conflicts.files
-        ]
-    )
-)
-?>
 
 %if 0%{?use_trigger} == 0
 <?py   for name, version, release, epoch in reqs: ?>
@@ -108,13 +100,14 @@ if [ $1 = 0 ]; then    # uninstall (! update)
 fi
 <?py #endif ?>
 
+<?py if conflicts.files: ?>
 %if 0%{?use_trigger} == 1
 <?py for name, version, release, epoch in reqs: ?>
 %triggerin -- #{name}
 %{_libexecdir}/%{name}-overrides/trigger-overrides
 <?py #endfor ?>
 %endif
-
+<?py #endif ?>
 
 %files
 %defattr(-,root,root,-)
