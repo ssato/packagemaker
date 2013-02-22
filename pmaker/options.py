@@ -21,6 +21,7 @@ import pmaker.backend.registry as Backends
 import pmaker.environ as E
 import pmaker.parser as P
 
+import anyconfig.api as AA
 import bunch as B
 import logging
 import optparse
@@ -303,9 +304,9 @@ class Options(B.Bunch):
             # Likewise:
             (options, args) = self.oparser.parse_args(argv)
 
-            if not args:  # it means this config provides files also.
+            if not args:  # it means this config provides files list also.
                 options.input_type = "filelist.%s" % \
-                    C.guess_type(options.config)
+                    AA.find_parser(options.config).type()
 
         if self.missing_files(args):
             logging.error(" Filelist was not given.\n")
