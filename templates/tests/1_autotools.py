@@ -50,16 +50,17 @@ class Test_templates_1_autotools(unittest.TestCase):
             group="Application/Text",
             license="GPLv3+",
             url="http://www.example.com/git/foobarbaz",
-            compressor=Bunch(ext="xz", ),
+            compressor=B.Bunch(ext="xz", ),
             arch=False,
             hostname=E.hostname(),
             packager=E.get_fullname(),
             email=E.get_email(),
-            date=Bunch(date="dummy date", timestamp="dummy timestamp"),
+            date=B.Bunch(date="dummy date", timestamp="dummy timestamp"),
             files=[],
-            conflicts=Bunch(files=[],),
-            not_conflicts=Bunch(files=[],),
+            conflicts=B.Bunch(files=[],),
+            not_conflicts=B.Bunch(files=[],),
             relations=[],
+            trigger=False,
         )
 
         c = TW.template_compile(tmpl, context)

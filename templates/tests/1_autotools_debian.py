@@ -42,9 +42,9 @@ class Test_templates_1_autotools_debian(unittest.TestCase):
             url="http://www.example.com/git/foobar.git",
             arch=False,
             relations=[
-                Bunch(targets=["abc", "defg"], type="Depends"),
-                Bunch(targets=["hi", "jklmn"], type="Depends"),
-                Bunch(targets=["stu", "xyz"], type="Suggests"),
+                B.Bunch(targets=["abc", "defg"], type="Depends"),
+                B.Bunch(targets=["hi", "jklmn"], type="Depends"),
+                B.Bunch(targets=["stu", "xyz"], type="Suggests"),
             ],
             summary="Debian package example",
         )
