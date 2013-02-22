@@ -181,7 +181,9 @@ class Test_01_FilelistCollector(unittest.TestCase):
         fo_ref = Factory.create(path, use_rpmdb=(not config.no_rpmdb))
 
         self.assertEquals(fos[0].path, path)
-        self.assertEquals(fos, [fo_ref])
+        self.assertEquals(fos[0].checksum, fo_ref.checksum)
+        self.assertEquals(fos[0].target, fo_ref.target)
+        #self.assertEquals(fos, [fo_ref], "ref=%s, res=%s" % (str([fo_ref]), str(fos)))
 
     def test_04_collect__single_real_file_rpm_owns(self):
         """test_04_collect__single_real_file_rpm_owns: FIXME"""
