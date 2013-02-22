@@ -96,6 +96,7 @@ class FilelistCollector(Collector):
             F.UnsupportedTypesFilter(),
             F.NotExistFilter(),
             F.ReadAccessFilter(),
+            F.WhitespacesInPathFilter(),
         ]
         self.modifiers = [M.AttributeModifier()]
         self.use_rpmdb = False
