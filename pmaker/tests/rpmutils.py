@@ -19,6 +19,7 @@ from pmaker.utils import checksum
 from pmaker.models.FileObjects import FileObject, DirObject
 
 import os
+import os.path
 import random
 import unittest
 
@@ -106,7 +107,10 @@ class TestFunctions(unittest.TestCase):
         pass
 
     def test_info_by_path(self):
-        d = info_by_path("/bin/bash")
+        # In Fedora 17+, /bin is a symlink to /usr/bin.
+        bash = "/usr/bin/bash" if os.path.islink("/bin") else "/bin/bash"
+        d = info_by_path(bash)
+
         self.assertNotEquals(d, NULL_DICT)
 
         for key in RPM_FI_KEYS:
