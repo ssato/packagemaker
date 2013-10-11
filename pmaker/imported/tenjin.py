@@ -1,6 +1,6 @@
 ##
-## $Release: 1.0.1 $
-## $Copyright: copyright(c) 2007-2011 kuwata-lab.com all rights reserved. $
+## $Release: 1.1.1 $
+## $Copyright: copyright(c) 2007-2012 kuwata-lab.com all rights reserved. $
 ## $License: MIT License $
 ##
 ## Permission is hereby granted, free of charge, to any person obtaining
@@ -29,7 +29,7 @@
    http://www.kuwata-lab.com/tenjin/pytenjin-examples.html
 """
 
-__version__  = "$Release: 1.0.1 $"[10:-2]
+__version__  = "$Release: 1.1.1 $"[10:-2]
 __license__  = "$License: MIT License $"[10:-2]
 __all__      = ('Template', 'Engine', )
 
@@ -102,7 +102,13 @@ def _ignore_not_found_error(f, default=None):
 
 def create_module(module_name, dummy_func=None, **kwargs):
     """ex. mod = create_module('tenjin.util')"""
-    mod = type(sys)(module_name)
+    try:
+        mod = type(sys)(module_name)
+    except:
+        # The module creation above does not work for Jython 2.5.2
+        import imp
+        mod = imp.new_module(module_name)
+
     mod.__file__ = __file__
     mod.__dict__.update(kwargs)
     sys.modules[module_name] = mod
@@ -459,6 +465,7 @@ def _dummy():
 html = create_module('tenjin.html', _dummy, helpers=helpers, _escaped=escaped)
 helpers.escape = html.escape_html
 helpers.html = html   # for backward compatibility
+sys.modules['tenjin.helpers.html'] = html
 
 
 ##
@@ -714,7 +721,9 @@ class Template(object):
         #if nl: declares.append(nl)
         buf.append(''.join(declares) + "\n")
 
-    EXPR_PATTERN = (r'#\{(.*?)\}|\$\{(.*?)\}|\{=(?:=(.*?)=|(.*?))=\}', re.S)
+    s = '(?:\{.*?\}.*?)*'
+    EXPR_PATTERN = (r'#\{(.*?'+s+r')\}|\$\{(.*?'+s+r')\}|\{=(?:=(.*?)=|(.*?))=\}', re.S)
+    del s
 
     def expr_pattern(self):
         pat = self.EXPR_PATTERN
@@ -782,7 +791,9 @@ class Template(object):
         buf.append("));")
 
     def _quote_text(self, text):
-        return re.sub(r"(['\\\\])", r"\\\1", text)
+        text = re.sub(r"(['\\\\])", r"\\\1", text)
+        text = text.replace("\r\n", "\\r\n")
+        return text
 
     def add_text(self, buf, text, encode_newline=False):
         if not text: return
@@ -1011,6 +1022,234 @@ class Preprocessor(Template):
             return
         code = "_decode_params(%s)" % code
         Template.add_expr(self, buf, code, *flags)
+
+
+class TemplatePreprocessor(object):
+    factory = Preprocessor
+
+    def __init__(self, factory=None):
+        if factory is not None: self.factory = factory
+        self.globals = sys._getframe(1).f_globals
+
+    def __call__(self, input, **kwargs):
+        filename = kwargs.get('filename')
+        context  = kwargs.get('context') or {}
+        globals  = kwargs.get('globals') or self.globals
+        template = self.factory()
+        template.convert(input, filename)
+        return template.render(context, globals=globals)
+
+
+class TrimPreprocessor(object):
+
+    _rexp     = re.compile(r'^[ \t]+<', re.M)
+    _rexp_all = re.compile(r'^[ \t]+',  re.M)
+
+    def __init__(self, all=False):
+        self.all = all
+
+    def __call__(self, input, **kwargs):
+        if self.all:
+            return self._rexp_all.sub('', input)
+        else:
+            return self._rexp.sub('<', input)
+
+
+class PrefixedLinePreprocessor(object):
+
+    def __init__(self, prefix='::(?=[ \t]|$)'):
+        self.prefix = prefix
+        self.regexp = re.compile(r'^([ \t]*)' + prefix + r'(.*)', re.M)
+
+    def convert_prefixed_lines(self, text):
+        fn = lambda m: "%s<?py%s ?>" % (m.group(1), m.group(2))
+        return self.regexp.sub(fn, text)
+
+    STMT_REXP = re.compile(r'<\?py\s.*?\?>', re.S)
+
+    def __call__(self, input, **kwargs):
+        buf = []; append = buf.append
+        pos = 0
+        for m in self.STMT_REXP.finditer(input):
+            text = input[pos:m.start()]
+            stmt = m.group(0)
+            pos = m.end()
+            if text: append(self.convert_prefixed_lines(text))
+            append(stmt)
+        rest = input[pos:]
+        if rest: append(self.convert_prefixed_lines(rest))
+        return "".join(buf)
+
+
+class ParseError(Exception):
+    pass
+
+
+class JavaScriptPreprocessor(object):
+
+    def __init__(self, **attrs):
+        self._attrs = attrs
+
+    def __call__(self, input, **kwargs):
+        return self.parse(input, kwargs.get('filename'))
+
+    def parse(self, input, filename=None):
+        buf = []
+        self._parse_chunks(input, buf, filename)
+        return ''.join(buf)
+
+    CHUNK_REXP = re.compile(r'(?:^( *)<|<)!-- *#(?:JS: (\$?\w+(?:\.\w+)*\(.*?\))|/JS:?) *-->([ \t]*\r?\n)?', re.M)
+
+    def _scan_chunks(self, input, filename):
+        rexp = self.CHUNK_REXP
+        pos = 0
+        curr_funcdecl = None
+        for m in rexp.finditer(input):
+            lspace, funcdecl, rspace = m.groups()
+            text = input[pos:m.start()]
+            pos = m.end()
+            if funcdecl:
+                if curr_funcdecl:
+                    raise ParseError("%s is nested in %s. (file: %s, line: %s)" % \
+                                         (funcdecl, curr_funcdecl, filename, _linenum(input, m.start()), ))
+                curr_funcdecl = funcdecl
+            else:
+                if not curr_funcdecl:
+                    raise ParseError("unexpected '<!-- #/JS -->'. (file: %s, line: %s)" % \
+                                         (filename, _linenum(input, m.start()), ))
+                curr_funcdecl = None
+            yield text, lspace, funcdecl, rspace, False
+        if curr_funcdecl:
+            raise ParseError("%s is not closed by '<!-- #/JS -->'. (file: %s, line: %s)" % \
+                                 (curr_funcdecl, filename, _linenum(input, m.start()), ))
+        rest = input[pos:]
+        yield rest, None, None, None, True
+
+    def _parse_chunks(self, input, buf, filename=None):
+        if not input: return
+        stag = '<script'
+        if self._attrs:
+            for k in self._attrs:
+                stag = "".join((stag, ' ', k, '="', self._attrs[k], '"'))
+        stag += '>'
+        etag = '</script>'
+        for text, lspace, funcdecl, rspace, end_p in self._scan_chunks(input, filename):
+            if end_p: break
+            if funcdecl:
+                buf.append(text)
+                if re.match(r'^\$?\w+\(', funcdecl):
+                    buf.extend((lspace or '', stag, 'function ', funcdecl, "{var _buf='';", rspace or ''))
+                else:
+                    m = re.match(r'(.+?)\((.*)\)', funcdecl)
+                    buf.extend((lspace or '', stag, m.group(1), '=function(', m.group(2), "){var _buf='';", rspace or ''))
+            else:
+                self._parse_stmts(text, buf)
+                buf.extend((lspace or '', "return _buf;};", etag, rspace or ''))
+            #
+        buf.append(text)
+
+    STMT_REXP = re.compile(r'(?:^( *)<|<)\?js(\s.*?) ?\?>([ \t]*\r?\n)?', re.M | re.S)
+
+    def _scan_stmts(self, input):
+        rexp = self.STMT_REXP
+        pos = 0
+        for m in rexp.finditer(input):
+            lspace, code, rspace = m.groups()
+            text = input[pos:m.start()]
+            pos = m.end()
+            yield text, lspace, code, rspace, False
+        rest = input[pos:]
+        yield rest, None, None, None, True
+
+    def _parse_stmts(self, input, buf):
+        if not input: return
+        for text, lspace, code, rspace, end_p in self._scan_stmts(input):
+            if end_p: break
+            if lspace is not None and rspace is not None:
+                self._parse_exprs(text, buf)
+                buf.extend((lspace, code, rspace))
+            else:
+                if lspace:
+                    text += lspace
+                self._parse_exprs(text, buf)
+                buf.append(code)
+                if rspace:
+                    self._parse_exprs(rspace, buf)
+        if text:
+            self._parse_exprs(text, buf)
+
+    s = r'(?:\{[^{}]*?\}[^{}]*?)*'
+    EXPR_REXP = re.compile(r'\{=(.*?)=\}|([$#])\{(.*?' + s + r')\}', re.S)
+    del s
+
+    def _get_expr(self, m):
+        code1, ch, code2 = m.groups()
+        if ch:
+            code = code2
+            escape_p = ch == '$'
+        elif code1[0] == code1[-1] == '=':
+            code = code1[1:-1]
+            escape_p = False
+        else:
+            code = code1
+            escape_p = True
+        return code, escape_p
+
+    def _scan_exprs(self, input):
+        rexp = self.EXPR_REXP
+        pos = 0
+        for m in rexp.finditer(input):
+            text = input[pos:m.start()]
+            pos = m.end()
+            code, escape_p = self._get_expr(m)
+            yield text, code, escape_p, False
+        rest = input[pos:]
+        yield rest, None, None, True
+
+    def _parse_exprs(self, input, buf):
+        if not input: return
+        buf.append("_buf+=")
+        extend = buf.extend
+        op = ''
+        for text, code, escape_p, end_p in self._scan_exprs(input):
+            if end_p:
+                break
+            if text:
+                extend((op, self._escape_text(text)))
+                op = '+'
+            if code:
+                extend((op, escape_p and '_E(' or '_S(', code, ')'))
+                op = '+'
+        rest = text
+        if rest:
+            extend((op, self._escape_text(rest)))
+        if input.endswith("\n"):
+            buf.append(";\n")
+        else:
+            buf.append(";")
+
+    def _escape_text(self, text):
+        lines = text.splitlines(True)
+        fn = self._escape_str
+        s = "\\\n".join( fn(line) for line in lines )
+        return "".join(("'", s, "'"))
+
+    def _escape_str(self, string):
+        return string.replace("\\", "\\\\").replace("'", "\\'").replace("\n", r"\n")
+
+
+def _linenum(input, pos):
+    return input[0:pos].count("\n") + 1
+
+
+JS_FUNC = r"""
+function _S(x){return x==null?'':x;}
+function _E(x){return x==null?'':typeof(x)!=='string'?x:x.replace(/[&<>"']/g,_EF);}
+var _ET={'&':"&amp;",'<':"&lt;",'>':"&gt;",'"':"&quot;","'":"&#039;"};
+function _EF(c){return _ET[c];};
+"""[1:-1]
+JS_FUNC = escaped.EscapedStr(JS_FUNC)
+
 
 
 ##
@@ -1468,14 +1707,14 @@ class Engine(object):
     layout     = None
     templateclass = Template
     path       = None
-    cache      = MarshalCacheStorage()  # save converted Python code into file by marshal-format
+    cache      = TextCacheStorage()  # save converted Python code into text file
     lang       = None
     loader     = FileSystemLoader()
     preprocess = False
     preprocessorclass = Preprocessor
     timestamp_interval = 1  # seconds
 
-    def __init__(self, prefix=None, postfix=None, layout=None, path=None, cache=True, preprocess=None, templateclass=None, preprocessorclass=None, lang=None, loader=None, **kwargs):
+    def __init__(self, prefix=None, postfix=None, layout=None, path=None, cache=True, preprocess=None, templateclass=None, preprocessorclass=None, lang=None, loader=None, pp=None, **kwargs):
         """Initializer of Engine class.
 
            prefix:str (='')
@@ -1498,6 +1737,8 @@ class Engine(object):
            lang:str (=None)
              Language name such as 'en', 'fr', 'ja', and so on. If you specify
              this, cache file path will be 'inex.html.en.cache' for example.
+           pp:list (=None)
+             List of preprocessor object which is callable and manipulates template content.
            kwargs:dict
              Options for Template class constructor.
              See document of Template.__init__() for details.
@@ -1511,6 +1752,14 @@ class Engine(object):
         if lang is not None:  self.lang = lang
         if loader is not None: self.loader = loader
         if preprocess is not None: self.preprocess = preprocess
+        if   pp is None:            pp = []
+        elif isinstance(pp, list):  pass
+        elif isinstance(pp, tuple): pp = list(pp)
+        else:
+            raise TypeError("'pp' expected to be a list but got %r." % (pp,))
+        self.pp = pp
+        if preprocess:
+            self.pp.append(TemplatePreprocessor(self.preprocessorclass))
         self.kwargs = kwargs
         self.encoding = kwargs.get('encoding')
         self._filepaths = {}   # template_name => relative path and absolute path
@@ -1566,10 +1815,14 @@ class Engine(object):
         #if _context is None: _context = {}
         #if _globals is None: _globals = sys._getframe(3).f_globals
         #: preprocess template and return result
+        #preprocessor = self.preprocessorclass(filepath, input=input)
+        #return preprocessor.render(_context, globals=_globals)
+        #: preprocesses input with _context and returns result.
         if '_engine' not in _context:
             self.hook_context(_context)
-        preprocessor = self.preprocessorclass(filepath, input=input)
-        return preprocessor.render(_context, globals=_globals)
+        for pp in self.pp:
+            input = pp.__call__(input, filename=filepath, context=_context, globals=_globals)
+        return input
 
     def add_template(self, template):
         self._added_templates[template.filename] = template
@@ -1630,7 +1883,7 @@ class Engine(object):
             if not ret:
                 raise TemplateNotFoundError("%r: template not found." % filepath)
             input, timestamp = ret
-            if self.preprocess:   ## required for preprocessing
+            if self.pp:   ## required for preprocessing
                 if _context is None: _context = {}
                 if _globals is None: _globals = sys._getframe(1).f_globals
                 input = self._preprocess(input, filepath, _context, _globals)
@@ -1641,7 +1894,10 @@ class Engine(object):
             template._last_checked_at = _time()
             #: save template object into cache.
             if cache:
-                if not template.bytecode: template.compile()
+                if not template.bytecode:
+                    #: ignores syntax error when compiling.
+                    try: template.compile()
+                    except SyntaxError: pass
                 cache.set(cachepath, template)
         #else:
         #    template.compile()
