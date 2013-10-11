@@ -123,14 +123,7 @@ class Base(object):
         :param output:  Output file path relative to workdir
         """
         out = os.path.join(self.workdir, output)
-        tmpl = U.find_template(template, self.template_paths)
-
-        if tmpl is None:
-            raise RuntimeError(
-                "Template not found in your search paths: " + template
-            )
-
-        content = T.template_compile(tmpl, self.pkgdata)
+        content = T.compile(tmpl, self.pkgdata, self.template_paths, ask=True)
         open(out, "w").write(content)  # may throw IOError, OSError.
 
     def copyfiles(self):
