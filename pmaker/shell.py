@@ -125,8 +125,7 @@ class ThreadedCommand(object):
             self.process = subprocess.Popen(self.cmd,
                                             bufsize=4096,
                                             shell=True,
-                                            cwd=self.workdir
-            )
+                                            cwd=self.workdir)
             self.result = self.process.wait()
 
             logging.debug("Finished: " + self.cmd_str)
@@ -136,10 +135,8 @@ class ThreadedCommand(object):
 
     def get_result(self):
         if self.thread is None:
-            logging.warn(
-                "Thread does not exist. Did you call %s.run_async() ?" \
-                    % self.__class__.__name__
-            )
+            logging.warn("Thread does not exist. Did you call %s.run_async() "
+                         "?" % self.__class__.__name__)
             return None
 
         # it will block.
@@ -179,4 +176,4 @@ def run(cmd, workdir=CURDIR, dryrun=False, stop_on_error=True, timeout=None):
     return tcmd.run()
 
 
-# vim:sw=4 ts=4 expandtab:
+# vim:sw=4:ts=4:et:
