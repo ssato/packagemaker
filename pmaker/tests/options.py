@@ -145,7 +145,7 @@ class Test_02_Options(unittest.TestCase):
     def test_03_parse_args_w_name_and_filelist_and_template_path(self):
         name = "foo"
         cwd = os.path.join(os.getcwd(), "templates")
-        paths_ref = E.Env().template_paths + [cwd]
+        paths_ref = [cwd] + E.Env().template_paths
 
         o = O.Options()
         (opts, args) = o.parse_args(
@@ -178,44 +178,34 @@ class Test_02_Options(unittest.TestCase):
     def test_06_parse_args_w_name_and_filelist_and_compressor(self):
         name = "foo"
         env = E.Env()
-        compressor = random.choice(
-            [
-                ct.extension for ct in env.compressors \
-                    if ct.extension != env.compressor.extension
-            ]
-        )
+        cs = [ct.extension for ct in env.compressors
+              if ct.extension != env.compressor.extension]
+        compressor = random.choice(cs)
 
         o = O.Options()
-        (opts, args) = o.parse_args(
-            ["-n", name, "--compressor", compressor, "dummy_filelist.txt"]
-        )
+        (opts, args) = o.parse_args(["-n", name, "--compressor", compressor,
+                                     "dummy_filelist.txt"])
         self.assertEquals(opts.compressor, compressor)
 
     def test_07_parse_args_w_name_and_filelist_and_no_mock(self):
         name = "foo"
 
         o = O.Options()
-        (opts, args) = o.parse_args(
-            ["-n", name, "--no-mock", "dummy_filelist.txt"]
-        )
+        (opts, args) = o.parse_args(["-n", name, "--no-mock",
+                                     "dummy_filelist.txt"])
         self.assertTrue(opts.no_mock)
 
     def test_08_parse_args_w_name_and_filelist_and_relations(self):
         name = "foo"
 
         o = O.Options()
-        (opts, args) = o.parse_args(
-            ["-n", name, "--relations", "requires:/bin/sh",
-                "dummy_filelist.txt"]
-        )
+        (opts, args) = o.parse_args(["-n", name, "--relations",
+                                     "requires:/bin/sh", "dummy_filelist.txt"])
         self.assertEquals(opts.relations[0], ('requires', ['/bin/sh']))
 
-        (opts, args) = o.parse_args(
-            ["-n", name,
-             "--relations", "obsoletes:mydata;conflicts:mydata-old",
-             "dummy_filelist.txt"
-            ]
-        )
+        (opts, args) = o.parse_args(["-n", name, "--relations",
+                                     "obsoletes:mydata;conflicts:mydata-old",
+                                     "dummy_filelist.txt"])
         self.assertEquals(opts.relations[0], ('obsoletes', ['mydata']))
         self.assertEquals(opts.relations[1], ('conflicts', ['mydata-old']))
 
@@ -241,9 +231,8 @@ class Test_02_Options_w_side_effects(unittest.TestCase):
             f.write(changelog_content)
 
         o = O.Options()
-        (opts, args) = o.parse_args(
-            ["-n", name, "--changelog", changelog_file, "dummy_filelist.txt"]
-        )
+        (opts, args) = o.parse_args(["-n", name, "--changelog", changelog_file,
+                                     "dummy_filelist.txt"])
         self.assertEquals(opts.changelog, changelog_content)
 
 
