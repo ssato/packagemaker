@@ -292,34 +292,6 @@ class Test_rm_rf_and_createdir(unittest.TestCase):
         self.assertFalse(os.path.exists(topdir))
 
 
-class Test_find_template(unittest.TestCase):
-
-    def setUp(self):
-        self.workdir = setup_workdir()
-        self.template = os.path.join(self.workdir, "a.tmpl")
-
-        open(self.template, "w").write("$a\n")
-
-    def tearDown(self):
-        cleanup_workdir(self.workdir)
-
-    def test_find_template__None(self):
-        tmpl = find_template("not_exist.tmpl")
-
-        self.assertTrue(tmpl is None)
-
-    def test_find_template__exact_path(self):
-        tmpl = find_template(self.template)
-
-        self.assertTrue(tmpl is not None)
-
-    def test_find_template__search_paths(self):
-        tmplname = os.path.basename(self.template)
-        tmpl = find_template(tmplname, [self.workdir])
-
-        self.assertTrue(tmpl is not None)
-
-
 class Test_date(unittest.TestCase):
 
     def test_date__default(self):

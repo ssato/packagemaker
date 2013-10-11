@@ -14,9 +14,9 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
-from pmaker.tests.common import selfdir
+from pmaker.tests.common import selfdir, setup_workdir, cleanup_workdir
 
-import pmaker.tenjinwrapper as TW
+import pmaker.tenjinwrapper as TT
 import os.path
 import unittest
 
@@ -26,14 +26,36 @@ class Test_00(unittest.TestCase):
     def test_00_template_compile(self):
         template_path = os.path.join(selfdir(), "template_example_00.tmpl")
 
-        c0 = TW.template_compile(template_path, {})
-        c1 = TW.template_compile(template_path,
-            {"title": "pyTenjin tests: context", }
-        )
+        c0 = TT.compile(template_path, {})
+        c1 = TT.compile(template_path, {"title": "pyTenjin tests: context", })
 
         # TBD:
         self.assertTrue(bool(c0))
         self.assertTrue(bool(c1))
 
+
+class Test_10(unittest.TestCase):
+
+    def setUp(self):
+        self.workdir = setup_workdir()
+        self.template = os.path.join(self.workdir, "a.tmpl")
+
+        open(self.template, "w").write("$a\n")
+
+    def tearDown(self):
+        cleanup_workdir(self.workdir)
+
+    def test_00_find_template__None(self):
+        with self.assertRaises(TT.TemplateNotFoundError):
+            tmpl = TT.find_template("not_exist.tmpl", ask=False)
+
+    def test_10_find_template__exact_path(self):
+        tmpl = TT.find_template(self.template)
+        self.assertTrue(tmpl is not None)
+
+    def test_20_find_template__search_paths(self):
+        tmplname = os.path.basename(self.template)
+        tmpl = TT.find_template(tmplname, [self.workdir])
+        self.assertTrue(tmpl is not None)
 
 # vim:sw=4:ts=4:et:
