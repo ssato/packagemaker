@@ -372,8 +372,8 @@ def rm_rf(target):
     assert target != "/", warnmsg
     assert os.path.realpath(target) != "/", warnmsg
 
-    xs = glob.glob(os.path.join(target, "*")) + \
-         glob.glob(os.path.join(target, ".*"))
+    mkpath = lambda pat: glob.glob(os.path.join(target, pat))
+    xs = mkpath("*") + mkpath(".*")
 
     for x in xs:
         if os.path.isdir(x):
@@ -434,7 +434,7 @@ def sort_out_paths_by_dir(paths):
     """
     cntr = itertools.count()
 
-    return [B.Bunch(id=str(cntr.next()), dir=d, files=list(ps)) \
+    return [B.Bunch(id=str(cntr.next()), dir=d, files=list(ps))
             for d, ps in itertools.groupby(paths, os.path.dirname)]
 
 
