@@ -108,4 +108,14 @@ class WhitespacesInPathFilter(BaseFilter):
         return  " " in f.path
 
 
+class ColonsInPathFilter(BaseFilter):
+    """
+    A filter to filter out files of which path contains ' ' (whitespaces).
+    """
+    _reason = "files of which patch contains colons ':' not supported (yet)"
+
+    def _pred(self, f):
+        return  ':' in f.path
+
+
 # vim:sw=4:ts=4:et:

@@ -97,6 +97,7 @@ class FilelistCollector(Collector):
             F.NotExistFilter(),
             F.ReadAccessFilter(),
             F.WhitespacesInPathFilter(),
+            F.ColonsInPathFilter(),
         ]
         self.modifiers = [M.AttributeModifier()]
         self.use_rpmdb = False
