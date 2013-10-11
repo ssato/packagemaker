@@ -29,6 +29,7 @@ Requires:       rpm-build
 Requires:       automake
 Requires:       autoconf
 Requires:       make
+Requires:       python-jinja2
 Requires:       %{name}-core = %{version}-%{release}
 
 
