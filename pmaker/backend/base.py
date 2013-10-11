@@ -123,7 +123,8 @@ class Base(object):
         :param output:  Output file path relative to workdir
         """
         out = os.path.join(self.workdir, output)
-        content = T.compile(tmpl, self.pkgdata, self.template_paths, ask=True)
+        content = T.compile(template, self.pkgdata, self.template_paths,
+                            ask=True)
         open(out, "w").write(content)  # may throw IOError, OSError.
 
     def copyfiles(self):
