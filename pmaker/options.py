@@ -90,10 +90,11 @@ on package format to use.
 def setup_template_path_option():
     def cb(option, opt_str, value, parser):
         if value not in parser.values.template_paths:
-            parser.values.template_paths.append(value)
+            parser.values.template_paths.insert(0, value)
 
     return dict(action="callback", callback=cb, type="string",
-                dest="template_paths", )
+                dest="template_paths", default=G.TEMPLATE_SEARCH_PATHS,
+                help="Specify template search paths [%default]")
 
 
 def get_content(path):
@@ -180,7 +181,7 @@ class Options(B.Bunch):
         add_option("", "--trace", action="store_true", help="Trace mode")
         add_option("-L", "--log", help="Log file [stdout]")
 
-    def __setup_build_options(self):
+    def __setup_build_options(self, tpaths=G.TEMPLATE_SEARCH_PATHS):
         global PACKAGING_STEPS, DESTDIR_OPTION_HELP
 
         bog = optparse.OptionGroup(self.oparser, "Build options")
