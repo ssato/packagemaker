@@ -1,22 +1,24 @@
 About
-================
+=======
 
-PackageMaker is a tool to automate process to package files, dirs and symlinks.
+PackageMaker is a kind of archiver like tar and zip but generates packages
+instead of just an archive file.
+
+Packaging process is fully automated and you can package files, dirs and
+symlinks by just passing paths list and packaing information.
 
 It helps building packages of existing files on your system by automating
 almost all of the steps needed for packaing: arrange source tree, create
 makefiles and rpm specs or debian packaging files, etc.
 
-
 Basic Usage
-======================
+=============
 
-see the output of `pmaker --help` or pmaker(8) or examples/*.log.
-
-
+see the output of `pmaker --help` (or run 'PYTHONPATH=. python tools/pmaker -h'
+in this dir) or pmaker(8) or examples/\*.log.
 
 How it works
-=======================
+==============
 
 When packaging files, dirs and symlinks which user gave in the path list,
 PackageMaker will try gathering the information of these targets  and then:
@@ -29,15 +31,12 @@ PackageMaker will try gathering the information of these targets  and then:
 
 3. build package such as rpm, src.rpm, deb, etc.
 
-
 NOTE: The permissions of the files might be lost during packaging process. If
 you want to ensure these are saved or force set permissions as you wanted,
 specify these explicitly in Makefile.am or rpm spec, etc.
 
-
-
 "Package-based system construction" - the concept behind packagemaker
-==============================================================================
+=======================================================================
 
 Usually, systems are constructed through the following steps:
 
@@ -47,52 +46,45 @@ Usually, systems are constructed through the following steps:
 4. install middleware and apps
 5. configure middleware and apps
 
-
 It is possible to automate some of steps 2..4, above but it takes much time and
 hard sometime because most steps consist of procedual steps with side effects.
 
-However, if those procedual steps with side effects are wrapped and "lift"-ed
-to a kind of "monad", it should be easy to manage and helps making these
-processes less procedual and more functional a lot. For example, if all of the
-changes (file/dir/symlink additions and modifications) after the step 2 could
-be packaged into some RPMs, we can re-play these steps with a kickstart file
-with basic os installatio and package list which these additional RPMs are
-added.
+With help of onfiguration management technology such like puppet, chef and
+ansible or deployment tools like cappistrano, you may be able to automate such
+build steps, but, important point is that procedual steps is not required in
+actual, that is, any procedual and effectful steps make some files, dirs and
+symlinks in the last. In other words, what we have to take care to construct
+systems is just what files, dirs and symlinks are needed and where these are.
 
-Along with that, most important point is that all we want are just *what*
-files, dirs and symlinks makes that system and we don't care *how* these were
-made actaully in most cases.
+It should be easy to manage and helps making these processes less procedual and
+more functional a lot if all we have to consider is what files we have to take
+care and where these should be. For example, if all of the changes
+(file/dir/symlink additions and modifications) after the step 2 could be
+packaged into some RPMs, we can re-play these steps with a kickstart file with
+basic os installatio and package list which these additional RPMs are added.
 
 PackageMaker is one of the important pieces to actualize and establish "package
 based system construction" methodology because it should enable reducing the
 cost of packaging files, dirs and sysmlinks (captureing what objects making
-that system), and may enables re-playing the system construction process.
-
+that system), and may enables 're-playing' the system construction process.
 
 Comparison with configuration management system
--------------------------------------------------------
+-------------------------------------------------
 
-Some configuration management systems such like puppet, chef also can
-accomplish the same goal packagemaker focusing but:
+Some configuration management systems such like puppet, chef and ansible also
+can accomplish the same goal packagemaker focusing but these add some more
+extra software layers to os-native software management systems. Puppet may
+conflict with and overrides package management system for example.
 
-* These add some more extra software layers to os-native software management
-  systems. Puppet conflicts with and overrides package management system for
-  example.
-
-* Most of all are based on server-client architecture and client and central
-  management systems are tightly-coupled as usual.
-
-* Custom scripts are required: kickstart does not support puppet natively and
-  some kinds of post scripts are needed to make use of puppet, for example.
-
+Say, if you're using puppet to just deploy files I think you should package
+these files and let package management system process them.
 
 Packages built with packagemaker do not need any runtime system or libraries
 and should be able to work well with os-native package management systems in
 standalone mode.
 
-
 Architecture
-===========================
+==============
 
 Simply put, PackageMaker can be divided into four components:
 
@@ -101,9 +93,8 @@ b. Collectors
 c. Backends
 d. Utility modules
 
-
 a. Models
----------------------------
+-----------
 
 Classes in pmaker.models.FileObjects implement the basic model of target
 objects: files, dirs and symlinks.  Because many instance of these objects
@@ -116,18 +107,16 @@ pmaker.models.FileObjectFactory and never instantiated directly.
 
 The code of models are placed in pmaker/models directory.
 
-
 b. Collectors
----------------------------
+---------------
 
 This component process user input (files list) and to collect FIleObject
 instances to package.
 
 The code of collectors are placed in pmaker/collectors directory.
 
-
 c. Backends (Drivers)
----------------------------
+-----------------------
 
 The modules underr pmaker/backend is the core componenet to manage and drive
 packaging process.
@@ -136,36 +125,33 @@ All backend classes are children of pmaker.backend.base.Base class and may
 override methods {setup, preconfigure, configure, sbuild, build} represents
 each build steps.
 
-
 d. Utility modules
----------------------------
+-------------------
 
-Most of python code in module's top directory (pmaker/\*.py) are utility modules.
-
+Most of python code in module's top directory (pmaker/\*.py) are utility
+modules.
 
 How to build
-================
-
+==============
 
 Build w/ mock
-------------------------
+----------------
 
 It takes some time to make a rpm but should be better, I think.
 
 1. python setup.py srpm
 2. mock -r <target_build_dist> dist/SRPMS/packagemaker-*.src.rpm
 
-
 Build w/o mock
-------------------------
+----------------
 
-It's easier than the above but only possible to make a rpm for build host.
+It's easier than the above but only possible to make a rpm for build host. Just
+run::
 
-1. python setup.py rpm
-
+  python setup.py rpm
 
 How to test
-================
+=============
 
 * Unit tests: `python setup.py test`
 * Unit tests + System tests: `python setup.py test --full`
@@ -176,9 +162,7 @@ a. source code: ./runtest.sh <path_to_python_source>
 b. a class in source code: ./runtest.sh <path_to_python_source>:<class_name>
 c. a method of a class in source code:./runtest.sh <path_to_python_source>:<class_name>.<method_name>
 
-
 SEE ALSO: nosetests(1)
-
 
 Here are some examples:
 
@@ -216,9 +200,8 @@ Here are some examples:
   OK
   $
 
-
 HACKING
-================
+==========
 
 This is my usual way for enhancements:
 
@@ -229,16 +212,14 @@ This is my usual way for enhancements:
 
 if all looks ok, merge the branch to main.
 
-
 And here is my usual way for bug fixes:
 
 1. Write tests for the bug
 2. Modify / add code for the fix
 3. Run the tests and confirm if the fix was right
 
-
 TODO
-================
+=======
 
 * resolve package name collisions due to overriding packages; there is
   'man-pages-overrides' package exist. How about using '-overlay' suffix
@@ -256,9 +237,8 @@ TODO
 * plugin system: posponed
 * keep permissions of targets in tar archives
 
-
 Finished TODO items
----------------------------
+---------------------
 
 * refactor its architecture: Done
 
@@ -269,9 +249,8 @@ Finished TODO items
 * sort out command line options: Done
 * Run w/o python-cheetah: Done (now it uses pytenjin instead)
 
-
 References
-================
+============
 
 In random order:
 
@@ -283,9 +262,8 @@ In random order:
 * http://wiki.debian.org/IntroDebianPackaging
 * http://www.debian.org/doc/maint-guide/ch-dother.ja.html
 
-
 Alternatives
-================
+==============
 
 Basic idea and implementation design of PackageMaker was arised from offhand
 talk with my very talented co-worker, Masatake Yamato (yamato at redhat.com).
@@ -300,12 +278,12 @@ buildrpm:
 
 * buildrpm: http://magnusg.fedorapeople.org/buildrpm/
 
-
 License
-================
+=========
 
 Copyright (C) 2011 Satoru SATOH <satoru.satoh @ gmail.com>
 Copyright (C) 2011 Satoru SATOH <ssato @ redhat.com>
+Copyright (C) 2011 - 2013 Red Hat, Inc.
 
 This program is free software: you can redistribute it and/or modify it under
 the terms of the GNU General Public License as published by the Free Software
@@ -319,18 +297,15 @@ PARTICULAR PURPOSE.  See the GNU General Public License for more details.
 You should have received a copy of the GNU General Public License along with
 this program.  If not, see <http://www.gnu.org/licenses/>.
 
-
 Exceptions
------------------------
+------------
 
 Files under pmaker/imported/ were imported from external projects and the above
 license is not applied. 
 
-
 Author
-================
+=======
 
 Satoru SATOH <ssato at redhat.com>
-
 
 .. vim:sw=2 ts=2 et:
