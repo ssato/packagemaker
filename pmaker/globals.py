@@ -92,21 +92,24 @@ UPTO = STEP_BUILD
 
 BUILD_STEPS = (
     # step_name, log_msg_fmt, help_txt
-    (STEP_SETUP, "Setting up src tree in %(workdir)s: %(pname)s",
-        "setup the package' src dir and copy target files in it"),
+    (STEP_SETUP,
+     "Setting up src tree in %(workdir)s: %(pname)s",
+     "setup the package' src dir and copy target files in it"),
 
-    (STEP_PRECONFIGURE, "Making up autotool-ized src directory: %(pname)s",
-        "arrange build aux files such like configure.ac, Makefile.am, " + \
-        "rpm spec file, debian/* and so on."),
+    (STEP_PRECONFIGURE,
+     "Making up autotool-ized src directory: %(pname)s",
+     "arrange build aux files such like configure.ac, Makefile.am, "
+     "rpm spec file, debian/* and so on."),
 
-    (STEP_CONFIGURE, "Configuring src distribution: %(pname)s",
-        "setup src dir to run './configure'. autotools will be needed"),
+    (STEP_CONFIGURE,
+     "Configuring src distribution: %(pname)s",
+     "setup src dir to run './configure'. autotools will be needed"),
 
-    (STEP_SBUILD, "Building src package: %(pname)s", "build src package[s]"),
+    (STEP_SBUILD,
+     "Building src package: %(pname)s", "build src package[s]"),
 
-    (STEP_BUILD, "Building bin packages: %(pname)s",
-        "build binary package[s]"),
-)
+    (STEP_BUILD,
+     "Building bin packages: %(pname)s", "build binary package[s]"))
 
 PACKAGING_STEPS = [
     B.Bunch(
