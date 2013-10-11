@@ -17,6 +17,9 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 import pmaker.imported.tenjin as tenjin
+import logging
+import os.path
+import os
 
 
 # dirty hack for highly customized and looks a bit overkill (IMHO) module
@@ -42,8 +45,76 @@ unquote = tenjin.helpers.unquote
 _ENGINE = tenjin.Engine(cache=tenjin.MemoryCacheStorage())
 
 
-def template_compile(template_path, context={}, engine=_ENGINE):
-    return engine.render(template_path, context)
+class TemplateNotFoundError(Exception):
+    pass
+
+
+def find_template(template, search_paths=[], ask=True):
+    """
+    Find template file from given path information.
+
+    1. Try the path ($template)
+    2. Try $path/$template where $path in $search_paths
+
+    :param template: Template file path, may be relative to path in paths.
+    :param search_paths: Path list to search for the template
+    :param ask: Ask user about the path to template file if it's missing
+        and this value is True
+
+    :return: template path or TemplateNotFoundError exception may be raised.
+    """
+    if not search_paths:
+        search_paths = [os.curdir]
+
+    # The path at the top is special (system search path).
+    # Make it searched at last.
+    search_paths = search_paths[1:] + [search_paths[0]]
+
+    tmpl = None
+
+    if os.path.exists(template):
+        tmpl = template
+    else:
+        logging.debug("Search template from: " + ",".join(search_paths))
+        for path in search_paths:
+            t = os.path.join(path, template)
+
+            if os.path.exists(t):
+                tmpl = t
+                break
+
+    if tmpl is None:  # Not found in search paths.
+        logging.warn("*** Missing template '%s' ***" % template)
+
+        if ask:
+            template = raw_input("Please enter template path: ")
+
+            if os.path.exists(template) and os.access(template, os.R_OK):
+                tmpl = template
+            else:
+                m = "Not exists or cannot read it: " + template
+                raise TemplateNotFoundError(m)
+        else:
+            raise TemplateNotFoundError("template=" + template)
+    else:
+        logging.info("Found template: " + tmpl)
+
+    return tmpl
+
+
+def compile(template, context={}, tpaths=[], ask=True, engine=_ENGINE):
+    """
+    :param template: Template file path or filename
+    :param context: Context dict to instantiate given template
+    :param tpaths: Template file search path
+    :param ask: Ask user about the path to template file if it's missing
+        and this value is True
+    :param engine: Template compiling engine
+
+    :return: Compiled result string or maybe TemplateNotFoundError thrown
+    """
+    tmpl = find_template(template, tpaths, ask=ask)
+    return engine.render(tmpl, context)
 
 
 # vim:sw=4:ts=4:et:
