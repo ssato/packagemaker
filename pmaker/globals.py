@@ -42,7 +42,7 @@ PACKAGE_MAKERS = dict()
 COLLECTORS = dict()
 BACKENDS = dict()
 
-TEMPLATE_SEARCH_PATHS = ["/usr/share/pmaker/templates", ]
+TEMPLATE_SEARCH_PATHS = ["/usr/share/pmaker/templates", "."]
 
 COMPRESSING_TOOLS = [
     B.Bunch(
