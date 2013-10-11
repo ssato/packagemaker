@@ -176,10 +176,8 @@ def info_by_path(path, fi_keys=RPM_FI_KEYS, rpmdb_path=None):
     apath = os.path.abspath(path)
 
     try:
-        fis = [
-            h.fiFromHeader() for h in \
-                ts(rpmdb_path).dbMatch("basenames", apath)
-        ]
+        fis = [h.fiFromHeader() for h in
+               ts(rpmdb_path).dbMatch("basenames", apath)]
         if fis:
             xs = [x for x in fis[0] if x and x[0] == apath]
             if xs:
@@ -192,7 +190,7 @@ def info_by_path(path, fi_keys=RPM_FI_KEYS, rpmdb_path=None):
 
 @U.memoize
 def filelist(cache=True, expires=1, pkl_proto=pickle.HIGHEST_PROTOCOL,
-        rpmdb_path=None, cache_file=RPM_FILELIST_CACHE):
+             rpmdb_path=None, cache_file=RPM_FILELIST_CACHE):
     """
     TODO: It should be a heavy and time-consuming task. How to shorten this
     time? - caching, utilize yum's file list database or whatever.
@@ -212,10 +210,8 @@ def filelist(cache=True, expires=1, pkl_proto=pickle.HIGHEST_PROTOCOL,
             date = None
 
     if data is None:
-        data = dict(
-            concat(((f, rpmh2nvrae(h)) for f in h["filenames"]) \
-                for h in ts(rpmdb_path).dbMatch())
-        )
+        data = dict(concat(((f, rpmh2nvrae(h)) for f in h["filenames"])
+                           for h in ts(rpmdb_path).dbMatch()))
 
         try:
             # TODO: How to detect errors during/after pickle.dump.
