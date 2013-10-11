@@ -198,10 +198,9 @@ if yaml is not None:
             if isinstance(node, yaml.MappingNode):
                 self.flatten_mapping(node)
             else:
-                raise yaml.constructor.ConstructorError(None, None,
-                    "expected a mapping node, but found %s" % node.id,
-                    node.start_mark
-                )
+                m = "expected a mapping node, but found %s" % node.id
+                exc = yaml.constructor.ConstructorError
+                raise exc(None, None, m, node.start_mark)
 
             mapping = B.Bunch()
 

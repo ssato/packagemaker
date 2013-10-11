@@ -48,7 +48,7 @@ class Test_00__list_paths(unittest.TestCase):
 
         for p in paths:
             self.assertTrue(p in paths_r,
-                "Expected %s in %s" % (p, str(paths_r)))
+                            "Expected %s in %s" % (p, str(paths_r)))
 
     def test_list_paths__not_None(self):
         self.assertEquals(["/a/b/c"], A.list_paths("testapp", ["/a/b/c"]))
