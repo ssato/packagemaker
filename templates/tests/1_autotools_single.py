@@ -42,10 +42,10 @@ class Test_templates_1_autotools_single(unittest.TestCase):
             [FO.SymlinkObject(p, p) for p in random.sample(paths, 3)]
 
         distdata = [
-            Bunch(id=i, files=random.sample(paths, 3), dir="/a/b") \
+            B.Bunch(id=i, files=random.sample(paths, 3), dir="/a/b") \
                 for i in range(5)
         ]
-        conflicts = Bunch(files=[1, 2, 3])  # dummy
+        conflicts = B.Bunch(files=[1, 2, 3])  # dummy
 
         context = dict(
             name="foobar",
@@ -64,7 +64,7 @@ class Test_templates_1_autotools_single(unittest.TestCase):
         context = dict(
             name="foobar",
             pversion="0.0.1",
-            compressor=Bunch(am_opt="dist-xz", ),
+            compressor=B.Bunch(am_opt="dist-xz", ),
         )
 
         c = TW.template_compile(tmpl, context)

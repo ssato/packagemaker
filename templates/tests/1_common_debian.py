@@ -56,7 +56,7 @@ class Test_templates_1_common_debian(unittest.TestCase):
             pversion="0.0.2",
             packager="John Doe",
             email="jdoe@example.com",
-            date=Bunch(date="2011-11-10 20:03"),
+            date=B.Bunch(date="2011-11-10 20:03"),
         )
 
         c = TW.template_compile(tmpl, context)
@@ -79,7 +79,7 @@ class Test_templates_1_common_debian(unittest.TestCase):
         context = dict(
             packager="John Doe",
             email="jdoe@example.com",
-            date=Bunch(date="2011-11-10 20:03"),
+            date=B.Bunch(date="2011-11-10 20:03"),
             license="MIT",
         )
 

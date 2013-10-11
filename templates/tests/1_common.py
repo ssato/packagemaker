@@ -37,7 +37,7 @@ class Test_templates_1_common(unittest.TestCase):
     def test__README(self):
         tmpl = tmplpath("README")
 
-        d = Bunch(date="2011.11.10")
+        d = B.Bunch(date="2011.11.10")
 
         context = dict(
             hostname="foobar.example.com",
@@ -56,9 +56,9 @@ class Test_templates_1_common(unittest.TestCase):
         tmpl = tmplpath("manifest")
 
         context = dict(
-            not_conflicts=Bunch(
+            not_conflicts=B.Bunch(
                 files=[
-                    Bunch(install_path=p) for p in ["/a/b/c", "/w/x/y/z"]
+                    B.Bunch(install_path=p) for p in ["/a/b/c", "/w/x/y/z"]
                 ]
             ),
         )
@@ -74,9 +74,9 @@ class Test_templates_1_common(unittest.TestCase):
         tmpl = tmplpath("manifest.overrides")
 
         context = dict(
-            conflicts=Bunch(
+            conflicts=B.Bunch(
                 files=[
-                    Bunch(install_path=p) for p in ["/a/b/c", "/w/x/y/z"]
+                    B.Bunch(install_path=p) for p in ["/a/b/c", "/w/x/y/z"]
                 ]
             ),
         )
@@ -100,7 +100,7 @@ class Test_templates_1_common(unittest.TestCase):
         files = [g(FO.FileObject(p)) for p in random.sample(paths, 4)]
 
         context = dict(
-            conflicts=Bunch(
+            conflicts=B.Bunch(
                 files=files,
                 savedir=CONFLICTS_SAVEDIR % {"name": "foo"},
                 newdir=CONFLICTS_NEWDIR % {"name": "foo"},
@@ -115,7 +115,7 @@ class Test_templates_1_common(unittest.TestCase):
         tmpl = tmplpath("apply-overrides")
 
         context = dict(
-            conflicts=Bunch(
+            conflicts=B.Bunch(
                 files=[],
                 savedir=CONFLICTS_SAVEDIR % {"name": "foo"},
                 newdir=CONFLICTS_NEWDIR % {"name": "foo"},
@@ -148,7 +148,7 @@ exit 0
         files = [g(FO.FileObject(p)) for p in random.sample(paths, 4)]
 
         context = dict(
-            conflicts=Bunch(
+            conflicts=B.Bunch(
                 files=files,
                 savedir=CONFLICTS_SAVEDIR % {"name": "foo"},
                 newdir=CONFLICTS_NEWDIR % {"name": "foo"},
@@ -163,7 +163,7 @@ exit 0
         tmpl = tmplpath("revert-overrides")
 
         context = dict(
-            conflicts=Bunch(
+            conflicts=B.Bunch(
                 files=[],
                 savedir=CONFLICTS_SAVEDIR % {"name": "foo"},
                 newdir=CONFLICTS_NEWDIR % {"name": "foo"},

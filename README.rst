@@ -38,7 +38,7 @@ specify these explicitly in Makefile.am or rpm spec, etc.
 "Package-based system construction" - the concept behind packagemaker
 =======================================================================
 
-Usually, systems are constructed through the following steps:
+Usually, build process of systems is like following steps:
 
 1. kitting: setup hardware
 2. install os
@@ -47,7 +47,17 @@ Usually, systems are constructed through the following steps:
 5. configure middleware and apps
 
 It is possible to automate some of steps 2..4, above but it takes much time and
-hard sometime because most steps consist of procedual steps with side effects.
+hard sometime because most steps consist of procedual steps with side effects,
+and to make things worse, these steps often require human-interactions.
+
+Configuration management system and tools such like puppet and chef helps
+automation of the part of the part of these steps, however, that's all.
+Packaging system managing installation steps and config management system /
+tools managing configration steps work separately and looks not co-operated normally.
+
+If these two (installation and configuration) steps , operate to same targets
+and have relations, are encapsulated into a set of RPMs, we can manange these
+procedual build steps like Monad or Arrow in haskell, I think.
 
 With help of onfiguration management technology such like puppet, chef and
 ansible or deployment tools like cappistrano, you may be able to automate such
@@ -137,6 +147,8 @@ How to build
 Build w/ mock
 ----------------
 
+Most of python code in module's top directory (pmaker/\*.py) are utility modules.
+
 It takes some time to make a rpm but should be better, I think.
 
 1. python setup.py srpm
@@ -221,6 +233,8 @@ And here is my usual way for bug fixes:
 TODO
 =======
 
+* Fixe template realated errors
+* Switched template engine from tenjin to jinja2 
 * resolve package name collisions due to overriding packages; there is
   'man-pages-overrides' package exist. How about using '-overlay' suffix
   instead of '-overrides' ?

@@ -98,7 +98,6 @@ fi
 if [ $1 = 0 ]; then    # uninstall (! update)
     %{_libexecdir}/%{name}-overrides/revert-overrides
 fi
-<?py #endif ?>
 
 <?py if conflicts.files: ?>
 %if 0%{?use_trigger} == 1
