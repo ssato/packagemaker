@@ -5,7 +5,7 @@ PackageMaker is a kind of archiver like tar and zip but generates packages
 instead of just an archive file.
 
 Packaging process is fully automated and you can package files, dirs and
-symlinks by just passing paths list and packaing information.
+symlinks by just passing paths list and package information.
 
 It helps building packages of existing files on your system by automating
 almost all of the steps needed for packaing: arrange source tree, create
