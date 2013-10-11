@@ -201,11 +201,9 @@ def get_compressor(ctools=COMPRESSING_TOOLS):
         )
 
         if c_exists:
-            am_support_c = 0 == subprocess.check_call(
-                "grep -q -e '^dist-%s:' %s 2> /dev/null" % \
-                    (ct.command, am_files_pattern),
-                shell=True,
-            )
+            c = "grep -q -e '^dist-%s:' %s 2> /dev/null" % (ct.command,
+                                                            am_files_pattern)
+            am_support_c = 0 == subprocess.check_call(c, shell=True)
             if am_support_c:
                 return ct
 
