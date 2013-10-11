@@ -63,14 +63,11 @@ class PkgData(B.Bunch):
                      see also: pmaker/configurations.py, pmaker/options.py
         :param files: List of files (FileObject instances) :: [FileObject]
         """
-        keys = (
-            "force", "verbosity", "workdir", "stepto", "driver",
-            "format", "destdir", "name", "group", "license", "url",
-            "summary", "arch", "relations", "packager", "email",
-            "pversion", "release", "changelog", "dist",
-            "template_paths", "hostname", "no_mock", "trigger",
-            "trace", 
-        )
+        keys = ("force", "verbosity", "workdir", "stepto", "driver", "format",
+                "destdir", "name", "group", "license", "url", "summary",
+                "arch", "relations", "packager", "email", "pversion",
+                "release", "changelog", "dist", "template_paths", "hostname",
+                "no_mock", "trigger", "trace")
 
         for key in keys:
             val = getattr(data, key, None)
