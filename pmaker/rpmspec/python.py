@@ -24,7 +24,7 @@ import sys
 import tarfile
 
 
-def get_download_url(name, base_url="http://pypi.python.org/pypi/"):
+def get_download_url(name, base_url="https://pypi.python.org/pypi/"):
     """
 
     PyPI url example: http://pypi.python.org/pypi/pyev/
@@ -35,9 +35,8 @@ def get_download_url(name, base_url="http://pypi.python.org/pypi/"):
         where <X> = Initial character of name
               <NAME> = name
               <VERSION> = version
-              <DBASE_URL> = "http://pypi.python.org/packages/source"
+              <DBASE_URL> = "http://pypi.python.org/packages/source/"
               <URL> = <DBASE_URL>/<X>/<NAME>/<NAME>-<VERSION>.tar.gz
-
     """
     pi_url = base_url + name
     page = U.urlread(pi_url)
@@ -47,7 +46,7 @@ def get_download_url(name, base_url="http://pypi.python.org/pypi/"):
         return None
 
     reg = re.compile(
-        r".*(http://pypi.python.org/packages/source/[^#]+)#md5=.*"
+        r".*(https://pypi.python.org/packages/source/[^#]+)#md5=.*"
     )
 
     ls = [l for l in page.split("\n") if reg.match(l)]

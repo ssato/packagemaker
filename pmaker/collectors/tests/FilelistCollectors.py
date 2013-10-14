@@ -48,20 +48,13 @@ PATHS = [
     "/root/*",  # likewise.
 ]
 
-PATHS_EXPANDED = U.unique(
-    U.concat(
-        "*" in p and glob.glob(p) or [p] for p in PATHS \
-            if not p.startswith("#")
-    )
-)
+PATHS_EXPANDED = U.unique(U.concat("*" in p and glob.glob(p) or [p] for p in
+                                   PATHS if not p.startswith("#")))
 
-SYSTEM_FILES_EXIST_AND_NO_RPMS_OWN = [
-    "/etc/resolv.conf", "/usr/share/mime/mime.cache",
-        "/usr/share/applications/mimeinfo.cache"
-]
-SYSTEM_FILES_EXIST_AND_NO_RPMS_OWN = [
-    f for f in SYSTEM_FILES_EXIST_AND_NO_RPMS_OWN if os.path.exists(f)
-]
+_sysfiles_no_rpms_own = ["/etc/resolv.conf", "/usr/share/mime/mime.cache",
+                         "/usr/share/applications/mimeinfo.cache"]
+SYSTEM_FILES_EXIST_AND_NO_RPMS_OWN = [f for f in _sysfiles_no_rpms_own
+                                      if os.path.exists(f)]
 
 
 def init_config(listfile):
@@ -100,11 +93,8 @@ class Test_00_FilelistCollector__wo_side_effects(unittest.TestCase):
 
         collector = FilelistCollector(listfile, config)
         fos = collector._parse(line)
-        fos_ref = [
-            Factory.create(listfile, False,
-                create=1, content="generated file"
-            ),
-        ]
+        fos_ref = [Factory.create(listfile, False,
+                                  create=1, content="generated file")]
 
         self.assertNotEquals(fos, [])
         self.assertEquals(fos, fos_ref)
@@ -183,7 +173,8 @@ class Test_01_FilelistCollector(unittest.TestCase):
         self.assertEquals(fos[0].path, path)
         self.assertEquals(fos[0].checksum, fo_ref.checksum)
         self.assertEquals(fos[0].target, fo_ref.target)
-        #self.assertEquals(fos, [fo_ref], "ref=%s, res=%s" % (str([fo_ref]), str(fos)))
+        #self.assertEquals(fos, [fo_ref], "ref=%s, res=%s" % (str([fo_ref]),
+        #                  str(fos)))
 
     def test_04_collect__single_real_file_rpm_owns(self):
         """test_04_collect__single_real_file_rpm_owns: FIXME"""
@@ -383,9 +374,8 @@ class Test_03_AnyFilelistCollector__w_side_effects(unittest.TestCase):
 
         config = init_config(listfile)
 
-        fos_ref = sorted(
-            f for f in (Factory.create(p, False) for p in PATHS_EXPANDED) \
-        )
+        fos_ref = sorted(f for f in (Factory.create(p, False) for p in
+                         PATHS_EXPANDED))
 
         ac = AnyFilelistCollector(listfile, config, Anycfg.CTYPE_JSON)
         fos = ac.list(listfile)
@@ -399,24 +389,19 @@ class Test_03_AnyFilelistCollector__w_side_effects(unittest.TestCase):
             def _pred(self, f):
                 return f.path.startswith("/usr")
 
-        filters = [
-            Filters.UnsupportedTypesFilter(),
-            Filters.NotExistFilter(),
-            Filters.ReadAccessFilter(),
-            UserDirFilter(),
-        ]
-        fos_ref_filtered = [
-            f for f in fos_ref if not any(filter(f) for filter in filters)
-        ]
+        filters = [Filters.UnsupportedTypesFilter(),
+                   Filters.NotExistFilter(),
+                   Filters.ReadAccessFilter(),
+                   UserDirFilter()]
+        fos_ref_filtered = [f for f in fos_ref
+                            if not any(filter(f) for filter in filters)]
 
         ac2 = AnyFilelistCollector(listfile, config, Anycfg.CTYPE_JSON)
         ac2.filters += filters
         fos_filtered = ac2.collect()
 
-        self.assertEquals(
-            sorted(f.path for f in fos_filtered),
-            sorted(f.path for f in fos_ref_filtered)
-        )
+        self.assertEquals(sorted(f.path for f in fos_filtered),
+                          sorted(f.path for f in fos_ref_filtered))
 
 
 # vim:sw=4:ts=4:et:

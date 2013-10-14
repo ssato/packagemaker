@@ -75,7 +75,7 @@ def setup_workdir_and_listfile():
 class BackendTester(object):
 
     def __init__(self, workdir, listfile, step=STEP_BUILD,
-            btype="autotools.single.tgz"):
+                 btype="autotools.single.tgz"):
         """
         Initialize backend object.
         """

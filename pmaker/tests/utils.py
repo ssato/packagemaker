@@ -1,5 +1,5 @@
 #
-# Copyright (C) 2011 Satoru SATOH <satoru.satoh @ gmail.com>
+# Copyright (C) 2011 - 2013 Satoru SATOH <satoru.satoh @ gmail.com>
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -82,11 +82,9 @@ class TestChecksum(unittest.TestCase):
             print >> sys.stderr, "You look root and cannot test this. Skipped"
             return
 
-        path = random.choice(
-            [p for p in ("/etc/at.deny", "/etc/securetty", "/etc/sudoer", \
-                "/etc/shadow") \
-                    if os.path.exists(p) and not os.access(p, os.R_OK)]
-        )
+        fs = ("/etc/at.deny", "/etc/securetty", "/etc/sudoer", "/etc/shadow")
+        pred = lambda p: os.path.exists(p) and not os.access(p, os.R_OK)
+        path = random.choice([p for p in fs if pred(p)])
 
         csum_ref = "0" * len(sha1("").hexdigest())
         self.assertEquals(checksum(path), csum_ref)
@@ -137,15 +135,12 @@ class TestFlatten(unittest.TestCase):
     def test_flatten_lists(self):
         self.assertListEqual(flatten([[1, 2, 3], [4, 5]]), [1, 2, 3, 4, 5])
         self.assertListEqual(flatten([[1, 2, [3]], [4, [5, 6]]]),
-            [1, 2, 3, 4, 5, 6]
-        )
+                             [1, 2, 3, 4, 5, 6])
         self.assertListEqual(flatten([(1, 2, 3), (4, 5)]), [1, 2, 3, 4, 5])
 
     def test_flatten_generator_expression(self):
-        self.assertListEqual(
-            flatten((i, i * 2) for i in range(5)),
-            [0, 0, 1, 2, 2, 4, 3, 6, 4, 8]
-        )
+        self.assertListEqual(flatten((i, i * 2) for i in range(5)),
+                             [0, 0, 1, 2, 2, 4, 3, 6, 4, 8])
 
 
 class TestConcat(unittest.TestCase):
@@ -157,16 +152,13 @@ class TestConcat(unittest.TestCase):
     def test_concat_lists(self):
         self.assertListEqual(concat([[1, 2, 3], [4, 5]]), [1, 2, 3, 4, 5])
         self.assertListEqual(concat([[1, 2, [3]], [4, [5, 6]]]),
-            [1, 2, [3], 4, [5, 6]]
-        )
+                             [1, 2, [3], 4, [5, 6]])
         self.assertListEqual(concat([(1, 2, [3]), (4, [5, 6])]),
-            [1, 2, [3], 4, [5, 6]]
-        )
+                             [1, 2, [3], 4, [5, 6]])
 
     def test_concat_generator_expression(self):
         self.assertListEqual(concat((i, i * 2) for i in range(5)),
-            [0, 0, 1, 2, 2, 4, 3, 6, 4, 8]
-        )
+                             [0, 0, 1, 2, 2, 4, 3, 6, 4, 8])
 
 
 class TestUnique(unittest.TestCase):
@@ -176,13 +168,11 @@ class TestUnique(unittest.TestCase):
 
     def test_unique_num_lists(self):
         self.assertListEqual(unique([0, 3, 1, 2, 1, 0, 4, 5]),
-            [0, 1, 2, 3, 4, 5]
-        )
+                             [0, 1, 2, 3, 4, 5])
 
     def test_unique_str_list(self):
         self.assertListEqual(unique(c for c in "dagcbfefagb"),
-            ["a", "b", "c", "d", "e", "f", "g"]
-        )
+                             ["a", "b", "c", "d", "e", "f", "g"])
 
 
 NULL_DICT = dict()
@@ -222,8 +212,7 @@ class Test_listplus(unittest.TestCase):
 
     def test_listplus(self):
         self.assertTrue(isinstance(listplus([0],
-            (i for i in range(10))), list)
-        )
+                                   (i for i in range(10))), list))
 
 
 class Test_true(unittest.TestCase):
@@ -295,25 +284,17 @@ class Test_rm_rf_and_createdir(unittest.TestCase):
 class Test_date(unittest.TestCase):
 
     def test_date__default(self):
-        self.assertNotEquals(
-            re.match(r".{3} .{3} +\d+ \d{4}", format_date()),
-            None
-        )
+        self.assertNotEquals(re.match(r".{3} .{3} +\d+ \d{4}", format_date()),
+                             None)
 
     def test_date__simple(self):
-        self.assertNotEquals(
-            re.match(r"\d{8}", format_date(DATE_FMT_SIMPLE)),
-            None
-        )
+        self.assertNotEquals(re.match(r"\d{8}", format_date(DATE_FMT_SIMPLE)),
+                             None)
 
     def test_date__rfc2822(self):
-        self.assertNotEquals(
-            re.match(
-                r".{3}, \d{1,2} .* \d{4} \d{2}:\d{2}:\d{2} \+\d{4}",
-                format_date(DATE_FMT_RFC2822)
-            ),
-            None
-        )
+        reg = r".{3}, \d{1,2} .* \d{4} \d{2}:\d{2}:\d{2} \+\d{4}"
+        self.assertNotEquals(re.match(reg, format_date(DATE_FMT_RFC2822)),
+                             None)
 
 
 class Test_sort_out_paths_by_dir(unittest.TestCase):
@@ -325,21 +306,15 @@ class Test_sort_out_paths_by_dir(unittest.TestCase):
         cleanup_workdir(self.workdir)
 
     def test_sort_out_paths_by_dir(self):
-        path_list = [
-           "/etc/resolv.conf",
-           "/etc/sysconfig/iptables",
-           "/etc/sysconfig/networks",
-        ]
+        path_list = ["/etc/resolv.conf", "/etc/sysconfig/iptables",
+                     "/etc/sysconfig/networks"]
 
-        expected_result = [
-            dict(dir="/etc", files=["/etc/resolv.conf"], id="0"),
-            dict(dir="/etc/sysconfig",
-                files=[
-                    "/etc/sysconfig/iptables",
-                    "/etc/sysconfig/networks"
-                ],
-                id="1"),
-        ]
+        expected_result = [dict(dir="/etc", files=["/etc/resolv.conf"],
+                                id="0"),
+                           dict(dir="/etc/sysconfig",
+                                files=["/etc/sysconfig/iptables",
+                                       "/etc/sysconfig/networks"],
+                                id="1")]
         for i, d in enumerate(sort_out_paths_by_dir(path_list)):
             self.assertTrue(dicts_comp(d, expected_result[i]))
 
@@ -361,6 +336,5 @@ class Test_parse_conf_value(unittest.TestCase):
         self.assertEquals("a string", parse_conf_value("a string"))
         self.assertEquals("0.1", parse_conf_value("0.1"))
         self.assertEquals("%config", parse_conf_value("'%config'"))
-
 
 # vim:sw=4:ts=4:et:

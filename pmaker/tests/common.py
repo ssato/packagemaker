@@ -38,12 +38,8 @@ PATHS = [
     "/root/*",  # likewise.
 ]
 
-PATHS_EXPANDED = U.unique(
-    U.concat(
-        "*" in p and glob.glob(p) or [p] for p in PATHS \
-            if not p.startswith("#")
-    )
-)
+PATHS_EXPANDED = U.unique(U.concat("*" in p and glob.glob(p) or [p] for p in
+                                   PATHS if not p.startswith("#")))
 
 
 def setup_workdir():

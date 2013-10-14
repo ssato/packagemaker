@@ -22,13 +22,14 @@ import re
 import unittest
 
 
+_BASEURL = "https://pypi.python.org/packages/source/"
+
+
 class Test_00(unittest.TestCase):
 
     def test_get_download_url(self):
         n = "pyev"
-        dp = re.compile(
-            "http://pypi.python.org/packages/source/p/%s/%s-.*.tar.gz" % (n, n)
-        )
+        dp = re.compile(_BASEURL + "p/%s/%s-.*.tar.gz" % (n, n))
         u = P.get_download_url(n)
 
         self.assertTrue(dp.match(u))

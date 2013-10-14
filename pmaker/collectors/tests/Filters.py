@@ -1,5 +1,5 @@
 #
-# Copyright (C) 2011 Satoru SATOH <satoru.satoh @ gmail.com>
+# Copyright (C) 2011 - 2013 Satoru SATOH <satoru.satoh @ gmail.com>
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -92,36 +92,29 @@ class TestReadAccessFilter(unittest.TestCase):
             print >> sys.stderr, "You look root and cannot test this. Skipped"
             return
 
+        pred = lambda f: os.path.exists(f) and not os.access(f, os.R_OK)
+
         filter = ReadAccessFilter()
-        path = random.choice(
-            [p for p in ("/etc/at.deny",
-                         "/etc/securetty",
-                         "/etc/sudoer",
-                         "/etc/shadow",
-                         "/etc/grub.conf") \
-                if os.path.exists(p) and not os.access(p, os.R_OK)]
-        )
+        path = random.choice([p for p in ("/etc/at.deny", "/etc/securetty",
+                                          "/etc/sudoer", "/etc/shadow",
+                                          "/etc/grub.conf")
+                              if pred(p)])
 
         fo = Factory.create(path)
-
         self.assertTrue(filter.pred(fo))
 
         fo.create = True
-
         self.assertFalse(filter.pred(fo))
 
     def test_pred__permitted_to_read(self):
         filter = ReadAccessFilter()
-        path = random.choice(
-            [p for p in ("/etc/hosts",
-                         "/etc/resolv.conf",
-                         "/etc/sysctl.conf",
-                    ) if os.path.exists(p) and os.access(p, os.R_OK)
-            ]
-        )
+        pred = lambda f: os.path.exists(f) and os.access(f, os.R_OK)
+
+        path = random.choice([p for p in ("/etc/hosts", "/etc/resolv.conf",
+                                          "/etc/sysctl.conf")
+                              if pred(p)])
 
         fo = Factory.create(path)
         self.assertFalse(filter.pred(fo))
-
 
 # vim:sw=4:ts=4:et:
