@@ -58,7 +58,7 @@ class TestCommand(Command):
     user_options = [("full", "F",
         "Fully test all including system/integration tests take much time to complete")]
     boolean_options = ['full']
-    test_driver = os.path.join(curdir, "runtest.sh")
+    test_driver = os.path.join(curdir, "aux", "runtest.sh")
 
     def initialize_options(self):
         self.full = 0
