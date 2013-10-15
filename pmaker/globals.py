@@ -1,5 +1,7 @@
 #
 # Copyright (C) 2011 Satoru SATOH <satoru.satoh @ gmail.com>
+# Copyright (C) 2011 - 2013 Satoru SATOH <ssato@redhat.com>
+# Copyright (C) 2011 - 2013 Red Hat, Inc.
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -15,7 +17,6 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 import pmaker.models.Bunch as B
-import datetime
 import logging
 import os.path
 
@@ -32,8 +33,6 @@ PMAKER_EMAIL = "satoru.satoh@gmail.com"
 PMAKER_WEBSITE = "https://github.com/ssato/packagemaker"
 
 PMAKER_VERSION = "0.4.2"
-#PMAKER_VERSION += "." + datetime.datetime.now().strftime("%Y%m%d")
-
 PMAKER_TEMPLATE_VERSION = "1"
 
 

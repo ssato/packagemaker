@@ -16,6 +16,12 @@ from pmaker.globals import PMAKER_AUTHOR, PMAKER_EMAIL, PMAKER_WEBSITE, \
     PMAKER_TITLE as PACKAGE, PMAKER_VERSION as VERSION
 
 
+# For daily snapshot versioning mode:
+if os.environ.get("_SNAPSHOT_BUILD", None) is not None:
+    import datetime
+    VERSION = VERSION + datetime.datetime.now().strftime(".%Y%m%d")
+
+
 def list_paths(path_pattern="*", topdir=curdir, pred=os.path.isfile):
     return [p for p in glob.glob(os.path.join(topdir, path_pattern)) if pred(p)]
 
