@@ -78,13 +78,13 @@ rm -rf $RPM_BUILD_ROOT
 
 %files
 %defattr(-,root,root,-)
-%doc README
+%doc README.rst
 %doc tests
 
 
 %files          core
 %defattr(-,root,root,-)
-%doc README
+%doc README.rst
 %doc examples
 %{python_sitelib}/pmaker
 %{_bindir}/*
