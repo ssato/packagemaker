@@ -100,6 +100,13 @@ rm -rf $RPM_BUILD_ROOT
 
 
 %changelog
+* Tue Oct 15 2013 Satoru SATOH <ssato@redhat.com> - 0.4.3-1
+- Make template search path specified in -P/--template-path option inserted
+  into the top of paths always
+- Added a filter filtering out files of which names contains ':' as make does
+  not like such file names
+- Some other minor bug fixes including many PEP8 errors
+
 * Fri Feb 22 2013 Satoru SATOH <ssato@redhat.com> - 0.4.2-1
 - Fixed template syntax error such var 'reqs' is undefined
 - Fixed templates having var 'trigger'
