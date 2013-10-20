@@ -99,7 +99,7 @@ a. Models
 Classes in pmaker.models.FileObjects implement the basic model of target
 objects: files, dirs and symlinks.  Because many instance of these objects
 should be created as user requested, operations (copy, move, etc.) for these
-models are implemented in in functions in another module,
+models are implemented in functions in another module,
 pmaker.models.FileObjectOperations.
 
 Model classes are instantiated from dedicated factory functions in
@@ -122,8 +122,8 @@ The modules underr pmaker/backend is the core componenet to manage and drive
 packaging process.
 
 All backend classes are children of pmaker.backend.base.Base class and may
-override methods {setup, preconfigure, configure, sbuild, build} represents
-each build steps.
+override methods {setup, preconfigure, configure, sbuild, build} to implement
+each actual build steps.
 
 d. Utility modules
 -------------------
@@ -281,9 +281,9 @@ buildrpm:
 License
 =========
 
-Copyright (C) 2011 Satoru SATOH <satoru.satoh @ gmail.com>
-Copyright (C) 2011 Satoru SATOH <ssato @ redhat.com>
-Copyright (C) 2011 - 2013 Red Hat, Inc.
+* Copyright (C) 2011 Satoru SATOH <satoru.satoh @ gmail.com>
+* Copyright (C) 2011 Satoru SATOH <ssato @ redhat.com>
+* Copyright (C) 2011 - 2013 Red Hat, Inc.
 
 This program is free software: you can redistribute it and/or modify it under
 the terms of the GNU General Public License as published by the Free Software
@@ -308,4 +308,4 @@ Author
 
 Satoru SATOH <ssato at redhat.com>
 
-.. vim:sw=2 ts=2 et:
+.. vim:sw=2:ts=2:et:
