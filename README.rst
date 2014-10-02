@@ -278,6 +278,11 @@ buildrpm:
 
 * buildrpm: http://magnusg.fedorapeople.org/buildrpm/
 
+And I recently found fpm which looks powerful and feature rich meta packaging
+tool written in ruby:
+
+* https://github.com/jordansissel/fpm
+
 License
 =========
 
