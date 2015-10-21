@@ -43,6 +43,10 @@ class Test_01_DestdirModifier(unittest.TestCase):
             DestdirModifier("/a/b/").rewrite_with_destdir("/a/b/c"),
             "/c"
         )
+        self.assertEquals(
+            DestdirModifier(".").rewrite_with_destdir("./a.b.c/d"),
+            "/a.b.c/d"
+        )
 
     def test_00_rewrite_with_destdir__no_destdir(self):
         try:

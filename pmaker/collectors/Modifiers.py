@@ -64,7 +64,7 @@ class DestdirModifier(FileObjectModifier):
         ...     pass
         """
         if path.startswith(self.destdir):
-            new_path = path.split(self.destdir)[1]
+            new_path = path.split(self.destdir, 1)[-1]
 
             if not new_path.startswith(os.path.sep):
                 new_path = os.path.sep + new_path
