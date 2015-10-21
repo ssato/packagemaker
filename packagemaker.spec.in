@@ -100,6 +100,9 @@ rm -rf $RPM_BUILD_ROOT
 
 
 %changelog
+* Wed Oct 21 2015 Satoru SATOH <ssato@redhat.com> - 0.5.0-1
+- Fix a grave bug when --destdir=. and path of target files contain '.'
+
 * Tue Oct 15 2013 Satoru SATOH <ssato@redhat.com> - 0.4.3-1
 - Make template search path specified in -P/--template-path option inserted
   into the top of paths always
