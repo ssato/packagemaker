@@ -5,7 +5,7 @@ PackageMaker is a kind of archiver like tar and zip but generates packages
 instead of just an archive file.
 
 Packaging process is fully automated and you can package files, dirs and
-symlinks by just passing paths list and package information.
+symlinks by just passing paths list and package information to PackageMaker.
 
 It helps building packages of existing files on your system by automating
 almost all of the steps needed for packaing: arrange source tree, create
@@ -14,7 +14,7 @@ makefiles and rpm specs or debian packaging files, etc.
 Basic Usage
 =============
 
-see the output of `pmaker --help` (or run 'PYTHONPATH=. python tools/pmaker -h'
+See the output of `pmaker --help` (or run 'PYTHONPATH=. python tools/pmaker -h'
 in this dir) or pmaker(8) or examples/\*.log.
 
 How it works
@@ -23,36 +23,36 @@ How it works
 When packaging files, dirs and symlinks which user gave in the path list,
 PackageMaker will try gathering the information of these targets  and then:
 
-1. arrange src tree contains these files, dirs and symlinks with these
+#. arrange src tree contains these files, dirs and symlinks with these
    relative path kept, and build files (Makefile.am, configure.ac, etc.)
    to install these.
 
-2. generate packaging metadata like RPM SPEC, debian/rules, etc.
+#. generate packaging metadata like RPM SPEC, debian/rules, etc.
+#. build package such as rpm, src.rpm, deb, etc.
 
-3. build package such as rpm, src.rpm, deb, etc.
-
-NOTE: The permissions of the files might be lost during packaging process. If
-you want to ensure these are saved or force set permissions as you wanted,
-specify these explicitly in Makefile.am or rpm spec, etc.
+.. note::
+   The permissions of the files might be lost during packaging process. If you
+   want to ensure these are saved or force set permissions as you wanted,
+   specify these explicitly in Makefile.am or rpm spec, etc.
 
 "Package-based system construction" - the concept behind packagemaker
 =======================================================================
 
 Usually, systems are constructed through the following steps:
 
-1. kitting: setup hardware
-2. install os
-3. configure os
-4. install middleware and apps
-5. configure middleware and apps
+#. kitting: setup hardware
+#. install os
+#. configure os
+#. install middleware and apps
+#. configure middleware and apps
 
 It is possible to automate some of steps 2..4, above but it takes much time and
 hard sometime because most steps consist of procedual steps with side effects.
 
 With help of onfiguration management technology such like puppet, chef and
-ansible or deployment tools like cappistrano, you may be able to automate such
-build steps, but, important point is that procedual steps is not required in
-actual, that is, any procedual and effectful steps make some files, dirs and
+ansible or deployment tools like cappistrano, it may be possible to automate
+such build steps, but, important point is that procedual steps is not required
+in actual, that is, any procedual and effectful steps make some files, dirs and
 symlinks in the last. In other words, what we have to take care to construct
 systems is just what files, dirs and symlinks are needed and where these are.
 
@@ -64,9 +64,11 @@ packaged into some RPMs, we can re-play these steps with a kickstart file with
 basic os installatio and package list which these additional RPMs are added.
 
 PackageMaker is one of the important pieces to actualize and establish "package
-based system construction" methodology because it should enable reducing the
-cost of packaging files, dirs and sysmlinks (captureing what objects making
+based system construction" [#]_ methodology because it should enable reducing
+the cost of packaging files, dirs and sysmlinks (captureing what objects making
 that system), and may enables 're-playing' the system construction process.
+
+.. [#] Although container based system construction and deployment technologies like docker becomes familiar these days, you have to write 'yum install ...' in docker files still. That is, docker can hide some of the steps but the essential problems do not go away by docker.
 
 Comparison with configuration management system
 -------------------------------------------------
@@ -96,9 +98,9 @@ d. Utility modules
 a. Models
 -----------
 
-Classes in pmaker.models.FileObjects implement the basic model of target
-objects: files, dirs and symlinks.  Because many instance of these objects
-should be created as user requested, operations (copy, move, etc.) for these
+Classes in pmaker.models.FileObjects module implement the basic model of target
+objects: files, dirs and symlinks.  Because a lot of instance of these objects
+need to be created as user requested, operations (copy, move, etc.) for these
 models are implemented in functions in another module,
 pmaker.models.FileObjectOperations.
 
@@ -110,20 +112,20 @@ The code of models are placed in pmaker/models directory.
 b. Collectors
 ---------------
 
-This component process user input (files list) and to collect FIleObject
-instances to package.
+This component process user input (files list) and to create a collection of
+FIleObject instances to package later.
 
 The code of collectors are placed in pmaker/collectors directory.
 
 c. Backends (Drivers)
 -----------------------
 
-The modules underr pmaker/backend is the core componenet to manage and drive
+The modules under pmaker/backend is the core componenet to manage and drive
 packaging process.
 
-All backend classes are children of pmaker.backend.base.Base class and may
-override methods {setup, preconfigure, configure, sbuild, build} to implement
-each actual build steps.
+All backend classes inherit pmaker.backend.base.Base class and may override
+methods {setup, preconfigure, configure, sbuild, build} to implement each
+actual build steps.
 
 d. Utility modules
 -------------------
@@ -137,10 +139,11 @@ How to build
 Build w/ mock
 ----------------
 
-It takes some time to make a rpm but should be better, I think.
+Although it takes some time to make a rpm, it should be better and I recommend
+this way:
 
-1. python setup.py srpm
-2. mock -r <target_build_dist> dist/SRPMS/packagemaker-*.src.rpm
+#. python setup.py srpm
+#. mock -r <target_build_dist> dist/SRPMS/packagemaker-*.src.rpm
 
 Build w/o mock
 ----------------
@@ -158,9 +161,9 @@ How to test
 
 If you want to test specific python code:
 
-a. source code: ./runtest.sh <path_to_python_source>
-b. a class in source code: ./runtest.sh <path_to_python_source>:<class_name>
-c. a method of a class in source code:./runtest.sh <path_to_python_source>:<class_name>.<method_name>
+#. source code: ./runtest.sh <path_to_python_source>
+#. a class in source code: ./runtest.sh <path_to_python_source>:<class_name>
+#. a method of a class in source code:./runtest.sh <path_to_python_source>:<class_name>.<method_name>
 
 SEE ALSO: nosetests(1)
 
@@ -205,18 +208,18 @@ HACKING
 
 This is my usual way for enhancements:
 
-1. create a branch: git branch foo
-2. modify or add code to archive objective enhancements in that branch: git checkout foo; vim ...
-3. add (unit) tests for enhancements to verify the correctness of changes
-4. commit and run full test (unit + system tests)
+#. create a branch: git branch foo
+#. modify or add code to archive objective enhancements in that branch: git checkout foo; vim ...
+#. add (unit) tests for enhancements to verify the correctness of changes
+#. commit and run full test (unit + system tests)
 
 if all looks ok, merge the branch to main.
 
 And here is my usual way for bug fixes:
 
-1. Write tests for the bug
-2. Modify / add code for the fix
-3. Run the tests and confirm if the fix was right
+#. Write tests for the bug
+#. Modify / add code for the fix
+#. Run the tests and confirm if the fix was right
 
 TODO
 =======
