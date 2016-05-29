@@ -1,4 +1,7 @@
-This package was debianized by #{packager} <#{email}>
-on #{date.date}.
+Format: http://www.debian.org/doc/packaging-manuals/copyright-format/1.0/
+Upstream-Name: #{name}
+Source: #{ _context.get("source0", "") }
 
-This package is distributed under #{license}.
+Files: *
+Copyright: Copyright #{date.date} #{packager} <#{email}>
+License: #{license}
