@@ -1,3 +1,8 @@
-# Use bzip2 instead of gzip
-compression = "bzip2"
-compression-level = 9
+## @see dpkg-source(1)
+## let dpkg-source create a debian.tar.bz2 with maximal compression
+#compression = "bzip2"
+#compression-level = 9
+## use debian/patches/debian-changes as automatic patch
+#single-debian-patch
+## ignore changes on config.{sub,guess}
+#extend-diff-ignore = "(^|/)(config.sub|config.guess)$"
